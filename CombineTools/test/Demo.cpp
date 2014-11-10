@@ -37,65 +37,79 @@ int main() {
       {7, "muTau_vbf_tight"}};
 
   cats["ee_7TeV"] = {
-      {0, "0jet_low"},
-      {1, "0jet_high"},
-      {2, "1jet_low"},
-      {3, "1jet_high"},
-      {4, "vbf"}};
+      {0, "ee_0jet_low"},
+      {1, "ee_0jet_high"},
+      {2, "ee_1jet_low"},
+      {3, "ee_1jet_high"},
+      {4, "ee_vbf"}};
   cats["ee_8TeV"] = cats["ee_7TeV"];
-  cats["mm_7TeV"] = cats["ee_7TeV"];
-  cats["mm_8TeV"] = cats["ee_7TeV"];
+
+  cats["mm_7TeV"] = {
+      {0, "mumu_0jet_low"},
+      {1, "mumu_0jet_high"},
+      {2, "mumu_1jet_low"},
+      {3, "mumu_1jet_high"},
+      {4, "mumu_vbf"}};
+  cats["mm_8TeV"] = cats["mm_7TeV"];
+
+  cats["tt_8TeV"] = {
+      {0, "tauTau_1jet_high_mediumhiggs"},
+      {1, "tauTau_1jet_high_highhiggs"},
+      {2, "tauTau_vbf"}};
 
   vector<string> masses = ch::MassesFromRange("110-145:5");
 
   for (string era : {"7TeV", "8TeV"}) {
-    cout << "------ " << era << " ------\n";
-    cout << ">> Adding observations...";
+    cout << ">> Adding observations for " << era << "...\n";
     cb.AddObservations({"*"}, {"htt"}, {era}, {"mt"}, cats["mt_"+era]);
     cb.AddObservations({"*"}, {"htt"}, {era}, {"ee"}, cats["ee_"+era]);
     cb.AddObservations({"*"}, {"htt"}, {era}, {"mm"}, cats["mm_"+era]);
+    cb.AddObservations({"*"}, {"htt"}, {era}, {"tt"}, cats["tt_"+era]);
     cout << " done\n";
 
-    cout << ">> Adding background processes...";
+    cout << ">> Adding background processes for " << era << "...\n";
     cb.AddProcesses({"*"}, {"htt"}, {era}, {"mt"},
-        {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"}, cats["mt_"+era], false);
+      {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"}, cats["mt_"+era], false);
     cb.AddProcesses({"*"}, {"htt"}, {era}, {"ee"},
-        {"ZTT", "WJets", "QCD", "ZEE", "TTJ", "Dibosons"}, cats["ee_"+era], false);
+        {"ZTT", "WJets", "QCD", "ZEE", "TTJ", "Dibosons",
+         "ggH_hww125", "qqH_hww125"}, cats["ee_"+era], false);
     cb.AddProcesses({"*"}, {"htt"}, {era}, {"mm"},
-      {"ZTT", "WJets", "QCD", "ZMM", "TTJ", "Dibosons"}, cats["mm_"+era], false);
-    cout << " done\n";
+        {"ZTT", "WJets", "QCD", "ZMM", "TTJ", "Dibosons",
+         "ggH_hww125", "qqH_hww125"}, cats["mm_"+era], false);
+    cb.AddProcesses({"*"}, {"htt"}, {era}, {"tt"},
+      {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"}, cats["tt_"+era], false);
+    // Have to drop ZL from tauTau_vbf
+    cb.FilterProcs([](ch::Process const* p) {
+      return p->bin() == "tauTau_vbf" && p->process() == "ZL";
+    });
 
-    cout << ">> Adding signal processes...";
+    cout << ">> Adding signal processes for " << era << "...\n";
     cb.AddProcesses(masses, {"htt"}, {era}, {"mt"},
         {"ggH", "qqH", "WH", "ZH"}, cats["mt_"+era], true);
     cb.AddProcesses(masses, {"htt"}, {era}, {"ee"},
         {"ggH", "qqH", "WH", "ZH"}, cats["ee_"+era], true);
     cb.AddProcesses(masses, {"htt"}, {era}, {"mm"},
         {"ggH", "qqH", "WH", "ZH"}, cats["mm_"+era], true);
-    cout << " done\n";
-    cout << "------------------\n";
+    cb.AddProcesses(masses, {"htt"}, {era}, {"tt"},
+        {"ggH", "qqH", "WH", "ZH"}, cats["tt_"+era], true);
   }
 
-  cout << ">> Adding systematic uncertainties...";
+  cout << ">> Adding systematic uncertainties...\n";
   ch::AddSystematics_et_mt(cb);
   ch::AddSystematics_ee_mm(cb);
-  cout << " done\n";
+  ch::AddSystematics_tt(cb);
 
-  cout << ">> Extracting histograms from input root files...";
+  cout << ">> Extracting histograms from input root files...\n";
   for (string era : {"7TeV", "8TeV"}) {
-    for (string chn : {"ee", "mm", "mt"}) {
-      std::string xtra = "";
-      if (chn == "ee") xtra = "ee_";
-      if (chn == "mm") xtra = "mumu_";
+    for (string chn : {"ee", "mm", "mt", "tt"}) {
       cb.cp().channel({chn}).era({era}).backgrounds().ExtractShapes(
           "data/sm-legacy/htt_" + chn + ".inputs-sm-" + era + "-hcg.root",
-          xtra + "$BIN/$PROCESS", xtra + "$BIN/$PROCESS_$SYSTEMATIC");
+          "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
       cb.cp().channel({chn}).era({era}).signals().ExtractShapes(
           "data/sm-legacy/htt_" + chn + ".inputs-sm-" + era + "-hcg.root",
-          xtra + "$BIN/$PROCESS$MASS", xtra + "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+          "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
     }
   }
-  cout << " done\n";
 
   cout << ">> Scaling signal process rates...\n";
   for (string const& e : {"7TeV", "8TeV"}) {
@@ -109,9 +123,8 @@ int main() {
     }
   }
 
-  cout << ">> Setting standardised bin names...";
+  cout << ">> Setting standardised bin names...\n";
   ch::SetStandardBinNames(cb);
-  cout << " done\n";
 
   cout << ">> Merging bin errors...";
   cb.cp().channel({"mt"}).bin_id({0, 1, 2, 3, 4}).process({"W", "QCD"})
@@ -124,9 +137,10 @@ int main() {
       .MergeBinErrors(0.1, 0.4);
   cb.cp().channel({"ee", "mm"}).bin_id({1, 3, 4}).process({"ZTT", "ZEE", "ZMM", "TTJ"})
       .MergeBinErrors(0.0, 0.4);
-  cout << "done\n";
+  cb.cp().channel({"tt"}).bin_id({0, 1, 2}).era({"8TeV"}).process({"ZTT", "QCD"})
+      .MergeBinErrors(0.1, 0.4);
 
-  cout << ">> Generating bbb uncertainties...";
+  cout << ">> Generating bbb uncertainties...\n";
   cb.cp().channel({"mt"}).bin_id({0, 1, 2, 3, 4}).process({"W", "QCD"})
       .AddBinByBin(0.1, true, &cb);
   cb.cp().channel({"mt"}).bin_id({5}).era({"7TeV"}).process({"W"})
@@ -137,9 +151,10 @@ int main() {
       .AddBinByBin(0.1, true, &cb);
   cb.cp().channel({"ee", "mm"}).bin_id({1, 3, 4}).process({"ZTT", "ZEE", "ZMM", "TTJ"})
       .AddBinByBin(0.0, true, &cb);
-  cout << "done\n";
+  cb.cp().channel({"tt"}).bin_id({0, 1, 2}).era({"8TeV"}).process({"QCD", "ZTT"})
+      .AddBinByBin(0.1, true, &cb);
 
-  for (string& chn : vector<string>{"ee", "mm", "mt"}) {
+  for (string& chn : vector<string>{"ee", "mm", "mt", "tt"}) {
     TFile output(("output/sm_cards/htt_" + chn + ".input.root").c_str(),
                  "RECREATE");
     set<string> bins = cb.cp().channel({chn}).bin_set();
@@ -152,7 +167,7 @@ int main() {
       }
     }
     cb.cp().channel({chn}).mass({"125", "*"}).WriteDatacard(
-        "output/sm_cards/" + chn + "_125.txt", output);
+        "output/sm_cards/htt_" + chn + "_125.txt", output);
     output.Close();
   }
   // TFile output("htt_combined.input.root", "RECREATE");
