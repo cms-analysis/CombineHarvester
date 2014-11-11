@@ -4,6 +4,7 @@
 
 namespace ch {
 void AddSystematics_et_mt(CombineHarvester& cb);
+void AddSystematics_em(CombineHarvester& cb);
 void AddSystematics_ee_mm(CombineHarvester& cb);
 void AddSystematics_tt(CombineHarvester& cb);
 void AddMSSMSystematics(CombineHarvester& cb);
