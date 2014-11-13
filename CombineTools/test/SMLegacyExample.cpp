@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <cstdlib>
+#include "boost/filesystem.hpp"
 #include "CombineTools/interface/CombineHarvester.h"
 #include "CombineTools/interface/Utilities.h"
 #include "CombineTools/interface/HttSystematics.h"
@@ -18,8 +20,21 @@ int main() {
   typedef vector<pair<int, string>> Categories;
   typedef vector<string> VString;
 
+  string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
+  string aux_shapes   = auxiliaries +"shapes/";
+  string aux_pruning  = auxiliaries +"pruning/";
+
   VString chns =
       {"et", "mt", "em", "ee", "mm", "tt"};
+
+  map<string, string> input_folders = {
+      {"et", "Imperial"},
+      {"mt", "Imperial"},
+      {"em", "MIT"},
+      {"ee", "DESY-KIT"},
+      {"mm", "DESY-KIT"},
+      {"tt", "CERN"}
+  };
 
   map<string, VString> bkg_procs;
   bkg_procs["et"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"};
@@ -105,12 +120,14 @@ int main() {
   cout << ">> Extracting histograms from input root files...\n";
   for (string era : {"7TeV", "8TeV"}) {
     for (string chn : chns) {
+      // Skip 7TeV tt:
+      if (chn == "tt" && era == "7TeV") continue;
+      string file = aux_shapes + input_folders[chn] + "/htt_" + chn +
+                    ".inputs-sm-" + era + "-hcg.root";
       cb.cp().channel({chn}).era({era}).backgrounds().ExtractShapes(
-          "data/sm-legacy/htt_" + chn + ".inputs-sm-" + era + "-hcg.root",
-          "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
+          file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
       cb.cp().channel({chn}).era({era}).signals().ExtractShapes(
-          "data/sm-legacy/htt_" + chn + ".inputs-sm-" + era + "-hcg.root",
-          "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+          file, "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
     }
   }
 
@@ -140,7 +157,7 @@ int main() {
   }
 
   cout << ">> Merging bin errors...\n";
-  ch::CombineHarvester cb_et = std::move(cb.cp().channel({"et"}));
+  ch::CombineHarvester cb_et = move(cb.cp().channel({"et"}));
   for (string era : {"7TeV", "8TeV"}) {
     cb_et.cp().era({era}).bin_id({1, 2}).process({"ZL", "ZJ", "QCD", "W"})
         .MergeBinErrors(0.1, 0.5);
@@ -154,7 +171,7 @@ int main() {
   cb_et.cp().era({"8TeV"}).bin_id({6}).process({"ZL", "ZJ", "W"})
       .MergeBinErrors(0.1, 0.5);
 
-  ch::CombineHarvester cb_mt = std::move(cb.cp().channel({"mt"}));
+  ch::CombineHarvester cb_mt = move(cb.cp().channel({"mt"}));
   for (string era : {"7TeV", "8TeV"}) {
     cb_mt.cp().era({era}).bin_id({1, 2, 3, 4}).process({"W", "QCD"})
         .MergeBinErrors(0.1, 0.5);
@@ -168,7 +185,7 @@ int main() {
   cb_mt.cp().era({"8TeV"}).bin_id({7}).process({"W", "ZTT"})
       .MergeBinErrors(0.1, 0.5);
 
-  ch::CombineHarvester cb_em = std::move(cb.cp().channel({"em"}));
+  ch::CombineHarvester cb_em = move(cb.cp().channel({"em"}));
   for (string era : {"7TeV", "8TeV"}) {
     cb_em.cp().era({era}).bin_id({1, 3}).process({"Fakes"})
         .MergeBinErrors(0.1, 0.5);
@@ -180,14 +197,14 @@ int main() {
   cb_em.cp().era({"8TeV"}).bin_id({4}).process({"Fakes", "EWK"})
       .MergeBinErrors(0.1, 0.5);
 
-  ch::CombineHarvester cb_ee_mm = std::move(cb.cp().channel({"ee", "mm"}));
+  ch::CombineHarvester cb_ee_mm = move(cb.cp().channel({"ee", "mm"}));
   for (string era : {"7TeV", "8TeV"}) {
     cb_ee_mm.cp().era({era}).bin_id({1, 3, 4})
         .process({"ZTT", "ZEE", "ZMM", "TTJ"})
         .MergeBinErrors(0.0, 0.5);
   }
 
-  ch::CombineHarvester cb_tt = std::move(cb.cp().channel({"tt"}));
+  ch::CombineHarvester cb_tt = move(cb.cp().channel({"tt"}));
   cb_tt.cp().bin_id({0, 1, 2}).era({"8TeV"}).process({"ZTT", "QCD"})
       .MergeBinErrors(0.1, 0.5);
 
@@ -231,10 +248,9 @@ int main() {
 
   cout << ">> Setting standardised bin names...\n";
   ch::SetStandardBinNames(cb);
-
   VString droplist = ch::ParseFileLines(
-    "data/pruning/uncertainty-pruning-drop-131128-htt.txt");
-  std::cout << ">> Droplist contains " << droplist.size() << " entries\n";
+    aux_pruning + "uncertainty-pruning-drop-131128-sm.txt");
+  cout << ">> Droplist contains " << droplist.size() << " entries\n";
 
   set<string> to_drop;
   for (auto x : droplist) to_drop.insert(x);
@@ -242,35 +258,38 @@ int main() {
   auto pre_drop = cb.nus_name_set();
   cb.nus_name(droplist, false);
   auto post_drop = cb.nus_name_set();
-  std::cout << ">> Systematics dropped: " << pre_drop.size() - post_drop.size()
+  cout << ">> Systematics dropped: " << pre_drop.size() - post_drop.size()
             << "\n";
 
-  set<string> dropped;
-  set_difference(pre_drop.begin(), pre_drop.end(), post_drop.begin(),
-                 post_drop.end(), std::inserter(dropped, dropped.end()));
+  // set<string> dropped;
+  // set_difference(pre_drop.begin(), pre_drop.end(), post_drop.begin(),
+  //                post_drop.end(), inserter(dropped, dropped.end()));
 
-  set<string> undropped;
-  set_difference(to_drop.begin(), to_drop.end(), dropped.begin(),
-                 dropped.end(), std::inserter(undropped, undropped.end()));
-  std::cout << ">> Un-dropped:\n";
-  for (auto const& x : undropped) {
-    cout << " - " << x << "\n";
-  }
+  // set<string> undropped;
+  // set_difference(to_drop.begin(), to_drop.end(), dropped.begin(),
+  //                dropped.end(), inserter(undropped, undropped.end()));
+  // cout << ">> Un-dropped:\n";
+  // for (auto const& x : undropped) {
+  //   cout << " - " << x << "\n";
+  // }
+
+  string folder = "output/sm_cards";
+  boost::filesystem::create_directories(folder);
 
   for (string chn : chns) {
-    TFile output(("output/sm_cards/htt_" + chn + ".input.root").c_str(),
+    TFile output((folder + "/htt_" + chn + ".input.root").c_str(),
                  "RECREATE");
-    set<string> bins = cb.cp().channel({chn}).bin_set();
+    auto bins = cb.cp().channel({chn}).bin_set();
     for (auto b : bins) {
       for (auto m : masses) {
         cout << ">> Writing datacard for bin: " << b << " and mass: " << m
                   << "\r" << flush;
         cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
-            "output/sm_cards/"+b + "_" + m + ".txt", output);
+            folder+"/"+b + "_" + m + ".txt", output);
       }
     }
     cb.cp().channel({chn}).mass({"125", "*"}).WriteDatacard(
-        "output/sm_cards/htt_" + chn + "_125.txt", output);
+        folder+"/htt_" + chn + "_125.txt", output);
     output.Close();
   }
 

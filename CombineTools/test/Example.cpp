@@ -4,6 +4,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <cstdlib>
 #include "CombineTools/interface/CombineHarvester.h"
 #include "CombineTools/interface/Observation.h"
 #include "CombineTools/interface/Process.h"
@@ -15,6 +16,10 @@ using namespace std;
 int main() {
   // In this example we'll setup a simplified version of the Higgs to tau tau
   // datacards, while exploring the main features of the CombineHarvester tool.
+
+  // First define the location of the "auxiliaries" directory where we can
+  // source the input files containing the datacard shapes
+  string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/";
 
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
@@ -157,11 +162,11 @@ int main() {
   // Also note that data histogram must be named data_obs to be extracted
   // by this command.
   cb.cp().backgrounds().ExtractShapes(
-      "data/demo/htt_mt.inputs-sm-8TeV-hcg.root",
+      aux_shapes + "Imperial/htt_mt.inputs-sm-8TeV-hcg.root",
       "$BIN/$PROCESS",
       "$BIN/$PROCESS_$SYSTEMATIC");
   cb.cp().signals().ExtractShapes(
-      "data/demo/htt_mt.inputs-sm-8TeV-hcg.root",
+      aux_shapes + "Imperial/htt_mt.inputs-sm-8TeV-hcg.root",
       "$BIN/$PROCESS$MASS",
       "$BIN/$PROCESS$MASS_$SYSTEMATIC");
 
