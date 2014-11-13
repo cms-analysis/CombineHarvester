@@ -63,10 +63,10 @@ LIBNAME_$(d) := $(subst /,_,$(patsubst /%,%,$(subst $(TOP),,$(d))))
 endif
 
 # Now define the full library target, but only in the case that we actually have
-# some object files to link. The full library target adds a libIC prefix to reduce
+# some object files to link. The full library target adds a libCH prefix to reduce
 # the chance of a naming clash with other linked libraries (eg. libCore in ROOT)
 ifneq ($(OBJS_$(d)),)
- LIB_$(d) := $(addsuffix .so,$(addprefix $(d)/lib/libIC,$(LIBNAME_$(d))))
+ LIB_$(d) := $(addsuffix .so,$(addprefix $(d)/lib/libCH,$(LIBNAME_$(d))))
  ifdef DEBUG
   $(info -- Library: $(LIB_$(d)))
  endif
@@ -86,7 +86,7 @@ endif
 
 # Setup the other libraries in the framework that this one depends on,
 # using the user-supplied list in the Rules.mk file.
-LIB_DEPS_$(d) := $(foreach x,$(LIB_DEPS),$(TOP)/$(x)/lib/libIC$(x).so)
+LIB_DEPS_$(d) := $(foreach x,$(LIB_DEPS),$(TOP)/$(x)/lib/libCH$(x).so)
 
 # Add LIB_EXTRA, defined in Rules.mk for other external libraries to link
 # against in this directory
