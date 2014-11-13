@@ -47,4 +47,10 @@ The program `CombineTools/bin/SMLegacyExample` creates a set of datacards that m
   * Writing the datacard `.txt` and `.root` files
 
 
+Example: MSSM Yield Tables {#ex-mssm-table}
+===========================================
+The example script `CombineTools/scripts/yield_tables_mssm_example.sh` uses the program `CombineTools/test/MSSMYieldTable.cpp` to produce the tables included in HIG-13-021. To use it you must first copy this folder containing the input datacards:
+
+    cd CombineTools
+    cp -r /afs/cern.ch/work/a/agilbert/public/CombineTools/data/mssm-paper-cmb ./data/
 
