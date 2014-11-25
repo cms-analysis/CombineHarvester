@@ -15,14 +15,6 @@ using ch::syst::bin_id;
 using ch::syst::process;
 using ch::JoinStr;
 
-/**
- * @brief Add systematics for the ee and mm channels
- *
- * @param cb Pointer to the CombineHarvester instance where these uncertainties
- *should be added
- * @param src Pointer to the CombineHarvester instance that contains the subset
- *of relevant processes (e.g. just the ee and mm channels)
- */
 void AddSystematics_ee_mm(CombineHarvester & cb) {
   CombineHarvester src = cb.cp();
   src.channel({"ee", "mm"});
