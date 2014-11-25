@@ -21,7 +21,7 @@
 
 tanb=30
 mass=350
-input=data/bbb-mlfit/cmb/
+input=data/bbb-SMHbkg-mlfit/cmb/
 postfit="true"
 
 ./bin/MSSMtauptYieldTable --channel=mt --header="$\\Pgm\\Pgt_{h}$ channel" \
@@ -43,7 +43,7 @@ postfit="true"
   --signal_mass=$mass --tanb=$tanb --postfit=$postfit &> et_yields_7TeV.tex
 
 ./bin/MSSMtauptYieldTable --channel=et --header="$\\Pe\\Pgt_{h}$ channel" \
-  --columns "No B-Tag low:10" "No B-Tag medium:11" "No B-Tag high:12" "B-Tag low:14" "B-Tag high:14" --eras "8TeV:19712" \
+  --columns "No B-Tag low:10" "No B-Tag medium:11" "No B-Tag high:12" "B-Tag low:13" "B-Tag high:14" --eras "8TeV:19712" \
   -d $input/$mass/tmp_30.00.txt -s $input/$mass/htt_et_*.txt \
   -f $input/$mass/out/mlfit.root:fit_s \
   --signal_mass=$mass --tanb=$tanb --postfit=$postfit &> et_yields_8TeV.tex
