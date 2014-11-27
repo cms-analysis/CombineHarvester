@@ -80,8 +80,8 @@ int main() {
 
   // The next step is to add details of the systematic uncertainties. The
   // details of an uncertainty on a single process in a single bin is called a
-  // Nuisance. Some of the code for this is in a nested namespace, so we'll make
-  // some using declarations first to simplify things a bit.
+  // ch::Systematic. Some of the code for this is in a nested namespace, so
+  // we'll make some using declarations first to simplify things a bit.
   using ch::syst::SystMap;
   using ch::syst::era;
   using ch::syst::bin_id;
@@ -100,15 +100,15 @@ int main() {
   // this shallow copy leaves the entries in the original instance intact. The
   // next method, signals(), acts on this copy. This is one of several filter
   // methods. It removes any non-signal process from the internal entries. We do
-  // this because we only want to create Nuisance entries for the signal
+  // this because we only want to create Systematic entries for the signal
   // processes. Like all filter methods this returns a reference to itself. Then
   // we can apply the actual AddSyst method. The first argument is a pointer to
-  // the CombineHarvester instance where the new Nuisance entries should be
+  // the CombineHarvester instance where the new Systematic entries should be
   // created. In this case we just give it the pointer to our original instance
   // (remember we are calling the AddSyst method on a copy of this instance).
-  // The next argument is the Nuisance name. Before the Nuisance entry for each
-  // Process is created a number of string substitutions will be made, based on
-  // the properties of the process in question. These are:
+  // The next argument is the Systematic name. Before the Systematic entry for
+  // each Process is created a number of string substitutions will be made,
+  // based on the properties of the process in question. These are:
   //   $BIN       --> proc.bin()
   //   $PROCESS   --> proc.process()  (the process name)
   //   $MASS      --> proc.mass()
@@ -116,21 +116,20 @@ int main() {
   //   $CHANNEL   --> proc.channel()
   //   $ANALYSIS  --> proc.analysis()
   // So in this example we will expect names like "lumi_8TeV". This substitution
-  // provides a quick way of renaming Nuisances to be correlated/uncorrelated
+  // provides a quick way of renaming systematics to be correlated/uncorrelated
   // between different channels/analyses/bins etc.
   // Next we specifiy the nuisance type, which must be either "lnN" or "shape".
   // The final argument is special map (SystMap) that contains the set of values
-  // that should be added (though note for shape this needs to be 1.0 at the
-  // moment). The SystMap is a templated class, which can take an arbitrary
-  // number of template parameters. Each parameter specifies a Process property
-  // that will be used as part of the key to map to the values. In this case we
-  // will just use the process era as a key. We initialse a new map with ::init,
-  // then provide a series entries. Each entry should consist of a series of
-  // vectors, one for each key value, and end in the lnN value that should be
-  // assigned. Processes matching any combination of key properties in this map
-  // will be assigned the given value. In this map, we assign at process with
-  // era "7TeV" a value of 1.022, and any "8TeV" process a value of 1.026. More
-  // examples are given below:
+  // that should be added. The SystMap is a templated class, which can take an
+  // arbitrary number of template parameters. Each parameter specifies a Process
+  // property that will be used as part of the key to map to the values. In this
+  // case we will just use the process era as a key. We initialse a new map with
+  // ::init, then provide a series of entries. Each entry should consist of a
+  // series of vectors, one for each key value, and end in the lnN value that
+  // should be assigned. Processes matching any combination of key properties in
+  // this map will be assigned the given value. In this map, we assign any
+  // Process with era "7TeV" a value of 1.022, and any "8TeV" Process a value of
+  // 1.026. More examples are given below:
   cb.cp().process({"ggH"})
       .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
 
@@ -149,16 +148,17 @@ int main() {
   cb.cp().process(JoinStr({sig_procs, {"ZTT"}}))
       .AddSyst(cb, "CMS_scale_t_mutau_$ERA", "shape", SystMap<>::init(1.00));
 
-  // Next we populate these Observation, Process and Nuisance entries with the
+  // Next we populate these Observation, Process and Systematic entries with the
   // actual histograms (and also yields). The last two arguments are the
-  // patterns The give the path the required nominal and systematic shape
-  // templates in the given file. Here we must do this separately for signal and
-  // background shapes which use a different naming convention.
-  // NOTE: In this method only the following substitutions are supported:
-  //   $CHANNEL    --> proc.bin()   (NB: different from above!!!)
+  // patterns which will be used to determine the paths of the nominal and
+  // systematic shape templates in the given file. Here we must do this
+  // separately for signal and background shapes which use a different naming
+  // convention. NOTE: In this method only the following substitutions are
+  // supported:
+  //   $BIN        --> proc.bin()
   //   $PROCESS    --> proc.process()
   //   $MASS       --> proc.mass()
-  //   $SYSTEMATIC --> nus.name()
+  //   $SYSTEMATIC --> syst.name()
   // Also note that data histogram must be named data_obs to be extracted
   // by this command.
   cb.cp().backgrounds().ExtractShapes(
@@ -182,18 +182,16 @@ int main() {
   // the bin content. The second argument controls the normalisation of the Up
   // and Down shapes that are created. If set to true, the normalisation is
   // fixed to nominal rate. If false, the normalisation is allowed to vary.
-  // Finally a pointer to the CombineHarvester instance where the Nuisance
+  // Finally a pointer to the CombineHarvester instance where the Systematic
   // entries should be created is supplied.
   cb.cp().backgrounds().AddBinByBin(0.1, true, &cb);
 
   // Now we will iterate through the set of bins and masspoints and write
   // a txt datacard file for each. First we generate a set of bin names:
   set<string> bins = cb.bin_set();
-  // This GenerateSetFromObs method will fill a set by applying the supplied
-  // function to each Observation entry. The function must be of the form:
-  // string Function(Observation *obs)
-  // Here we use mem_fn to quickly generate such a function from the
-  // Observation::bin class method.
+  // This method will produce a set of unique bin names by considering all
+  // Observation, Process and Systematic entries in the CombineHarvester
+  // instance.
 
   // Uncomment this line to print all the entries
   // cb.PrintAll();
