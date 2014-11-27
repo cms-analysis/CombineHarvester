@@ -255,9 +255,9 @@ int main() {
   set<string> to_drop;
   for (auto x : droplist) to_drop.insert(x);
 
-  auto pre_drop = cb.nus_name_set();
-  cb.nus_name(droplist, false);
-  auto post_drop = cb.nus_name_set();
+  auto pre_drop = cb.syst_name_set();
+  cb.syst_name(droplist, false);
+  auto post_drop = cb.syst_name_set();
   cout << ">> Systematics dropped: " << pre_drop.size() - post_drop.size()
             << "\n";
 

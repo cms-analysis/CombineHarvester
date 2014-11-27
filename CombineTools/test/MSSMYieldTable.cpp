@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
     cmb.ParseDatacard(d, "", "", "", 0, signal_mass);
   }
 
-  cmb.ForEachNus(boost::bind(ch::SetFromBinName<ch::Nuisance>, _1,
+  cmb.ForEachSyst(boost::bind(ch::SetFromBinName<ch::Systematic>, _1,
                              "$ANALYSIS_$CHANNEL_$BINID_$ERA"));
   cmb.ForEachObs(boost::bind(ch::SetFromBinName<ch::Observation>, _1,
                              "$ANALYSIS_$CHANNEL_$BINID_$ERA"));
