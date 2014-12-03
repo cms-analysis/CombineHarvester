@@ -11,9 +11,15 @@ void AddSystematics_em(CombineHarvester& cb);
 void AddSystematics_ee_mm(CombineHarvester& cb);
 void AddSystematics_tt(CombineHarvester& cb);
 
+
 // Legacy MSSM analysis systematics
 // Implemented in src/HttSystematics_MSSMLegacy.cc
 void AddMSSMSystematics(CombineHarvester& cb);
+
+// Hhh systematics
+// Implemented in src/HhhSystematics.cc
+void AddSystematics_hhh_et_mt(CombineHarvester& cb);
+void AddSystematics_hhh_tt(CombineHarvester& cb);
 }
 
 #endif
