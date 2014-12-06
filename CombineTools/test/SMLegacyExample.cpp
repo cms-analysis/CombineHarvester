@@ -275,9 +275,13 @@ int main() {
 
   string folder = "output/sm_cards";
   boost::filesystem::create_directories(folder);
+  boost::filesystem::create_directories(folder+"/common");
+  for (auto m : masses) {
+    boost::filesystem::create_directories(folder+"/"+m);
+  }
 
   for (string chn : chns) {
-    TFile output((folder + "/htt_" + chn + ".input.root").c_str(),
+    TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
                  "RECREATE");
     auto bins = cb.cp().channel({chn}).bin_set();
     for (auto b : bins) {
@@ -285,7 +289,7 @@ int main() {
         cout << ">> Writing datacard for bin: " << b << " and mass: " << m
                   << "\r" << flush;
         cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
-            folder+"/"+b + "_" + m + ".txt", output);
+            folder + "/" + m + "/" + b + ".txt", output);
       }
     }
     cb.cp().channel({chn}).mass({"125", "*"}).WriteDatacard(
