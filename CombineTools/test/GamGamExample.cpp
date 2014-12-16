@@ -38,8 +38,7 @@ int main() {
 
   RooFitResult fitresult =
       ch::OpenFromTFile<RooFitResult>("output/CMSDAS/hgg_mlfit.root:fit_s");
-  auto fitparams = ch::ExtractFitParameters(fitresult);
-  cb.UpdateParameters(fitparams);
+  cb.UpdateParameters(&fitresult);
 
   ch::CombineHarvester cb_sig = cb.cp();
   cb_sig.bin({"cat4"}).signals();

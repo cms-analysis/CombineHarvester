@@ -28,23 +28,28 @@ int main() {
   // cb.SetVerbosity(3);
 
   // We will define two analysis categories (i.e. two distributions that we want
-  // to fit simultaneously). In combine parlance, each is called a "bin". Each
-  // bin must have a unique name. CombineHarvester also gives each bin an
+  // to fit simultaneously). From now on, we'll refer to each as a "bin". It's a
+  // good idea for each bin to have a unique name: this is required by combine,
+  // and while not required by CombineHarvester explicitly, a number of
+  // functions rely on this being true. CombineHarvester also gives each bin an
   // integer value, called a "bin_id", that does not need to be unique. This can
   // be useful to label a "type-of-category" that might appear more than once.
   // For example, VBF event categories for both the 7TeV and 8TeV datasets might
-  // have a common bin_id, but different names "vbf_7TeV" and "vbf_8TeV".
+  // have a common bin_id, but different names: "vbf_7TeV" and "vbf_8TeV".
   //
   // Here we will just define two categories for an 8TeV analysis. Each entry in
   // the vector below specifies a bin name and corresponding bin_id.
-  vector<pair<int, string>> cats = {
+  ch::Categories cats = {
       {1, "muTau_1jet_medium"},
       {2, "muTau_vbf_loose"}
     };
+  // ch::Categories is just a typedef of vector<pair<int, string>>
 
   // Now we define the signal mass points we will build datacards for, but note
   // these are specified as strings, not floats.
-  vector<string> masses = ch::MassesFromRange("110,115-140:5,145");
+  vector<string> masses = ch::MassesFromRange("120-135:5");
+  // Or equivalently, specify the mass points explicitly:
+  //    vector<string> masses = {"120", "125", "130", "135"};
 
   // The next step is to add some new entries to the CombineHarvester instance.
   // First we will specifiy the observations (i.e. the actual data). The
@@ -86,7 +91,6 @@ int main() {
   using ch::syst::era;
   using ch::syst::bin_id;
   using ch::syst::process;
-  using ch::JoinStr;
 
   // First, let's just go ahead and add a luminosity uncertainty for the signal
   // samples:
@@ -133,7 +137,7 @@ int main() {
   cb.cp().process({"ggH"})
       .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
 
-  cb.cp().process(JoinStr({sig_procs, {"ZTT", "TT"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"ZTT", "TT"}}))
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
   cb.cp()
@@ -145,7 +149,7 @@ int main() {
         ({"8TeV"}, {2},     {"qqH"},        1.04)
         ({"8TeV"}, {2},     {"TT"},         1.05));
 
-  cb.cp().process(JoinStr({sig_procs, {"ZTT"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"ZTT"}}))
       .AddSyst(cb, "CMS_scale_t_mutau_$ERA", "shape", SystMap<>::init(1.00));
 
   // Next we populate these Observation, Process and Systematic entries with the
