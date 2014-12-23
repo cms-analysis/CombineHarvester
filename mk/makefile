@@ -39,12 +39,17 @@ ifndef BOOSTSYS
 	BOOSTSYS := $(shell scram tool tag boost BOOST_BASE)
 endif
 
+ifndef PYSYS
+	PYSYS := $(shell scram tool tag python INCLUDE)
+endif
+
 USERINCLUDES += -I$(TOP)
 USERINCLUDES += -I$(TOP)/../../..
 
 USERINCLUDES += -isystem $(ROOTSYS)/include
 USERINCLUDES += -isystem $(ROOFITSYS)/include
 USERINCLUDES += -isystem $(BOOSTSYS)/include
+USERINCLUDES += -isystem $(PYSYS)
 
 USERLIBS += $(shell $(ROOTSYS)/bin/root-config --glibs) -lGenVector -lTreePlayer -lTMVA
 USERLIBS += -L$(ROOFITSYS)/lib -lRooFit -lRooFitCore
