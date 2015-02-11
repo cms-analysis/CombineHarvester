@@ -55,7 +55,7 @@ ifneq ($(CMSSW), 0)
 	# USERINCLUDES += -I$(CMSSW_BASE)/src
 	USERINCLUDES += -isystem $(CMSSW_RELEASE_BASE)/src
 	# CMSSW user area
-	USERLIBS += -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH) -lHiggsAnalysisHiggsToTauTau
+	# USERLIBS += -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH) -lHiggsAnalysisHiggsToTauTau
 	USERLIBS += -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH) -lFWCoreFWLite -lPhysicsToolsFWLite -lCommonToolsUtils
 endif
 # Analysis area
