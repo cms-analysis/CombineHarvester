@@ -292,8 +292,8 @@ int main() {
       auto bins = cb.cp().channel({chn}).bin_set();
       for (auto bin : bins) {
         for (auto p : sig_procs) {
-          ch::BuildRooMorphing(ws, cb, bin, p, mh, "110", "145", can_morph[chn],
-                               false);
+          ch::BuildRooMorphing(ws, cb, bin, p, mh, "110", "145", "norm",
+                               can_morph[chn], false);
         }
       }
     }
