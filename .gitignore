@@ -12,7 +12,6 @@
 
 # Compiled Static libraries
 output/
-input/
 
 # Python
 __init__.py

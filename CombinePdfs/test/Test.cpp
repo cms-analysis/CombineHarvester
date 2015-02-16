@@ -145,7 +145,7 @@ int main() {
   cout << ">> Scaling signal process rates...\n";
   map<string, TGraph> xs;
   // Get the table of H->tau tau BRs vs mass
-  ch::ParseTable(&xs, "data/xsecs_brs/htt_YR3.txt", {"htt"});
+  ch::ParseTable(&xs, "input/xsecs_brs/htt_YR3.txt", {"htt"});
   for (string const& e : {"7TeV", "8TeV"}) {
     for (string const& p : sig_procs) {
       // Get the table of xsecs vs mass for process "p" and era "e":
@@ -156,7 +156,7 @@ int main() {
       });
     }
   }
-  ch::ParseTable(&xs, "data/xsecs_brs/hww_over_htt.txt", {"hww_over_htt"});
+  ch::ParseTable(&xs, "input/xsecs_brs/hww_over_htt.txt", {"hww_over_htt"});
   for (string const& e : {"7TeV", "8TeV"}) {
     for (string const& p : {"ggH", "qqH"}) {
      cb.cp().channel({"em"}).process({p+"_hww125"}).era({e})

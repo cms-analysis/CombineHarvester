@@ -254,7 +254,7 @@ int main() {
   map<string, TGraph> xs;
   for (string e : {"8TeV"}) {
     for (string p : {"ggH", "bbH"}) {
-      ch::ParseTable(&xs, "data/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt",
+      ch::ParseTable(&xs, "input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt",
                      {p + "_" + e});
     }
   }
