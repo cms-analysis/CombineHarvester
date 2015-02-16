@@ -40,12 +40,12 @@ int main() {
 
   ch::CombineHarvester cmb;
   // cmb.SetVerbosity(2);
-  cmb.ParseDatacard(
-      "output/cmshcg/summer2013/searches/hzz4l/125/hzz4l_4muS_8TeV_0.txt",
-      "$MASS/$ANALYSIS_$CHANNEL_$ERA_$BINID.txt");
   // cmb.ParseDatacard(
-  //     "output/cmshcg/summer2013/searches/hzz4l/125/hzz4l_4muS_8TeV_1.txt",
+  //     "output/cmshcg/summer2013/searches/hzz4l/125/hzz4l_4muS_8TeV_0.txt",
   //     "$MASS/$ANALYSIS_$CHANNEL_$ERA_$BINID.txt");
+  cmb.ParseDatacard(
+      "output/cmshcg/summer2013/searches/hzz4l/125/hzz4l_4muS_8TeV_1.txt",
+      "$MASS/$ANALYSIS_$CHANNEL_$ERA_$BINID.txt");
   // cmb.ParseDatacard(
   //     "output/cmshcg/summer2013/searches/hzz4l/125/hzz4l_4muS_7TeV_0.txt",
   //     "$MASS/$ANALYSIS_$CHANNEL_$ERA_$BINID.txt");
@@ -69,7 +69,7 @@ int main() {
   std::cout << bkg_shape.Integral() << "\n";
   TH1F data = cmb.GetObservedShape();
   data.Print("range");
-  int rebin = 8;
+  int rebin = 1;
   sig_shape.Rebin(rebin);
   bkg_shape.Rebin(rebin);
   data.Rebin(rebin);
