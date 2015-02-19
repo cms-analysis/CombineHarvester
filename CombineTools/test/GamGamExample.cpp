@@ -94,9 +94,10 @@ int main() {
   data.Draw("esamex0");
 
   FixTopRange(pads[0], GetPadYMax(pads[0]), 0.15);
-  DrawCMSLogo(pads[0], "CMS", "Preliminary", 11, 0.045, 0.035, 1.2);
-  DrawTitle(pads[0], "19.7 fb^{-1} (8 TeV)", 3);
-  DrawTitle(pads[0], "H#rightarrow#gamma#gamma", 1);
+  // DrawCMSLogo(pads[0], "CMS", "Preliminary", 11, 0.045, 0.035, 1.2);
+  DrawTitle(pads[0], "CombineHarvester", 1);
+  DrawTitle(pads[0], "hgg", 3);
+  // DrawTitle(pads[0], "H#rightarrow#gamma#gamma", 1);
   TLegend *legend = PositionedLegend(0.35, 0.23, 3, 0.03);
   legend->SetTextFont(42);
   FixBoxPadding(pads[0], legend, 0.05);
