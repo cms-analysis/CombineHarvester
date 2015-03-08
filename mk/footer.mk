@@ -4,6 +4,15 @@ define FOOTER
 # First define all the directory-specific variables we need #
 #############################################################
 
+TESTDIR := $(wildcard $(d)/lib)
+ifneq ($(TESTDIR),)
+ifeq ($(ALL_LIB_DIRS),)
+ALL_LIB_DIRS := $(d)/lib
+else
+ALL_LIB_DIRS := $(ALL_LIB_DIRS):$(d)/lib
+endif
+endif
+
 # Get list of sub-directories defined in Rules.mk, and add the full path
 # as a prefix
 SUBDIRS_$(d) := $(patsubst %/,%,$(addprefix $(d)/,$(SUBDIRS)))
@@ -198,7 +207,7 @@ clean_all :: clean_$(d)
 ########################################################################
 
 clean_$(d) :
-	rm -f $(subst clean_,,$@)/bin/* $(subst clean_,,$@)/obj/* $(subst clean_,,$@)/lib/*
+	rm -f $(subst clean_,,$@)/bin/* $(subst clean_,,$@)/obj/*.o $(subst clean_,,$@)/obj/*.d $(subst clean_,,$@)/lib/*.so
 
 clean_tree_$(d) : clean_$(d) $(foreach sd,$(SUBDIRS_$(d)),clean_tree_$(sd))
 

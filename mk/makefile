@@ -76,7 +76,7 @@ LDFLAGS= -shared -Wall -Wextra
 CXXFLAGS += $(USERINCLUDES)
 LIBS += $(USERLIBS)
 
-.PHONY: dir tree all clean clean_all clean_tree dist_clean
+.PHONY: dir tree all clean clean_all clean_tree dist_clean env
 
 # Default target when nothing is given on the command line.  Reasonable
 # options are:
@@ -98,6 +98,9 @@ all : all_proxy
 clean : clean_$(RUNDIR)
 
 clean_tree : clean_tree_$(RUNDIR)
+
+env :
+	@echo -e 'export CHPATH='$(TOP)';\nexport PYTHONPATH='$(ALL_LIB_DIRS)':$$PYTHONPATH;'
 
 # $(d) keeps the path of "current" directory during tree traversal and
 # $(dir_stack) is used for backtracking during traversal
