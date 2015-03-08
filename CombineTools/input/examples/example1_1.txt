@@ -1,0 +1,37 @@
+--------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process               rate       shape
+--------------------------------------------------------------------------------------------------------
+125    htt       8TeV   mt       muTau_vbf_loose              6   data_obs              76         1
+--------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process          sig  rate       shape
+--------------------------------------------------------------------------------------------------------
+125    htt       8TeV   mt       muTau_vbf_loose              6   ggH              1    1.2171     1
+125    htt       8TeV   mt       muTau_vbf_loose              6   qqH              1    3.5739     1
+125    htt       8TeV   mt       muTau_vbf_loose              6   VH               1    0.029033   1
+125    htt       8TeV   mt       muTau_vbf_loose              6   ZTT              0    50.212     1
+125    htt       8TeV   mt       muTau_vbf_loose              6   QCD              0    10.788     1
+125    htt       8TeV   mt       muTau_vbf_loose              6   W                0    22.544     1
+125    htt       8TeV   mt       muTau_vbf_loose              6   ZL               0    0.23798    1
+125    htt       8TeV   mt       muTau_vbf_loose              6   ZJ               0    1.9001     1
+125    htt       8TeV   mt       muTau_vbf_loose              6   TT               0    2.0405     1
+125    htt       8TeV   mt       muTau_vbf_loose              6   VV               0    0.7037     1
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process          sig  nuisance                                      type     value         sh_d sh_u
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+125    htt       8TeV   mt       muTau_vbf_loose              6   ggH              1    lumi_8TeV                                     lnN      1.026         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   qqH              1    lumi_8TeV                                     lnN      1.026         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   VH               1    lumi_8TeV                                     lnN      1.026         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   qqH              1    pdf_qqbar                                     lnN      1.036         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   VH               1    pdf_qqbar                                     lnN      1.04          0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   ggH              1    pdf_gg                                        lnN      1.097         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   ggH              1    UEPS                                          lnN      0.893         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   qqH              1    UEPS                                          lnN      0.988         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   VH               1    UEPS                                          lnN      0.988         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   ggH              1    QCDscale_ggH2in                               lnN      0.772         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   qqH              1    QCDscale_qqH                                  lnN      1.018         0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   VH               1    QCDscale_VH                                   lnN      1.04          0    0
+125    htt       8TeV   mt       muTau_vbf_loose              6   ggH              1    CMS_scale_t_mutau_8TeV                        shape    0.9513/1.093  1    1
+125    htt       8TeV   mt       muTau_vbf_loose              6   qqH              1    CMS_scale_t_mutau_8TeV                        shape    0.9585/1.038  1    1
+125    htt       8TeV   mt       muTau_vbf_loose              6   VH               1    CMS_scale_t_mutau_8TeV                        shape    0.9999/1      1    1
+125    htt       8TeV   mt       muTau_vbf_loose              6   ZTT              0    CMS_scale_t_mutau_8TeV                        shape    0.9639/1.055  1    1
+...

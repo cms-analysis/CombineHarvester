@@ -1,11 +1,72 @@
 #include "CombineTools/interface/CombineHarvester_Python.h"
 #include "CombineTools/interface/CombineHarvester.h"
+#include "CombineTools/interface/Observation.h"
 #include "boost/python.hpp"
 #include "TFile.h"
 #include "TH1F.h"
 #include "RooFitResult.h"
 namespace py = boost::python;
 using ch::CombineHarvester;
+using ch::Object;
+using ch::Observation;
+using ch::Process;
+using ch::Systematic;
+
+void FilterAllPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Object *obj) -> bool {
+      return boost::python::extract<bool>(func(boost::ref(*obj)));
+  };
+  cb.FilterAll(lambda);
+}
+
+void FilterObsPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Observation *obs) -> bool {
+      return boost::python::extract<bool>(func(boost::ref(*obs)));
+  };
+  cb.FilterObs(lambda);
+}
+
+void FilterProcsPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Process *proc) -> bool {
+      return boost::python::extract<bool>(func(boost::ref(*proc)));
+  };
+  cb.FilterProcs(lambda);
+}
+
+void FilterSystsPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Systematic *sys) -> bool {
+      return boost::python::extract<bool>(func(boost::ref(*sys)));
+  };
+  cb.FilterSysts(lambda);
+}
+
+void ForEachObsPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Observation *obs) {
+      func(boost::ref(*obs));
+  };
+  cb.ForEachObs(lambda);
+}
+
+void ForEachProcPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Process *proc) {
+      func(boost::ref(*proc));
+  };
+  cb.ForEachProc(lambda);
+}
+
+void ForEachSystPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Systematic *sys) {
+      func(boost::ref(*sys));
+  };
+  cb.ForEachSyst(lambda);
+}
+
+void ForEachObjPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](ch::Object *obj) {
+      func(boost::ref(*obj));
+  };
+  cb.ForEachObj(lambda);
+}
 
 // To resolve overloaded methods we first define some pointers
 int (CombineHarvester::*Overload1_ParseDatacard)(
@@ -30,6 +91,10 @@ TH1F (CombineHarvester::*Overload2_GetShapeWithUncertainty)(
 
 void (CombineHarvester::*Overload1_UpdateParameters)(
   RooFitResult const&) = &CombineHarvester::UpdateParameters;
+
+void (CombineHarvester::*Overload_AddBinByBin)(
+    double, bool, CombineHarvester &) = &CombineHarvester::AddBinByBin;
+
 
 
 // Use some macros for methods with default values
@@ -59,7 +124,10 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
 
   // Define converters from python --> C++
   convert_py_seq_to_cpp_vector<std::string>();
+  convert_py_tup_to_cpp_pair<int, std::string>();
+  convert_py_seq_to_cpp_vector<std::pair<int, std::string>>();
   convert_py_seq_to_cpp_vector<int>();
+  convert_py_seq_to_cpp_vector<double>();
   convert_py_root_to_cpp_root<TFile>();
   convert_py_root_to_cpp_root<TH1F>();
   convert_py_root_to_cpp_root<RooFitResult>();
@@ -67,13 +135,22 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
   py::class_<CombineHarvester>("CombineHarvester")
       // Constructors, destructors and copying
       .def("cp", &CombineHarvester::cp)
+      .def("deep", &CombineHarvester::deep)
       // Logging and printing
       .def("PrintAll", &CombineHarvester::PrintAll,
-          py::return_value_policy<py::reference_existing_object>())
+           py::return_internal_reference<>())
+      .def("PrintObs", &CombineHarvester::PrintObs,
+           py::return_internal_reference<>())
+      .def("PrintProcs", &CombineHarvester::PrintProcs,
+           py::return_internal_reference<>())
+      .def("PrintSysts", &CombineHarvester::PrintSysts,
+           py::return_internal_reference<>())
+      .def("PrintParams", &CombineHarvester::PrintParams,
+           py::return_internal_reference<>())
       .def("SetVerbosity", &CombineHarvester::SetVerbosity)
       // Datacards
-      .def("ParseDatacard", Overload1_ParseDatacard)
-      .def("ParseDatacard", Overload2_ParseDatacard)
+      .def("__ParseDatacard__", Overload1_ParseDatacard)
+      .def("QuickParseDatacard", Overload2_ParseDatacard)
       .def("WriteDatacard", Overload1_WriteDatacard)
       // Filters
       .def("bin", &CombineHarvester::bin,
@@ -106,6 +183,14 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
           py::return_internal_reference<>())
       .def("data", &CombineHarvester::data,
           py::return_internal_reference<>())
+      .def("FilterAll", FilterAllPy,
+          py::return_internal_reference<>())
+      .def("FilterObs", FilterObsPy,
+          py::return_internal_reference<>())
+      .def("FilterProcs", FilterProcsPy,
+          py::return_internal_reference<>())
+      .def("FilterSysts", FilterSystsPy,
+          py::return_internal_reference<>())
       // Set producers
       .def("bin_set", &CombineHarvester::bin_set)
       .def("bin_id_set", &CombineHarvester::bin_id_set)
@@ -118,6 +203,13 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("syst_type_set", &CombineHarvester::syst_type_set)
       // Modification
       .def("UpdateParameters", Overload1_UpdateParameters)
+      .def("RenameParameter", &CombineHarvester::RenameParameter)
+      .def("ForEachObj", ForEachObjPy)
+      .def("ForEachObs", ForEachObsPy)
+      .def("ForEachProc", ForEachProcPy)
+      .def("ForEachSyst", ForEachSystPy)
+      .def("VariableRebin", &CombineHarvester::VariableRebin)
+      .def("SetPdfBins", &CombineHarvester::SetPdfBins)
       // Evaluation
       .def("GetRate", &CombineHarvester::GetRate)
       .def("GetObservedRate", &CombineHarvester::GetObservedRate)
@@ -127,5 +219,67 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("GetShapeWithUncertainty", Overload2_GetShapeWithUncertainty)
       .def("GetObservedShape", &CombineHarvester::GetObservedShape)
       // Creation
-  ;
+      .def("__AddObservations__", &CombineHarvester::AddObservations)
+      .def("__AddProcesses__", &CombineHarvester::AddProcesses)
+      .def("AddBinByBin", Overload_AddBinByBin)
+      .def("MergeBinErrors",  &CombineHarvester::MergeBinErrors)
+      ;
+
+    py::class_<Object>("Object")
+      .def("set_bin", &Object::set_bin)
+      .def("bin", &Object::bin,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_process", &Object::set_process)
+      .def("process",&Object::process,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_analysis", &Object::set_analysis)
+      .def("analysis", &Object::analysis,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_era", &Object::set_era)
+      .def("era", &Object::era,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_channel", &Object::set_channel)
+      .def("channel", &Object::channel,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_bin_id", &Object::set_bin_id)
+      .def("bin_id", &Object::bin_id)
+      .def("set_mass", &Object::set_mass)
+      .def("mass", &Object::mass,
+          py::return_value_policy<py::copy_const_reference>())
+    ;
+
+    py::class_<Observation, py::bases<Object>>("Observation")
+      .def("set_rate", &Observation::set_rate)
+      .def("rate", &Observation::rate)
+      .def("ShapeAsTH1F", &Observation::ShapeAsTH1F)
+    ;
+
+    py::class_<Process, py::bases<Object>>("Process")
+      .def("set_rate", &Process::set_rate)
+      .def("rate", &Process::rate)
+      .def("no_norm_rate", &Process::no_norm_rate)
+      .def("set_signal", &Process::set_signal)
+      .def("signal", &Process::signal)
+      .def("ShapeAsTH1F", &Process::ShapeAsTH1F)
+    ;
+
+    py::class_<Systematic, py::bases<Object>>("Systematic")
+      .def("set_signal", &Systematic::set_signal)
+      .def("signal", &Systematic::signal)
+      .def("set_name", &Systematic::set_name)
+      .def("name", &Systematic::name,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_type", &Systematic::set_type)
+      .def("type", &Systematic::type,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_value_u", &Systematic::set_value_u)
+      .def("value_u", &Systematic::value_u)
+      .def("set_value_d", &Systematic::set_value_d)
+      .def("value_d", &Systematic::value_d)
+      .def("set_scale", &Systematic::set_scale)
+      .def("scale", &Systematic::scale)
+      .def("set_asymm", &Systematic::set_asymm)
+      .def("asymm", &Systematic::asymm)
+    ;
+
 }

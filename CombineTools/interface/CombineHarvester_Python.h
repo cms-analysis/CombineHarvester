@@ -5,6 +5,19 @@
 #include "TPython.h"
 namespace bp = boost::python;
 
+namespace ch { class CombineHarvester; }
+
+void FilterAllPy(ch::CombineHarvester & cb, boost::python::object func);
+void FilterObsPy(ch::CombineHarvester & cb, boost::python::object func);
+void FilterProcsPy(ch::CombineHarvester & cb, boost::python::object func);
+void FilterSystsPy(ch::CombineHarvester & cb, boost::python::object func);
+
+void ForEachObjPy(ch::CombineHarvester & cb, boost::python::object func);
+void ForEachObsPy(ch::CombineHarvester & cb, boost::python::object func);
+void ForEachProcPy(ch::CombineHarvester & cb, boost::python::object func);
+void ForEachSystPy(ch::CombineHarvester & cb, boost::python::object func);
+
+
 /**
  * Covert a C++ ROOT type to a PyROOT type
  */
@@ -94,6 +107,38 @@ struct convert_py_seq_to_cpp_vector {
     for (int i = 0; i < l; i++) {
       v->push_back(bp::extract<T>(PySequence_GetItem(obj_ptr, i)));
     }
+    data->convertible = storage;
+  }
+};
+
+// from http://cci.lbl.gov/cctbx_sources/boost_adaptbx/std_pair_conversion.h
+template <typename T, typename U>
+struct convert_py_tup_to_cpp_pair {
+  convert_py_tup_to_cpp_pair() {
+    bp::converter::registry::push_back(
+        &convertible, &construct, boost::python::type_id<std::pair<T, U> >()
+        // #ifdef BOOST_PYTHON_SUPPORTS_PY_SIGNATURES
+        // , get_pytype
+        // #endif
+        );
+  }
+
+  // static const PyTypeObject *get_pytype() { return &PyTuple_Type; }
+
+  static void* convertible(PyObject* obj_ptr) {
+    if (!PyTuple_Check(obj_ptr) || PyTuple_GET_SIZE(obj_ptr) != 2) return 0;
+    return obj_ptr;
+  }
+
+  static void construct(PyObject* obj_ptr,
+                        bp::converter::rvalue_from_python_stage1_data* data) {
+    PyObject* first = PyTuple_GET_ITEM(obj_ptr, 0),
+              *second = PyTuple_GET_ITEM(obj_ptr, 1);
+    void* storage =
+        ((bp::converter::rvalue_from_python_storage<std::pair<T, U> >*)data)
+            ->storage.bytes;
+    new (storage)
+        std::pair<T, U>(bp::extract<T>(first), bp::extract<U>(second));
     data->convertible = storage;
   }
 };

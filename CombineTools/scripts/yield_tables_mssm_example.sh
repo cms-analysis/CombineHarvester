@@ -21,7 +21,7 @@
 
 tanb=8
 mass=160
-input=data/mssm-paper-cmb
+input=input/mssm-paper-cmb
 postfit="true"
 
 ./bin/MSSMYieldTable --channel=mt --header="$\\Pgm\\Pgt_{h}$ channel" \

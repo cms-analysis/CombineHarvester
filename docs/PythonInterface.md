@@ -5,7 +5,7 @@ The python interface is embedded within the shared library (`CombineTools/lib/li
 
     eval `make env`
 
-Then in a python script you can do, e.g. `import libCHCombineTools as ch`. The sections below summarises the methods that are currently supported.
+Then in a python script you can do, e.g. `import combineharvester as ch`. The sections below summarises the methods that are currently supported.
 
 ## Constructors and copying
 C++:
