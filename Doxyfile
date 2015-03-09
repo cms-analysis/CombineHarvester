@@ -758,11 +758,13 @@ INPUT  = CombineTools/interface \
          CombineTools/src \
          CombineTools/test/SMLegacyExample.cpp \
          CombineTools/test/MSSMYieldTable.cpp \
+         CombineTools/test/PostFitShapes.cpp \
          docs/Main.md \
          docs/BuildSystem.md \
          docs/Example1.md \
          docs/Example2.md \
          docs/PythonInterface.md \
+         docs/PostFitShapes.md \
         # docs/MSSMWithMorphing.md
 
 # This tag can be used to specify the character encoding of the source files
