@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <set>
 #include <iostream>
 #include "TFile.h"
 #include "TTree.h"
@@ -11,24 +12,10 @@
 #include "TString.h"
 #include "TLatex.h"
 
+#include "CombineTools/interface/TFileIO.h"
+#include "CombineTools/interface/JsonTools.h"
 #include "CombineTools/interface/Plotting.h"
 #include "CombineTools/interface/Plotting_Style.h"
-
-
-TGraph ExtractGraph(TTree *t, double & bestFit) {
-  TGraph g(t->GetEntries());
-  float r = 0;
-  float deltaNLL = 0;
-  t->SetBranchAddress("r", &r);
-  t->SetBranchAddress("deltaNLL", &deltaNLL);
-  for (unsigned i = 0; i < t->GetEntries(); ++i) {
-    t->GetEntry(i);
-    if (deltaNLL == 0) bestFit = r;
-    g.SetPoint(i, r, 2.0*deltaNLL);
-  }
-  g.Sort();
-  return g;
-}
 
 std::vector<double> GetCrossings(TGraph const& g, double cross) {
   std::vector<double> result;
@@ -51,92 +38,118 @@ std::vector<double> GetCrossings(TGraph const& g, double cross) {
   return result;
 }
 
+// The settings for drawing each scan component
 struct Scan {
   std::string file;
+  std::string tree;
   std::string label;
   int color;
-  TGraph *gr;
+  TGraph * gr;
+  double bestfit;
+  double uncert;
 };
 
-int main() {
+int main(int argc, char* argv[]) {
+  Json::Value const js = ch::MergedJson(argc, argv);
+
+  TH1::AddDirectory(0);
   ModTDRStyle();
-
-  std::vector<Scan> scans;
-  //scans.push_back({"higgsCombinefullScan.MultiDimFit.mH125.root", "with syst.", 1, nullptr});
-  //scans.push_back({"higgsCombinefastScan.MultiDimFit.mH125.root", "no syst.", 32, nullptr});
-  //scans.push_back({"higgsCombinenoBBBScan.MultiDimFit.mH125.root", "no bbb syst.", 38, nullptr});
-  
-  scans.push_back({"thesis/higgsCombineFullScan.MultiDimFit.mH125.root", "Stat+Syst+Theory", 1, nullptr});
-  scans.push_back({"thesis/higgsCombineStatAndExp.MultiDimFit.mH125.root", "Stat+Syst", kAzure-9, nullptr});
-  scans.push_back({"thesis/higgsCombineStatOnly.MultiDimFit.mH125.root", "Stat Only", kBlue+1, nullptr});
-  //scans.push_back({"thesis/higgsCombineStatAndTh.MultiDimFit.mH125.root", "Stat+Theory", 39, nullptr});
-  TCanvas c1("canvas","canvas");
-
+  TCanvas canv(js.get("output", "scan").asCString(), "");
+  std::vector<TPad*> pads = OnePad();
   std::vector<TLine *> lines;
 
 
-  TLegend *leg = new TLegend(0.37,0.65,0.73,0.9,"","brNDC");
+  std::vector<Scan> scans;
 
-  unsigned counter = 0;
-  for (auto & sc : scans) {
-    TFile f1(sc.file.c_str());
-    TTree *t1 = dynamic_cast<TTree*>(f1.Get("limit"));
-    double best1 = 0.0;
-    sc.gr = new TGraph(ExtractGraph(t1, best1));
+
+  for (auto it = js["env"].begin(); it != js["env"].end(); ++it) {
+    std::cout << (*it).asString() << "\n";
+  }
+
+  std::string xvar = js.get("xvar", "r").asString();
+  std::string yvar = js.get("yvar", "2. * deltaNLL").asString();
+  bool re_zero_graphs = js.get("rezero", true).asBool();
+  double cross = js.get("crossing", 1.0).asFloat();
+  int precision = js.get("precision", 2).asInt();
+
+  std::set<std::string> draw;
+  for (unsigned i = 0; i < js["draw"].size(); ++i) {
+    draw.insert(js["draw"][i].asString());
+  }
+
+
+  for (unsigned i = 0; i < js["scans"].size(); ++i) {
+    Json::Value const sc_js = js["scans"][i];
+    if (!draw.count(sc_js["label"].asString())) continue;
+    Scan scan;
+    scan.file = sc_js["file"].asString();
+    scan.tree = sc_js["tree"].asString();
+    scan.color = sc_js["color"].asInt();
+    scan.label = sc_js["legend"].asString();
+    scans.push_back(scan);
+  }
+  if (scans.size() == 0) return 1;
+
+  TLegend *leg =
+      PositionedLegend(0.4, 0.15 * float(scans.size()) / 1.7, 2, 0.03);
+  leg->SetTextSize(0.035);
+
+  for (unsigned i = 0; i < scans.size(); ++i) {
+    Scan & sc = scans[i];
+    TFile f(sc.file.c_str());
+    TTree *t = static_cast<TTree*>(f.Get(sc.tree.c_str()));
+    sc.gr = new TGraph(TGraphFromTree(t, xvar, yvar));
+    sc.gr->Sort();
+    for (int j = 0; j < sc.gr->GetN(); ++j) {
+      if (std::fabs(sc.gr->GetY()[j] - 0.) < 1E-5) sc.bestfit = sc.gr->GetX()[j];
+    }
+    if (re_zero_graphs) ReZeroTGraph(sc.gr);
     auto x1 = GetCrossings(*(sc.gr), 1.0);
     TString res;
     if (x1.size() == 2) {
-      double err = (x1[1]-x1[0])/2.0;
-      std::cout << "Best fit is: " << best1 << " +/- " << err << std::endl;
-      lines.push_back(new TLine(x1[0],0,x1[0],1.0));
+      sc.uncert = (x1[1]-x1[0])/2.0;
+      std::cout << "Best fit is: " << sc.bestfit << " +/- " << sc.uncert << "\n";
+      lines.push_back(new TLine(x1[0], 0, x1[0], 1.0));
       lines.back()->SetLineColor(sc.color);
       lines.back()->SetLineWidth(2);
-      lines.push_back(new TLine(x1[1],0,x1[1],1.0));
+      lines.push_back(new TLine(x1[1], 0, x1[1], 1.0));
       lines.back()->SetLineColor(sc.color);
       lines.back()->SetLineWidth(2);
-      res = TString::Format("%.2f#pm%.2f",best1,err);
+      res = TString::Format(
+          TString::Format("%%.%if#pm%%.%if", precision, precision), sc.bestfit,
+          sc.uncert);
+      TString leg_text = "#splitline{"+sc.label+"}{"+res+"}";
+      sc.gr->SetLineColor(sc.color);
+      sc.gr->SetLineWidth(3);
+      leg->AddEntry(sc.gr, leg_text, "L");
     }
-    sc.gr->SetLineColor(sc.color);
-    sc.gr->SetLineWidth(3);
-    sc.gr->Draw(counter ? "LSAME" : "AL");
-    TString leg_text = "#splitline{"+sc.label+"}{"+res+"}";
-    leg->AddEntry(sc.gr, leg_text, "L");
-    counter++;
   }
-  // c1.cd();
-  // // g1.Print();
-  // g1.SetLineColor(1);
-  // g1.SetLineWidth(2);
-  // // g1.SetMarkerColor(7);
-  // g1.Draw("AC");
-  scans[0].gr->SetMaximum(1.9);
-  scans[0].gr->GetXaxis()->SetRangeUser(0.4, 1.4);
-  scans[0].gr->GetXaxis()->SetTitle("Signal Strength, #mu");
-  scans[0].gr->GetYaxis()->SetTitle("-2 #Delta ln L");
-  scans[0].gr->GetXaxis()->SetTitleFont(62);
-  scans[0].gr->GetYaxis()->SetTitleFont(62);
-  leg->SetBorderSize(1);
-  leg->SetTextFont(42);
-  leg->SetTextSize(0.03);
-  leg->SetLineColor(0);
-  leg->SetLineStyle(1);
-  leg->SetLineWidth(1);
-  leg->SetFillColor(0);
-  leg->SetFillStyle(1001);
+
+
+  TH1 *axis = CreateAxisHist(scans[0].gr, true);
+  axis->GetXaxis()->SetTitle(js["x_axis_title"].asCString());
+  axis->GetYaxis()->SetTitle(js["y_axis_title"].asCString());
+  axis->Draw();
+
+  for (unsigned i = 0; i < scans.size(); ++i) {
+    Scan & sc = scans[i];
+    sc.gr->Draw("LSAME");
+  }
+
   leg->Draw();
-  lines.push_back(new TLine(0.4,1,1.4,1));
+
+  double xmin = axis->GetXaxis()->GetXmin();
+  double xmax = axis->GetXaxis()->GetXmax();
+
+  lines.push_back(new TLine(xmin, cross, xmax, cross));
   lines.back()->SetLineColor(2);
   for (auto l : lines) l->Draw();
-  TLatex *title_latex = new TLatex();
-  title_latex->SetNDC();
-  title_latex->SetTextSize(0.035);
-  title_latex->SetTextFont(62);
-  title_latex->SetTextAlign(11);
-  title_latex->DrawLatex(0.17,0.93,"4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV");
-  title_latex->SetTextAlign(31);
-  title_latex->SetTextSize(0.035);
-  title_latex->DrawLatex(0.95,0.94,"#mu_{}#tau_{h}, e#tau_{h}, e#mu");
-  c1.Update();
-  c1.SaveAs("scan.pdf");
+
+  DrawCMSLogo(pads[0], "CMS", js["cms_label"].asString(), 0);
+  DrawTitle(pads[0], js["title_right"].asString(), 3);
+
+  canv.Update();
+  canv.SaveAs(".pdf");
+  canv.SaveAs(".png");
   return 0;
 }
