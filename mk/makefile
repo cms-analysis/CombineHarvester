@@ -69,6 +69,7 @@ CXX=g++
 LD=g++
 CXXFLAGS= -Wall -Wextra -O2 -std=c++0x
 LDFLAGS= -shared -Wall -Wextra
+CXXFLAGS += $(EXTRAFLAGS)
 
 # Extra gcc flags that will generate A LOT of warnings
 # -pedantic -Weffc++
