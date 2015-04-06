@@ -1,6 +1,7 @@
 #include "CombineTools/interface/CombineHarvester_Python.h"
 #include "CombineTools/interface/CombineHarvester.h"
 #include "CombineTools/interface/Observation.h"
+#include "CombineTools/interface/CardWriter.h"
 #include "boost/python.hpp"
 #include "TFile.h"
 #include "TH1F.h"
@@ -11,6 +12,7 @@ using ch::Object;
 using ch::Observation;
 using ch::Process;
 using ch::Systematic;
+using ch::CardWriter;
 
 void FilterAllPy(ch::CombineHarvester & cb, boost::python::object func) {
       auto lambda = [func](ch::Object *obj) -> bool {
@@ -282,4 +284,13 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("asymm", &Systematic::asymm)
     ;
 
+    py::class_<CardWriter>("CardWriter", py::init<std::string, std::string>())
+      .def("WriteCards", &CardWriter::WriteCards)
+      .def("SetVerbosity", &CardWriter::SetVerbosity,
+           py::return_internal_reference<>())
+      .def("CreateDirectories", &CardWriter::CreateDirectories,
+           py::return_internal_reference<>())
+      .def("SetWildcardMasses", &CardWriter::SetWildcardMasses,
+           py::return_internal_reference<>())
+    ;
 }

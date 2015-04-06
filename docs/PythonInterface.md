@@ -228,3 +228,18 @@ Python:
 
 The AddSyst ExtractPdfs, ExtractData and AddWorkspace methods are not currently supported. The creation of Systematic entries via the [AddSyst](\ref ch::CombineHarvester::AddSyst) method is not trivial to convert to python due to the heavy use of C++ templates. A python equivalent will be made available in a future release.
 
+Class: CardWriter {#py-card-writer}
+================================
+The ch::CardWriter class has an identical interface in python.
+
+C++:
+
+    ch::CardWriter writer("$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt",
+                          "$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root");
+    writer.WriteCards("LIMITS/cmb", cb);
+
+Python:
+
+    writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
+                           '$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root')
+    writer.WriteCards('LIMITS/cmb', cb)
