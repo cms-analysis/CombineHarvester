@@ -1,13 +1,16 @@
 Python Interface {#python-interface}
 ====================================
 
+[TOC]
+
 The python interface is embedded within the shared library (`CombineTools/lib/libCHCombineTools.so`) that is produced when the code is compiled. Add this directory to your `PYTHONPATH` environment variable so that it can be imported from anywhere. This can also be achieved by doing:
 
     eval `make env`
 
 Then in a python script you can do, e.g. `import combineharvester as ch`. The sections below summarises the methods that are currently supported.
 
-## Constructors and copying
+Constructors and copying {#py-constr-copy}
+==========================================
 C++:
 
     ch::CombineHarvester cb;
@@ -20,7 +23,8 @@ Python:
     cb_shallow_copy = cb.cp()
     cb_deep_copy = cb.deep()
 
-## Logging and Printing
+Logging and Printing {#py-log-print}
+====================================
 C++:
 
     cb.PrintAll();
@@ -39,9 +43,11 @@ Python:
     cb.PrintParams()
     cb.SetVerbosity(1)
 
-## Datacards
+Datacards {#py-datacards}
+=========================
 
-### Parsing specifying metadata
+Parsing specifying metadata  {#py-datacards-meta}
+-------------------------------------------------
 C++:
 
     cb.ParseDatacard("datacard.txt", "htt", "8TeV", "mt", 6, "125");
@@ -54,7 +60,8 @@ Metadata parameters also have default values and can be named explicitly:
 
     cb.ParseDatacard("datacard.txt", analysis = "htt", mass = "125")
 
-### Parsing with pattern substitution
+Parsing with pattern substitution {#py-datacards-pat-sub}
+---------------------------------------------------------
 C++:
 
     cb.ParseDatacard("htt_mt_8_8TeV.txt", "$ANALYSIS_$CHANNEL_$BINID_$ERA.txt");
@@ -63,7 +70,8 @@ Python (note the different method name):
 
     cb.QuickParseDatacard("htt_mt_8_8TeV.txt", "$ANALYSIS_$CHANNEL_$BINID_$ERA.txt")
 
-### Writing
+Writing {#py-datacards-writing}
+-------------------------------
 C++:
 
     cb.WriteDatacard("card.txt", "file.root"); // or
@@ -75,7 +83,8 @@ Python (second method not yet available):
 
     cb.WriteDatacard("card.txt", "file.root")
 
-## Filtering
+Filtering {#py-filtering}
+=========================
 All of the basic filter methods can be called and chained in a similar way in both interfaces. For example:
 
 C++:
@@ -98,9 +107,10 @@ Python:
 
     cb.FilterAll(lambda obj : obj.mass() in ['110', '145'])
 
-## Set producers
+Set producers {#py-sets}
+========================
 
-Only the basic set producer methods are available at the moment. The generic methods (GenerateSetFromObs, GenerateSetFromProcs, GenerateSetFromSysts) will be adapted shortly.
+All basic set producer methods are available.
 
 C++:
 
@@ -115,7 +125,22 @@ Python:
     for p in cb.process_set():
         ...
 
-## Modifications
+**NEW** The generic methods are now available too, and accept a generic function object.
+
+C++:
+
+    set<string> bins = cb.SetFromAll(std::mem_fn(&ch::Object::bin));
+    set<string> some_set = cb.SetFromProcs([](ch::Process const* p) {
+            return p->process() + "_" + p->bin();
+        });
+
+Python:
+
+    bins = cb.SetFromAll(ch.Object.bin)
+    some_set = cb.SetFromProcs(lambda x : x.process() + '_' + x.bin())
+
+Modifications {#py-modifications}
+=================================
 
 The `GetParameter`, and `UpdateParameters` methods that use `ch::Parameter` objects are not available (and may be deprecated soon anyway). The `UpdateParameters` method taking a `RooFitResult` is available however.
 
@@ -147,7 +172,8 @@ Python:
         if p.process() == 'ggH_hww125': p.set_signal(True)
     cb.ForEachProc(SwitchToSignal)
 
-## Rate and shape evaluation
+Rate and shape evaluation {#py-eval}
+====================================
 
 All methods are supported with a similar interface.
 
@@ -172,7 +198,8 @@ Python:
     f = cb.GetShape()
     g = cb.GetShapeWithUncertainty(res, 500)
 
-## Datacard creation
+Datacard creation {#py-creation}
+================================
 
 Creating observation and process entries is supported.
 
