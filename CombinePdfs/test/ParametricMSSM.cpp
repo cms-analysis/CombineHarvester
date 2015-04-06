@@ -107,8 +107,7 @@ int main() {
   std::cout << " done\n";
 
   // cb.era({"8TeV"}).bin_id({8});
-  set<string> lm_bins =
-      cb.GenerateSetFromObs<string>(mem_fn(&ch::Observation::bin));
+  set<string> lm_bins = cb.SetFromObs(mem_fn(&ch::Observation::bin));
 
   if (create_asimov) {
     for (auto const& b : lm_bins) {
@@ -140,11 +139,7 @@ int main() {
     in->set_bin(in->bin() + "_hm");
   });
 
-  set<string> hm_bins =
-      cb_hm.GenerateSetFromObs<string>(mem_fn(&ch::Observation::bin));
-
-
-
+  set<string> hm_bins = cb_hm.SetFromObs(mem_fn(&ch::Observation::bin));
 
   cb.cp().bin_id({8}).VariableRebin(
     {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120,

@@ -18,7 +18,7 @@ using ch::JoinStr;
 void AddMSSMSystematics(CombineHarvester & cb) {
   CombineHarvester src = cb.cp();
 
-  auto signal = Set2Vec(src.cp().signals().GenerateSetFromProcs<std::string>(
+  auto signal = Set2Vec(src.cp().signals().SetFromProcs(
       std::mem_fn(&Process::process)));
 
   src.cp().signals()

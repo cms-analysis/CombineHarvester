@@ -158,7 +158,7 @@ int main(int argc, char* argv[]){
     cmb.UpdateParameters(fitparams);
   }
 
-  auto bins = cmb.GenerateSetFromObs<string>(std::mem_fn(&ch::Observation::bin));
+  auto bins = cmb.SetFromObs(std::mem_fn(&ch::Observation::bin));
   map<string, ch::SOverBInfo> weights;
   for (auto const& bin : bins) {
     TH1F sig = cmb.cp().bin({bin}).signals().GetShape();
