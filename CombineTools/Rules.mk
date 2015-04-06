@@ -2,7 +2,7 @@ SUBDIRS 	:=
 LIB_DEPS 	:=
 LIB_EXTRA := -lboost_python -L$(shell scramv1 tool tag python LIBDIR) -l$(shell scramv1 tool tag python LIB) -lPyROOT
 
-$(d)/interface/GitVersion.h: $(TOP)/../.git/HEAD $(TOP)/../.git/index
+$(d)/interface/GitVersion.h: $(TOP)/../.git/logs/HEAD
 	@echo -e "Updating $@"
 	@echo -e "namespace ch { inline std::string GitVersion() { return \""$(shell git describe --dirty)"\"; } }\n" > $@
 
