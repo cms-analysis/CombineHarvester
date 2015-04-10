@@ -179,12 +179,8 @@ int main(int argc, char* argv[]) {
     cmb.ParseDatacard(d, "", "", "", 0, signal_mass);
   }
 
-  cmb.ForEachSyst(boost::bind(ch::SetFromBinName<ch::Systematic>, _1,
+  cmb.ForEachObj(boost::bind(ch::SetFromBinName, _1,
                              "$ANALYSIS_$CHANNEL_$BINID_$ERA"));
-  cmb.ForEachObs(boost::bind(ch::SetFromBinName<ch::Observation>, _1,
-                             "$ANALYSIS_$CHANNEL_$BINID_$ERA"));
-  cmb.ForEachProc(boost::bind(ch::SetFromBinName<ch::Process>, _1,
-                              "$ANALYSIS_$CHANNEL_$BINID_$ERA"));
 
   cmb.cp().signals().ForEachProc([&](ch::Process *p) {
     p->set_rate(p->rate() * d_tanb);
