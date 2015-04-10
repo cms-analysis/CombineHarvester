@@ -94,7 +94,7 @@ int main() {
       {0, "tauTau_1jet_high_mediumhiggs"}, {1, "tauTau_1jet_high_highhiggs"},
       {2, "tauTau_vbf"}};
 
-  vector<string> masses = ch::MassesFromRange("110-145:5");
+  vector<string> masses = ch::ValsFromRange("110:145|5");
 
   cout << ">> Creating processes and observations...\n";
   for (string era : {"7TeV", "8TeV"}) {
