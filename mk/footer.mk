@@ -4,6 +4,7 @@ define FOOTER
 # First define all the directory-specific variables we need #
 #############################################################
 
+# Build list of all lib directories so we can add it to $PYTHONPATH
 TESTDIR := $(wildcard $(d)/lib)
 ifneq ($(TESTDIR),)
 ifeq ($(ALL_LIB_DIRS),)
@@ -25,7 +26,7 @@ endif
 # "wildcard" gets the files in src, "notdir" removes the directory part, "basename"
 # removes the extension, "addprefix" adds the full path to the obj directory and finally
 # "addsuffix" adds the .o extension
-OBJS_$(d) := $(addsuffix .o, $(addprefix $(d)/obj/,$(basename $(notdir $(wildcard $(d)/src/*.cc)))))
+OBJS_$(d) := $(addsuffix .o, $(addprefix $(d)/obj/,$(basename $(notdir $(wildcard $(d)/$(SRC_DIR)/*.$(SRC_EXT))))))
 ifdef DEBUG
 $(info Target object files:)
 $(foreach x,$(OBJS_$(d)),$(info -- Target file: $(x)))
@@ -95,13 +96,13 @@ endif
 
 # Setup the other libraries in the framework that this one depends on,
 # using the user-supplied list in the Rules.mk file.
-LIB_DEPS_$(d) := $(foreach x,$(LIB_DEPS),$(TOP)/$(x)/lib/libCH$(x).so)
+LIB_DEPS_$(d) := $(foreach x,$(LIB_DEPS),$(TOP)/$(x)/lib/libCH$(subst /,_,$(x)).so)
 
 # Add LIB_EXTRA, defined in Rules.mk for other external libraries to link
 # against in this directory
 $(foreach x,$(EXES_$(d)),$(eval EXE_DEP_$(x) := $(LIB_EXTRA)))
 $(foreach x,$(LIB_$(d)),$(eval LIB_DEP_$(x) := $(LIB_EXTRA)))
-
+$(foreach x,$(OBJS_$(d)),$(eval FLAGS_$(x) := $(PKG_FLAGS)))
 
 SKIP := 0
 ifeq ($(CMSSW), 0)
@@ -136,9 +137,9 @@ endif
 -include $(EXE_OBJS_$(d):.o=.d)
 
 # Rule for generating object files from source files
-$(d)/obj/%.o: $(d)/src/%.cc
+$(d)/obj/%.o: $(d)/$(SRC_DIR)/%.$(SRC_EXT)
 	@echo -e "$(COLOR_BL)Compiling object file $(subst $(TOP)/,,$@)$(NOCOLOR)"
-	$(DOECHO)$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+	$(DOECHO)$(CXX) $(CXXFLAGS) $(FLAGS_$(@)) -fPIC -c $< -o $@
 	@echo -e "$(COLOR_CY)Generating dependency file $(subst $(TOP)/,,$(@:.o=.d))$(NOCOLOR)"
 	@$(CXX) $(CXXFLAGS) -MM -MP -MT "$@" $< -o $(@:.o=.d)
 
@@ -149,7 +150,7 @@ $(d)/obj/rootcint_dict.o: $(d)/obj/rootcint_dict.cc
 	@echo -e "$(COLOR_CY)Generating dependency file $(subst $(TOP)/,,$(@:.o=.d))$(NOCOLOR)"
 	@$(CXX) $(CXXFLAGS) -MM -MP -MT "$@" $< -o $(@:.o=.d)
 
-$(d)/obj/rootcint_dict.cc: $(DHEADERS_$(d)) $(d)/interface/LinkDef.h
+$(d)/obj/rootcint_dict.cc: $(DHEADERS_$(d)) $(d)/$(INC_DIR)/LinkDef.h
 	@echo -e "$(COLOR_YE)Generating dictionary $(subst $(TOP)/,,$@)$(NOCOLOR)"
 	$(DOECHO)$(ROOTSYS)/bin/rootcint -v3 -f $@ -c -p -I$(TOP) -I$(TOP)/../../.. -I$(ROOFITSYS)/include $^
 
