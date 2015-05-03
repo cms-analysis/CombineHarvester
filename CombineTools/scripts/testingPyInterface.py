@@ -101,6 +101,19 @@ for era in ['7TeV', '8TeV']:
 # cb.ForEachProc(SwitchToSignal)
 # cb.VariableRebin([0., 50., 100., 150., 200., 250., 300.])
 
+
+# The following is an example of duplicating existing objects and modifying
+# them in the process. Here we clone all mH=125 signals, adding "_SM125" to
+# the process name, switching it to background and giving it the generic mass
+# label. This would let us create a datacard for doing a second Higgs search
+
+# def Signal2Background(obj):
+#   obj.set_process(obj.process() + "_SM125")
+#   obj.set_signal(False)
+#   obj.set_mass("*")
+
+# ch.CloneProcs(cb.cp().signals().mass(['125']), cb, Signal2Background)
+
 cb.PrintAll()
 
 

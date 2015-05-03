@@ -17,6 +17,14 @@ void ForEachObsPy(ch::CombineHarvester & cb, boost::python::object func);
 void ForEachProcPy(ch::CombineHarvester & cb, boost::python::object func);
 void ForEachSystPy(ch::CombineHarvester & cb, boost::python::object func);
 
+void CloneObsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                boost::python::object func);
+void CloneProcsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                  boost::python::object func);
+void CloneSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                boost::python::object func);
+void CloneProcsAndSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                        boost::python::object func);
 
 /**
  * Covert a C++ ROOT type to a PyROOT type

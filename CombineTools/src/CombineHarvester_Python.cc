@@ -2,6 +2,7 @@
 #include "CombineTools/interface/CombineHarvester.h"
 #include "CombineTools/interface/Observation.h"
 #include "CombineTools/interface/CardWriter.h"
+#include "CombineTools/interface/CopyTools.h"
 #include "boost/python.hpp"
 #include "TFile.h"
 #include "TH1F.h"
@@ -70,6 +71,38 @@ void ForEachObjPy(ch::CombineHarvester & cb, boost::python::object func) {
   cb.ForEachObj(lambda);
 }
 
+void CloneObsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                boost::python::object func) {
+  auto lambda = [func](ch::Observation *obs) {
+    func(boost::ref(*obs));
+  };
+  ch::CloneObs(src, dest, lambda);
+}
+
+void CloneProcsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                  boost::python::object func) {
+  auto lambda = [func](ch::Process *proc) {
+    func(boost::ref(*proc));
+  };
+  ch::CloneProcs(src, dest, lambda);
+}
+
+void CloneSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                boost::python::object func) {
+  auto lambda = [func](ch::Systematic *syst) {
+    func(boost::ref(*syst));
+  };
+  ch::CloneSysts(src, dest, lambda);
+}
+
+void CloneProcsAndSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
+                        boost::python::object func) {
+  auto lambda = [func](ch::Object *obj) {
+    func(boost::ref(*obj));
+  };
+  ch::CloneProcsAndSysts(src, dest, lambda);
+}
+
 // To resolve overloaded methods we first define some pointers
 int (CombineHarvester::*Overload1_ParseDatacard)(
     std::string const&, std::string const&, std::string const&,
@@ -96,7 +129,6 @@ void (CombineHarvester::*Overload1_UpdateParameters)(
 
 void (CombineHarvester::*Overload_AddBinByBin)(
     double, bool, CombineHarvester &) = &CombineHarvester::AddBinByBin;
-
 
 
 // Use some macros for methods with default values
@@ -293,4 +325,9 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("SetWildcardMasses", &CardWriter::SetWildcardMasses,
            py::return_internal_reference<>())
     ;
+
+    py::def("CloneObs", CloneObsPy);
+    py::def("CloneProcs", CloneProcsPy);
+    py::def("CloneSysts", CloneSystsPy);
+    py::def("CloneProcsAndSysts", CloneProcsAndSystsPy);
 }

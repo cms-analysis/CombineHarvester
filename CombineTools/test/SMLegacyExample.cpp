@@ -10,6 +10,7 @@
 #include "CombineTools/interface/Utilities.h"
 #include "CombineTools/interface/HttSystematics.h"
 #include "CombineTools/interface/CardWriter.h"
+#include "CombineTools/interface/CopyTools.h"
 
 using namespace std;
 
@@ -273,6 +274,18 @@ int main() {
   // for (auto const& x : undropped) {
   //   cout << " - " << x << "\n";
   // }
+
+  // The following is an example of duplicating existing objects and modifying
+  // them in the process. Here we clone all mH=125 signals, adding "_SM125" to
+  // the process name, switching it to background and giving it the generic mass
+  // label. This would let us create a datacard for doing a second Higgs search
+
+  // ch::CloneProcsAndSysts(cb.cp().signals().mass({"125"}), cb,
+  //                        [](ch::Object* p) {
+  //   p->set_process(p->process() + "_SM125");
+  //   p->set_signal(false);
+  //   p->set_mass("*");
+  // });
 
   string folder = "output/sm_cards/LIMITS";
   boost::filesystem::create_directories(folder);
