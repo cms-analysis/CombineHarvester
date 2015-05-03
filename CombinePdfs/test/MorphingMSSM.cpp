@@ -268,9 +268,7 @@ int main() {
   }
 
   cout << "Setting standardised bin names...";
-  cb.ForEachObs(ch::SetStandardBinName<ch::Observation>);
-  cb.ForEachProc(ch::SetStandardBinName<ch::Process>);
-  cb.ForEachSyst(ch::SetStandardBinName<ch::Systematic>);
+  ch::SetStandardBinNames(cb);
   cout << " done\n";
 
   RooWorkspace ws("htt", "htt");

@@ -101,9 +101,7 @@ int main() {
   cb.era({"8TeV"});
 
   std::cout << "Setting standardised bin names...";
-  cb.ForEachObs(ch::SetStandardBinName<ch::Observation>);
-  cb.ForEachProc(ch::SetStandardBinName<ch::Process>);
-  cb.ForEachSyst(ch::SetStandardBinName<ch::Systematic>);
+  ch::SetStandardBinNames(cb);
   std::cout << " done\n";
 
   // cb.era({"8TeV"}).bin_id({8});
