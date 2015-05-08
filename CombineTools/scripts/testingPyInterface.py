@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import combineharvester as ch
-# import itertools
 import ROOT as R
 import glob
 
@@ -89,6 +88,30 @@ for era in ['7TeV', '8TeV']:
     cb.AddProcesses(['*'],  ['htt'], [era], [chn], bkg_procs[chn], cats[chn+"_"+era], False)
     cb.AddProcesses(masses, ['htt'], [era], [chn], sig_procs,      cats[chn+"_"+era], True)
 
+cb.channel(['mt']).bin_id([1, 2])
+
+cb.SetVerbosity(2)
+cb.AddSyst(cb, "test_$BIN", "lnN", ch.SystMap('process', 'bin_id')
+    (['ZTT', 'W', 'QCD'],   [1, 2], 1.08)
+    (['VV', 'TT', 'blah'],  [1, 2], 1.05)
+  )
+
+cb.cp().process(['ZTT']).AddSyst(cb, "test_ZTT", "lnN", ch.SystMap()(1.10))
+
+cb.cp().process(['WH', 'ZH']).AddSyst(
+  cb, 'QCDscale_VH', 'lnN', ch.SystMap('channel', 'era', 'bin_id')
+    (['mt'], ['7TeV', '8TeV'],  [1, 2],               1.010)
+    (['mt'], ['7TeV', '8TeV'],  [3, 4, 5, 6, 7],      1.040)
+    (['et'], ['7TeV'],          [1, 2, 3, 5, 6, 7],   1.040)
+    (['et'], ['8TeV'],          [1, 2],               1.010)
+    (['et'], ['8TeV'],          [3, 5, 6, 7],         1.040))
+
+# cb.PrintSysts()
+
+
+
+
+
 # cb.FilterProcs(lambda x : x.process() in ['ggH', 'qqH'])
 # cb.FilterAll(lambda y : y.mass() == '110')
 
@@ -114,7 +137,7 @@ for era in ['7TeV', '8TeV']:
 
 # ch.CloneProcs(cb.cp().signals().mass(['125']), cb, Signal2Background)
 
-cb.PrintAll()
+# cb.PrintAll()
 
 
 

@@ -33,6 +33,7 @@ C++:
     cb.PrintSysts();
     cb.PrintParams();
     cb.SetVerbosity(1);
+    cb.Verbosity();
 
 Python:
 
@@ -42,6 +43,7 @@ Python:
     cb.PrintSysts()
     cb.PrintParams()
     cb.SetVerbosity(1)
+    cb.Verbosity()
 
 Datacards {#py-datacards}
 =========================
@@ -226,7 +228,30 @@ Python:
     cb.MergeBinErrors(0.1, 0.5)
     cb.AddBinByBin(0.1, True, cb)
 
-The AddSyst ExtractPdfs, ExtractData and AddWorkspace methods are not currently supported. The creation of Systematic entries via the [AddSyst](\ref ch::CombineHarvester::AddSyst) method is not trivial to convert to python due to the heavy use of C++ templates. A python equivalent will be made available in a future release.
+The creation of Systematic entries with the `AddSyst` method is supported, though has a slightly different syntax due to the heavy template usage in the C++ version.
+
+C++:
+
+    cb.cp().process({"WH", "ZH"}).AddSyst(
+      cb, "QCDscale_VH", "lnN", SystMap<channel, era, bin_id>::init
+        ({"mt"}, {"7TeV", "8TeV"},  {1, 2},               1.010)
+        ({"mt"}, {"7TeV", "8TeV"},  {3, 4, 5, 6, 7},      1.040)
+        ({"et"}, {"7TeV"},          {1, 2, 3, 5, 6, 7},   1.040)
+        ({"et"}, {"8TeV"},          {1, 2},               1.010)
+        ({"et"}, {"8TeV"},          {3, 5, 6, 7},         1.040));
+
+Python:
+
+    cb.cp().process(['WH', 'ZH']).AddSyst(
+      cb, "QCDscale_VH", "lnN", ch.SystMap('channel', 'era', 'bin_id')
+        (['mt'], ['7TeV', '8TeV'],  [1, 2],               1.010)
+        (['mt'], ['7TeV', '8TeV'],  [3, 4, 5, 6, 7],      1.040)
+        (['et'], ['7TeV'],          [1, 2, 3, 5, 6, 7],   1.040)
+        (['et'], ['8TeV'],          [1, 2],               1.010)
+        (['et'], ['8TeV'],          [3, 5, 6, 7],         1.040))
+
+
+The ExtractPdfs, ExtractData and AddWorkspace methods are not currently supported.
 
 Class: CardWriter {#py-card-writer}
 ================================

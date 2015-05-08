@@ -182,6 +182,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("PrintParams", &CombineHarvester::PrintParams,
            py::return_internal_reference<>())
       .def("SetVerbosity", &CombineHarvester::SetVerbosity)
+      .def("Verbosity", &CombineHarvester::Verbosity)
       // Datacards
       .def("__ParseDatacard__", Overload1_ParseDatacard)
       .def("QuickParseDatacard", Overload2_ParseDatacard)
@@ -255,8 +256,12 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       // Creation
       .def("__AddObservations__", &CombineHarvester::AddObservations)
       .def("__AddProcesses__", &CombineHarvester::AddProcesses)
+      .def("AddSystFromProc", &CombineHarvester::AddSystFromProc)
       .def("AddBinByBin", Overload_AddBinByBin)
       .def("MergeBinErrors",  &CombineHarvester::MergeBinErrors)
+      .def("InsertObservation", &CombineHarvester::InsertObservation)
+      .def("InsertProcess", &CombineHarvester::InsertProcess)
+      .def("InsertSystematic", &CombineHarvester::InsertSystematic)
       ;
 
     py::class_<Object>("Object")
@@ -286,6 +291,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("set_rate", &Observation::set_rate)
       .def("rate", &Observation::rate)
       .def("ShapeAsTH1F", &Observation::ShapeAsTH1F)
+      .def(py::self_ns::str(py::self_ns::self))
     ;
 
     py::class_<Process, py::bases<Object>>("Process")
@@ -295,6 +301,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("set_signal", &Process::set_signal)
       .def("signal", &Process::signal)
       .def("ShapeAsTH1F", &Process::ShapeAsTH1F)
+      .def(py::self_ns::str(py::self_ns::self))
     ;
 
     py::class_<Systematic, py::bases<Object>>("Systematic")
@@ -314,6 +321,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("scale", &Systematic::scale)
       .def("set_asymm", &Systematic::set_asymm)
       .def("asymm", &Systematic::asymm)
+      .def(py::self_ns::str(py::self_ns::self))
     ;
 
     py::class_<CardWriter>("CardWriter", py::init<std::string, std::string>())
