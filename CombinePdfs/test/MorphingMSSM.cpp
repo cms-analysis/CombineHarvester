@@ -298,8 +298,8 @@ int main() {
     }
   }
   demo.Close();
-  cb.AddWorkspace(&ws);
-  cb.cp().signals().ExtractPdfs("htt", "$BIN_$PROCESS_morph", &cb);
+  cb.AddWorkspace(ws);
+  cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
 
   // cout << "Adding bbb...\n";

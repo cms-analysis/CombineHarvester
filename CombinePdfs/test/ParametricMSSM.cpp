@@ -217,8 +217,8 @@ int main() {
     }
     cb_hm.process({"ggH", "bbH", "bkg"});
 
-    cb_hm.AddWorkspace(&ws);
-    cb_hm.cp().backgrounds().ExtractPdfs("htt", "$CHANNEL_bkgpdf");
+    cb_hm.AddWorkspace(ws);
+    cb_hm.cp().backgrounds().ExtractPdfs(cb_hm, "htt", "$CHANNEL_bkgpdf");
     // cb_hm.PrintAll();
   } else {
     cb_hm.cp().bin_id({8}).VariableRebin(

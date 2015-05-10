@@ -297,8 +297,8 @@ int main() {
         }
       }
     }
-    cb.AddWorkspace(&ws);
-    cb.cp().signals().ExtractPdfs("htt", "$BIN_$PROCESS_morph", &cb);
+    cb.AddWorkspace(ws);
+    cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
 
     string folder = "output/sm_cards_morphed";
     boost::filesystem::create_directories(folder);
