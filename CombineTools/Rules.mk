@@ -12,3 +12,5 @@ clean_$(d)/interface/GitVersion.h :
 clean_$(d) : clean_$(d)/interface/GitVersion.h
 
 dir_$(d) : | $(d)/interface/GitVersion.h
+tree_$(d) : | $(d)/interface/GitVersion.h
+all_proxy :: | $(d)/interface/GitVersion.h
