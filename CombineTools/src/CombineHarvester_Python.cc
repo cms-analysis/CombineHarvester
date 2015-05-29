@@ -2,6 +2,7 @@
 #include "CombineTools/interface/CombineHarvester.h"
 #include "CombineTools/interface/Observation.h"
 #include "CombineTools/interface/CardWriter.h"
+#include "CombineTools/interface/BinByBin.h"
 #include "CombineTools/interface/CopyTools.h"
 #include "boost/python.hpp"
 #include "TFile.h"
@@ -14,6 +15,7 @@ using ch::Observation;
 using ch::Process;
 using ch::Systematic;
 using ch::CardWriter;
+using ch::BinByBinFactory;
 
 void FilterAllPy(ch::CombineHarvester & cb, boost::python::object func) {
       auto lambda = [func](ch::Object *obj) -> bool {
@@ -338,4 +340,20 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
     py::def("CloneProcs", CloneProcsPy);
     py::def("CloneSysts", CloneSystsPy);
     py::def("CloneProcsAndSysts", CloneProcsAndSystsPy);
+
+    py::class_<BinByBinFactory>("BinByBinFactory")
+      .def("MergeBinErrors", &BinByBinFactory::MergeBinErrors)
+      .def("AddBinByBin", &BinByBinFactory::AddBinByBin)
+      .def("MergeAndAdd", &BinByBinFactory::MergeAndAdd)
+      .def("SetVerbosity", &BinByBinFactory::SetVerbosity,
+           py::return_internal_reference<>())
+      .def("SetAddThreshold", &BinByBinFactory::SetAddThreshold,
+           py::return_internal_reference<>())
+      .def("SetMergeThreshold", &BinByBinFactory::SetMergeThreshold,
+           py::return_internal_reference<>())
+      .def("SetPattern", &BinByBinFactory::SetPattern,
+           py::return_internal_reference<>())
+      .def("SetFixNorm", &BinByBinFactory::SetFixNorm,
+           py::return_internal_reference<>())
+    ;
 }
