@@ -18,8 +18,6 @@ using namespace std;
 int main() {
   ch::CombineHarvester cb;
 
-  // cb.SetVerbosity(1);
-
   typedef vector<pair<int, string>> Categories;
   typedef vector<string> VString;
 
@@ -213,18 +211,6 @@ int main() {
   auto post_drop = cb.syst_name_set();
   cout << ">> Systematics dropped: " << pre_drop.size() - post_drop.size()
             << "\n";
-
-  // set<string> dropped;
-  // set_difference(pre_drop.begin(), pre_drop.end(), post_drop.begin(),
-  //                post_drop.end(), inserter(dropped, dropped.end()));
-
-  // set<string> undropped;
-  // set_difference(to_drop.begin(), to_drop.end(), dropped.begin(),
-  //                dropped.end(), inserter(undropped, undropped.end()));
-  // cout << ">> Un-dropped:\n";
-  // for (auto const& x : undropped) {
-  //   cout << " - " << x << "\n";
-  // }
 
   // The following is an example of duplicating existing objects and modifying
   // them in the process. Here we clone all mH=125 signals, adding "_SM125" to
