@@ -106,6 +106,10 @@ cb.cp().process(['WH', 'ZH']).AddSyst(
     (['et'], ['8TeV'],          [1, 2],               1.010)
     (['et'], ['8TeV'],          [3, 5, 6, 7],         1.040))
 
+# gr = ch.TGraphFromTable("input/xsecs_brs/htt_YR3.txt", "mH", "br")
+
+# cb.cp().signals().ForEachProc(lambda x: x.set_rate(x.rate() * gr.Eval(float(x.mass()))))
+
 # cb.PrintSysts()
 
 

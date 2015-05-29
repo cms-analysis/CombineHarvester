@@ -4,9 +4,11 @@
 #include "CombineTools/interface/CardWriter.h"
 #include "CombineTools/interface/BinByBin.h"
 #include "CombineTools/interface/CopyTools.h"
+#include "CombineTools/interface/Utilities.h"
 #include "boost/python.hpp"
 #include "TFile.h"
 #include "TH1F.h"
+#include "TGraph.h"
 #include "RooFitResult.h"
 namespace py = boost::python;
 using ch::CombineHarvester;
@@ -158,6 +160,9 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
   py::to_python_converter<TH1F,
                           convert_cpp_root_to_py_root<TH1F>>();
 
+  py::to_python_converter<TGraph,
+                          convert_cpp_root_to_py_root<TGraph>>();
+
   // Define converters from python --> C++
   convert_py_seq_to_cpp_vector<std::string>();
   convert_py_tup_to_cpp_pair<int, std::string>();
@@ -166,6 +171,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
   convert_py_seq_to_cpp_vector<double>();
   convert_py_root_to_cpp_root<TFile>();
   convert_py_root_to_cpp_root<TH1F>();
+  convert_py_root_to_cpp_root<TGraph>();
   convert_py_root_to_cpp_root<RooFitResult>();
 
   py::class_<CombineHarvester>("CombineHarvester")
@@ -356,4 +362,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("SetFixNorm", &BinByBinFactory::SetFixNorm,
            py::return_internal_reference<>())
     ;
+
+    py::def("TGraphFromTable", ch::TGraphFromTable);
+
 }
