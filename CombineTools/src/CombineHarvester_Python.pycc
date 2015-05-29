@@ -147,12 +147,18 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_syst_name, syst_name, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_syst_type, syst_type, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_process_rgx, process_rgx, 1, 2)
 
+BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_MassesFromRange, ch::MassesFromRange, 1, 2)
+BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_ValsFromRange, ch::ValsFromRange, 1, 2)
+BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_SetStandardBinNames, ch::SetStandardBinNames, 1, 2)
 
-BOOST_PYTHON_MODULE(libCHCombineTools)
+BOOST_PYTHON_MODULE(_combineharvester)
 {
   // Define converters from C++ --> python
   py::to_python_converter<std::set<std::string>,
                           convert_cpp_set_to_py_list<std::string>>();
+
+  py::to_python_converter<std::vector<std::string>,
+                          convert_cpp_vector_to_py_list<std::string>>();
 
   py::to_python_converter<std::set<int>,
                           convert_cpp_set_to_py_list<int>>();
@@ -265,6 +271,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
       .def("__AddObservations__", &CombineHarvester::AddObservations)
       .def("__AddProcesses__", &CombineHarvester::AddProcesses)
       .def("AddSystFromProc", &CombineHarvester::AddSystFromProc)
+      .def("ExtractShapes", &CombineHarvester::ExtractShapes)
       .def("AddBinByBin", Overload_AddBinByBin)
       .def("MergeBinErrors",  &CombineHarvester::MergeBinErrors)
       .def("InsertObservation", &CombineHarvester::InsertObservation)
@@ -346,6 +353,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
     py::def("CloneProcs", CloneProcsPy);
     py::def("CloneSysts", CloneSystsPy);
     py::def("CloneProcsAndSysts", CloneProcsAndSystsPy);
+    py::def("SplitSyst", ch::SplitSyst);
 
     py::class_<BinByBinFactory>("BinByBinFactory")
       .def("MergeBinErrors", &BinByBinFactory::MergeBinErrors)
@@ -364,5 +372,7 @@ BOOST_PYTHON_MODULE(libCHCombineTools)
     ;
 
     py::def("TGraphFromTable", ch::TGraphFromTable);
-
+    py::def("MassesFromRange", ch::MassesFromRange, defaults_MassesFromRange());
+    py::def("ValsFromRange", ch::ValsFromRange, defaults_ValsFromRange());
+    py::def("SetStandardBinNames", ch::SetStandardBinNames, defaults_SetStandardBinNames());
 }

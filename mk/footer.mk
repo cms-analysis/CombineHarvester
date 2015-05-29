@@ -4,13 +4,13 @@ define FOOTER
 # First define all the directory-specific variables we need #
 #############################################################
 
-# Build list of all lib directories so we can add it to $PYTHONPATH
-TESTDIR := $(wildcard $(d)/lib)
+# Build list of all python directories so we can add it to $PYTHONPATH
+TESTDIR := $(wildcard $(d)/python)
 ifneq ($(TESTDIR),)
 ifeq ($(ALL_LIB_DIRS),)
-ALL_LIB_DIRS := $(d)/lib
+ALL_LIB_DIRS := $(d)/python
 else
-ALL_LIB_DIRS := $(ALL_LIB_DIRS):$(d)/lib
+ALL_LIB_DIRS := $(ALL_LIB_DIRS):$(d)/python
 endif
 endif
 
@@ -31,6 +31,8 @@ ifdef DEBUG
 $(info Target object files:)
 $(foreach x,$(OBJS_$(d)),$(info -- Target file: $(x)))
 endif
+
+PYOBJS_$(d) := $(addsuffix .pyo, $(addprefix $(d)/obj/,$(basename $(notdir $(wildcard $(d)/$(SRC_DIR)/*.$(PY_EXT))))))
 
 # If DICTIONARY has been specified, define DHEADERS_$(d) and DOBJ_$(d)
 ifneq ($(DICTIONARY),)
@@ -86,6 +88,8 @@ else
  endif
 endif
 
+PYLIBS_$(d) := $(foreach x,$(PY_MODULES),$(d)/python/$(x)/_$(x).so)
+$(foreach x,$(PY_MODULES), $(eval PYOBJS_$(d)/python/$(x)/_$(x).so := $(d)/obj/$(PY_SRC_$(x):$(PY_EXT)=pyo)))
 
 # Only if the directory we're scanning is the directory the user is running from
 # we define shortcut targets for compiling executables. This means the user can
@@ -102,6 +106,7 @@ LIB_DEPS_$(d) := $(foreach x,$(LIB_DEPS),$(TOP)/$(x)/lib/libCH$(subst /,_,$(x)).
 # against in this directory
 $(foreach x,$(EXES_$(d)),$(eval EXE_DEP_$(x) := $(LIB_EXTRA)))
 $(foreach x,$(LIB_$(d)),$(eval LIB_DEP_$(x) := $(LIB_EXTRA)))
+$(foreach x,$(PYLIBS_$(d)),$(eval PYLIB_DEP_$(x) := $(LIB_EXTRA)))
 $(foreach x,$(OBJS_$(d)),$(eval FLAGS_$(x) := $(PKG_FLAGS)))
 
 SKIP := 0
@@ -121,7 +126,7 @@ ifeq ($(SKIP), 0)
 # Define directory-specific Rules #
 ###################################
 # Targets for a directory are the shared library and the executables
-TARGETS_$(d) := $(LIB_$(d)) $(EXES_$(d))
+TARGETS_$(d) := $(PYLIBS_$(d)) $(LIB_$(d)) $(EXES_$(d))
 
 # Check if verbose mode is enabled, and if so we will echo commands
 ifdef V
@@ -133,6 +138,7 @@ endif
 # If they exist (-include instead of include), load automatic rules in the
 # .d files
 -include $(OBJS_$(d):.o=.d)
+-include $(PYOBJS_$(d):.pyo=.d)
 -include $(d)/obj/rootcint_dict.d
 -include $(EXE_OBJS_$(d):.o=.d)
 
@@ -142,6 +148,13 @@ $(d)/obj/%.o: $(d)/$(SRC_DIR)/%.$(SRC_EXT)
 	$(DOECHO)$(CXX) $(CXXFLAGS) $(FLAGS_$(@)) -fPIC -c $< -o $@
 	@echo -e "$(COLOR_CY)Generating dependency file $(subst $(TOP)/,,$(@:.o=.d))$(NOCOLOR)"
 	@$(CXX) $(CXXFLAGS) -MM -MP -MT "$@" $< -o $(@:.o=.d)
+
+# Rule for generating python object files from source files
+$(d)/obj/%.pyo: $(d)/$(SRC_DIR)/%.$(PY_EXT)
+	@echo -e "$(COLOR_BL)Compiling object file $(subst $(TOP)/,,$@)$(NOCOLOR)"
+	$(DOECHO)$(CXX) $(CXXFLAGS) $(FLAGS_$(@)) -x c++ -fPIC -c $< -o $@
+	@echo -e "$(COLOR_CY)Generating dependency file $(subst $(TOP)/,,$(@:.pyo=.d))$(NOCOLOR)"
+	@$(CXX) $(CXXFLAGS) -x c++ -MM -MP -MT "$@" $< -o $(@:.pyo=.d)
 
 # Rule for generating dictionary object
 $(d)/obj/rootcint_dict.o: $(d)/obj/rootcint_dict.cc
@@ -165,6 +178,11 @@ $(d)/bin/%.o: $(d)/test/%.cpp
 $(LIB_$(d)) : $(OBJS_$(d)) $(LIB_DEPS_$(d))
 	@echo -e "$(COLOR_PU)Creating shared library $(subst $(TOP)/,,$@)$(NOCOLOR)"
 	$(DOECHO)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS) $(LIB_DEP_$(@))
+
+.SECONDEXPANSION:
+$(PYLIBS_$(d)) : % : $$(PYOBJS_%) $(LIB_DEPS_$(d)) $(LIB_$(d))
+	@echo -e "$(COLOR_PU)Creating python library $(subst $(TOP)/,,$@)$(NOCOLOR)"
+	$(DOECHO)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS) $(PYLIB_DEP_$(@))
 
 # Shortcut rules for building an executable, if this is the run directory
 # NB: don't remove the echo statement here or make will optimise-out this
@@ -208,7 +226,7 @@ clean_all :: clean_$(d)
 ########################################################################
 
 clean_$(d) :
-	rm -f $(subst clean_,,$@)/bin/* $(subst clean_,,$@)/obj/*.o $(subst clean_,,$@)/obj/*.d $(subst clean_,,$@)/lib/*.so
+	rm -f $(subst clean_,,$@)/bin/* $(subst clean_,,$@)/obj/*.o $(subst clean_,,$@)/obj/*.pyo $(subst clean_,,$@)/obj/*.d $(subst clean_,,$@)/lib/*.so $(subst clean_,,$@)/python/*/*.so
 
 clean_tree_$(d) : clean_$(d) $(foreach sd,$(SUBDIRS_$(d)),clean_tree_$(sd))
 

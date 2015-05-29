@@ -1,6 +1,8 @@
 SUBDIRS 	:=
 LIB_DEPS 	:=
 LIB_EXTRA := -lRooStats -lboost_python -L$(shell scramv1 tool tag python LIBDIR) -l$(shell scramv1 tool tag python LIB) -lPyROOT
+PY_MODULES := combineharvester
+PY_SRC_combineharvester := CombineHarvester_Python.pycc
 
 $(d)/interface/GitVersion.h: $(TOP)/../.git/logs/HEAD
 	@echo -e "Updating $@"
