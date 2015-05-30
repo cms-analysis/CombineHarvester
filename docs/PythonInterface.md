@@ -3,7 +3,7 @@ Python Interface {#python-interface}
 
 [TOC]
 
-The python interface is embedded within the shared library (`CombineTools/lib/libCHCombineTools.so`) that is produced when the code is compiled. Add this directory to your `PYTHONPATH` environment variable so that it can be imported from anywhere. This can also be achieved by doing:
+The python interface is embedded within the shared library (`CombineTools/python/combineharvester/_combineharvester.so`) that is produced when the code is compiled. Add the directory `CombineTools/python` to your `PYTHONPATH` environment variable so that it can be imported from anywhere. This can also be achieved by doing:
 
     eval `make env`
 
@@ -127,7 +127,7 @@ Python:
     for p in cb.process_set():
         ...
 
-**NEW** The generic methods are now available too, and accept a generic function object.
+The generic methods are available too, and accept a generic function object.
 
 C++:
 
@@ -216,7 +216,7 @@ Python:
     ## or with default values:
     cb.AddProcesses(procs = ['ZTT', 'ZL', ZJ'], bin = [(0, "0jet"), (1, "1jet")], signal=False)
 
-As is bin-by-bin creating and merging.
+As is bin-by-bin creating and merging, but note that these methods have been deprecated in favour of the standalone ch::BinByBinFactory class (see below).
 
 C++:
 
@@ -268,3 +268,23 @@ Python:
     writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
                            '$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root')
     writer.WriteCards('LIMITS/cmb', cb)
+
+Class: BinByBinFactory {#py-bbbfactory}
+=======================================
+The ch::BinByBinFactory class has an identical interface in python.
+
+C++:
+
+    auto bbb = ch::BinByBinFactory()
+        .SetAddThreshold(0.1)
+        .SetMergeThreshold(0.5)
+        .SetFixNorm(true);
+    bbb.MergeBinErrors(cb.cp().backgrounds());
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+
+Python:
+
+    bbb = ch.BinByBinFactory()
+    bbb.SetAddThreshold(0.1).SetMergeThreshold(0.5).SetFixNorm(True)
+    bbb.MergeBinErrors(cb.cp().backgrounds())
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb)

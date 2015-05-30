@@ -74,7 +74,7 @@ The next step is optional. This will generate additional shape uncertainties to 
 
 \snippet CombineTools/test/Example2.cpp part8
 
-The first argument is the bin error threshold over which an uncertainty should be created, expressed as a percentage of the bin content. The second argument controls the normalisation of the Up and Down shapes that are created. If set to true, the normalisation is fixed to nominal rate. If false, the normalisation is allowed to vary. Finally a pointer to the CombineHarvester instance where the Systematic entries should be created is supplied.
+We first create a ch::BinByBinFactory instance, and specify the bin error threshold over which an uncertainty should be created, expressed as a percentage of the bin content. We also set the flag "FixedNorm", which controls the normalisation of the Up and Down shapes that are created. If set to true, the normalisation is fixed to nominal rate. If false, the normalisation is allowed to vary. We then call the AddBinByBin method specifying that only the background processes should be considered.
 
 Writing datacards {#ex2-p5}
 ===========================

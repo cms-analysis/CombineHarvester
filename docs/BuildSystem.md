@@ -10,6 +10,7 @@ The code within the directory `CombineHarvester` is organised into a set of pack
     lib/          : used by the build system
     test/         : code for executable programs (.cpp)
     bin/          : programs compiled from test directory located here
+    python/       : compiled C++ to python libraries will be produced here
 
  The `makefile` is located in `CombineHarvester/mk`, with a symbolic link added to the root directory of each package. This defines a number of special targets that can be built by running: `make [target]`
 
@@ -20,5 +21,6 @@ The code within the directory `CombineHarvester` is organised into a set of pack
   * `make clean_tree`: Also cleans packages in sub-directories
   * `make clean_all`: Clean every package recursively starting from the top directory
   * `make bin/[program]` Shortcut target for each executable in the current directory. This provides a quick way to update a single program.
+  * `make env`: generates an `export PYTHONPATH=...` expression that contain the package python directories.
 
 On machines with multiple processor cores add the `-j[n]` option to compile with *n* threads. By default the makefile will just print a summary of each operation to the screen. To print the full command for each step add the option `V=1`. The option `DEBUG=1` can also be added which will cause make to print a list of the targets it finds as it scans directories.

@@ -97,7 +97,6 @@ for era in ['7TeV', '8TeV']:
 #Have to drop ZL from tautau_vbf category
 cb.FilterProcs(lambda p : p.bin() == 'tauTau_vbf' and p.process() == 'ZL')
 
-# cb.SetVerbosity(2)
 print '>> Adding systematic uncertainties...'
 systematics.SMLegacy.AddSystematics_et_mt(cb)
 systematics.SMLegacy.AddSystematics_em(cb)
@@ -177,9 +176,6 @@ pre_drop = cb.syst_name_set()
 cb.syst_name(to_drop, False)
 post_drop = cb.syst_name_set()
 print '>> Systematics dropped: ' + str(len(pre_drop) - len(post_drop))
-
-ch.SplitSyst(cb, 'lumi_7TeV', 'lumi_2011', 'CMS_lumi_2011', 1.006, 1.0212)
-ch.SplitSyst(cb, 'lumi_8TeV', 'lumi_2012', 'CMS_lumi_2012', 1.006, 1.0212)
 
 writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
                        '$TAG/common/$ANALYSIS_$CHANNEL.input.root')

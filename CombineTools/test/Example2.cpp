@@ -10,6 +10,7 @@
 #include "CombineTools/interface/Process.h"
 #include "CombineTools/interface/Utilities.h"
 #include "CombineTools/interface/Systematics.h"
+#include "CombineTools/interface/BinByBin.h"
 
 using namespace std;
 
@@ -101,7 +102,11 @@ int main() {
   //! [part7]
 
   //! [part8]
-  cb.cp().backgrounds().AddBinByBin(0.1, true, &cb);
+  auto bbb = ch::BinByBinFactory()
+    .SetAddThreshold(0.1)
+    .SetFixNorm(true);
+
+  bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}

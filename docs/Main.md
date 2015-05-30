@@ -3,7 +3,7 @@ Introduction {#mainpage}
 
 [TOC]
 
-This page documents a new framework for the production and analysis of datacards for use with the CMS [combine](https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit) statistical analysis tool. The central part of this framework is the [CombineHarvester](\ref ch::CombineHarvester) class, which provides a representation of the text-format datacards and the associated shape input.
+This page documents the CombineHarvester framework for the production and analysis of datacards for use with the CMS [combine](https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit) statistical analysis tool. The central part of this framework is the [CombineHarvester](\ref ch::CombineHarvester) class, which provides a representation of the text-format datacards and the associated shape input.
 
 The production of new datacards typically requires several steps, for example:
 
@@ -15,9 +15,9 @@ The production of new datacards typically requires several steps, for example:
   * Pruning the set of bin-by-bin nuisance parameters
   * Exporting to the text datacard format and creating the associated ROOT shape files
 
-All of these operations are performed either directly by class methods of the CombineHarvester class, or by calling higher-level helper functions. By design all of the input required for these steps can be specified directly in the code. This makes it possible to quickly build a datacard from scratch in a single, self-contained file, without the use of any external scripts or configuration files.
+All of these operations are performed either directly by methods of the CombineHarvester class, or by using higher-level helper functions (see \ref high-level-tools below). By design all of the input required for these steps can be specified directly in the code. This makes it possible to quickly build a datacard from scratch in a single, self-contained file, without the use of any external scripts or configuration files.
 
-The other side of the feature set is the extraction of information about the fit model:
+Other functions include extracting information about the fit model:
 
   * Evaluating the expected rates of signal and background processes, both pre- and post-fit, and for the latter taking into account the nuisance parameter correlations
   * Similar evaluation of the background shapes, including the ability to scale, modify and re-bin the shapes in-place
@@ -28,7 +28,7 @@ Getting started {#getting-started}
 ==================================
 The CombineHarvester code is part of the official HiggsToTauTau CMSSW package for limit-setting tools: https://github.com/cms-analysis/HiggsAnalysis-HiggsToTauTau. All the framework code is located in the `CombineHarvester` directory, within which it is organised, via sub-directories, into packages. These are not seen or compiled by scram, but rather by a separate makefile-based build system. See further details on the page [Build System](\ref build).
 
-You should check-out the HiggsAnalysis/HiggsToTauTau CMSSW package alongside the HiggsAnalysis/CombinedLimit package, using the release recommended by the combine developers [here](https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#SLC6_release). Note that the CombineHarvester framework is only compatible with the CMSSW 7_X_Y series releases. A new release area can be set up and compiled in the following steps:
+You should checkout the HiggsAnalysis/HiggsToTauTau CMSSW package alongside the HiggsAnalysis/CombinedLimit package, using the release recommended by the combine developers [here](https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#SLC6_release). Note that the CombineHarvester framework is only compatible with the CMSSW 7_X_Y series releases. A new release area can be set up and compiled in the following steps:
 
     export SCRAM_ARCH=slc6_amd64_gcc481
     scram project CMSSW CMSSW_7_1_5
@@ -56,8 +56,17 @@ The input root files will be sourced from here.
 
 More realistic, though less well documented, examples can be found in the following files:
   * `CombineTools/bin/PostFitShapes` ([source code](\ref CombineTools/test/PostFitShapes.cpp)) - see separate page [here](\ref post-fit-shapes)
-  * `CombineTools/bin/SMLegacyExample` ([source code](\ref CombineTools/test/SMLegacyExample.cpp)) - produces a complete set of htt datacards for the legacy Run I SM analysis (HIG-13-004)
+  * `CombineTools/bin/SMLegacyExample` ([source code](\ref CombineTools/test/SMLegacyExample.cpp)) - produces a complete set of htt datacards for the legacy Run I SM analysis (HIG-13-004). The same workflow is also possible in python, see `CombineTools/scripts/SMLegacyExample.py`
   * `CombineTools/bin/MSSMYieldTable` ([source code](\ref CombineTools/test/MSSMYieldTable.cpp)) - produces the latex yield tables for the MSSM htt analysis (HIG-13-021). Run via the script `CombineTools/scripts/yield_tables_mssm_example.sh`. You will first need to copy the input datacards: `cd CombineTools; cp -r /afs/cern.ch/work/a/agilbert/public/CombineTools/data/mssm-paper-cmb ./input/`
+
+High-level tools {#high-level-tools}
+====================================
+A number of high-level tools have been developed to provide a more convenient interface for some common CombineHarvester tasks:
+
+  * ch::CardWriter: In a nutshell, calls `CombineHarvester::WriteDatacard` so you don't have to. It can be used to write a set of datacards into the familiar **LIMITS** directory structure, or any other structure based on simple pattern strings.
+  * ch::BinByBinFactory: Does the merging of bin uncertainties within a category and creates bin-by-bin shape systematics
+  * CopyTools.h: Provides functions like ch::CloneProcsAndSysts and ch::SplitSyst for duplicating existing processes and systematics
+  * ch::ParseCombineWorkspace: A function that can populate a CombineHarvester instance directly from a `combine` workspace. May be useful for extracting post-fit yields and shapes for more complex physics models. Should be considered experimental at the moment.
 
 Other comments {#note}
 ======================
