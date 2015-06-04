@@ -88,9 +88,9 @@ def AddSystematics_hhh_et_mt(cb):
       cb,"CMS_htt_zttNorm_8TeV","lnN",ch.SystMap()(1.03))
 
   src.cp().process(['TT','W']).AddSyst(
-      cb,"CMS_htt_ttbarNorm_8TeV","lnN",ch.SystMap('process')
-          (['TT'],1.10)
-          (['W'],0.75))
+      cb,"CMS_htt_ttbarNorm_8TeV","lnN",ch.SystMap('bin_id','process')
+          ([0,1,2],['TT'],1.10)
+          ([1],['W'],0.75))
 
   src.cp().process(['VV']).AddSyst(
       cb,"CMS_htt_DiBosonNorm_8TeV","lnN",ch.SystMap()(1.15))
