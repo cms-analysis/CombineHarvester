@@ -42,7 +42,37 @@ import glob
 # }
 
 # 2D reweighting
-SCALES = {
+SCALES_7TEV = {
+  ('mt', 1) : 1.027, #0jet-low
+  ('mt', 2) : 1.044, #0jet-high
+  ('mt', 3) : 0.924, #1jet-low
+  ('mt', 4) : 0.925, #1jet-high (low boost)
+  ('mt', 5) : 0.782, #1jet-high (med boost)
+  ('mt', 6) : 0.962, #vbf
+  ('et', 1) : 1.027, #0jet-low
+  ('et', 2) : 1.044, #0jet-high
+  ('et', 3) : 0.924, #1jet-low
+  ('et', 4) : 0.925, #1jet-high (low boost)
+  ('et', 5) : 0.782, #1jet-high (med boost)
+  ('et', 6) : 0.962, #vbf
+  ('em', 0) : 1.027, #0jet-low
+  ('em', 1) : 1.044, #0jet-high
+  ('em', 2) : 0.924, #1jet-low
+  ('em', 3) : 0.889, #1jet-high
+  ('em', 4) : 0.962, #vbf
+  ('ee', 0) : 1.027, #0jet-low
+  ('ee', 1) : 1.044, #0jet-high
+  ('ee', 2) : 0.924, #1jet-low
+  ('ee', 3) : 0.889, #1jet-high
+  ('ee', 4) : 0.962, #vbf
+  ('mm', 0) : 1.027, #0jet-low
+  ('mm', 1) : 1.044, #0jet-high
+  ('mm', 2) : 0.924, #1jet-low
+  ('mm', 3) : 0.889, #1jet-high
+  ('mm', 4) : 0.962, #vbf
+}
+
+SCALES_8TEV = {
   ('mt', 1) : 1.051, #0jet-low
   ('mt', 2) : 1.061, #0jet-high
   ('mt', 3) : 0.955, #1jet-low
@@ -78,7 +108,6 @@ SCALES = {
   ('tt', 2) : 1.087 #vbf
 }
 
-
 def DoScales(cmb, scales):
   for key, val in scales.iteritems():
     print 'Scaling ' + str(key) + ' by ' + str(val)
@@ -95,7 +124,8 @@ for card in glob.glob('output/htt-YR3/*/vhtt*.txt'):
 
 cmb_for_scaling = cmb.cp().analysis(['vhtt'], False)
 
-DoScales(cmb_for_scaling, SCALES)
+DoScales(cmb_for_scaling.cp().era(['7TeV']), SCALES_7TEV)
+DoScales(cmb_for_scaling.cp().era(['8TeV']), SCALES_8TEV)
 
 writer_htt = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
                            '$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root')
