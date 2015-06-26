@@ -256,13 +256,26 @@ int main() {
     TFile output((folder + "/htt.input.root").c_str(),
                  "RECREATE");
     for (string chn : chns) {
+      boost::filesystem::create_directories(folder+"/"+chn);
+      //Use CH to create combined card for each channel
+      cb.cp().channel({chn}).mass({"*"}).WriteDatacard(
+        folder + "/" + chn + "/combinedCard.txt", output);
       auto bins = cb.cp().channel({chn}).bin_set();
       for (auto b : bins) {
         cout << ">> Writing datacard for bin: " << b << "\r" << flush;
+        //Also print individual datacards for each category of each channel
+        boost::filesystem::create_directories(folder+"/"+chn);
         cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(
-            folder + "/" + b + ".txt", output);
+        folder + "/" + chn + "/" + b + ".txt", output);
+        //Also print individual datacards for each category of each channel in the combined directory
+        boost::filesystem::create_directories(folder+"/cmb");
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(
+            folder + "/cmb/"+ b + ".txt", output);
       }
     }
+    //Use CH to create combined card for full combination
+    cb.cp().mass({"*"}).WriteDatacard(
+        folder + "/cmb/combinedCard.txt", output);
     output.Close();
     cout << "\n>> Done!\n";
   }
