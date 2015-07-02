@@ -92,7 +92,22 @@ cmb.cp().process(['bbH']).AddSyst(
     (['7TeV'], 1.061)
     (['8TeV'], 1.062))
 
-cmb.cp().process(['bbH']).PrintAll()
+def ModUEPS(sys):
+  if sys.name() != 'UEPS': return
+  if 'ggH' in sys.process() or 'bbH' in sys.process():
+    sys.set_name('UEPS_ggH')
+  elif 'qqH' in sys.process():
+    sys.set_name('UEPS_qqH')
+  elif 'WH' in sys.process() or 'ZH' in sys.process():
+    sys.set_name('UEPS_VH')
+  else:
+    raise Exception('process %s not recognised' % (sys.process()))
+  if ((sys.channel() in ['ee', 'mm', 'em'] and sys.bin_id() >= 4) or
+      (sys.channel() in ['et', 'mt'] and sys.bin_id() >= 6) or
+      (sys.channel() in ['tt'] and sys.bin_id() >= 2)) :
+    sys.set_name(sys.name() + '_vbf')
+
+cmb.ForEachSyst(ModUEPS)
 
 def FixMe(sys):
   if sys.process().startswith('ggH_hww') and sys.name() == 'pdf_qqbar':
