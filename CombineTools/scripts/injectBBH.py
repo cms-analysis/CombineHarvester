@@ -107,7 +107,10 @@ def ModUEPS(sys):
       (sys.channel() in ['tt'] and sys.bin_id() >= 2)) :
     sys.set_name(sys.name() + '_vbf')
 
+
 cmb.ForEachSyst(ModUEPS)
+
+cmb.cp().syst_name(['QCDscale_ggH2in']).ForEachSyst(lambda sys: sys.set_name('QCDscale_ggH2in_vbf'))
 
 def FixMe(sys):
   if sys.process().startswith('ggH_hww') and sys.name() == 'pdf_qqbar':
