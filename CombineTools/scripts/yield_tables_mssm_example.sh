@@ -19,37 +19,37 @@
 # postfit:      true/false
 
 
-tanb=8
-mass=160
-input=input/mssm-paper-cmb
+tanb=30
+mass=500
+input=data/mssm-paper-cmb
 postfit="true"
 
-./bin/MSSMYieldTable --channel=mt --header="$\\Pgm\\Pgt_{h}$ channel" \
+./bin/MSSMtauptYieldTable --channel=mt --header="$\\Pgm\\Pgt_{h}$ channel" \
   --columns "No B-Tag:8" "B-Tag:9" --eras "7TeV:4935" "8TeV:19712" \
-  -d $input/$mass/tmp_8.00.txt -s $input/$mass/htt_mt_*.txt \
+  -d $input/$mass/tmp_$tanb.00.txt -s $input/$mass/htt_mt_*.txt \
   -f $input/$mass/out/mlfit.root:fit_s \
   --signal_mass=$mass --tanb=$tanb --postfit=$postfit &> mt_yields.tex
 
-./bin/MSSMYieldTable --channel=et --header="$\\Pe\\Pgt_{h}$ channel" \
+./bin/MSSMtauptYieldTable --channel=et --header="$\\Pe\\Pgt_{h}$ channel" \
   --columns "No B-Tag:8" "B-Tag:9" --eras "7TeV:4935" "8TeV:19712" \
-  -d $input/$mass/tmp_8.00.txt -s $input/$mass/htt_et_*.txt \
+  -d $input/$mass/tmp_$tanb.00.txt -s $input/$mass/htt_et_*.txt \
   -f $input/$mass/out/mlfit.root:fit_s \
   --signal_mass=$mass --tanb=$tanb --postfit=$postfit &> et_yields.tex
 
-./bin/MSSMYieldTable --channel=em --header="$\\Pe\\Pgm$ channel" \
+./bin/MSSMtauptYieldTable --channel=em --header="$\\Pe\\Pgm$ channel" \
   --columns "No B-Tag:8" "B-Tag:9" --eras "7TeV:4980" "8TeV:19712" \
-  -d $input/$mass/tmp_8.00.txt -s $input/$mass/htt_em_*.txt \
+  -d $input/$mass/tmp_$tanb.00.txt -s $input/$mass/htt_em_*.txt \
   -f $input/$mass/out/mlfit.root:fit_s \
   --signal_mass=$mass --tanb=$tanb --postfit=$postfit &> em_yields.tex
 
-./bin/MSSMYieldTable --channel=mm --header="$\\Pgm\\Pgm$ channel" \
+./bin/MSSMtauptYieldTable --channel=mm --header="$\\Pgm\\Pgm$ channel" \
   --columns "No B-Tag:8" "B-Tag:9" --eras "7TeV:4980" "8TeV:19712" \
-  -d $input/$mass/tmp_8.00.txt -s $input/$mass/htt_mm_*.txt \
+  -d $input/$mass/tmp_$tanb.00.txt -s $input/$mass/htt_mm_*.txt \
   -f $input/$mass/out/mlfit.root:fit_s \
   --signal_mass=$mass --tanb=$tanb --postfit=$postfit &> mm_yields.tex
 
-./bin/MSSMYieldTable --channel=tt --header="$\\Pgt_{h}\\Pgt_{h}$ channel" \
+./bin/MSSMtauptYieldTable --channel=tt --header="$\\Pgt_{h}\\Pgt_{h}$ channel" \
   --columns "No B-Tag:8" "B-Tag:9" --eras "8TeV:18400" \
-  -d $input/$mass/tmp_8.00.txt -s $input/$mass/htt_tt_*.txt \
+  -d $input/$mass/tmp_$tanb.00.txt -s $input/$mass/htt_tt_*.txt \
   -f $input/$mass/out/mlfit.root:fit_s \
   --signal_mass=$mass --tanb=$tanb --postfit=$postfit &> tt_yields.tex
