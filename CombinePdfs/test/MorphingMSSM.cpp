@@ -227,6 +227,10 @@ int main() {
                   signal_types["ggH"], {mt_cats[0]}, true);
   cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {"mt"},
                   signal_types["bbH"], {mt_cats[1]}, true);
+  cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {"mt"},
+                  signal_types["bbH"], {mt_cats[0]}, true);
+  cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {"mt"},
+                  signal_types["ggH"], {mt_cats[1]}, true);
   cout << " done\n";
 
   cout << "Adding systematic uncertainties...";
@@ -333,6 +337,11 @@ int main() {
   // bbA.Write("bbA");
   // bbX.Write("bbX");
   cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mt_mssm.txt", output);
+  auto bins = cb.bin_set();
+  for (auto b : bins) {
+    cb.cp().bin({b}).mass({"*"}).WriteDatacard(
+    folder + "/" + b + ".txt", output);
+  }
   output.Close();
 }
 
