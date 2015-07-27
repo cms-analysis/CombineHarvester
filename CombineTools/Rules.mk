@@ -8,6 +8,8 @@ $(d)/interface/GitVersion.h: $(TOP)/../.git/logs/HEAD
 	@echo -e "Updating $@"
 	@echo -e "namespace ch { inline std::string GitVersion() { return \""$(shell git describe --dirty)"\"; } }\n" > $@
 
+$(d)/src/CombineHarvester_Datacards.cc : $(d)/interface/GitVersion.h
+
 clean_$(d)/interface/GitVersion.h :
 	rm -f $(subst clean_,,$@)
 
