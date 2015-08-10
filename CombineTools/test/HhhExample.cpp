@@ -25,8 +25,7 @@ int main() {
 	string aux_pruning  = auxiliaries +"pruning/";
 
 	VString chns =
-	{"et","mt"};
-	//{"et", "mt","tt"};
+	{"et", "mt","tt"};
 
 	map<string, string> input_folders = {
 		{"et", "Imperial"},
@@ -37,7 +36,7 @@ int main() {
 	map<string, VString> bkg_procs;
 	bkg_procs["et"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"};
 	bkg_procs["mt"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"};
-	// bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"};
+	bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV"};
 
 	/*map<string,VString> sm_procs;
 	  sm_procs["et"] = {"ggH_SM125","VH_SM125","qqH_SM125"};
@@ -56,10 +55,10 @@ int main() {
 		{0, "muTau_2jet0tag"}, {1, "muTau_2jet1tag"},
 		{2, "muTau_2jet2tag"}};
 
-	/*  cats["tt_8TeV"] = {
+	  cats["tt_8TeV"] = {
 	    {0, "tauTau_2jet0tag"}, {1, "tauTau_2jet1tag"},
 	    {2, "tauTau_2jet2tag"}};
-	 */
+	 
 
 
 	vector<string> masses = ch::MassesFromRange("260-350:10");
@@ -78,9 +77,17 @@ int main() {
 		}
 	}
 
-	cout << ">> Adding systematic uncertainties...\n";
+    //Remove W background from 2jet1tag and 2jet2tag categories for tt channel
+    cb.FilterProcs([](ch::Process const* p) {
+      return (p->bin() == "tauTau_2jet1tag") && p->process() == "W";
+    });
+    cb.FilterProcs([](ch::Process const* p) {
+      return (p->bin() == "tauTau_2jet2tag") && p->process() == "W";
+    });
+	
+    cout << ">> Adding systematic uncertainties...\n";
 	ch::AddSystematics_hhh_et_mt(cb);
-	// ch::AddSystematics_hhh_tt(cb);
+    ch::AddSystematics_hhh_tt(cb);
 
 	cout << ">> Extracting histograms from input root files...\n";
 	for (string era : {"8TeV"}) {
@@ -98,20 +105,19 @@ int main() {
 	cout << ">> Merging bin errors...\n";
 	ch::CombineHarvester cb_et = move(cb.cp().channel({"et"}));
 	for (string era : {"8TeV"}) {
-		cb_et.cp().era({era}).bin_id({0, 1, 2}).process({"ZL", "ZJ", "QCD", "W","TT","ZTT","VV"})
+		cb_et.cp().era({era}).bin_id({0, 1, 2}).process({"QCD","W","ZL","ZJ","VV","ZTT","TT"})
 			.MergeBinErrors(0.1, 0.5);
 	}
 	ch::CombineHarvester cb_mt = move(cb.cp().channel({"mt"}));
 	for (string era : {"8TeV"}) {
-		cb_mt.cp().era({era}).bin_id({0, 1, 2}).process({"ZL", "ZJ", "QCD", "W", "TT","ZTT","VV"})
+		cb_mt.cp().era({era}).bin_id({0, 1, 2}).process({"QCD","W","ZL","ZJ","VV","ZTT","TT"})
 			.MergeBinErrors(0.1, 0.5);
 	}
-
-
-	/*ch::CombineHarvester cb_tt = move(cb.cp().channel({"tt"}));
-	  cb_tt.cp().bin_id({0, 1, 2}).era({"8TeV"}).process({"ZL","ZJ","QCD","W","TT", "ZTT", "VV"})
-	  .MergeBinErrors(0.1, 0.5);
-	 */
+	ch::CombineHarvester cb_tt = move(cb.cp().channel({"tt"}));
+	for (string era : {"8TeV"}) {
+		cb_tt.cp().era({era}).bin_id({0, 1, 2}).process({"QCD","W","ZLL","VV","ZTT","TT"})
+			.MergeBinErrors(0.1, 0.5);
+	}
 
 	cout << ">> Generating bbb uncertainties...\n";
 	cb_mt.cp().bin_id({0, 1, 2}).process({"ZL","ZJ","W", "QCD","TT", "ZTT","VV"})
@@ -120,8 +126,8 @@ int main() {
 	cb_et.cp().bin_id({0, 1, 2}).process({"ZL", "ZJ", "QCD", "W", "TT","ZTT","VV"})
 		.AddBinByBin(0.1, true, &cb);
 
-	//cb_tt.cp().bin_id({0, 1, 2}).era({"8TeV"}).process({"ZL", "ZJ","W", "TT", "QCD", "ZTT","VV"})
-	//   .AddBinByBin(0.1, true, &cb);
+	cb_tt.cp().bin_id({0, 1, 2}).era({"8TeV"}).process({"ZL", "ZJ","W", "TT", "QCD", "ZTT","VV"})
+	   .AddBinByBin(0.1, true, &cb);
 
 	cout << ">> Setting standardised bin names...\n";
 	ch::SetStandardBinNames(cb);
@@ -146,7 +152,7 @@ int main() {
 				cout << ">> Writing datacard for bin: " << b << " and mass: " << m
 					<< "\r" << flush;
 				cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
-						folder+"/"+chn+"/"+m+"/"+b + "_" + m + ".txt", output);
+						folder+"/"+chn+"/"+m+"/"+b + ".txt", output);
 			}
 		}
 		  output.Close();
