@@ -1,5 +1,6 @@
 #include <vector>
 #include <set>
+#include <map>
 #include "boost/python.hpp"
 #include "boost/python/type_id.hpp"
 #include "TPython.h"
@@ -59,6 +60,22 @@ struct convert_cpp_set_to_py_list {
   static PyObject* convert(const std::set<T>& in) {
     bp::list out;
     for (T const& ele : in) out.append(ele);
+    return bp::incref(out.ptr());
+  }
+};
+
+/**
+ * Convert a C++ map<TKey, std::set<TValue> to a python dict
+ */
+template <typename TKey, typename TValue>
+struct convert_cpp_set_map_to_py_list_dict {
+  static PyObject* convert(const std::map<TKey, std::set<TValue>>& in) {
+    bp::dict out;
+    for (std::pair<TKey, std::set<TValue>> const& ele : in) {
+      bp::list value;
+      for (TValue const& val : ele.second) value.append(val);
+      out[ele.first] = value;
+    }
     return bp::incref(out.ptr());
   }
 };
