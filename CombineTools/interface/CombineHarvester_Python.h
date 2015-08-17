@@ -65,17 +65,13 @@ struct convert_cpp_set_to_py_list {
 };
 
 /**
- * Convert a C++ map<TKey, std::set<TValue> to a python dict
+ * Convert a C++ map to a python dict
  */
 template <typename TKey, typename TValue>
-struct convert_cpp_set_map_to_py_list_dict {
-  static PyObject* convert(const std::map<TKey, std::set<TValue>>& in) {
+struct convert_cpp_map_to_py_dict {
+  static PyObject* convert(const std::map<TKey, TValue>& in) {
     bp::dict out;
-    for (std::pair<TKey, std::set<TValue>> const& ele : in) {
-      bp::list value;
-      for (TValue const& val : ele.second) value.append(val);
-      out[ele.first] = value;
-    }
+    for (std::pair<TKey, TValue> const& ele : in) out[ele.first] = ele.second;
     return bp::incref(out.ptr());
   }
 };
