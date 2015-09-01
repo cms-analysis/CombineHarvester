@@ -82,18 +82,15 @@ int main() {
   std::cout << " done\n";
 
   std::cout << "Scaling signal process rates for acceptance...\n";
-  map<string, TGraph> xs;
-  for (std::string const& e : {"7TeV", "8TeV"}) {
-    for (std::string const& p : {"ggH", "bbH"}) {
-      ch::ParseTable(&xs, "data/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt",
-                     {p + "_" + e});
-    }
-  }
-  for (std::string const& e : {"7TeV", "8TeV"}) {
-    for (std::string const& p : {"ggH", "bbH"}) {
+  for (string e : {"8TeV"}) {
+    for (string p : {"ggH", "bbH"}) {
       std::cout << "Scaling for process " << p << " and era " << e << "\n";
+      auto gr = ch::TGraphFromTable(
+          "input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
+          "accept");
       cb.cp().process({p}).era({e}).ForEachProc([&](ch::Process *proc) {
-        ch::ScaleProcessRate(proc, &xs, p+"_"+e, "");
+        double m = boost::lexical_cast<double>(proc->mass());
+        proc->set_rate(proc->rate() * gr.Eval(m));
       });
     }
   }

@@ -43,12 +43,12 @@ DoScales(cmb_for_scaling.cp().era(['7TeV']), SCALES_XSEC_7TEV)
 DoScales(cmb_for_scaling.cp().era(['8TeV']), SCALES_XSEC_8TEV)
 DoScales(cmb_for_scaling, SCALES_BR)
 
-writer_htt = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA_lhchcg.txt',
-                           '$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA_lhchcg.root')
+writer_htt = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
+                           '$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root')
 writer_htt.SetVerbosity(1)
 writer_htt.WriteCards('output/htt-YR3', cmb.cp().analysis(['htt']))
 
-writer_vhtt = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$BINID_$ERA_lhchcg.txt',
-                            '$TAG/common/$ANALYSIS.input_$ERA_lhchcg.root')
+writer_vhtt = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$BINID_$ERA.txt',
+                            '$TAG/common/$ANALYSIS.input_$ERA.root')
 writer_vhtt.SetVerbosity(1)
 writer_vhtt.WriteCards('output/htt-YR3', cmb.cp().analysis(['vhtt']))
