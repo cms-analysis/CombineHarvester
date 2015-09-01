@@ -163,6 +163,9 @@ BOOST_PYTHON_MODULE(_combineharvester)
   py::to_python_converter<std::set<int>,
                           convert_cpp_set_to_py_list<int>>();
 
+  py::to_python_converter<std::map<std::string, CombineHarvester>,
+                          convert_cpp_map_to_py_dict<std::string, CombineHarvester>>();
+
   py::to_python_converter<TH1F,
                           convert_cpp_root_to_py_root<TH1F>>();
 
