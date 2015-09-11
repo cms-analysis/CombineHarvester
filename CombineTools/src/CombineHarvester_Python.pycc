@@ -5,6 +5,7 @@
 #include "CombineTools/interface/BinByBin.h"
 #include "CombineTools/interface/CopyTools.h"
 #include "CombineTools/interface/Utilities.h"
+#include "CombineTools/interface/ParseCombineWorkspace.h"
 #include "boost/python.hpp"
 #include "TFile.h"
 #include "TH1F.h"
@@ -172,6 +173,9 @@ BOOST_PYTHON_MODULE(_combineharvester)
   py::to_python_converter<TGraph,
                           convert_cpp_root_to_py_root<TGraph>>();
 
+  py::to_python_converter<RooWorkspace,
+                          convert_cpp_root_to_py_root<RooWorkspace>>();
+
   // Define converters from python --> C++
   convert_py_seq_to_cpp_vector<std::string>();
   convert_py_tup_to_cpp_pair<int, std::string>();
@@ -182,6 +186,7 @@ BOOST_PYTHON_MODULE(_combineharvester)
   convert_py_root_to_cpp_root<TH1F>();
   convert_py_root_to_cpp_root<TGraph>();
   convert_py_root_to_cpp_root<RooFitResult>();
+  convert_py_root_to_cpp_root<RooWorkspace>();
 
   py::class_<CombineHarvester>("CombineHarvester")
       // Constructors, destructors and copying
@@ -378,4 +383,5 @@ BOOST_PYTHON_MODULE(_combineharvester)
     py::def("MassesFromRange", ch::MassesFromRange, defaults_MassesFromRange());
     py::def("ValsFromRange", ch::ValsFromRange, defaults_ValsFromRange());
     py::def("SetStandardBinNames", ch::SetStandardBinNames, defaults_SetStandardBinNames());
+    py::def("ParseCombineWorkspace", ch::ParseCombineWorkspacePy);
 }
