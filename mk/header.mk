@@ -10,4 +10,5 @@ SRC_EXT := cc
 PY_EXT := pycc
 INC_DIR := interface
 PKG_FLAGS :=
+PY_MODULES :=
 endef

@@ -227,6 +227,10 @@ int main() {
                   signal_types["ggH"], {mt_cats[0]}, true);
   cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {"mt"},
                   signal_types["bbH"], {mt_cats[1]}, true);
+  cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {"mt"},
+                  signal_types["bbH"], {mt_cats[0]}, true);
+  cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {"mt"},
+                  signal_types["ggH"], {mt_cats[1]}, true);
   cout << " done\n";
 
   cout << "Adding systematic uncertainties...";
@@ -251,18 +255,15 @@ int main() {
   cout << " done\n";
 
   cout << "Scaling signal process rates for acceptance...\n";
-  map<string, TGraph> xs;
   for (string e : {"8TeV"}) {
     for (string p : {"ggH", "bbH"}) {
-      ch::ParseTable(&xs, "input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt",
-                     {p + "_" + e});
-    }
-  }
-  for (string const& e : {"8TeV"}) {
-    for (string const& p : {"ggH", "bbH"}) {
       cout << "Scaling for process " << p << " and era " << e << "\n";
+      auto gr = ch::TGraphFromTable(
+          "input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
+          "accept");
       cb.cp().process(signal_types[p]).era({e}).ForEachProc([&](ch::Process *proc) {
-        ch::ScaleProcessRate(proc, &xs, p+"_"+e, "");
+        double m = boost::lexical_cast<double>(proc->mass());
+        proc->set_rate(proc->rate() * gr.Eval(m));
       });
     }
   }
@@ -336,6 +337,11 @@ int main() {
   // bbA.Write("bbA");
   // bbX.Write("bbX");
   cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mt_mssm.txt", output);
+  auto bins = cb.bin_set();
+  for (auto b : bins) {
+    cb.cp().bin({b}).mass({"*"}).WriteDatacard(
+    folder + "/" + b + ".txt", output);
+  }
   output.Close();
 }
 
