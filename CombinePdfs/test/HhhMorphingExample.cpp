@@ -45,10 +45,11 @@ int main() {
     // tool to do this.
 
     // Define mA and tanb as RooRealVars
-    // Here we fix the valid ranges of these parameters and set their starting
-    // values
-    RooRealVar mA("mA", "mA", 300., 220., 350.);
-    RooRealVar tanb("tanb", "tanb", 1., 1., 10.);
+    // Here I do not declare a range and it is decided automatically from 
+    // the inputs once the first RooDataHist is created. 
+    // There were some issues found with declaring a range by hand.
+    RooRealVar mA("mA", "mA", 300.);
+    RooRealVar tanb("tanb", "tanb", 1.);
 
     // All the other inputs we need to build the model can be found in one of the
     // LHCXSWG scans. Here we use the low-tanb-high scenario. This file contains a
@@ -58,12 +59,16 @@ int main() {
                "models/out.low-tb-high-8TeV-tanbAll-nnlo.root");
     // Get the TH2Fs for the masses of the h and H bosons.
     TH2F h_mH = ch::OpenFromTFile<TH2F>(&inputs, "h_mH");
+    TH2F h_mh = ch::OpenFromTFile<TH2F>(&inputs, "h_mh");
     // Now two more steps are needed: we have to convert each TH2F to a
     // RooDataHist, then build a RooHistFunc from the RooDataHist. These steps
     // will be repeated for every TH2F we import below.
     RooDataHist dh_mH("dh_mH", "dh_mH", RooArgList(mA, tanb),
                     RooFit::Import(h_mH));
+    RooDataHist dh_mh("dh_mh", "dh_mh", RooArgList(mA, tanb),
+                    RooFit::Import(h_mh));
     RooHistFunc mH("mH", "mH", RooArgList(mA, tanb), dh_mH);
+    RooHistFunc mh("mh", "mh", RooArgList(mA, tanb), dh_mh);
     // There is also the possibility to interpolate mass values rather than just
     // take the value of the enclosing histogram bin, but we'll leave this off for
     // now.
@@ -104,10 +109,12 @@ int main() {
     cout << "mA: " << mA.getVal() << "\n";
     cout << "tanb: " << tanb.getVal() << "\n\n";
     cout << "mH: " << mH.getVal() << "\n";
+    cout << "mh: " << mh.getVal() << "\n";
     cout << "ggF_xsec_H: " << ggF_xsec_H.getVal() << "\n";
     cout << "brh0h0_H: " << brh0h0_H.getVal()/2<< "\n";
     cout << "brtautau_h: " << brtautau_h.getVal() << "\n";
     cout << "brbb_h: " << brbb_h.getVal() << "\n";
+    cout << "ggF_xsec_br_H: " << ggF_xsec_br_H.getVal() << "\n";
   
     map<string, RooAbsArg *> xs_map;
     xs_map["ggHTohhTo2Tau2B"] = &ggF_xsec_br_H;
@@ -250,6 +257,7 @@ int main() {
     cb.AddWorkspace(ws);
     cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
     cb.PrintAll();
+    
 
 	string folder = "output/hhh_cards";
 	boost::filesystem::create_directories(folder);
