@@ -1,0 +1,8 @@
+{
+  "opts" : "--testStat=LHC --frequentist -d htt_mt_mssm.root --singlePoint 1.0 --saveHybridResult --clsAcc 0 --fullBToys --fork 2",
+  "POIs" : ["mA", "tanb"],
+  "grids" : [
+    ["500", "1:60|2"]
+  ],
+  "toys_per_cycle" : 5000
+}
