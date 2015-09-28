@@ -473,11 +473,11 @@ def TGraph2DFromTree(tree, xvar,  yvar, zvar, selection):
     return gr
 
 def ParamFromFilename(filename, param):
-    if len(re.findall(param+'\d+\.\d+', filename)) :
-        num1 = re.findall(param+'\d+\.\d+', filename)[0].replace(param,'')
+    if len(re.findall(param+'\.\d+\.\d+', filename)) :
+        num1 = re.findall(param+'\.\d+\.\d+', filename)[0].replace(param+'.','')
         return float(num1)
-    elif len(re.findall(param+'\d+', filename)) :    
-        num1 = re.findall(param + '\d+', filename)[0].replace(param,'')
+    elif len(re.findall(param+'\.\d+', filename)) :    
+        num1 = re.findall(param + '\.\d+', filename)[0].replace(param+'.','')
         return int(num1)
     else :
         print "Error: parameter " + param + " not found in filename"

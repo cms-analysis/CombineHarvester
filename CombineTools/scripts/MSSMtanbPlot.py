@@ -19,10 +19,22 @@ def makeHist(name, xbins, ybins, graph2d):
     hist = ROOT.TH2F(name, '', xbins, graph2d.GetXmin()-binw_x, graph2d.GetXmax()+binw_x, ybins, graph2d.GetYmin()-binw_y, graph2d.GetYmax()+binw_y)
     return hist
 
+
+col_store = []
+def CreateTransparentColor(color, alpha):
+  adapt   = ROOT.gROOT.GetColor(color)
+  new_idx = ROOT.gROOT.GetListOfColors().GetSize() + 1
+  trans = ROOT.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
+  col_store.append(trans)
+  trans.SetName('userColor%i' % new_idx)
+  return new_idx
+    
+
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
 parser.add_argument('--files', '-f', help='named input files')
 parser.add_argument('--verbosity', '-v', help='verbosity')
+parser.add_argument('--scenario', '-s', help='scenario for plot label e.g. [mhmax,mhmodp,mhmodm,low-tb-high]')
 args = parser.parse_args()
 
 infiles = args.files.split(',')
@@ -79,7 +91,9 @@ for f in goodfiles:
     n=n+1
 
 #Create canvas and TH2D for each component
+#Note the binning of the TH2D for the interpolation should match the initial input grid
 plot.ModTDRStyle(width=800, l=0.13)
+#plot.SetTDRStyle()
 c1=ROOT.TCanvas()
 axis = makeHist('hist2d', 16, 60, graph_exp)
 axis.GetYaxis().SetTitle("tan#beta")
@@ -154,14 +168,25 @@ for p in cont_obs :
     p.SetMarkerSize(1.0)
     p.SetMarkerColor(ROOT.kBlack)
     p.SetFillStyle(1001)
-    #p.SetFillColor(plot.CreateTransparentColor(ROOT.kAzure-4,0.5))
-    #p.SetFillColor(ROOT.TColor(1501, 0.463, 0.867, 0.957).GetNumber())
-    p.SetFillColor(ROOT.kAzure+6)
+    p.SetFillColor(CreateTransparentColor(ROOT.kAzure+6,0.5))
     pads[0].cd()
     p.Draw("F SAME")
     p.Draw("L SAME")
 
-plot.DrawCMSLogo(pads[0], 'Combine Harvester', 'm_{h}^{max} scenario', 11, 0.045, 0.035, 1.2)
+#Set some common scenario labels
+scenario_label=""
+if args.scenario == "mhmax":
+    scenario_label="m_{h}^{max} scenario"
+if args.scenario == "mhmodp":
+    scenario_label="m_{h}^{mod+} scenario"
+if args.scenario == "mhmodm":
+    scenario_label="m_{h}^{mod-} scenario"
+if args.scenario == "low-tb-high":
+    scenario_label="low tan#beta scenario"
+
+
+plot.DrawCMSLogo(pads[0], 'Combine Harvester', scenario_label, 11, 0.045, 0.035, 1.2)
 plot.FixOverlay()
-c1.SaveAs("mssm_mhmax.png")
+c1.SaveAs("mssm_"+args.scenario+".pdf")
+c1.SaveAs("mssm_"+args.scenario+".png")
 
