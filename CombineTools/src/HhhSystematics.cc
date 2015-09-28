@@ -16,9 +16,7 @@ using ch::syst::process;
 using ch::JoinStr;
 
 
-
-void AddSystematics_hhh_et_mt(CombineHarvester & cb) {
-  CombineHarvester src = cb.cp();
+void AddSystematics_hhh_et_mt(CombineHarvester & cb, CombineHarvester src) {
   src.channel({"et","mt"});
 
   auto signal = Set2Vec(cb.cp().signals().process_set());
@@ -226,9 +224,15 @@ src.cp().process({"ZJ"}).bin_id({2}).channel({"mt"})
 
 }
 
+void AddSystematics_hhh_et_mt(CombineHarvester & cb) {
 
- void AddSystematics_hhh_tt(CombineHarvester & cb) {
   CombineHarvester src = cb.cp();
+  AddSystematics_hhh_et_mt(cb, src);
+
+}
+
+
+ void AddSystematics_hhh_tt(CombineHarvester & cb, CombineHarvester src) {
   src.channel({"tt"});
 
   auto signal = Set2Vec(cb.cp().signals().process_set());
@@ -297,9 +301,11 @@ src.cp().process({"ZJ"}).bin_id({2}).channel({"mt"})
   src.cp().process({"ZLL"}).bin_id({2})
   .AddSyst(cb, "CMS_htt_ZLL_FakeTau_tautau_2jet2tag_8TeV", "lnN", SystMap<>::init(1.671));
 
+ }
+ void AddSystematics_hhh_tt(CombineHarvester & cb) {
 
- 
- 
- 
+  CombineHarvester src = cb.cp();
+  AddSystematics_hhh_tt(cb, src);
+
  }
 }
