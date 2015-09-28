@@ -390,10 +390,7 @@ int main() {
         for (auto p : procs) {
           std::cout << "morphing process: " << p << std::endl;
           string pdf_name = b + "_" + p + "_morph";
-          std::string mass1,mass2;
-          mass1 = (b.find("0")!=std::string::npos || b.find("1")!=std::string::npos || b.find("2")!=std::string::npos) ? "260" : "90";
-          mass2 = (b.find("0")!=std::string::npos || b.find("1")!=std::string::npos || b.find("2")!=std::string::npos) ? "350" : "1000";
-          ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]), mass1, mass2,
+          ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
                                "eff_acc", true, true, &demo);
           std::string prod_name = pdf_name + "_eff_acc";
           RooAbsReal *norm =  ws.function(prod_name.c_str());
