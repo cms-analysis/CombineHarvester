@@ -235,6 +235,7 @@ int main() {
   RooWorkspace ws("htt", "htt");
   RooRealVar mh("MH", "", 125, 90, 145);
 
+  // TFile demo("htt_sm_morphing_debug.root", "RECREATE");
   bool do_morphing = true;
   if (do_morphing) {
     // RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
@@ -242,11 +243,12 @@ int main() {
       auto bins = cb.cp().channel({chn}).bin_set();
       for (auto bin : bins) {
         for (auto p : sig_procs) {
-          ch::BuildRooMorphing(ws, cb, bin, p, mh, "110", "145", "norm",
-                               can_morph[chn], false);
+          ch::BuildRooMorphing(ws, cb, bin, p, mh, "norm",
+                               can_morph[chn], true, nullptr /*&demo*/);
         }
       }
     }
+    // demo.Close();
     cb.AddWorkspace(ws);
     cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
 
