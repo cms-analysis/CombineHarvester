@@ -5,6 +5,7 @@
 #include "CombineTools/interface/BinByBin.h"
 #include "CombineTools/interface/CopyTools.h"
 #include "CombineTools/interface/Utilities.h"
+#include "CombineTools/interface/ParseCombineWorkspace.h"
 #include "boost/python.hpp"
 #include "TFile.h"
 #include "TH1F.h"
@@ -134,6 +135,14 @@ void (CombineHarvester::*Overload1_UpdateParameters)(
 void (CombineHarvester::*Overload_AddBinByBin)(
     double, bool, CombineHarvester &) = &CombineHarvester::AddBinByBin;
 
+void (Observation::*Overload_Obs_set_shape)(
+    TH1 const& ,bool) = &Observation::set_shape;
+
+void (Process::*Overload_Proc_set_shape)(
+    TH1 const&, bool) = &Process::set_shape;
+
+void (Systematic::*Overload_Syst_set_shapes)(
+    TH1 const&, TH1 const&, TH1 const&) = &Systematic::set_shapes;
 
 // Use some macros for methods with default values
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin, bin, 1, 2)
@@ -172,6 +181,9 @@ BOOST_PYTHON_MODULE(_combineharvester)
   py::to_python_converter<TGraph,
                           convert_cpp_root_to_py_root<TGraph>>();
 
+  py::to_python_converter<RooWorkspace,
+                          convert_cpp_root_to_py_root<RooWorkspace>>();
+
   // Define converters from python --> C++
   convert_py_seq_to_cpp_vector<std::string>();
   convert_py_tup_to_cpp_pair<int, std::string>();
@@ -180,8 +192,10 @@ BOOST_PYTHON_MODULE(_combineharvester)
   convert_py_seq_to_cpp_vector<double>();
   convert_py_root_to_cpp_root<TFile>();
   convert_py_root_to_cpp_root<TH1F>();
+  convert_py_root_to_cpp_root<TH1>();
   convert_py_root_to_cpp_root<TGraph>();
   convert_py_root_to_cpp_root<RooFitResult>();
+  convert_py_root_to_cpp_root<RooWorkspace>();
 
   py::class_<CombineHarvester>("CombineHarvester")
       // Constructors, destructors and copying
@@ -308,6 +322,7 @@ BOOST_PYTHON_MODULE(_combineharvester)
     py::class_<Observation, py::bases<Object>>("Observation")
       .def("set_rate", &Observation::set_rate)
       .def("rate", &Observation::rate)
+      .def("set_shape", Overload_Obs_set_shape)
       .def("ShapeAsTH1F", &Observation::ShapeAsTH1F)
       .def(py::self_ns::str(py::self_ns::self))
     ;
@@ -316,6 +331,7 @@ BOOST_PYTHON_MODULE(_combineharvester)
       .def("set_rate", &Process::set_rate)
       .def("rate", &Process::rate)
       .def("no_norm_rate", &Process::no_norm_rate)
+      .def("set_shape", Overload_Proc_set_shape)
       .def("set_signal", &Process::set_signal)
       .def("signal", &Process::signal)
       .def("ShapeAsTH1F", &Process::ShapeAsTH1F)
@@ -339,6 +355,7 @@ BOOST_PYTHON_MODULE(_combineharvester)
       .def("scale", &Systematic::scale)
       .def("set_asymm", &Systematic::set_asymm)
       .def("asymm", &Systematic::asymm)
+      .def("set_shapes", Overload_Syst_set_shapes)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
@@ -378,4 +395,5 @@ BOOST_PYTHON_MODULE(_combineharvester)
     py::def("MassesFromRange", ch::MassesFromRange, defaults_MassesFromRange());
     py::def("ValsFromRange", ch::ValsFromRange, defaults_ValsFromRange());
     py::def("SetStandardBinNames", ch::SetStandardBinNames, defaults_SetStandardBinNames());
+    py::def("ParseCombineWorkspace", ch::ParseCombineWorkspacePy);
 }

@@ -15,8 +15,8 @@ using ch::syst::bin_id;
 using ch::syst::process;
 using ch::JoinStr;
 
-void AddMSSMSystematics(CombineHarvester & cb) {
-  CombineHarvester src = cb.cp();
+void AddMSSMSystematics(CombineHarvester & cb, CombineHarvester src) {
+  //CombineHarvester src = cb.cp();
 
   auto signal = Set2Vec(src.cp().signals().SetFromProcs(
       std::mem_fn(&Process::process)));
@@ -154,4 +154,12 @@ void AddMSSMSystematics(CombineHarvester & cb) {
       .AddSyst(cb,
       "CMS_htt_ZLScale_mutau_$ERA", "shape", SystMap<>::init(1.00));
 }
+
+void AddMSSMSystematics(CombineHarvester & cb) {
+
+  CombineHarvester src = cb.cp();
+  AddMSSMSystematics(cb, src);
+
+}
+
 }
