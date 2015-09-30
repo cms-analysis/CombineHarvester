@@ -453,6 +453,7 @@ def CreateTransparentColor(color, alpha):
 def TFileIsGood(filename):
     if not os.path.exists(filename): return False
     fin = R.TFile.Open(filename)
+    R.TFile.Close(fin)
     if not fin: return False
     return True
 
@@ -696,7 +697,6 @@ def contourFromTH2(h2in, threshold, minPoints=10, mult = 1.0):
   if conts is None or conts.GetSize() == 0:
     print '*** No Contours Were Extracted!'
     return None
-
   ret = R.TList()
   for i in xrange(conts.GetSize()):
     contLevel = conts.At(i)
