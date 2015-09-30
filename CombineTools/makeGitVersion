@@ -1,0 +1,4 @@
+${CMSSW_BASE}/src/CombineHarvester/CombineTools/interface/GitVersion.h: ${CMSSW_BASE}/src/CombineHarvester/.git/logs/HEAD
+	@echo -e "Updating $@"
+	@echo -e "namespace ch { inline std::string GitVersion() { return \""$(shell git --git-dir=${CMSSW_BASE}/src/CombineHarvester/.git describe --dirty --always)"\"; } }\n" > $@
+all : clean_$(d)/interface/GitVersion.h
