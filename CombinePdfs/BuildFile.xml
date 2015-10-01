@@ -1,4 +1,3 @@
-<flags SKIP_FILES="$$(shell make -f ${CMSSW_BASE}/src/CombineHarvester/CombineTools/makeGitVersion)"/>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
@@ -12,6 +11,8 @@
 <use name="boost_python"/>
 <use name="boost_regex"/>
 <use name="rootpy"/>
+<use name="CombineHarvester/CombineTools"/>
+<use name="HiggsAnalysis/CombinedLimit"/>
 <export>
   <lib name="1"/>
 </export>
