@@ -6,11 +6,11 @@
 #include <utility>
 #include <cstdlib>
 #include "boost/filesystem.hpp"
-#include "CombineTools/interface/CombineHarvester.h"
-#include "CombineTools/interface/Utilities.h"
-#include "CombineTools/interface/HttSystematics.h"
-#include "CombinePdfs/interface/MorphFunctions.h"
-#include "CombineTools/interface/TFileIO.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/HttSystematics.h"
+#include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
+#include "CombineHarvester/CombineTools/interface/TFileIO.h"
 
 #include "RooWorkspace.h"
 #include "RooRealVar.h"

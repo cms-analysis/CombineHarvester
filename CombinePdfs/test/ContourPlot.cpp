@@ -1,6 +1,6 @@
-#include "CombineTools/interface/Plotting.h"
-#include "CombineTools/interface/Plotting_Style.h"
-#include "CombineTools/interface/Plotting_Contours.h"
+#include "CombineHarvester/CombineTools/interface/Plotting.h"
+#include "CombineHarvester/CombineTools/interface/Plotting_Style.h"
+#include "CombineHarvester/CombineTools/interface/Plotting_Contours.h"
 #include <vector>
 #include <TFrame.h>
 

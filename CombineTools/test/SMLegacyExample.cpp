@@ -6,12 +6,12 @@
 #include <utility>
 #include <cstdlib>
 #include "boost/filesystem.hpp"
-#include "CombineTools/interface/CombineHarvester.h"
-#include "CombineTools/interface/Utilities.h"
-#include "CombineTools/interface/HttSystematics.h"
-#include "CombineTools/interface/CardWriter.h"
-#include "CombineTools/interface/CopyTools.h"
-#include "CombineTools/interface/BinByBin.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/HttSystematics.h"
+#include "CombineHarvester/CombineTools/interface/CardWriter.h"
+#include "CombineHarvester/CombineTools/interface/CopyTools.h"
+#include "CombineHarvester/CombineTools/interface/BinByBin.h"
 
 using namespace std;
 

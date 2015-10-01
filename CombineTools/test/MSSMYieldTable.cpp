@@ -6,9 +6,9 @@
 #include "boost/format.hpp"
 #include "boost/bind.hpp"
 #include "boost/program_options.hpp"
-#include "CombineTools/interface/CombineHarvester.h"
-#include "CombineTools/interface/Utilities.h"
-#include "CombineTools/interface/TFileIO.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/TFileIO.h"
 
 namespace po = boost::program_options;
 

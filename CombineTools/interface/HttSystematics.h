@@ -1,6 +1,6 @@
 #ifndef CombineTools_HttSystematics_h
 #define CombineTools_HttSystematics_h
-#include "CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 
 namespace ch {
 

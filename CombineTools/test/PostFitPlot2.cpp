@@ -11,8 +11,8 @@
 // #include "HiggsTauTau/interface/HTTPlotTools.h"
 // #include "HiggsTauTau/interface/HTTAnalysisTools.h"
 // #include "HiggsTauTau/interface/mssm_xs_tools.h"
-#include "CombineTools/interface/CombineHarvester.h"
-#include "CombineTools/interface/TFileIO.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/TFileIO.h"
 
 namespace po = boost::program_options;
 

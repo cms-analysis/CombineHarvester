@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 
 using namespace std;
 

@@ -1,10 +1,10 @@
 #include <string>
 #include <vector>
 #include <TFile.h>
-#include "CombineTools/interface/CombineHarvester.h"
-#include "CombineTools/interface/TFileIO.h"
-#include "CombineTools/interface/Plotting.h"
-#include "CombineTools/interface/Plotting_Style.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/TFileIO.h"
+#include "CombineHarvester/CombineTools/interface/Plotting.h"
+#include "CombineHarvester/CombineTools/interface/Plotting_Style.h"
 #include "TCanvas.h"
 #include "TFrame.h"
 

@@ -12,10 +12,10 @@
 #include "TString.h"
 #include "TLatex.h"
 
-#include "CombineTools/interface/TFileIO.h"
-#include "CombineTools/interface/JsonTools.h"
-#include "CombineTools/interface/Plotting.h"
-#include "CombineTools/interface/Plotting_Style.h"
+#include "CombineHarvester/CombineTools/interface/TFileIO.h"
+#include "CombineHarvester/CombineTools/interface/JsonTools.h"
+#include "CombineHarvester/CombineTools/interface/Plotting.h"
+#include "CombineHarvester/CombineTools/interface/Plotting_Style.h"
 
 std::vector<double> GetCrossings(TGraph const& g, double cross) {
   std::vector<double> result;

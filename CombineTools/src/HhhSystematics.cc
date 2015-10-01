@@ -1,9 +1,9 @@
-#include "CombineTools/interface/HttSystematics.h"
+#include "CombineHarvester/CombineTools/interface/HttSystematics.h"
 #include <vector>
 #include <string>
-#include "CombineTools/interface/Systematics.h"
-#include "CombineTools/interface/Process.h"
-#include "CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/Systematics.h"
+#include "CombineHarvester/CombineTools/interface/Process.h"
+#include "CombineHarvester/CombineTools/interface/Utilities.h"
 
 namespace ch {
 

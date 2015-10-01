@@ -13,10 +13,10 @@
 
 #include "boost/range/adaptor/reversed.hpp"
 
-#include "CombineTools/interface/Plotting.h"
-#include "CombineTools/interface/Plotting_Style.h"
-#include "CombineTools/interface/TFileIO.h"
-#include "CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/Plotting.h"
+#include "CombineHarvester/CombineTools/interface/Plotting_Style.h"
+#include "CombineHarvester/CombineTools/interface/TFileIO.h"
+#include "CombineHarvester/CombineTools/interface/Utilities.h"
 
 // Function prototypes
 struct BkgComponent {

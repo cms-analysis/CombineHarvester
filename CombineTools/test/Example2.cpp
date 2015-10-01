@@ -5,12 +5,12 @@
 #include <utility>
 #include <vector>
 #include <cstdlib>
-#include "CombineTools/interface/CombineHarvester.h"
-#include "CombineTools/interface/Observation.h"
-#include "CombineTools/interface/Process.h"
-#include "CombineTools/interface/Utilities.h"
-#include "CombineTools/interface/Systematics.h"
-#include "CombineTools/interface/BinByBin.h"
+#include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
+#include "CombineHarvester/CombineTools/interface/Observation.h"
+#include "CombineHarvester/CombineTools/interface/Process.h"
+#include "CombineHarvester/CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/Systematics.h"
+#include "CombineHarvester/CombineTools/interface/BinByBin.h"
 
 using namespace std;
 
