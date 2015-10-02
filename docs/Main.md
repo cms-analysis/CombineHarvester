@@ -55,9 +55,9 @@ git clone https://github.com/roger-wolf/HiggsAnalysis-HiggsToTauTau-auxiliaries.
 The input root files will be sourced from here.
 
 More realistic, though less well documented, examples can be found in the following files:
-  * `CombineTools/bin/PostFitShapes` ([source code](\ref CombineTools/test/PostFitShapes.cpp)) - see separate page [here](\ref post-fit-shapes)
-  * `CombineTools/bin/SMLegacyExample` ([source code](\ref CombineTools/test/SMLegacyExample.cpp)) - produces a complete set of htt datacards for the legacy Run I SM analysis (HIG-13-004). The same workflow is also possible in python, see `CombineTools/scripts/SMLegacyExample.py`
-  * `CombineTools/bin/MSSMYieldTable` ([source code](\ref CombineTools/test/MSSMYieldTable.cpp)) - produces the latex yield tables for the MSSM htt analysis (HIG-13-021). Run via the script `CombineTools/scripts/yield_tables_mssm_example.sh`. You will first need to copy the input datacards: `cd CombineTools; cp -r /afs/cern.ch/work/a/agilbert/public/CombineTools/data/mssm-paper-cmb ./input/`
+  * `CombineTools/bin/PostFitShapes` ([source code](\ref CombineTools/bin/PostFitShapes.cpp)) - see separate page [here](\ref post-fit-shapes)
+  * `CombineTools/bin/SMLegacyExample` ([source code](\ref CombineTools/bin/SMLegacyExample.cpp)) - produces a complete set of htt datacards for the legacy Run I SM analysis (HIG-13-004). The same workflow is also possible in python, see `CombineTools/scripts/SMLegacyExample.py`
+  * `CombineTools/bin/MSSMYieldTable` ([source code](\ref CombineTools/bin/MSSMYieldTable.cpp)) - produces the latex yield tables for the MSSM htt analysis (HIG-13-021). Run via the script `CombineTools/scripts/yield_tables_mssm_example.sh`. You will first need to copy the input datacards: `cd CombineTools; cp -r /afs/cern.ch/work/a/agilbert/public/CombineTools/data/mssm-paper-cmb ./input/`
 
 High-level tools {#high-level-tools}
 ====================================
@@ -82,11 +82,11 @@ Other comments {#note}
       what():
     *******************************************************************************
     Context: Function ch::GetClonedTH1 at
-      HiggsAnalysis/HiggsToTauTau/CombineHarvester/CombineTools/src/TFileIO.cc:21
+      CombineHarvester/CombineTools/src/TFileIO.cc:21
     Problem: TH1 eleTau_0jet_medium/ggH not found in CMSSW_7_0_7/src/auxiliaries/shapes/htt_et.inputs-sm-7TeV-hcg.root
     *******************************************************************************
 
-If the cause of such an error message is unclear, or if you believe the error message should not have been produced, please raise an issue here with full details on reproducing the problem: https://github.com/cms-analysis/HiggsAnalysis-HiggsToTauTau/issues/new
+If the cause of such an error message is unclear, or if you believe the error message should not have been produced, please raise an issue here with full details on reproducing the problem: https://github.com/cms-analysis/CombineHarvester/issues/new
 
 Please also raise an issue if you encounter any bugs, unintended behaviour, abrupt errors or segmentation faults - these will be addressed promptly by the developers.
 

@@ -4,7 +4,7 @@ Examples Part I {#intro1}
 [TOC]
 
 
-**File**: CombineTools/test/Example1.cpp
+**File**: CombineTools/bin/Example1.cpp
 
 In this example we use CombineHarvester to parse an existing datacard and then extract information from it. Open the file above and take a look at the source code. To run the example, first make sure the code has been compiled:
 
@@ -16,7 +16,7 @@ Parsing a single card {#ex1-p1}
 ===============================
 In the first part we locate and open a single text datacard file:
 
-\snippet CombineTools/test/Example1.cpp part1
+\snippet CombineTools/bin/Example1.cpp part1
 
 When parsing a datacard, CombineHarvester breaks down the information it contains into sets of objects, each represented by a C++ class. A ch::Observation object stores the information about the observed data in a single category, and likewise ch::Process stores the information for one expected signal or background process in a category. A ch::Systematic object records the uncertainty value assigned to a particular process from a particular source.
 
@@ -48,7 +48,7 @@ Parsing multiple cards {#ex1-p2}
 ================================
 Next we create another CombineHarvester instance and parse several datacards, this time using a method in which the object metadata is inferred from the datacard filenames:
 
-\snippet CombineTools/test/Example1.cpp part2
+\snippet CombineTools/bin/Example1.cpp part2
 
 In this ParseDatacard method only two arguments are required: the path to the text datacard and a string containing place-holders for the metadata. Note that there's no obligation to include all five place-holders in this string. Additionally, the place-holders are not restricted to appearing in the filename but may also be included in the preceding directory path, e.g. `$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt` is also valid.
 
@@ -56,11 +56,11 @@ Filtering {#ex1-p3}
 ===================
 Now let's pretend we are no longer interested in the first four categories we parsed. To remove objects we use a filter method. There are four generic filter methods: FilterAll, FilterObs, FilterProcs and FilterSysts that each accept a function, or function-type object that must have a single ch::Object, ch::Observation, ch::Process or ch::Systematic pointer argument and return a bool. A `true` return value indicates that the object should be dropped. The FilterAll method will act on all three object collections whereas the others operate only on their respective collections. It's often convenient to write a small lambda function in-place:
 
-\snippet CombineTools/test/Example1.cpp part3a
+\snippet CombineTools/bin/Example1.cpp part3a
 
 Alternatively,there are a number of fixed-property filters, in which you need only supply a vector of the object properties you want to keep:
 
-\snippet CombineTools/test/Example1.cpp part3b
+\snippet CombineTools/bin/Example1.cpp part3b
 
 An optional boolean can be supplied as a second argument. When set to false this reverses the logic -  objects with a property in the list will be dropped. In the second line we use this to remove all information about the QCD process. The full list of filter methods is found [here](\ref CH-Filters)
 
@@ -68,7 +68,7 @@ Yields, copying and sets {#ex1-p4}
 ==================================
 In the final part of this example we take a look at the rate evaluation methods. These calculate the total event yields for either the observed data or the expected processes:
 
-\snippet CombineTools/test/Example1.cpp part4
+\snippet CombineTools/bin/Example1.cpp part4
 
 Note that these functions are greedy - they will sum the contribution from every available Observation or Process entry. This means in the first line we get the total number of observed events in the three remaining categories. To get the yield for a single category we can prefix the function with a filter method. But here we must be careful, because we don't want to actually remove the information on the other categories permanently, which is what would happen if we just do:
 
