@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import combineharvester as ch
+import CombineHarvester.CombineTools.ch as ch
 import os
 
 cb = ch.CombineHarvester()

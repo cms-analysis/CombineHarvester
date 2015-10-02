@@ -1,4 +1,4 @@
-import combineharvester as ch
+import CombineHarvester.CombineTools.ch as ch
 
 def AddSystematics_hhh_et_mt(cb):
   src = cb.cp()

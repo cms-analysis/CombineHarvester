@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import combineharvester as ch
-import systematics.Hhh
+import CombineHarvester.CombineTools.ch as ch
+import CombineHarvester.CombineTools.systematics.Hhh as HhhSysts
 import ROOT as R
 import glob
 import os
@@ -59,8 +59,8 @@ cb.FilterProcs(lambda p : p.bin() == 'tauTau_2jet1tag' and p.process() == 'W')
 cb.FilterProcs(lambda p : p.bin() == 'tauTau_2jet2tag' and p.process() == 'W')
 
 print '>> Adding systematic uncertainties...'
-systematics.Hhh.AddSystematics_hhh_et_mt(cb)
-systematics.Hhh.AddSystematics_hhh_tt(cb)
+HhhSysts.AddSystematics_hhh_et_mt(cb)
+HhhSysts.AddSystematics_hhh_tt(cb)
 
 print '>> Extracting histograms from input root files...'
 for chn in chns:

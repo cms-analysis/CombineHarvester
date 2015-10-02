@@ -160,7 +160,7 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_MassesFromRange, ch::MassesFromRange, 1
 BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_ValsFromRange, ch::ValsFromRange, 1, 2)
 BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_SetStandardBinNames, ch::SetStandardBinNames, 1, 2)
 
-BOOST_PYTHON_MODULE(_combineharvester)
+BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
 {
   // Define converters from C++ --> python
   py::to_python_converter<std::set<std::string>,

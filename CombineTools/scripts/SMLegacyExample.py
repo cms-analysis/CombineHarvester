@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import combineharvester as ch
-import systematics.SMLegacy
+import CombineHarvester.CombineTools.combineharvester as ch
+import CombineHarvester.CombineTools.systematics.SMLegacy as SMLegacySysts
 import ROOT as R
 import glob
 import os
@@ -11,6 +11,7 @@ cb = ch.CombineHarvester()
 auxiliaries  = os.environ['CMSSW_BASE'] + '/src/auxiliaries/'
 aux_shapes   = auxiliaries +'shapes/'
 aux_pruning  = auxiliaries +'pruning/'
+input_dir    = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/CombineTools/input';
 
 chns = ['et', 'mt', 'em', 'ee', 'mm', 'tt']
 
@@ -98,10 +99,10 @@ for era in ['7TeV', '8TeV']:
 cb.FilterProcs(lambda p : p.bin() == 'tauTau_vbf' and p.process() == 'ZL')
 
 print '>> Adding systematic uncertainties...'
-systematics.SMLegacy.AddSystematics_et_mt(cb)
-systematics.SMLegacy.AddSystematics_em(cb)
-systematics.SMLegacy.AddSystematics_ee_mm(cb)
-systematics.SMLegacy.AddSystematics_tt(cb)
+SMLegacySysts.AddSystematics_et_mt(cb)
+SMLegacySysts.AddSystematics_em(cb)
+SMLegacySysts.AddSystematics_ee_mm(cb)
+SMLegacySysts.AddSystematics_tt(cb)
 
 print '>> Extracting histograms from input root files...'
 for era in ['7TeV', '8TeV']:
@@ -116,17 +117,17 @@ for era in ['7TeV', '8TeV']:
 print '>> Scaling signal process rates...'
 xs = { }
 # Get the table of H->tau tau BRs vs mass
-xs['htt'] = ch.TGraphFromTable('input/xsecs_brs/htt_YR3.txt', 'mH', 'br')
+xs['htt'] = ch.TGraphFromTable(input_dir+'/xsecs_brs/htt_YR3.txt', 'mH', 'br')
 for e in ['7TeV', '8TeV']:
   for p in sig_procs:
     # Get the table of xsecs vs mass for process 'p' and era 'e':
-    xs[p+'_'+e] = ch.TGraphFromTable('input/xsecs_brs/'+p+'_'+e+'_YR3.txt', 'mH', 'xsec')
+    xs[p+'_'+e] = ch.TGraphFromTable(input_dir+'/xsecs_brs/'+p+'_'+e+'_YR3.txt', 'mH', 'xsec')
     print '>>>> Scaling for process ' + p + ' and era ' + e
     cb.cp().process([p]).era([e]).ForEachProc(
       lambda x : x.set_rate(
         x.rate() * xs[p+'_'+e].Eval(float(x.mass())) * xs['htt'].Eval(float(x.mass())))
     )
-xs['hww_over_htt'] = ch.TGraphFromTable('input/xsecs_brs/hww_over_htt.txt', 'mH', 'ratio')
+xs['hww_over_htt'] = ch.TGraphFromTable(input_dir+'/xsecs_brs/hww_over_htt.txt', 'mH', 'ratio')
 
 for e in ['7TeV', '8TeV']:
   for p in sig_procs:
