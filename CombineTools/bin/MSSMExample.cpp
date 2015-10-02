@@ -24,6 +24,8 @@ int main() {
   string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
   string aux_shapes   = auxiliaries +"shapes/";
   string aux_pruning  = auxiliaries +"pruning/";
+  string input_dir =
+      string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
 
 //So far only mutau added for MSSM, need to copy over all the systematics for other channels 
 
@@ -78,7 +80,7 @@ int main() {
     for (string p : sig_procs) {
       cout << "Scaling for process " << p << " and era " << e << "\n";
       auto gr = ch::TGraphFromTable(
-          "input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
+          input_dir + "/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
           "accept");
       cb.cp().process(signal_types[p]).era({e}).ForEachProc([&](ch::Process *proc) {
         double m = boost::lexical_cast<double>(proc->mass());

@@ -24,6 +24,8 @@ int main() {
   string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
   string aux_shapes   = auxiliaries +"shapes/";
   string aux_pruning  = auxiliaries +"pruning/";
+  string input_dir =
+      string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
 
   VString chns =
       {"et", "mt", "em", "ee", "mm", "tt"};
@@ -145,11 +147,11 @@ int main() {
   cout << ">> Scaling signal process rates...\n";
   map<string, TGraph> xs;
   // Get the table of H->tau tau BRs vs mass
-  xs["htt"] = ch::TGraphFromTable("input/xsecs_brs/htt_YR3.txt", "mH", "br");
+  xs["htt"] = ch::TGraphFromTable(input_dir+"/xsecs_brs/htt_YR3.txt", "mH", "br");
   for (string const& e : {"7TeV", "8TeV"}) {
     for (string const& p : sig_procs) {
       // Get the table of xsecs vs mass for process "p" and era "e":
-      xs[p+"_"+e] = ch::TGraphFromTable("input/xsecs_brs/"+p+"_"+e+"_YR3.txt", "mH", "xsec");
+      xs[p+"_"+e] = ch::TGraphFromTable(input_dir+"/xsecs_brs/"+p+"_"+e+"_YR3.txt", "mH", "xsec");
       cout << ">>>> Scaling for process " << p << " and era " << e << "\n";
       cb.cp().process({p}).era({e}).ForEachProc([&](ch::Process *proc) {
         double m = boost::lexical_cast<double>(proc->mass());
@@ -157,7 +159,7 @@ int main() {
       });
     }
   }
-  xs["hww_over_htt"] = ch::TGraphFromTable("input/xsecs_brs/hww_over_htt.txt", "mH", "ratio");
+  xs["hww_over_htt"] = ch::TGraphFromTable(input_dir+"/xsecs_brs/hww_over_htt.txt", "mH", "ratio");
   for (string const& e : {"7TeV", "8TeV"}) {
     for (string const& p : {"ggH", "qqH"}) {
      cb.cp().channel({"em"}).process({p+"_hww125"}).era({e})
