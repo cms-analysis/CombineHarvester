@@ -1,0 +1,23 @@
+language: cpp
+before_install:
+  - cd .. && mkdir -p src && mv $OLDPWD src/CombineHarvester
+  - export CMSSW_BASE=$PWD
+  - cd src/CombineHarvester
+install:
+  - export DOX=doxygen-1.8.8
+  - wget -O - http://ftp.stack.nl/pub/users/dimitri/${DOX}.linux.bin.tar.gz |  tar xz -C ${TMPDIR-/tmp} ${DOX}/bin/doxygen
+  - sudo install -m 755 ${TMPDIR-/tmp}/${DOX}/bin/doxygen /usr/local/bin/doxygen
+script:
+  - ./docs/publish-doxygen.sh 
+git:
+    submodules: false
+env:
+  global:
+    - secure: "DNbbwoJnY6yhOn3BTyuR8SMUO1/uKg70NshGwSdnP0P1ICBj1dp/Q6pMAvx3BSuCeiRZXRSj4Vjnx68+shljO4rD6KGQao25hR+RW1dNeAw9kAC5fXB2FTgLoo+oskwF9S13RTb1bEtENdyy56+tKbPkwGrAC78SfJM3yjtX6bg="
+# whitelist
+branches:
+  only:
+    - master
+notifications:
+  email:
+    - andrew.gilbert@cern.ch

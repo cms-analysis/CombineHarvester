@@ -755,15 +755,17 @@ WARN_LOGFILE           =
 
 INPUT  = CombineTools/interface \
          CombineTools/src \
+         CombinePdfs/interface \
+         CombinePdfs/src \
          CombineTools/bin/SMLegacyExample.cpp \
          CombineTools/bin/MSSMYieldTable.cpp \
          CombineTools/bin/PostFitShapes.cpp \
          docs/Main.md \
-         docs/BuildSystem.md \
          docs/Example1.md \
          docs/Example2.md \
          docs/PythonInterface.md \
          docs/PostFitShapes.md \
+        # docs/BuildSystem.md \
         # docs/MSSMWithMorphing.md
 
 # This tag can be used to specify the character encoding of the source files
