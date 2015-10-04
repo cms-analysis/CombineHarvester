@@ -116,8 +116,8 @@ $(document).ready(function(){initNavTree('python-interface.html','');});
 <li class="level1"><a href="#py-bbbfactory">Class: BinByBinFactory </a></li>
 </ul>
 </div>
-<div class="textblock"><p>The python interface is embedded within the shared library (<code>CombineTools/python/combineharvester/_combineharvester.so</code>) that is produced when the code is compiled. Add the directory <code>CombineTools/python</code> to your <code>PYTHONPATH</code> environment variable so that it can be imported from anywhere. This can also be achieved by doing: </p><pre class="fragment">eval `make env`
-</pre><p>Then in a python script you can do, e.g. <code>import combineharvester as ch</code>. The sections below summarises the methods that are currently supported.</p>
+<div class="textblock"><p>The C++ CombineHarvester class and a number of other tools have a python interface available. The module containing this interface can be imported like any other CMSSW python module: </p><pre class="fragment">import CombineHarvester.CombineTools.ch as ch
+</pre><p>The sections below summarise the methods that are currently supported.</p>
 <h1><a class="anchor" id="py-constr-copy"></a>
 Constructors and copying </h1>
 <p>C++: </p><pre class="fragment">ch::CombineHarvester cb;
