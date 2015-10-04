@@ -119,7 +119,7 @@ int main() {
   TH2F h_bbH4f_xsec_A = ch::OpenFromTFile<TH2F>(&inputs, "h_bbH4f_xsec_A");
   TH2F h_bbH_xsec_h = SantanderMatching(h_bbH4f_xsec_h, h_bbH5f_xsec_h, &h_mh);
   TH2F h_bbH_xsec_H = SantanderMatching(h_bbH4f_xsec_H, h_bbH5f_xsec_H, &h_mH);
-  TH2F h_bbH_xsec_A = SantanderMatching(h_bbH4f_xsec_H, h_bbH5f_xsec_H, nullptr);
+  TH2F h_bbH_xsec_A = SantanderMatching(h_bbH4f_xsec_A, h_bbH5f_xsec_A, nullptr);
   RooDataHist dh_bbH_xsec_h("dh_bbH_xsec_h", "dh_bbH_xsec_h",
                             RooArgList(mA, tanb), RooFit::Import(h_bbH_xsec_h));
   RooDataHist dh_bbH_xsec_H("dh_bbH_xsec_H", "dh_bbH_xsec_H",

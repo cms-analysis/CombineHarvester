@@ -3,7 +3,7 @@ Introduction {#mainpage}
 
 [TOC]
 
-This page documents the CombineHarvester framework for the production and analysis of datacards for use with the CMS [combine](https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit) statistical analysis tool. The central part of this framework is the [CombineHarvester](\ref ch::CombineHarvester) class, which provides a representation of the text-format datacards and the associated shape input.
+This page documents the CombineHarvester framework for the production and analysis of datacards for use with the CMS [combine](https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit) tool. The central part of this framework is the [CombineHarvester](\ref ch::CombineHarvester) class, which provides a representation of the text-format datacards and the associated shape input.
 
 The production of new datacards typically requires several steps, for example:
 
@@ -22,11 +22,11 @@ Other functions include extracting information about the fit model:
   * Evaluating the expected rates of signal and background processes, both pre- and post-fit, and for the latter taking into account the nuisance parameter correlations
   * Similar evaluation of the background shapes, including the ability to scale, modify and re-bin the shapes in-place
 
-As well as histogram-based templates, the production of datacards with arbitrary RooFit PDFs and datasets is also supported. Though not typically required by the \f$H\rightarrow\tau\tau\f$ group, such datacards are often used in other CMS Higgs groups, and may be useful in future \f$H\rightarrow\tau\tau\f$ analyses.
+As well as histogram-based templates, the production of datacards with arbitrary RooFit PDFs and datasets is also supported.
 
 Getting started {#getting-started}
 ==================================
-The CombineHarvester code is part of the official HiggsToTauTau CMSSW package for limit-setting tools: https://github.com/cms-analysis/HiggsAnalysis-HiggsToTauTau. All the framework code is located in the `CombineHarvester` directory, within which it is organised, via sub-directories, into packages. These are not seen or compiled by scram, but rather by a separate makefile-based build system. See further details on the page [Build System](\ref build).
+The CombineHarvester code (https://github.com/cms-analysis/CombineHarvester) is contained within a "top-level" CMSSW package: `$CMSSW_BASE/src/CombineHarvester` with subpackages for the core framework (`CombineHarvester/CombineTools`) and custom PDF extensions  (`CombineHarvester/CombinePdfs`). Further analysis-specific sub-packages will be added in future.
 
 You should checkout the HiggsAnalysis/HiggsToTauTau CMSSW package alongside the HiggsAnalysis/CombinedLimit package, using the release recommended by the combine developers [here](https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#SLC6_release). Note that the CombineHarvester framework is only compatible with the CMSSW 7_X_Y series releases. A new release area can be set up and compiled in the following steps:
 
