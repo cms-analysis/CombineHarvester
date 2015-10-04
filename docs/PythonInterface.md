@@ -2,12 +2,11 @@ Python Interface {#python-interface}
 ====================================
 
 [TOC]
+The C++ CombineHarvester class and a number of other tools have a python interface available. The module containing this interface can be imported like any other CMSSW python module:
 
-The python interface is embedded within the shared library (`CombineTools/python/combineharvester/_combineharvester.so`) that is produced when the code is compiled. Add the directory `CombineTools/python` to your `PYTHONPATH` environment variable so that it can be imported from anywhere. This can also be achieved by doing:
+    import CombineHarvester.CombineTools.ch as ch
 
-    eval `make env`
-
-Then in a python script you can do, e.g. `import combineharvester as ch`. The sections below summarises the methods that are currently supported.
+The sections below summarise the methods that are currently supported.
 
 Constructors and copying {#py-constr-copy}
 ==========================================
