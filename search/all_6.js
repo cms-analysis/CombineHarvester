@@ -13,10 +13,8 @@ var searchData=
   ['getrate',['GetRate',['../classch_1_1_combine_harvester.html#aff4165661f9f137607d6c3c881172689',1,'ch::CombineHarvester']]],
   ['getshape',['GetShape',['../classch_1_1_combine_harvester.html#a3d265eb50ea8ec70192788d985733d9d',1,'ch::CombineHarvester']]],
   ['getshapewithuncertainty',['GetShapeWithUncertainty',['../classch_1_1_combine_harvester.html#a749af47fa05e1e11b1488bfdb49efce5',1,'ch::CombineHarvester::GetShapeWithUncertainty()'],['../classch_1_1_combine_harvester.html#afeae4c75ae1a122fdcf0a7f28b15a9d8',1,'ch::CombineHarvester::GetShapeWithUncertainty(RooFitResult const *fit, unsigned n_samples)'],['../classch_1_1_combine_harvester.html#a4601ceaf29711b11611545a3ee4a8fbb',1,'ch::CombineHarvester::GetShapeWithUncertainty(RooFitResult const &amp;fit, unsigned n_samples)']]],
-  ['gettuple',['GetTuple',['../classch_1_1syst_1_1_syst_map.html#a74f29749f6a14f71a02fe711386604b9',1,'ch::syst::SystMap::GetTuple()'],['../classch_1_1syst_1_1_syst_map_asymm.html#aec91d3b1a862d4ecb3027dde88da2382',1,'ch::syst::SystMapAsymm::GetTuple()']]],
+  ['gettuple',['GetTuple',['../classch_1_1syst_1_1_syst_map.html#a164b50fafa77c9f471fca8abeec7aba2',1,'ch::syst::SystMap::GetTuple()'],['../classch_1_1syst_1_1_syst_map_asymm.html#ad5ff5e296f946fa96f4b206fc64bae95',1,'ch::syst::SystMapAsymm::GetTuple()']]],
   ['gettupleset',['GetTupleSet',['../classch_1_1syst_1_1_syst_map.html#ad2fed05a0c421419ea4ebead6d205bb0',1,'ch::syst::SystMap::GetTupleSet()'],['../classch_1_1syst_1_1_syst_map_asymm.html#a43e04ec9efeff0239a428e517340c570',1,'ch::syst::SystMapAsymm::GetTupleSet()']]],
   ['getuncertainty',['GetUncertainty',['../classch_1_1_combine_harvester.html#a9c0e44635dc637746222f67e9be518e5',1,'ch::CombineHarvester::GetUncertainty()'],['../classch_1_1_combine_harvester.html#af71f64a1d858700bd16d98cee1c10c26',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const *fit, unsigned n_samples)'],['../classch_1_1_combine_harvester.html#aa7c0646bfab0a974c72fe815e33c5a32',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const &amp;fit, unsigned n_samples)']]],
-  ['gitversion',['GitVersion',['../namespacech.html#aeb1a37bcec03e498ee954263f09996e6',1,'ch']]],
-  ['gitversion_2eh',['GitVersion.h',['../_git_version_8h.html',1,'']]],
   ['graphfromspline',['GraphFromSpline',['../namespacech.html#aefdcaba918224f404af9fcd9b53fa7bb',1,'ch']]]
 ];

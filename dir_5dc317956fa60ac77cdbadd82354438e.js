@@ -10,7 +10,6 @@ var dir_5dc317956fa60ac77cdbadd82354438e =
     [ "CombineHarvester.h", "_combine_harvester_8h.html", "_combine_harvester_8h" ],
     [ "CombineHarvester_Python.h", "_combine_harvester___python_8h.html", "_combine_harvester___python_8h" ],
     [ "CopyTools.h", "_copy_tools_8h.html", "_copy_tools_8h" ],
-    [ "GitVersion.h", "_git_version_8h.html", "_git_version_8h" ],
     [ "HistMapping.h", "_hist_mapping_8h.html", [
       [ "HistMapping", "structch_1_1_hist_mapping.html", "structch_1_1_hist_mapping" ]
     ] ],

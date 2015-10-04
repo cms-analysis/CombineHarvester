@@ -1,7 +1,7 @@
 var dir_510ea882f93f24ffb670d111f3c48591 =
 [
     [ "BinByBin.cc", "_bin_by_bin_8cc.html", null ],
-    [ "CardWriter.cc", "_card_writer_8cc.html", "_card_writer_8cc" ],
+    [ "CardWriter.cc", "_card_writer_8cc.html", null ],
     [ "CombineHarvester.cc", "_combine_harvester_8cc.html", "_combine_harvester_8cc" ],
     [ "CombineHarvester_Creation.cc", "_combine_harvester___creation_8cc.html", null ],
     [ "CombineHarvester_Datacards.cc", "_combine_harvester___datacards_8cc.html", null ],
