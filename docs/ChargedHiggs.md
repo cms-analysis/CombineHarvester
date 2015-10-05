@@ -26,7 +26,7 @@ To reproduce the model-independent limits from the charged Higgs PAS we will nee
 
 Then we can run the asymptotic limits:
 
-    combineTool.py -M Asymptotic -d hplus_tauhad_mssm.root -m 80:160:10  --freezeNuisances MH --setPhysicsModelParameterRanges BR=0,0.2 --cminDefaultMinimizerType Minuit2 --strictBounds --rAbsAcc 0.00001 -n .ChargedHiggs
+    combineTool.py -M Asymptotic -d hplus_tauhad_mssm.root -m 80:160:10  --freezeNuisances MH --setPhysicsModelParameterRanges BR=0,0.2 --cminDefaultMinimizerType Minuit2 --rAbsAcc 0.00001 -n .ChargedHiggs
 
 A few non-default combine options are used:
 
