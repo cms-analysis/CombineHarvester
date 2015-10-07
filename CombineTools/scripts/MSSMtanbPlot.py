@@ -1,4 +1,4 @@
-import plotting as plot 
+import CombineHarvester.CombineTools.plotting as plot 
 import ROOT
 import math
 import argparse
@@ -31,7 +31,7 @@ def higgsConstraint(model, higgstype) :
 
     higgsBand=ROOT.TH2D("higgsBand", "higgsBand", nmass, masslow, masshigh, ntanb, tanblow, tanbhigh)
     for mass in range (masslow, masshigh+1, massstep):
-        myfile = open("../../data/Higgs125/"+model+"/higgs_"+str(mass)+".dat", 'r')
+        myfile = open("../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/"+model+"/higgs_"+str(mass)+".dat", 'r')
         for line in myfile:
             tanb = (line.split())[0]
             mh = float((line.split())[1])
@@ -82,41 +82,50 @@ graph_plus1sigma = ROOT.TGraph2D()
 graph_obs = ROOT.TGraph2D()
 for f in infiles:
     if plot.TFileIsGood(f) :
-        #First find the mA and tanb value indicated by the filename
-        mA = plot.ParamFromFilename(f, "mA")
-        tanb = plot.ParamFromFilename(f, "tanb")
         # Extract the relevant values from the file. This implementation is lifted from HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py
         file = ROOT.TFile(f, 'r')
-        tree = file.Get("limit")
-        staff = ROOT.staff_t()
-        tree.SetBranchAddress("quantileExpected",ROOT.AddressOf(staff,"quantileExpected"))
-        tree.SetBranchAddress("mh",ROOT.AddressOf(staff,"mh"))
-        tree.SetBranchAddress("limit",ROOT.AddressOf(staff,"limit"))
-        for i in range(tree.GetEntries()) :
-            tree.GetEntry(i);
-            if abs(staff.quantileExpected-0.025) < 0.01  :
-                minus2sigma=staff.limit
-            if abs(staff.quantileExpected-0.160) < 0.01  :
-                minus1sigma=staff.limit
-            if abs(staff.quantileExpected-0.500) < 0.01  :
-                exp=staff.limit
-            if abs(staff.quantileExpected-0.840) < 0.01  :
-                plus1sigma=staff.limit
-            if abs(staff.quantileExpected-0.975) < 0.01  :
-                plus2sigma=staff.limit
-            if abs(staff.quantileExpected+1.000) < 0.01  :
-                obs=staff.limit           
-        if int(args.verbosity) > 0 :
-            print "Tested points: ", mA, tanb, minus2sigma, minus1sigma, exp, plus1sigma, plus2sigma, obs
+        if file.GetListOfKeys().Contains("limit") :
+            #First find the mA and tanb value indicated by the filename
+            mA = plot.ParamFromFilename(f, "mA")
+            tanb = plot.ParamFromFilename(f, "tanb")
+            tree = file.Get("limit")
+            staff = ROOT.staff_t()
+            tree.SetBranchAddress("quantileExpected",ROOT.AddressOf(staff,"quantileExpected"))
+            tree.SetBranchAddress("mh",ROOT.AddressOf(staff,"mh"))
+            tree.SetBranchAddress("limit",ROOT.AddressOf(staff,"limit"))
+            minus2sigma=1000
+            minus1sigma=1000
+            exp=1000
+            plus1sigma=1000
+            plus2sigma=1000
+            obs=1000
+            for i in range(tree.GetEntries()) :
+                tree.GetEntry(i);
+                if abs(staff.quantileExpected-0.025) < 0.01  :
+                    minus2sigma=staff.limit
+                    #print minus2sigma
+                if abs(staff.quantileExpected-0.160) < 0.01  :
+                    minus1sigma=staff.limit
+                    #print minus1sigma
+                if abs(staff.quantileExpected-0.500) < 0.01  :
+                    exp=staff.limit
+                if abs(staff.quantileExpected-0.840) < 0.01  :
+                    plus1sigma=staff.limit
+                if abs(staff.quantileExpected-0.975) < 0.01  :
+                    plus2sigma=staff.limit
+                if abs(staff.quantileExpected+1.000) < 0.01  :
+                    obs=staff.limit           
+            if int(args.verbosity) > 0 :
+                print "Tested points: ", mA, tanb, minus2sigma, minus1sigma, exp, plus1sigma, plus2sigma, obs
+            #Fill TGraphs with the values of each CLs
+            graph_exp.SetPoint(n, mA, tanb, exp)
+            graph_minus2sigma.SetPoint(n, mA, tanb, minus2sigma)
+            graph_minus1sigma.SetPoint(n, mA, tanb, minus1sigma)
+            graph_plus2sigma.SetPoint(n, mA, tanb, plus2sigma)
+            graph_plus1sigma.SetPoint(n, mA, tanb, plus1sigma)
+            graph_obs.SetPoint(n, mA, tanb, obs)
+            n=n+1 
         ROOT.TFile.Close(file)
-        #Fill TGraphs with the values of each CLs
-        graph_exp.SetPoint(n, mA, tanb, exp)
-        graph_minus2sigma.SetPoint(n, mA, tanb, minus2sigma)
-        graph_minus1sigma.SetPoint(n, mA, tanb, minus1sigma)
-        graph_plus2sigma.SetPoint(n, mA, tanb, plus2sigma)
-        graph_plus1sigma.SetPoint(n, mA, tanb, plus1sigma)
-        graph_obs.SetPoint(n, mA, tanb, obs)
-        n=n+1 
 
 #Create canvas and TH2D for each component
 #Note the binning of the TH2D for the interpolation should match the initial input grid
@@ -146,23 +155,29 @@ axis.Draw()
 
 
 #Extract exclusion contours from the TH2Ds
-cont_exp = plot.contourFromTH2(h_exp, 1.0, 20)
-cont_obs = plot.contourFromTH2(h_obs, 1.0, 5)
-cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, 1.0, 20)
-cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, 1.0, 20)
-cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, 1.0, 20)
-cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, 1.0, 20)
+#cont_exp = plot.contourFromTH2(h_exp, 1.0, 20)
+#cont_obs = plot.contourFromTH2(h_obs, 1.0, 5)
+#cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, 1.0, 20)
+#cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, 1.0, 20)
+#cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, 1.0, 20)
+#cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, 1.0, 20)
+cont_exp = plot.contourFromTH2(h_exp, 0.05, 20)
+cont_obs = plot.contourFromTH2(h_obs, 0.05, 5)
+cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, 0.05, 20)
+cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, 0.05, 20)
+cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, 0.05, 20)
+cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, 0.05, 20)
 
-if args.scenario == "low-tb-high":
-    plane_higgsHBand = higgsConstraint(args.scenario, "H")
+#if args.scenario == "low-tb-high":
+#    plane_higgsHBand = higgsConstraint(args.scenario, "H")
 #  plane_higgsBands.push_back(plane_higgsHBand);
 #  //lower edge entry 2
-    cont_higgsHlow = plot.contourFromTH2(plane_higgsHBand, 260, 20)
+#    cont_higgsHlow = plot.contourFromTH2(plane_higgsHBand, 260, 20)
 #  STestFunctor higgsHband0 = std::for_each( iter_higgsHlow.Begin(), TIter::End(), STestFunctor() );
 #  for(int i=0; i<higgsHband0.sum; i++) {gr_higgsHlow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false, 200))->At(i));}
 #  gr_higgsBands.push_back(gr_higgsHlow);
 #  //upper edge entry 3
-    cont_higgsHhigh = plot.contourFromTH2(plane_higgsHBand, 350, 20)
+#    cont_higgsHhigh = plot.contourFromTH2(plane_higgsHBand, 350, 20)
 #  STestFunctor higgsHband1 = std::for_each( iter_higgsHhigh.Begin(), TIter::End(), STestFunctor() );
 #  for(int i=0; i<higgsHband1.sum; i++) {gr_higgsHhigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false, 200))->At(i));} 
 #  gr_higgsBands.push_back(gr_higgsHhigh);
@@ -205,7 +220,6 @@ for p in cont_exp :
     p.Draw("L SAME")
 
 for p in cont_obs :
-    print "cont_obs"
     p.SetLineColor(ROOT.kBlack)
     p.SetLineWidth(2)
     p.SetMarkerStyle(20)
@@ -217,23 +231,23 @@ for p in cont_obs :
     p.Draw("F SAME")
     p.Draw("L SAME")
 
-for p in cont_higgsHlow:      
-    print "higgsHlow"
-    p.SetLineWidth(9902)
-    p.SetFillStyle(1001)
-    p.SetFillColor(ROOT.kGreen) 
-    p.SetLineColor(ROOT.kGreen+3)
-    p.SetLineStyle(3)
+#for p in cont_higgsHlow:      
+#    print "higgsHlow"
+#    p.SetLineWidth(9902)
+#    p.SetFillStyle(1001)
+#    p.SetFillColor(ROOT.kGreen) 
+#    p.SetLineColor(ROOT.kGreen+3)
+#    p.SetLineStyle(3)
     #p.Draw("L SAME")
     #p.Draw("F SAME")
 
-for p in cont_higgsHhigh:      
-    print "higgsHhigh"
-    p.SetLineWidth(-9902)
-    p.SetFillStyle(1001)
-    p.SetFillColor(ROOT.kGreen) 
-    p.SetLineColor(ROOT.kGreen+3)
-    p.SetLineStyle(3)
+#for p in cont_higgsHhigh:      
+#    print "higgsHhigh"
+#    p.SetLineWidth(-9902)
+#    p.SetFillStyle(1001)
+#    p.SetFillColor(ROOT.kGreen) 
+#    p.SetLineColor(ROOT.kGreen+3)
+#    p.SetLineStyle(3)
     #p.Draw("L SAME")
     #p.Draw("F SAME")
 

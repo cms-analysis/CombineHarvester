@@ -1,3 +1,4 @@
+import CombineHarvester.CombineTools.ch as ch
 import ROOT as R
 import os
 from functools import partial
@@ -453,7 +454,7 @@ def CreateTransparentColor(color, alpha):
 def TFileIsGood(filename):
     if not os.path.exists(filename): return False
     fin = R.TFile.Open(filename)
-    R.TFile.Close(fin)
+    if fin: R.TFile.Close(fin)
     if not fin: return False
     return True
 
