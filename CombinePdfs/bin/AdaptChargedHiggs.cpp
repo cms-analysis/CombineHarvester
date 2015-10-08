@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
       auto procs = cb.cp().bin({b}).signals().process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, mHp,
-                             "norm", true, true, &demo);
+                             "norm", true, true, false, &demo);
       }
     }
   }

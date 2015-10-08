@@ -390,8 +390,11 @@ int main() {
         for (auto p : procs) {
           std::cout << "morphing process: " << p << std::endl;
           string pdf_name = b + "_" + p + "_morph";
+          // Set option to force signal to 0 outside of template range for H->hh only
+          bool force_template_limit = true;
+          if(b.find("8")!=string::npos && b.find("9")!=string::npos) force_template_limit=false;
           ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                               "eff_acc", true, true, &demo);
+                               "eff_acc", true, true, force_template_limit, &demo);
           std::string prod_name = pdf_name + "_eff_acc";
           RooAbsReal *norm =  ws.function(prod_name.c_str());
           RooProduct full_norm((pdf_name + "_norm").c_str(), "",
