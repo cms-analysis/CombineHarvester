@@ -55,8 +55,14 @@ def CreateTransparentColor(color, alpha):
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
 parser.add_argument('--files', '-f', help='named input files')
-parser.add_argument('--verbosity', '-v', help='verbosity')
 parser.add_argument('--scenario', '-s', help='scenario for plot label e.g. [mhmax,mhmodp,mhmodm,low-tb-high]')
+parser.add_argument('--custom_y_range', help='Fix y axis range', default=False)
+parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=0.0)
+parser.add_argument('--y_axis_max',  help='Fix y axis maximum', default=60.0)
+parser.add_argument('--custom_x_range', help='Fix x axis range', default=False)
+parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
+parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
+parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
 args = parser.parse_args()
 
 myfile = open(args.files, 'r')
@@ -93,6 +99,7 @@ for f in infiles:
             tree.SetBranchAddress("quantileExpected",ROOT.AddressOf(staff,"quantileExpected"))
             tree.SetBranchAddress("mh",ROOT.AddressOf(staff,"mh"))
             tree.SetBranchAddress("limit",ROOT.AddressOf(staff,"limit"))
+            #Set not excluded by default in case a fit fails
             minus2sigma=1000
             minus1sigma=1000
             exp=1000
@@ -103,10 +110,8 @@ for f in infiles:
                 tree.GetEntry(i);
                 if abs(staff.quantileExpected-0.025) < 0.01  :
                     minus2sigma=staff.limit
-                    #print minus2sigma
                 if abs(staff.quantileExpected-0.160) < 0.01  :
                     minus1sigma=staff.limit
-                    #print minus1sigma
                 if abs(staff.quantileExpected-0.500) < 0.01  :
                     exp=staff.limit
                 if abs(staff.quantileExpected-0.840) < 0.01  :
@@ -129,14 +134,25 @@ for f in infiles:
 
 #Create canvas and TH2D for each component
 #Note the binning of the TH2D for the interpolation should match the initial input grid
-plot.ModTDRStyle(width=800, l=0.13)
-#plot.SetTDRStyle()
+plot.ModTDRStyle(width=600, l=0.12)
+#Slightly thicker frame to ensure contour edges dont overlay the axis
+ROOT.gStyle.SetFrameLineWidth(2)
 c1=ROOT.TCanvas()
 axis = makeHist('hist2d', 16, 45, graph_exp)
 axis.GetYaxis().SetTitle("tan#beta")
+if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), float(args.y_axis_max))
 axis.GetXaxis().SetTitle("m_{A}")
-pads = plot.OnePad()
-pads[0].Draw()
+if args.custom_x_range : axis.GetXaxis().SetRangeUser(float(args.x_axis_min), float(args.x_axis_max))
+#Create two pads, one is just for the Legend
+pad1 = ROOT.TPad("pad1","pad1",0,0.82,1,1)
+pad1.SetFillStyle(4000)
+pad1.Draw()
+pad2 = ROOT.TPad("pad2","pad2",0,0,1,0.82)
+pad2.SetFillStyle(4000)
+pad2.Draw()
+pads=[pad1,pad2]
+pads[1].cd()
+
 h_exp = makeHist("h_exp", 16, 45, graph_exp)
 h_obs = makeHist("h_obs", 16, 45, graph_obs)
 h_minus1sigma = makeHist("h_minus1sigma", 16, 45, graph_minus1sigma)
@@ -154,19 +170,14 @@ axis.Draw()
 #h_obs.Draw("colzsame")
 
 
-#Extract exclusion contours from the TH2Ds
-#cont_exp = plot.contourFromTH2(h_exp, 1.0, 20)
-#cont_obs = plot.contourFromTH2(h_obs, 1.0, 5)
-#cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, 1.0, 20)
-#cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, 1.0, 20)
-#cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, 1.0, 20)
-#cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, 1.0, 20)
+#Extract exclusion contours from the TH2Ds, use threshold 1.0 for limit and 0.05 for CLs
 cont_exp = plot.contourFromTH2(h_exp, 0.05, 20)
 cont_obs = plot.contourFromTH2(h_obs, 0.05, 5)
 cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, 0.05, 20)
 cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, 0.05, 20)
 cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, 0.05, 20)
 cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, 0.05, 20)
+
 
 #if args.scenario == "low-tb-high":
 #    plane_higgsHBand = higgsConstraint(args.scenario, "H")
@@ -187,28 +198,28 @@ for p in cont_minus2sigma :
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kGray+1)
     p.SetFillStyle(1001)
-    pads[0].cd()
+    pads[1].cd()
     p.Draw("F SAME")
 
 for p in cont_minus1sigma :
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kGray+2)
     p.SetFillStyle(1001)
-    pads[0].cd()
+    pads[1].cd()
     p.Draw("F SAME")
 
 for p in cont_plus1sigma :
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kGray+1)
     p.SetFillStyle(1001)
-    pads[0].cd()
+    pads[1].cd()
     p.Draw("F SAME")
 
 for p in cont_plus2sigma :
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kWhite)
     p.SetFillStyle(1001)
-    pads[0].cd()
+    pads[1].cd()
     p.Draw("F SAME")
 
 for p in cont_exp :
@@ -216,7 +227,7 @@ for p in cont_exp :
     p.SetLineWidth(2)
     p.SetLineStyle(2)
     p.SetFillColor(100)
-    pads[0].cd()
+    pads[1].cd()
     p.Draw("L SAME")
 
 for p in cont_obs :
@@ -227,7 +238,7 @@ for p in cont_obs :
     p.SetMarkerColor(ROOT.kBlack)
     p.SetFillStyle(1001)
     p.SetFillColor(CreateTransparentColor(ROOT.kAzure+6,0.5))
-    pads[0].cd()
+    pads[1].cd()
     p.Draw("F SAME")
     p.Draw("L SAME")
 
@@ -261,9 +272,36 @@ if args.scenario == "mhmodm":
     scenario_label="m_{h}^{mod-} scenario"
 if args.scenario == "low-tb-high":
     scenario_label="low tan#beta scenario"
+if args.scenario == "hMSSM":
+    scenario_label="hMSSM scenario"
 
 
-plot.DrawCMSLogo(pads[0], 'Combine Harvester', scenario_label, 11, 0.045, 0.035, 1.2)
+pads[0].cd()
+legend = plot.PositionedLegend(0.5,0.9,2,0.03)
+legend.SetNColumns(2)
+legend.SetFillStyle(1001)
+legend.SetTextSize(0.15)
+legend.SetTextFont(62)
+legend.SetHeader("95% CL Excluded:")
+# Stupid hack to get legend entry looking correct
+if cont_obs[0] : 
+    alt_cont_obs = cont_obs[0].Clone()
+    alt_cont_obs.SetLineColor(ROOT.kWhite)
+    legend.AddEntry(alt_cont_obs,"Observed", "F")
+if cont_minus1sigma[0] : legend.AddEntry(cont_minus1sigma[0], "#pm 1#sigma Expected", "F")
+if cont_exp[0] : legend.AddEntry(cont_exp[0],"Expected", "L")
+if cont_minus2sigma[0] : legend.AddEntry(cont_minus2sigma[0], "#pm 2#sigma Expected", "F")
+legend.Draw("same")
+
+# ROOT is just the worst - ARC requested the observed symbol in the legend be changed to this
+if(cont_obs[0]) :
+    legline = ROOT.TLine(605, 13, 680, 13)
+    legline.SetLineWidth(3)
+    legline.SetLineColor(ROOT.kBlack)
+    legline.DrawLineNDC(legend.GetX1()+0.0115, legend.GetY2()-0.36, legend.GetX1()+0.05, legend.GetY2()-0.36)
+
+plot.DrawCMSLogo(pads[1], 'Combine Harvester', scenario_label if scenario_label is not "" else args.scenario, 11, 0.045, 0.035, 1.2)
+plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
 plot.FixOverlay()
 c1.SaveAs("mssm_"+args.scenario+".pdf")
 c1.SaveAs("mssm_"+args.scenario+".png")

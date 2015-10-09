@@ -515,6 +515,19 @@ def OnePad():
     result = [pad]
     return result
 
+def TwoPadSplit(split_point, gap_low, gap_high) :
+    upper = R.TPad('upper', 'upper', 0., 0., 1., 1.)
+    upper.SetBottomMargin(split_point + gap_high)
+    upper.SetFillStyle(4000)
+    upper.Draw()
+    lower = R.TPad('lower', 'lower', 0., 0., 1., 1.)
+    lower.SetTopMargin(1 - split_point + gap_low)
+    lower.SetFillStyle(4000)
+    lower.Draw()
+    upper.cd()
+    result = [upper,lower]
+    return result
+
 def ImproveMinimum(graph, func):
     fit_x = 0.
     fit_y = 0.
