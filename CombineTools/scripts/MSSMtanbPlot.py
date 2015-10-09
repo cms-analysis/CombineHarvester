@@ -86,6 +86,9 @@ graph_minus1sigma = ROOT.TGraph2D()
 graph_plus2sigma = ROOT.TGraph2D()
 graph_plus1sigma = ROOT.TGraph2D()
 graph_obs = ROOT.TGraph2D()
+#Store the mA and tanb list being used for the interpolation
+tanb_list=[]
+mA_list=[]
 for f in infiles:
     if plot.TFileIsGood(f) :
         # Extract the relevant values from the file. This implementation is lifted from HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py
@@ -94,6 +97,8 @@ for f in infiles:
             #First find the mA and tanb value indicated by the filename
             mA = plot.ParamFromFilename(f, "mA")
             tanb = plot.ParamFromFilename(f, "tanb")
+            mA_list.append(mA)
+            tanb_list.append(tanb)
             tree = file.Get("limit")
             staff = ROOT.staff_t()
             tree.SetBranchAddress("quantileExpected",ROOT.AddressOf(staff,"quantileExpected"))
@@ -132,13 +137,20 @@ for f in infiles:
             n=n+1 
         ROOT.TFile.Close(file)
 
+tanb_list = sorted(set(tanb_list))
+mA_list = sorted(set(mA_list))
+tanb_bins=len(tanb_list)
+mA_bins=len(mA_list)
+if int(args.verbosity) > 0 :
+    print "mA_list: ", mA_list, "Total number: ", mA_bins 
+    print "tanb_list: ", tanb_list, "Total number: ", tanb_bins
+
 #Create canvas and TH2D for each component
-#Note the binning of the TH2D for the interpolation should match the initial input grid
 plot.ModTDRStyle(width=600, l=0.12)
 #Slightly thicker frame to ensure contour edges dont overlay the axis
 ROOT.gStyle.SetFrameLineWidth(2)
 c1=ROOT.TCanvas()
-axis = makeHist('hist2d', 16, 45, graph_exp)
+axis = makeHist('hist2d', mA_bins, tanb_bins, graph_exp)
 axis.GetYaxis().SetTitle("tan#beta")
 if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), float(args.y_axis_max))
 axis.GetXaxis().SetTitle("m_{A}")
@@ -153,12 +165,14 @@ pad2.Draw()
 pads=[pad1,pad2]
 pads[1].cd()
 
-h_exp = makeHist("h_exp", 16, 45, graph_exp)
-h_obs = makeHist("h_obs", 16, 45, graph_obs)
-h_minus1sigma = makeHist("h_minus1sigma", 16, 45, graph_minus1sigma)
-h_plus1sigma = makeHist("h_plus1sigma", 16, 45, graph_plus1sigma)
-h_minus2sigma = makeHist("h_minus2sigma", 16, 45, graph_minus2sigma)
-h_plus2sigma = makeHist("h_plus2sigma", 16, 45, graph_plus2sigma)
+#Note the binning of the TH2D for the interpolation should ~ match the initial input grid
+#Could in future implement variable binning here
+h_exp = makeHist("h_exp", mA_bins, tanb_bins, graph_exp)
+h_obs = makeHist("h_obs", mA_bins, tanb_bins, graph_obs)
+h_minus1sigma = makeHist("h_minus1sigma", mA_bins, tanb_bins, graph_minus1sigma)
+h_plus1sigma = makeHist("h_plus1sigma", mA_bins, tanb_bins, graph_plus1sigma)
+h_minus2sigma = makeHist("h_minus2sigma", mA_bins, tanb_bins, graph_minus2sigma)
+h_plus2sigma = makeHist("h_plus2sigma", mA_bins, tanb_bins, graph_plus2sigma)
 fillTH2(h_exp, graph_exp)
 fillTH2(h_obs, graph_obs)
 fillTH2(h_minus1sigma, graph_minus1sigma)
@@ -171,12 +185,14 @@ axis.Draw()
 
 
 #Extract exclusion contours from the TH2Ds, use threshold 1.0 for limit and 0.05 for CLs
-cont_exp = plot.contourFromTH2(h_exp, 0.05, 20)
-cont_obs = plot.contourFromTH2(h_obs, 0.05, 5)
-cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, 0.05, 20)
-cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, 0.05, 20)
-cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, 0.05, 20)
-cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, 0.05, 20)
+threshold=0.05
+#threshold=1
+cont_exp = plot.contourFromTH2(h_exp, threshold, 20)
+cont_obs = plot.contourFromTH2(h_obs, threshold, 5)
+cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, threshold, 20)
+cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, threshold, 20)
+cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, threshold, 20)
+cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, threshold, 20)
 
 
 #if args.scenario == "low-tb-high":
@@ -298,7 +314,7 @@ if(cont_obs[0]) :
     legline = ROOT.TLine(605, 13, 680, 13)
     legline.SetLineWidth(3)
     legline.SetLineColor(ROOT.kBlack)
-    legline.DrawLineNDC(legend.GetX1()+0.0115, legend.GetY2()-0.36, legend.GetX1()+0.05, legend.GetY2()-0.36)
+    legline.DrawLineNDC(legend.GetX1()+0.0106, legend.GetY2()-0.36, legend.GetX1()+0.0516, legend.GetY2()-0.36)
 
 plot.DrawCMSLogo(pads[1], 'Combine Harvester', scenario_label if scenario_label is not "" else args.scenario, 11, 0.045, 0.035, 1.2)
 plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
