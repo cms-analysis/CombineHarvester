@@ -5,6 +5,7 @@
 <bin file="ImpactsTable.cpp" name="ImpactsTable"></bin>
 <bin file="LimitCompare.cpp" name="LimitCompare"></bin>
 <bin file="MSSMExample.cpp" name="MSSMExample"></bin>
+<bin file="MSSMUpdate.cpp" name="MSSMUpdate"></bin>
 <bin file="MSSMYieldTable.cpp" name="MSSMYieldTable"></bin>
 <bin file="MSSMtauptYieldTable.cpp" name="MSSMtauptYieldTable"></bin>
 <bin file="NuisanceSummary.cpp" name="NuisanceSummary"></bin>
