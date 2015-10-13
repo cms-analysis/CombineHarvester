@@ -19,27 +19,25 @@ def makeHist(name, xbins, ybins, graph2d):
     hist = ROOT.TH2F(name, '', xbins, graph2d.GetXmin()-binw_x, graph2d.GetXmax()+binw_x, ybins, graph2d.GetYmin()-binw_y, graph2d.GetYmax()+binw_y)
     return hist
 
+# Should find another location for this function, and make more general. Ideally use the model files rather than the .dat files too
 def higgsConstraint(model, higgstype) :
-    if model=="low-tb-high":
-        massstep=10
-        masslow=150
-        masshigh=500
-        nmass=int(((masshigh-masslow)/massstep-1))
-        tanblow=0.5
-        tanbhigh=9.5
-        ntanb=int(((tanbhigh-tanblow)*10-1))
-
-    higgsBand=ROOT.TH2D("higgsBand", "higgsBand", nmass, masslow, masshigh, ntanb, tanblow, tanbhigh)
-    for mass in range (masslow, masshigh+1, massstep):
+    higgsBand=ROOT.TGraph2D()
+    masslow = 150
+    masshigh = 500
+    massstep = 10
+    n=0
+    for mass in range (masslow, masshigh, massstep):
         myfile = open("../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/"+model+"/higgs_"+str(mass)+".dat", 'r')
         for line in myfile:
             tanb = (line.split())[0]
             mh = float((line.split())[1])
             mH = float((line.split())[3])
             if higgstype=="h" :
-                 higgsBand.SetBinContent(higgsBand.GetXaxis().FindBin(mass), higgsBand.GetYaxis().FindBin(tanb), mh);
+                 higgsBand.SetPoint(n, mass, float(tanb), mh)
             elif higgstype=="H" :
-                higgsBand.SetBinContent(higgsBand.GetXaxis().FindBin(mass), higgsBand.GetYaxis().FindBin(tanb), mH);
+                 higgsBand.SetPoint(n, mass, float(tanb), mH)
+            n=n+1 
+        myfile.close()    
     return higgsBand
 
 col_store = []
@@ -153,7 +151,7 @@ c1=ROOT.TCanvas()
 axis = makeHist('hist2d', mA_bins, tanb_bins, graph_exp)
 axis.GetYaxis().SetTitle("tan#beta")
 if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), float(args.y_axis_max))
-axis.GetXaxis().SetTitle("m_{A}")
+axis.GetXaxis().SetTitle("m_{A} (GeV)")
 if args.custom_x_range : axis.GetXaxis().SetRangeUser(float(args.x_axis_min), float(args.x_axis_max))
 #Create two pads, one is just for the Legend
 pad1 = ROOT.TPad("pad1","pad1",0,0.82,1,1)
@@ -195,20 +193,14 @@ cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, threshold, 20)
 cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, threshold, 20)
 
 
-#if args.scenario == "low-tb-high":
-#    plane_higgsHBand = higgsConstraint(args.scenario, "H")
-#  plane_higgsBands.push_back(plane_higgsHBand);
-#  //lower edge entry 2
-#    cont_higgsHlow = plot.contourFromTH2(plane_higgsHBand, 260, 20)
-#  STestFunctor higgsHband0 = std::for_each( iter_higgsHlow.Begin(), TIter::End(), STestFunctor() );
-#  for(int i=0; i<higgsHband0.sum; i++) {gr_higgsHlow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false, 200))->At(i));}
-#  gr_higgsBands.push_back(gr_higgsHlow);
-#  //upper edge entry 3
-#    cont_higgsHhigh = plot.contourFromTH2(plane_higgsHBand, 350, 20)
-#  STestFunctor higgsHband1 = std::for_each( iter_higgsHhigh.Begin(), TIter::End(), STestFunctor() );
-#  for(int i=0; i<higgsHband1.sum; i++) {gr_higgsHhigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false, 200))->At(i));} 
-#  gr_higgsBands.push_back(gr_higgsHhigh);
-#}
+if args.scenario == "low-tb-high":
+    graph_higgshBand = higgsConstraint(args.scenario, "h")
+    plane_higgshBand = makeHist('plane_higgshBand', 36, 91, graph_higgshBand)
+    fillTH2(plane_higgshBand, graph_higgshBand)
+    plane_higgshBand.SaveAs("plane_higgshBand.C")
+    cont_higgshlow = plot.contourFromTH2(plane_higgshBand, 122, 5)
+    cont_higgshhigh = plot.contourFromTH2(plane_higgshBand, 128, 5)
+    cont_higgsh = plot.contourFromTH2(plane_higgshBand, 125, 5)
 
 for p in cont_minus2sigma :
     p.SetLineColor(0)
@@ -278,8 +270,32 @@ for p in cont_obs :
     #p.Draw("L SAME")
     #p.Draw("F SAME")
 
+for p in cont_higgshlow:
+    p.SetLineWidth(-402)
+    p.SetFillStyle(3005)
+    p.SetFillColor(ROOT.kRed)
+    p.SetLineColor(ROOT.kRed)
+    pads[1].cd()
+    p.Draw("L SAME")
+
+for p in cont_higgshlow:
+    p.SetLineWidth(402)
+    p.SetFillStyle(3005)
+    p.SetFillColor(ROOT.kRed)
+    p.SetLineColor(ROOT.kRed)
+    pads[1].cd()
+    p.Draw("L SAME")
+
+for p in cont_higgsh:
+    p.SetLineWidth(2)
+    p.SetLineColor(ROOT.kRed)
+    p.SetLineStyle(7)
+    pads[1].cd()
+    p.Draw("L SAME")
+
+
 #Set some common scenario labels
-scenario_label=""
+scenario_label=args.scenario
 if args.scenario == "mhmax":
     scenario_label="m_{h}^{max} scenario"
 if args.scenario == "mhmodp":
@@ -316,7 +332,7 @@ if(cont_obs[0]) :
     legline.SetLineColor(ROOT.kBlack)
     legline.DrawLineNDC(legend.GetX1()+0.0106, legend.GetY2()-0.36, legend.GetX1()+0.0516, legend.GetY2()-0.36)
 
-plot.DrawCMSLogo(pads[1], 'Combine Harvester', scenario_label if scenario_label is not "" else args.scenario, 11, 0.045, 0.035, 1.2)
+plot.DrawCMSLogo(pads[1], 'Combine Harvester', scenario_label, 11, 0.045, 0.035, 1.2)
 plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
 plot.FixOverlay()
 c1.SaveAs("mssm_"+args.scenario+".pdf")
