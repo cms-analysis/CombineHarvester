@@ -27,26 +27,33 @@ int main() {
   string input_dir =
       string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
 
-//So far only mutau added for MSSM, need to copy over all the systematics for other channels 
-
   VString chns =
-      {"mt"};
+      {"mt", "et", "tt"};
 
   map<string, string> input_folders = {
-      {"mt", "Imperial"}
+      {"mt", "Imperial"},
+      {"et", "Imperial"},
+      {"tt", "CERN"}
   };
   
   map<string, VString> bkg_procs;
-  bkg_procs["mt"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TT", "VV"};
+  bkg_procs["mt"] = {"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV"};
+  bkg_procs["et"] = {"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV"};
+  bkg_procs["tt"] = {"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV"};
   
   VString sig_procs = {"ggH", "bbH"};
+  VString SM_procs = {"ggH_SM125", "qqH_SM125", "VH_SM125"};
   
   map<string, Categories> cats;
   cats["mt_8TeV"] = {
-      {8, "muTau_nobtag"}, {9, "muTau_btag"}};
+      {10, "muTau_nobtag_low"}, {11, "muTau_nobtag_medium"}, {12, "muTau_nobtag_high"}, {13, "muTau_btag_low"}, {14, "muTau_btag_high"}};
+  cats["et_8TeV"] = {
+      {10, "eleTau_nobtag_low"}, {11, "eleTau_nobtag_medium"}, {12, "eleTau_nobtag_high"}, {13, "eleTau_btag_low"}, {14, "eleTau_btag_high"}};
+  cats["tt_8TeV"] = {
+      {10, "tauTau_nobtag_low"}, {11, "tauTau_nobtag_medium"}, {12, "tauTau_nobtag_high"}, {13, "tauTau_btag_low"}, {14, "tauTau_btag_high"}};
   
   auto masses = ch::MassesFromRange(
-      "90,100,120-140:10,140-200:20,200-500:50,600-1000:100");
+      "90,100,120-140:10,140-200:20,200-500:50,600-1000:100"); //90,100?
     
   for (auto chn : chns) {
     cb.AddObservations(
@@ -55,9 +62,14 @@ int main() {
       {"*"}, {"htt"}, {"8TeV"}, {chn}, bkg_procs[chn], cats[chn+"_8TeV"], false);
     cb.AddProcesses(
       masses, {"htt"}, {"8TeV"}, {chn}, sig_procs, cats[chn+"_8TeV"], true);
+    cb.AddProcesses(
+      masses, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], true);
   }
   
-  ch::AddMSSMSystematics(cb);
+  ch::AddMSSMUpdateSystematics_et_mt(cb);
+  //ch::AddMSSMUpdateSystematics_em(cb);
+  //ch::AddMSSMUpdateSystematics_mm(cb);
+  ch::AddMSSMUpdateSystematics_tt(cb);
 
   cout << ">> Extracting histograms from input root files...\n";
   for (string chn : chns) {
@@ -73,11 +85,11 @@ int main() {
     //{"ggH", {"ggh", "ggH", "ggA"}},
     //{"bbH", {"bbh", "bbH", "bbA"}}
     {"ggH", {"ggH"}},
-    {"bbH", {"bbH"}}
+    {"bbH", {"bbH"}} //SM_procs hier dazu?
   };
   cout << "Scaling signal process rates for acceptance...\n";
   for (string e : {"8TeV"}) {
-    for (string p : sig_procs) {
+    for (string p : sig_procs) { //SM_procs hier dazu?
       cout << "Scaling for process " << p << " and era " << e << "\n";
       auto gr = ch::TGraphFromTable(
           input_dir + "/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
