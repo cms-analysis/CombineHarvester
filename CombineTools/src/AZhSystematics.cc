@@ -23,11 +23,11 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
 
   auto signal = Set2Vec(cb.cp().signals().process_set());
 
-  src.cp().signals()
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}}))
       .AddSyst(cb, "lumi_8TeV", "lnN", SystMap<>::init
       (1.026));
 
-  src.cp().process(JoinStr({signal,{"GGToZZ2L2L,ZH_ww125,ZH_ww125,ZZ,TTZ,WZZ,ZZZ"}}))
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}}))
       .AddSyst(cb, "CMS_eff_e_8TeV", "lnN", SystMap<channel,bin_id>::init
       ({"et"}, {0}, 1.06)
       ({"et"}, {1}, 1.02)
@@ -36,7 +36,7 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
       ({"mt"}, {0}, 1.04)
       ({"tt"}, {0}, 1.04));
 
-  src.cp().process(JoinStr({signal,{"GGToZZ2L2L,ZH_ww125,ZH_ww125,ZZ,TTZ,WZZ,ZZZ"}}))
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}}))
       .AddSyst(cb, "CMS_eff_m_8TeV", "lnN", SystMap<channel,bin_id>::init
       ({"et"}, {1}, 1.04)
       ({"em"}, {0}, 1.02)
@@ -45,15 +45,23 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
       ({"mt"}, {1}, 1.06)
       ({"tt"}, {1}, 1.04));
 
-  src.cp().process(JoinStr({signal,{"GGToZZ2L2L,ZH_ww125,ZH_ww125,ZZ,TTZ,WZZ,ZZZ"}})).bin_id({0})
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}})).channel({"et","mt"})
+      .AddSyst(cb, "CMS_eff_t_llet_8TeV", "lnN", SystMap<>::init
+      (1.06));
+  
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}})).channel({"tt"})
+      .AddSyst(cb, "CMS_eff_t_lltt_8TeV", "lnN", SystMap<>::init
+      (1.12));
+  
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}})).bin_id({0})
       .AddSyst(cb, "CMS_trigger_e_8TeV", "lnN", SystMap<>::init
       (1.01));
   
-  src.cp().process(JoinStr({signal,{"GGToZZ2L2L,ZH_ww125,ZH_ww125,ZZ,TTZ,WZZ,ZZZ"}})).bin_id({1})
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}})).bin_id({1})
       .AddSyst(cb, "CMS_trigger_m_8TeV", "lnN", SystMap<>::init
       (1.01));
 
-  src.cp().process(JoinStr({signal,{"GGToZZ2L2L,ZH_ww125,ZH_ww125,ZZ,TTZ,WZZ,ZZZ"}}))
+  src.cp().process(JoinStr({signal,{"GGToZZ2L2L","ZH_ww125","ZH_ww125","ZZ","TTZ","WWZ","WZZ","ZZZ"}}))
       .AddSyst(cb, "CMS_fake_b_8TeV", "lnN", SystMap<>::init
       (1.01));
   
@@ -81,35 +89,35 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
       .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init
       (1.025));
 
-  src.cp().process({"ZJets"}).channel({"et","mt"})
+  src.cp().process({"Zjets"}).channel({"et","mt"})
       .AddSyst(cb, "CMS_zh2l2tau_ZjetBkg_lt_extrap_8TeV", "lnN", SystMap<>::init
       (1.20));
   
-  src.cp().process({"ZJets"}).channel({"em"})
+  src.cp().process({"Zjets"}).channel({"em"})
       .AddSyst(cb, "CMS_zh2l2tau_ZjetBkg_emu_extrap_8TeV", "lnN", SystMap<>::init
       (1.50));
   
-  src.cp().process({"ZJets"}).channel({"tt"})
+  src.cp().process({"Zjets"}).channel({"tt"})
       .AddSyst(cb, "CMS_zh2l2tau_ZjetBkg_tt_extrap_8TeV", "lnN", SystMap<>::init
       (1.15));
   
-  src.cp().process({"ZJets"}).channel({"mt"})
+  src.cp().process({"Zjets"}).channel({"mt"})
       .AddSyst(cb, "CMS_zh2l2tau_ZjetBkg_mu_extrap_8TeV", "lnN", SystMap<>::init
       (1.10));
   
-  src.cp().process({"ZJets"}).channel({"et"})
+  src.cp().process({"Zjets"}).channel({"et"})
       .AddSyst(cb, "CMS_zh2l2tau_ZjetBkg_e_extrap_8TeV", "lnN", SystMap<>::init
       (1.10));
   
-  src.cp().process(JoinStr({signal,{"ZZ,GGToZZ2L2L,TTZ,WWZ,WZZ,ZZZ,ZH_ww125,ZH_tt125"}})).channel({"et"})
+  src.cp().process(JoinStr({signal,{"ZZ","GGToZZ2L2L","TTZ","WWZ","WZZ","ZZZ","ZH_ww125","ZH_tt125"}})).channel({"et"})
       .AddSyst(cb, "CMS_scale_t_llet_8TeV", "shape", SystMap<>::init
       (1.00));
   
-  src.cp().process(JoinStr({signal,{"ZZ,GGToZZ2L2L,TTZ,WWZ,WZZ,ZZZ,ZH_ww125,ZH_tt125"}})).channel({"mt"})
+  src.cp().process(JoinStr({signal,{"ZZ","GGToZZ2L2L","TTZ","WWZ","WZZ","ZZZ","ZH_ww125","ZH_tt125"}})).channel({"mt"})
       .AddSyst(cb, "CMS_scale_t_llmt_8TeV", "shape", SystMap<>::init
       (1.00));
   
-  src.cp().process(JoinStr({signal,{"ZZ,GGToZZ2L2L,TTZ,WWZ,WZZ,ZZZ,ZH_ww125,ZH_tt125"}})).channel({"tt"})
+  src.cp().process(JoinStr({signal,{"ZZ","GGToZZ2L2L","TTZ","WWZ","WZZ","ZZZ","ZH_ww125","ZH_tt125"}})).channel({"tt"})
       .AddSyst(cb, "CMS_scale_t_lltt_8TeV", "shape", SystMap<>::init
       (1.00));
   
@@ -133,16 +141,16 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
       .AddSyst(cb, "CMS_vhtt_zzNorm_em_8TeV", "lnN", SystMap<>::init
       (1.05));
 
-  src.cp().process({"WWZ"}).channel({"em"})
-      .AddSyst(cb, "CMS_vhtt_wwzNorm_em_8TeV", "lnN", SystMap<>::init
+  src.cp().process({"WWZ"})
+      .AddSyst(cb, "CMS_vhtt_wwzNorm_8TeV", "lnN", SystMap<>::init
       (1.50));
   
-  src.cp().process({"WZZ"}).channel({"em"})
-      .AddSyst(cb, "CMS_vhtt_wzzNorm_em_8TeV", "lnN", SystMap<>::init
+  src.cp().process({"WZZ"})
+      .AddSyst(cb, "CMS_vhtt_wzzNorm_8TeV", "lnN", SystMap<>::init
       (1.50));
   
-  src.cp().process({"ZZZ"}).channel({"em"})
-      .AddSyst(cb, "CMS_vhtt_zzzNorm_em_8TeV", "lnN", SystMap<>::init
+  src.cp().process({"ZZZ"})
+      .AddSyst(cb, "CMS_vhtt_zzzNorm_8TeV", "lnN", SystMap<>::init
       (1.50));
 
   src.cp().process({"GGToZZ2L2L"}).channel({"mt"})
@@ -157,18 +165,6 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
       .AddSyst(cb, "CMS_vhtt_zzNorm_mt_8TeV", "lnN", SystMap<>::init
       (1.05));
 
-  src.cp().process({"WWZ"}).channel({"mt"})
-      .AddSyst(cb, "CMS_vhtt_wwzNorm_mt_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
-  src.cp().process({"WZZ"}).channel({"mt"})
-      .AddSyst(cb, "CMS_vhtt_wzzNorm_mt_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
-  src.cp().process({"ZZZ"}).channel({"mt"})
-      .AddSyst(cb, "CMS_vhtt_zzzNorm_mt_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
   src.cp().process({"GGToZZ2L2L"}).channel({"et"})
       .AddSyst(cb, "CMS_vhtt_ggZZNorm_et_8TeV", "lnN", SystMap<>::init
       (1.05));
@@ -181,18 +177,6 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
       .AddSyst(cb, "CMS_vhtt_zzNorm_et_8TeV", "lnN", SystMap<>::init
       (1.05));
 
-  src.cp().process({"WWZ"}).channel({"et"})
-      .AddSyst(cb, "CMS_vhtt_wwzNorm_et_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
-  src.cp().process({"WZZ"}).channel({"et"})
-      .AddSyst(cb, "CMS_vhtt_wzzNorm_et_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
-  src.cp().process({"ZZZ"}).channel({"et"})
-      .AddSyst(cb, "CMS_vhtt_zzzNorm_et_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
   src.cp().process({"GGToZZ2L2L"}).channel({"tt"})
       .AddSyst(cb, "CMS_vhtt_ggZZNorm_tt_8TeV", "lnN", SystMap<>::init
       (1.05));
@@ -205,17 +189,6 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
       .AddSyst(cb, "CMS_vhtt_zzNorm_tt_8TeV", "lnN", SystMap<>::init
       (1.05));
 
-  src.cp().process({"WWZ"}).channel({"tt"})
-      .AddSyst(cb, "CMS_vhtt_wwzNorm_tt_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
-  src.cp().process({"WZZ"}).channel({"tt"})
-      .AddSyst(cb, "CMS_vhtt_wzzNorm_tt_8TeV", "lnN", SystMap<>::init
-      (1.50));
-  
-  src.cp().process({"ZZZ"}).channel({"tt"})
-      .AddSyst(cb, "CMS_vhtt_zzzNorm_tt_8TeV", "lnN", SystMap<>::init
-      (1.50));
 }
 
 void AddSystematics_AZh(CombineHarvester & cb) {
