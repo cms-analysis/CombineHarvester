@@ -34,6 +34,10 @@ void AddSystematics_hhh_et_mt(CombineHarvester& cb, CombineHarvester src);
 void AddSystematics_hhh_et_mt(CombineHarvester& cb);
 void AddSystematics_hhh_tt(CombineHarvester& cb, CombineHarvester  src);
 void AddSystematics_hhh_tt(CombineHarvester& cb);
+// AZh systematics
+// Implemented in src/AZhSystematics.cc
+void AddSystematics_AZh(CombineHarvester& cb, CombineHarvester src);
+void AddSystematics_AZh(CombineHarvester& cb);
 }
 
 #endif
