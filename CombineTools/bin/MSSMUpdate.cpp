@@ -28,21 +28,25 @@ int main() {
       string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
 
   VString chns =
-      {"mt", "et", "tt"};
+      {"mt", "et", "tt", "em", "mm"};
 
   map<string, string> input_folders = {
-      {"mt", "Imperial"},
-      {"et", "Imperial"},
-      {"tt", "CERN"}
+      {"mt", "LLR"},
+      {"et", "LLR"},
+      {"tt", "LLR"},
+      {"em", "MIT"},
+      {"mm", "DESY-KIT"},
   };
   
   map<string, VString> bkg_procs;
   bkg_procs["mt"] = {"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV"};
   bkg_procs["et"] = {"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV"};
   bkg_procs["tt"] = {"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV"};
+  bkg_procs["em"] = {"Ztt", "ttbar", "EWK", "Fakes"};
+  bkg_procs["mm"] = {"ZTT", "ZMM", "QCD", "TTJ", "WJets", "Dibosons"};
   
   VString sig_procs = {"ggH", "bbH"};
-  VString SM_procs = {"ggH_SM125", "qqH_SM125", "VH_SM125"};
+  //VString SM_procs = {"ggH_SM125", "qqH_SM125", "VH_SM125"};
   
   map<string, Categories> cats;
   cats["mt_8TeV"] = {
@@ -51,6 +55,10 @@ int main() {
       {10, "eleTau_nobtag_low"}, {11, "eleTau_nobtag_medium"}, {12, "eleTau_nobtag_high"}, {13, "eleTau_btag_low"}, {14, "eleTau_btag_high"}};
   cats["tt_8TeV"] = {
       {10, "tauTau_nobtag_low"}, {11, "tauTau_nobtag_medium"}, {12, "tauTau_nobtag_high"}, {13, "tauTau_btag_low"}, {14, "tauTau_btag_high"}};
+  cats["em_8TeV"] = {
+      {8, "emu_nobtag"}, {9, "emu_btag"}};
+  cats["mm_8TeV"] = {
+      {8, "mumu_nobtag"}, {9, "mumu_btag"}};
   
   auto masses = ch::MassesFromRange(
       "90,100,120-140:10,140-200:20,200-500:50,600-1000:100"); //90,100?
@@ -62,13 +70,13 @@ int main() {
       {"*"}, {"htt"}, {"8TeV"}, {chn}, bkg_procs[chn], cats[chn+"_8TeV"], false);
     cb.AddProcesses(
       masses, {"htt"}, {"8TeV"}, {chn}, sig_procs, cats[chn+"_8TeV"], true);
-    cb.AddProcesses(
-      masses, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], true);
+    /*cb.AddProcesses(
+      masses, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], false);*/ //true?
   }
   
   ch::AddMSSMUpdateSystematics_et_mt(cb);
-  //ch::AddMSSMUpdateSystematics_em(cb);
-  //ch::AddMSSMUpdateSystematics_mm(cb);
+  ch::AddMSSMUpdateSystematics_em(cb);
+  ch::AddMSSMUpdateSystematics_mm(cb);
   ch::AddMSSMUpdateSystematics_tt(cb);
 
   cout << ">> Extracting histograms from input root files...\n";
@@ -101,8 +109,25 @@ int main() {
     }
   }
   
-  cout << ">> Setting standardised bin names...\n";
-  ch::SetStandardBinNames(cb);
+  cout << ">> Merging bin errors and generating bbb uncertainties...\n";
+   auto bbb = ch::BinByBinFactory()
+       .SetAddThreshold(0.05)
+       .SetFixNorm(true);
+   bbb.AddBinByBin(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}), cb); //bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+
+   cout << ">> Setting standardised bin names...\n";
+   ch::SetStandardBinNames(cb);
+   VString droplist = ch::ParseFileLines(
+     aux_pruning + "uncertainty-pruning-drop-150602-mssm-taupt.txt");
+   cout << ">> Droplist contains " << droplist.size() << " entries\n";
+
+   set<string> to_drop;
+   for (auto x : droplist) to_drop.insert(x);
+   auto pre_drop = cb.syst_name_set();
+   cb.syst_name(droplist, false);
+   auto post_drop = cb.syst_name_set();
+   cout << ">> Systematics dropped: " << pre_drop.size() - post_drop.size()
+             << "\n";
   
   string folder = "output/mssm_cards/LIMITS";
   boost::filesystem::create_directories(folder);
