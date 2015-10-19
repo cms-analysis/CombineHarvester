@@ -5,7 +5,7 @@ import math
 import itertools
 
 class MSSMHiggsModel(PhysicsModel):
-    def __init__(self):
+    def __init__(self, modelname):
         PhysicsModel.__init__(self)
         # Define the known production and decay processes
         # These are strings we will look for in the process names to
@@ -15,6 +15,7 @@ class MSSMHiggsModel(PhysicsModel):
         # loaded from the model files. Should integrate this into the options
         # somehow.
         eras = ['8TeV']
+        self.modelname = modelname
         self.PROC_SETS = []
         self.PROC_SETS.append(
                 ([ 'ggh', 'bbh' ], [ 'htautau' ], eras)
@@ -34,7 +35,11 @@ class MSSMHiggsModel(PhysicsModel):
         be imported later as dependents of the normalisation terms."""
         # First call the parent class implementation
         PhysicsModel.setModelBuilder(self, modelBuilder)
-        self.buildModel(os.environ['CMSSW_BASE']+'/src/auxiliaries/models/out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root')
+        if self.modelname == "mhmax" : filename = 'out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root'
+        if self.modelname == "mhmodp" : filename = 'out.mhmodp-8TeV-tanbHigh-nnlo.root'
+        if self.modelname == "mhmodm" : filename = 'out.mhmodm-8TeV-tanbHigh-nnlo.root'
+        if self.modelname == "hMSSM" : filename = 'hMSSM_8TeV.root'
+        self.buildModel(os.environ['CMSSW_BASE']+'/src/auxiliaries/models/'+filename)
 
     def doHistFunc(self, name, hist, varlist, interpolate=1):
         "method to conveniently create a RooHistFunc from a TH1/TH2 input"
@@ -61,17 +66,49 @@ class MSSMHiggsModel(PhysicsModel):
         mA = ROOT.RooRealVar('mA', 'mA', 344., 90., 1000.)
         tanb = ROOT.RooRealVar('tanb', 'tanb', 9., 1., 60.)
         f = ROOT.TFile(filename)
-        mH = self.doHistFunc('mH', f.Get('h_mH'), [mA, tanb])
-        mh = self.doHistFunc('mh', f.Get('h_mh'), [mA, tanb])
-        ggF_xsec_h = self.doHistFunc('xsec_ggh_8TeV', f.Get('h_ggF_xsec_h'), [mA, tanb])
-        ggF_xsec_H = self.doHistFunc('xsec_ggH_8TeV', f.Get('h_ggF_xsec_H'), [mA, tanb])
-        ggF_xsec_A = self.doHistFunc('xsec_ggA_8TeV', f.Get('h_ggF_xsec_A'), [mA, tanb])
-        bbH_xsec_h = self.doHistFunc('xsec_bbh_8TeV', self.santanderMatching(f.Get('h_bbH4f_xsec_h'), f.Get('h_bbH_xsec_h'), f.Get('h_mh')), [mA, tanb])
-        bbH_xsec_H = self.doHistFunc('xsec_bbH_8TeV', self.santanderMatching(f.Get('h_bbH4f_xsec_H'), f.Get('h_bbH_xsec_H'), f.Get('h_mH')), [mA, tanb])
-        bbH_xsec_A = self.doHistFunc('xsec_bbA_8TeV', self.santanderMatching(f.Get('h_bbH4f_xsec_A'), f.Get('h_bbH_xsec_A')), [mA, tanb])
-        brtautau_h = self.doHistFunc('br_htautau', f.Get('h_brtautau_h'), [mA, tanb])
-        brtautau_H = self.doHistFunc('br_Htautau', f.Get('h_brtautau_H'), [mA, tanb])
-        ggF_xsec_A = self.doHistFunc('br_Atautau', f.Get('h_brtautau_A'), [mA, tanb])
+        #Take care of different histogram names for hMSSM:
+        if self.modelname is not 'hMSSM' :
+            mH_str = "h_mH"
+            mh_str = "h_mh"
+            ggF_xsec_h_str = "h_ggF_xsec_h"
+            ggF_xsec_H_str = "h_ggF_xsec_H"
+            ggF_xsec_A_str = "h_ggF_xsec_A"
+            bbH_4f_xsec_h_str = "h_bbH4f_xsec_h"
+            bbH_4f_xsec_H_str = "h_bbH4f_xsec_H"
+            bbH_4f_xsec_A_str = "h_bbH4f_xsec_A"
+            bbH_xsec_h_str = "h_bbH_xsec_h"
+            bbH_xsec_H_str = "h_bbH_xsec_H"
+            bbH_xsec_A_str = "h_bbH_xsec_A"
+            brtautau_h_str = "h_brtautau_h"
+            brtautau_H_str = "h_brtautau_H"
+            brtautau_A_str = "h_brtautau_A"
+        else :
+            mH_str = "m_H"
+            mh_str = "m_h"
+            ggF_xsec_h_str = "xs_gg_h"
+            ggF_xsec_H_str = "xs_gg_H"
+            ggF_xsec_A_str = "xs_gg_A"
+            bbH_4f_xsec_h_str = "xs_bb4F_h"
+            bbH_4f_xsec_H_str = "xs_bb4F_H"
+            bbH_4f_xsec_A_str = "xs_bb4F_A"
+            bbH_xsec_h_str = "xs_bb5F_h"
+            bbH_xsec_H_str = "xs_bb5F_H"
+            bbH_xsec_A_str = "xs_bb5F_A"
+            brtautau_h_str = "br_h_tautau"
+            brtautau_H_str = "br_H_tautau"
+            brtautau_A_str = "br_A_tautau"
+        
+        mH = self.doHistFunc('mH', f.Get(mH_str), [mA, tanb])
+        mh = self.doHistFunc('mh', f.Get(mh_str), [mA, tanb])
+        ggF_xsec_h = self.doHistFunc('xsec_ggh_8TeV', f.Get(ggF_xsec_h_str), [mA, tanb])
+        ggF_xsec_H = self.doHistFunc('xsec_ggH_8TeV', f.Get(ggF_xsec_H_str), [mA, tanb])
+        ggF_xsec_A = self.doHistFunc('xsec_ggA_8TeV', f.Get(ggF_xsec_A_str), [mA, tanb])
+        bbH_xsec_h = self.doHistFunc('xsec_bbh_8TeV', self.santanderMatching(f.Get(bbH_4f_xsec_h_str), f.Get(bbH_xsec_h_str), f.Get(mh_str)), [mA, tanb])
+        bbH_xsec_H = self.doHistFunc('xsec_bbH_8TeV', self.santanderMatching(f.Get(bbH_4f_xsec_H_str), f.Get(bbH_xsec_H_str), f.Get(mH_str)), [mA, tanb])
+        bbH_xsec_A = self.doHistFunc('xsec_bbA_8TeV', self.santanderMatching(f.Get(bbH_4f_xsec_A_str), f.Get(bbH_xsec_A_str)), [mA, tanb])
+        brtautau_h = self.doHistFunc('br_htautau', f.Get(brtautau_h_str), [mA, tanb])
+        brtautau_H = self.doHistFunc('br_Htautau', f.Get(brtautau_H_str), [mA, tanb])
+        ggF_xsec_A = self.doHistFunc('br_Atautau', f.Get(brtautau_A_str), [mA, tanb])
         # Next step: creating theory uncertainties
         #  1) for each syst source build kappaHi and kappaLo TH1s by doing a *careful* divide
         #     between nominal and shifted TH2s => "kappa_hi_xsec_ggh_8TeV_scale"
@@ -155,6 +192,9 @@ class BRChargedHiggs(PhysicsModel):
 
 
 
-MSSM = MSSMHiggsModel()
+mhmax = MSSMHiggsModel("mhmax")
+mhmodp = MSSMHiggsModel("mhmodp")
+mhmodm = MSSMHiggsModel("mhmodm")
+hMSSM = MSSMHiggsModel("hMSSM")
 brChargedHiggs = BRChargedHiggs()
 
