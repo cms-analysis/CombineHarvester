@@ -1,4 +1,4 @@
-#include "CombineHarvester/CombineTools/interface/HttSystematics.h"
+ #include "CombineHarvester/CombineTools/interface/HttSystematics.h"
 #include <vector>
 #include <string>
 #include "CombineHarvester/CombineTools/interface/Systematics.h"
@@ -23,34 +23,27 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
       std::mem_fn(&Process::process)));
 
   src.cp().process({"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init({"8TeV"}, 1.026));
-
+    .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init
+	     //({"7TeV"}, 1.026)
+	     ({"8TeV"}, 1.026));
+  
   src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel>::init({"mt"}, 1.010));
+    .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel>::init({"mt"}, 1.010));
   src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel>::init({"et"}, 1.020));
-
+    .AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel>::init({"et"}, 1.020));
+  
   src.cp()
-      .AddSyst(cb, "CMS_eff_t_mutau_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-	({"mt"}, {10, 11, 12, 13, 14}, {"ggH", "bbH", "ZTT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.08)
-	({"mt"}, {10, 11, 12}, {"TT"}, 1.080)
-	);
-  src.cp()
-      .AddSyst(cb, "CMS_eff_t_etau_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-	({"et"}, {10, 11, 12, 13}, {"ggH", "bbH", "ZTT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.08)
-	({"et"}, {10, 11, 12}, {"TT"}, 1.080)
-	);
-
+    .AddSyst(cb, "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({10, 11, 12, 13}, {"ggH", "bbH", "ZTT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.08)
+	     ({10, 11, 12}, {"TT"}, 1.080)
+	     );
+  
   src.cp().process({"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_eff_t_mssmHigh_mutau_$ERA", "shape", SystMap<channel>::init({"mt"}, 1));
-  src.cp().process({"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_eff_t_mssmHigh_etau_$ERA", "shape", SystMap<channel>::init({"et"}, 1));
-
+    .AddSyst(cb, "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1));
+  
   src.cp().process({"ggH", "bbH", "ZTT", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_scale_t_mutau_$ERA", "shape", SystMap<channel>::init({"mt"}, 1));
-  src.cp().process({"ggH", "bbH", "ZTT", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_scale_t_etau_$ERA", "shape", SystMap<channel>::init({"et"}, 1));
-
+    .AddSyst(cb, "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<channel>::init(1));
+  
   /*src.cp().process({"W"})
       .AddSyst(cb, "CMS_shift1_muTau_nobtag_low_$ERA_W_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.000));
   src.cp().process({"W"})
@@ -74,7 +67,7 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
   src.cp().process({"QCD"})
       .AddSyst(cb, "CMS_shift1_muTau_nobtag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
   src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_shift2_muTau_nobtag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
+  .AddSyst(cb, "CMS_shift2_muTau_nobtag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
   src.cp().process({"W"})
       .AddSyst(cb, "CMS_shift1_muTau_btag_low_$ERA_W_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {13}, 1.000));
   src.cp().process({"W"})
@@ -133,238 +126,156 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
       .AddSyst(cb, "CMS_shift2_eleTau_btag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"et"}, {14}, 1.000));*/
 
   src.cp()
-      .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-	({"mt", "et"}, {10, 11, 12}, {"bbH", "TT"}, 0.99)
-	({"mt"}, {13, 14}, {"ggH", "ggH_SM125"}, 0.99)
-	({"mt"}, {13, 14}, {"bbH"}, 1.01)
-	({"mt"}, {13, 14}, {"ZJ"}, 0.980)
-	({"mt"}, {13, 14}, {"ZL"}, 0.980)
-	({"mt"}, {13, 14}, {"TT"}, 0.920)
-	({"mt"}, {13, 14}, {"VV"}, 0.980)
-	({"et"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.03)
-	({"et"}, {13, 14}, {"bbH"}, 1.01)
-	({"et"}, {13, 14}, {"ZJ"}, 1.060)
-	({"et"}, {13, 14}, {"ZL"}, 0.960)
-	({"et"}, {13, 14}, {"TT"}, 0.900)
-	({"et"}, {13, 14}, {"VV"}, 0.940)
-	);
+    .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+	     ({"mt", "et"}, {10, 11, 12}, {"bbH", "TT"}, 0.99)
+	     ({"mt"}, {13, 14}, {"ggH", "ggH_SM125"}, 0.99)
+	     ({"mt"}, {13, 14}, {"bbH"}, 1.01)
+	     ({"mt"}, {13, 14}, {"ZJ"}, 0.980)
+	     ({"mt"}, {13, 14}, {"ZL"}, 0.980)
+	     ({"mt"}, {13, 14}, {"TT"}, 0.920)
+	     ({"mt"}, {13, 14}, {"VV"}, 0.980)
+	     ({"et"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.03)
+	     ({"et"}, {13, 14}, {"bbH"}, 1.01)
+	     ({"et"}, {13, 14}, {"ZJ"}, 1.060)
+	     ({"et"}, {13, 14}, {"ZL"}, 0.960)
+	     ({"et"}, {13, 14}, {"TT"}, 0.900)
+	     ({"et"}, {13, 14}, {"VV"}, 0.940));
 
   src.cp()
-      .AddSyst(cb, "CMS_htt_scale_met_$ERA", "lnN", SystMap<bin_id, process>::init
-	({10, 11, 12, 13, 14}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.99)
-	({10, 11, 12, 13, 14}, {"ZJ", "ZL", "TT"}, 1.010)
-	({13, 14}, {"W"}, 1.010)
-	);
-
+    .AddSyst(cb, "CMS_htt_scale_met_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({10, 11, 12, 13, 14}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.99)
+	     ({10, 11, 12, 13, 14}, {"ZJ", "ZL", "TT"}, 1.010)
+	     ({13, 14}, {"W"}, 1.010));
+  
   src.cp()
       .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-	({"et", "mt"}, {10, 11, 12}, {"bbH"}, 0.99)
-	({"et", "mt"}, {10, 11, 12}, {"TT"}, 0.950)
-	({"mt"}, {10, 11, 12}, {"VV"}, 0.980)
-	({"et"}, {10, 11, 12}, {"VV"}, 0.990)
-	({"mt"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.01)
-	({"mt"}, {13, 14}, {"bbH"}, 1.03)
-	({"mt"}, {13, 14}, {"ZL"}, 1.040)
-	({"mt"}, {13, 14}, {"TT"}, 1.020)
-	({"mt"}, {13, 14}, {"VV"}, 1.040)
-	({"et"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.01)
-	({"et"}, {13, 14}, {"bbH"}, 1.02)
-	({"et"}, {13, 14}, {"ZL"}, 1.020)
-	({"et"}, {13, 14}, {"ZJ"}, 1.040)
-	({"et"}, {13, 14}, {"TT"}, 1.040)
-	({"et"}, {13, 14}, {"VV"}, 1.040)
-	);
-
+	       ({"et", "mt"}, {10, 11, 12}, {"bbH"}, 0.99)
+	       ({"et", "mt"}, {10, 11, 12}, {"TT"}, 0.950)
+	       ({"mt"}, {10, 11, 12}, {"VV"}, 0.980)
+	       ({"et"}, {10, 11, 12}, {"VV"}, 0.990)
+	       ({"mt"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.01)
+	       ({"mt"}, {13, 14}, {"bbH"}, 1.03)
+	       ({"mt"}, {13, 14}, {"ZL"}, 1.040)
+	       ({"mt"}, {13, 14}, {"TT"}, 1.020)
+	       ({"mt"}, {13, 14}, {"VV"}, 1.040)
+	       ({"et"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.01)
+	       ({"et"}, {13, 14}, {"bbH"}, 1.02)
+	       ({"et"}, {13, 14}, {"ZL"}, 1.020)
+	       ({"et"}, {13, 14}, {"ZJ"}, 1.040)
+	       ({"et"}, {13, 14}, {"TT"}, 1.040)
+	       ({"et"}, {13, 14}, {"VV"}, 1.040));
+	       
   src.cp()
-      .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-	({"mt", "et"}, {10, 11, 12}, {"TT"}, 0.970)
-	({"mt", "et"}, {10, 11, 12}, {"VV"}, 0.990)
-	({"mt"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.05)
-	({"mt"}, {13, 14}, {"ZL"}, 1.050)
-	({"mt"}, {13, 14}, {"ZJ"}, 1.090)
-	({"mt"}, {13, 14}, {"TT", "VV"}, 1.010)
-	({"et"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.03)
-	({"et"}, {13, 14}, {"ZL"}, 1.020)
-	({"et"}, {13, 14}, {"ZJ"}, 1.090)
-	({"et"}, {13, 14}, {"TT", "VV"}, 1.010)
-	);
+    .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+	     ({"mt", "et"}, {10, 11, 12}, {"TT"}, 0.970)
+	     ({"mt", "et"}, {10, 11, 12}, {"VV"}, 0.990)
+	     ({"mt"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.05)
+	     ({"mt"}, {13, 14}, {"ZL"}, 1.050)
+	     ({"mt"}, {13, 14}, {"ZJ"}, 1.090)
+	     ({"mt"}, {13, 14}, {"TT", "VV"}, 1.010)
+	     ({"et"}, {13, 14}, {"ggH", "ggH_SM125"}, 1.03)
+	     ({"et"}, {13, 14}, {"ZL"}, 1.020)
+	     ({"et"}, {13, 14}, {"ZJ"}, 1.090)
+	     ({"et"}, {13, 14}, {"TT", "VV"}, 1.010));
 
   src.cp().process({"ZTT", "ZJ", "ZL"})
-      .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.030));
-
+    .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.030));
+  
   src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_mutau_nobtag_medium_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {11}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_mutau_nobtag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_mutau_btag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {13}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_mutau_btag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {14}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_etau_nobtag_medium_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {11}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_etau_nobtag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {12}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_etau_btag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {13}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_etau_btag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {14}, 1.050));
+    .AddSyst(cb, "CMS_htt_extrap_ztt_$CHANNEL_$BIN_$ERA", "lnN", SystMap<bin_id>::init
+	     ({11, 12, 13, 14}, 1.050));
+  
+  src.cp().process({"TT"})
+    .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
+  
+  src.cp().process({"TT"})
+    .AddSyst(cb, "CMS_htt_ttbarPtReweight_$ERA", "shape", SystMap<>::init(1.000));
 
   src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
+    .AddSyst(cb, "CMS_htt_ttbarJetFake_$ERA", "shape", SystMap<>::init(1.000));
 
   src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarPtReweight_$ERA", "shape", SystMap<>::init(1.000));
-
-  src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarJetFake_$ERA", "shape", SystMap<>::init(1.000));
-
-  src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbar_emb_$ERA", "lnN", SystMap<bin_id>::init({13, 14}, 1.140));
+    .AddSyst(cb, "CMS_htt_ttbar_emb_$ERA", "lnN", SystMap<bin_id>::init({13, 14}, 1.140));
 
   src.cp().process({"VV"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.150));
+    .AddSyst(cb, "CMS_htt_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.150));
 
   src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_mutau_nobtag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.200));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_mutau_nobtag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.100));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_mutau_nobtag_medium_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {11}, 1.200));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_mutau_nobtag_medium_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {11}, 1.100));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_mutau_nobtag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.200));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_mutau_nobtag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.100));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_mutau_btag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {13}, 1.300));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_mutau_btag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {13}, 1.200));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_mutau_btag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {14}, 1.500));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_mutau_btag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {14}, 1.200));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_etau_nobtag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {10}, 1.200));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_etau_nobtag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {10}, 1.100));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_etau_nobtag_medium_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {11}, 1.200));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_etau_nobtag_medium_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {11}, 1.100));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_etau_nobtag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {12}, 1.200));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_etau_nobtag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {12}, 1.100));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_etau_btag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {13}, 1.300));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_etau_btag_low_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {13}, 1.200));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_etau_btag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {14}, 1.500));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_etau_btag_high_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {14}, 1.200));
+    .AddSyst(cb, "CMS_htt_WNorm_$CHANNEL_$BIN_$ERA", "lnN", SystMap<bin_id>::init
+	     ({10, 11, 12}, 1.200)
+	     ({13}, 1.300)
+	     ({14}, 1.500));
 
   src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDfrShape_mutau_$ERA", "shape", SystMap<channel>::init({"mt"}, 1.000));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDfrShape_etau_$ERA", "shape", SystMap<channel>::init({"et"}, 1.000));
-
-  src.cp().process({"ZJ"})
-      .AddSyst(cb, "CMS_htt_ZJetFakeTau_mutau_$ERA", "lnN", SystMap<channel>::init({"mt"}, 1.200));
-  src.cp().process({"ZJ"})
-      .AddSyst(cb, "CMS_htt_ZJetFakeTau_etau_$ERA", "lnN", SystMap<channel>::init({"et"}, 1.200));
+    .AddSyst(cb, "CMS_htt_QCDSyst_$CHANNEL_$BIN_$ERA", "lnN", SystMap<bin_id>::init
+	     ({10, 11, 12}, 1.100)
+	     ({13, 14}, 1.200));
 
   src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_mutau_low_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {10, 13}, 1.300));
+    .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_$CHANNEL_low_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init
+	     ({"mt"}, {10, 13}, 1.300)
+	     ({"et"}, {10, 13}, 1.200));
+  
   src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_mutau_medium_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {11, 14}, 1.300));
-  src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_mutau_high_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.300));
-  src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_etau_low_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {10, 13}, 1.200));
-  src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_etau_medium_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {11, 14}, 1.200));
-  src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_etau_high_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init({"et"}, {12}, 1.200));
+    .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_$CHANNEL_medium_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init
+	     ({"mt"}, {11, 14}, 1.300)
+	     ({"et"}, {11, 14}, 1.200));
 
   src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLScale_mutau_$ERA", "shape", SystMap<channel>::init({"mt"}, 1.000));
+    .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_$CHANNEL_high_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init
+	     ({"mt"}, {12}, 1.300)
+	     ({"et"}, {12}, 1.200));
+
   src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLScale_etau_$ERA", "shape", SystMap<channel>::init({"et"}, 1.000));
-
+    .AddSyst(cb, "CMS_htt_ZLScale_$CHANNEL_$ERA", "shape", SystMap<>::init(1.000));
+  
   src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_mutau_nobtag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_mutau_nobtag_medium_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {11}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_mutau_nobtag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_mutau_btag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {13}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_mutau_btag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {14}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_etau_nobtag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {10}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_etau_nobtag_medium_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {11}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_etau_nobtag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {12}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_etau_btag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {13}, 1.000));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_etau_btag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {14}, 1.000));
-
+    .AddSyst(cb, "CMS_htt_WShape_$CHANNEL_$BIN_$ERA", "shape", SystMap<>::init(1.000));
+  
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
-
+    .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
+  
   src.cp()
-      .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<process>::init
-	({"qqH_SM125"}, 1.036)
-	({"VH_SM125"}, 1.040)
-	);
-
+    .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<process>::init
+	     ({"qqH_SM125"}, 1.036)
+	     ({"VH_SM125"}, 1.040));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
-
+    .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
+  
   src.cp()
-      .AddSyst(cb, "UEPS", "lnN", SystMap<bin_id, process>::init
-	({10, 11, 12}, {"ggH_SM125"}, 1.013)
-	({10, 11, 12}, {"qqH_SM125", "VH_SM125"}, 1.050)
-	({13, 14}, {"ggH_SM125"}, 0.946)
-	({13, 14}, {"qqH_SM125", "VH_SM125"}, 1.007)
-	);
-
+    .AddSyst(cb, "UEPS", "lnN", SystMap<bin_id, process>::init
+	     ({10, 11, 12}, {"ggH_SM125"}, 1.013)
+	     ({10, 11, 12}, {"qqH_SM125", "VH_SM125"}, 1.050)
+	     ({13, 14}, {"ggH_SM125"}, 0.946)
+	     ({13, 14}, {"qqH_SM125", "VH_SM125"}, 1.007));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<channel, bin_id>::init
-	({"mt", "et"}, {10, 11, 12}, 1.080)
-	({"mt"}, {13, 14}, 1.105)
-	({"et"}, {13, 14}, 1.125)
-	);
-
+    .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<channel, bin_id>::init
+	     ({"mt", "et"}, {10, 11, 12}, 1.080)
+	     ({"mt"}, {13, 14}, 1.105)
+	     ({"et"}, {13, 14}, 1.125));
+  
   src.cp().process({"qqH_SM125"})
-      .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<bin_id>::init
-	({10, 11, 12}, 1.022)
-	({13, 14}, 1.015)
-	);
-
+    .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<bin_id>::init
+	     ({10, 11, 12}, 1.022)
+	     ({13, 14}, 1.015));
+  
   src.cp().process({"VH_SM125"})
-      .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<bin_id>::init
-	({10, 11, 12}, 1.010)
-	({13, 14}, 1.040)
-	);
-
+    .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<bin_id>::init
+	     ({10, 11, 12}, 1.010)
+	     ({13, 14}, 1.040));
+  
   src.cp().process({"ggH"})
-      .AddSyst(cb, "CMS_htt_higgsPtReweight_$ERA", "shape", SystMap<>::init(1));
-
+    .AddSyst(cb, "CMS_htt_higgsPtReweight_$ERA", "shape", SystMap<>::init(1));
+  
   src.cp().process({"ggH"})
-      .AddSyst(cb, "CMS_htt_higgsPtReweight_scale_$ERA", "shape", SystMap<channel, bin_id>::init
-	({"mt", "et"}, {10, 11, 12, 13}, 1)
-	({"et"}, {14}, 1)
-	);
-
+    .AddSyst(cb, "CMS_htt_higgsPtReweight_scale_$ERA", "shape", SystMap<channel, bin_id>::init
+	     ({"mt", "et"}, {10, 11, 12, 13}, 1)
+	     ({"et"}, {14}, 1));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "CMS_htt_higgsPtReweightSM_$ERA", "shape", SystMap<>::init(1.000));
-
+    .AddSyst(cb, "CMS_htt_higgsPtReweightSM_$ERA", "shape", SystMap<>::init(1.000));
 }
 
 void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb) {
@@ -382,127 +293,114 @@ void AddMSSMUpdateSystematics_em(CombineHarvester & cb, CombineHarvester src) {
       std::mem_fn(&Process::process)));
 
   src.cp().process({"ggH", "bbH", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init({"8TeV"}, 1.026));
-
+    .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init({"8TeV"}, 1.026));
+  
   src.cp().process({"ggH", "bbH", "Ztt", "ttbar", "EKW", "Fakes", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_eff_e_$ERA", "lnN", SystMap<>::init(1.02));
-
+    .AddSyst(cb, "CMS_eff_e_$ERA", "lnN", SystMap<>::init(1.02));
+  
   src.cp().process({"ggH", "bbH", "Ztt", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_scale_e_$ERA", "shape", SystMap<>::init(1));
-
+    .AddSyst(cb, "CMS_scale_e_$ERA", "shape", SystMap<>::init(1));
+  
   /*src.cp().process({"EKW"})
-      .AddSyst(cb, "CMS_shift1_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
-  src.cp().process({"EKW"})
-      .AddSyst(cb, "CMS_shift1_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
-
-  src.cp().process({"EKW"})
-      .AddSyst(cb, "CMS_shift2_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
-  src.cp().process({"EKW"})
-      .AddSyst(cb, "CMS_shift2_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));*/
+    .AddSyst(cb, "CMS_shift1_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
+    src.cp().process({"EKW"})
+    .AddSyst(cb, "CMS_shift1_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
+    
+    src.cp().process({"EKW"})
+    .AddSyst(cb, "CMS_shift2_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
+    src.cp().process({"EKW"})
+    .AddSyst(cb, "CMS_shift2_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));*/
 
   src.cp().process({"ggH", "bbH", "Ztt", "ttbar", "EKW", "Fakes", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<>::init(1.02));
+    .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<>::init(1.02));
 
   src.cp()
-      .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.01)
-	({8}, {"ttbar", "EKW"}, 0.990)
-	({9}, {"ggH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.04)
-	({9}, {"bbH"}, 1.01)
-	({9}, {"ttbar"}, 0.930)
-	({9}, {"EKW"}, 0.970)
-	);
+    .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.01)
+	     ({8}, {"ttbar", "EKW"}, 0.990)
+	     ({9}, {"ggH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.04)
+	     ({9}, {"bbH"}, 1.01)
+	     ({9}, {"ttbar"}, 0.930)
+	     ({9}, {"EKW"}, 0.970));
 
   src.cp()
-      .AddSyst(cb, "CMS_htt_scale_met_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8, 9}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
-	({8}, {"ttbar"}, 0.990)
-	({9}, {"ttbar"}, 1.010)
-	);
+    .AddSyst(cb, "CMS_htt_scale_met_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8, 9}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({8}, {"ttbar"}, 0.990)
+	     ({9}, {"ttbar"}, 1.010));
+  
+  src.cp()
+    .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH", "bbH", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({8}, {"ttbar"}, 0.950)
+	     ({9}, {"ggH", "ggH_SM125"}, 1.01)
+	     ({9}, {"bbH"}, 1.05)
+	     ({9}, {"ttbar"}, 1.020)
+	     ({9}, {"EKW"}, 1.030));
 
   src.cp()
-      .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH", "bbH", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
-	({8}, {"ttbar"}, 0.950)
-	({9}, {"ggH", "ggH_SM125"}, 1.01)
-	({9}, {"bbH"}, 1.05)
-	({9}, {"ttbar"}, 1.020)
-	({9}, {"EKW"}, 1.030)
-	);
-
-  src.cp()
-      .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH", "bbH", "ttbar", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
-	({9}, {"ggH", "ggH_SM125"}, 1.05)
-	({9}, {"EKW"}, 1.030)
-	);
+    .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH", "bbH", "ttbar", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({9}, {"ggH", "ggH_SM125"}, 1.05)
+	     ({9}, {"EKW"}, 1.030));
 
   src.cp().process({"Ztt"})
-      .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.030));
-
+    .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.030));
+  
   src.cp().process({"Ztt"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_em_btag_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.010));
-
+    .AddSyst(cb, "CMS_htt_extrap_ztt_$CHANNEL_btag_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.010));
+  
   src.cp().process({"ttbar"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
-
+    .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
+  
   src.cp().process({"EKW"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.150));
+    .AddSyst(cb, "CMS_htt_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.150));
 
   src.cp().process({"Fakes"})
-      .AddSyst(cb, "CMS_htt_fakes_em_$ERA", "lnN", SystMap<>::init(1.300));
-
+    .AddSyst(cb, "CMS_htt_fakes_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.300));
+  
   src.cp().process({"Fakes"})
-      .AddSyst(cb, "CMS_htt_fakes_em_btag_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.090));
-
+    .AddSyst(cb, "CMS_htt_fakes_$CHANNEL_btag_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.090));
+  
   src.cp().process({"ttbar"})
-      .AddSyst(cb, "CMS_htt_ttbar_emb_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.020));
-
+    .AddSyst(cb, "CMS_htt_ttbar_emb_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.020));
+  
   src.cp().process({"Fakes"})
-      .AddSyst(cb, "CMS_htt_FakeShape_em_nobtag_$ERA", "shape", SystMap<bin_id>::init({8}, 1.000));
-  src.cp().process({"Fakes"})
-      .AddSyst(cb, "CMS_htt_FakeShape_em_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.000));
-
+    .AddSyst(cb, "CMS_htt_FakeShape_$CHANNEL_$BIN_$ERA", "shape", SystMap<>::init(1.000));
+  
   src.cp().process({"ttbar"})
-      .AddSyst(cb, "CMS_htt_TTbarShape_em_nobtag_$ERA", "shape", SystMap<bin_id>::init({8}, 1.000));
-  src.cp().process({"ttbar"})
-      .AddSyst(cb, "CMS_htt_TTbarShape_em_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.000));
-
+    .AddSyst(cb, "CMS_htt_TTbarShape_$CHANNEL_$BIN_$ERA", "shape", SystMap<bin_id>::init(1.000));
+  
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
-
+    .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
+  
   src.cp()
-      .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<bin_id, process>::init
-	({8, 9}, {"qqH_SM125"}, 1.036)
-	({8}, {"VH_SM125"}, 1.010)
-	({9}, {"VH_SM125"}, 1.020)
-	);
-
+    .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<bin_id, process>::init
+	     ({8, 9}, {"qqH_SM125"}, 1.036)
+	     ({8}, {"VH_SM125"}, 1.010)
+	     ({9}, {"VH_SM125"}, 1.020));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
-
+    .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<bin_id>::init
-	({8}, 1.080)
-	({9}, 1.105)
-	);
-
+    .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<bin_id>::init
+	     ({8}, 1.080)
+	     ({9}, 1.105));
+  
   src.cp().process({"qqH_SM125"})
-      .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<bin_id>::init
-	({8}, 1.034)
-	({9}, 1.008)
-	);
+    .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<bin_id>::init
+	     ({8}, 1.034)
+	     ({9}, 1.008));
 
   src.cp().process({"VH_SM125"})
-      .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<>::init(1.040));
+    .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<>::init(1.040));
 
   src.cp()
-      .AddSyst(cb, "UEPS", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH_SM125"}, 1.035)
-	({9}, {"ggH_SM125"}, 0.984)
-	({8}, {"qqH_SM125", "VH_SM125"}, 1.089)
-	);
-
+    .AddSyst(cb, "UEPS", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH_SM125"}, 1.035)
+	     ({9}, {"ggH_SM125"}, 0.984)
+	     ({8}, {"qqH_SM125", "VH_SM125"}, 1.089));
 }
 
 void AddMSSMUpdateSystematics_em(CombineHarvester & cb) {
@@ -520,109 +418,100 @@ void AddMSSMUpdateSystematics_mm(CombineHarvester & cb, CombineHarvester src) {
       std::mem_fn(&Process::process)));
 
   src.cp()
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<bin_id, process, era>::init
-	({8, 9}, {"ggH", "bbH", "Dibosons", "ggH_SM125", "qqH_SM125", "VH_SM125"}, {"8TeV"}, 1.026)
-	({8}, {"WJets"}, {"8TeV"}, 1.026)
-	);
+    .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<bin_id, process, era>::init
+	     ({8, 9}, {"ggH", "bbH", "Dibosons", "ggH_SM125", "qqH_SM125", "VH_SM125"}, {"8TeV"}, 1.026)
+	     ({8}, {"WJets"}, {"8TeV"}, 1.026));
 
   src.cp()
-      .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8, 9}, {"ggH", "bbH", "ZTT", "TTJ", "Dibosons", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.06)
-	({8}, {"WJets"}, 1.060)
-	);
+    .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8, 9}, {"ggH", "bbH", "ZTT", "TTJ", "Dibosons", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.06)
+	     ({8}, {"WJets"}, 1.060));
+  
+  src.cp()
+    .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.02)
+	     ({8}, {"TTJ", "WJets", "Dibosons"}, 0.990)
+	     ({9}, {"ggH", "ggH_SM125"}, 0.98)
+	     ({9}, {"bbH"}, 1.01)
+	     ({9}, {"TTJ"}, 0.920)
+	     ({9}, {"Dibosons"}, 0.950));
 
   src.cp()
-      .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.02)
-	({8}, {"TTJ", "WJets", "Dibosons"}, 0.990)
-	({9}, {"ggH", "ggH_SM125"}, 0.98)
-	({9}, {"bbH"}, 1.01)
-	({9}, {"TTJ"}, 0.920)
-	({9}, {"Dibosons"}, 0.950)
-	);
+    .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({8}, {"TTJ"}, 0.940)
+	     ({8}, {"WJets", "Dibosons"}, 0.970)
+	     ({9}, {"ggH", "ggH_SM125"}, 1.01)
+	     ({9}, {"bbH"}, 1.05)
+	     ({9}, {"TTJ"}, 1.020)
+	     ({9}, {"Dibosons"}, 1.030));
 
   src.cp()
-      .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
-	({8}, {"TTJ"}, 0.940)
-	({8}, {"WJets", "Dibosons"}, 0.970)
-	({9}, {"ggH", "ggH_SM125"}, 1.01)
-	({9}, {"bbH"}, 1.05)
-	({9}, {"TTJ"}, 1.020)
-	({9}, {"Dibosons"}, 1.030)
-	);
-
-  src.cp()
-      .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH", "bbH", "TTJ", "WJets", "Dibosons", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
-	({9}, {"ggH", "ggH_SM125"}, 1.06)
-	({9}, {"Dibosons"}, 1.050)
-	);
+    .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH", "bbH", "TTJ", "WJets", "Dibosons", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({9}, {"ggH", "ggH_SM125"}, 1.06)
+	     ({9}, {"Dibosons"}, 1.050));
 
   src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.050));
-
+    .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.050));
+  
   src.cp().process({"TTJ"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
-
+    .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
+  
   src.cp().process({"Dibosons"})
-      .AddSyst(cb, "CMS_htt_mm_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.300));
-
+    .AddSyst(cb, "CMS_htt_$CHANNEL_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.300));
+  
   src.cp().process({"ZMM"})
-      .AddSyst(cb, "CMS_htt_mm_zmmNorm_$ERA", "lnN", SystMap<>::init(1.050));
+    .AddSyst(cb, "CMS_htt_$CHANNEL_zmmNorm_$ERA", "lnN", SystMap<>::init(1.050));
 
   src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_mm_QCDNorm_nobtag_$ERA", "lnN", SystMap<bin_id>::init({8}, 1.100));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_mm_QCDNorm_btag_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.250));
-
+    .AddSyst(cb, "CMS_htt_$CHANNEL_QCDNorm_$BIN_$ERA", "lnN", SystMap<bin_id>::init
+	     ({8}, 1.100)
+	     ({9}, 1.250));
+  
   src.cp().process({"WJets"})
-      .AddSyst(cb, "CMS_htt_mm_WJetsNorm_nobtag_$ERA", "lnN", SystMap<bin_id>::init({8}, 1.220));
-
+    .AddSyst(cb, "CMS_htt_$CHANNEL_WJetsNorm_nobtag_$ERA", "lnN", SystMap<bin_id>::init({8}, 1.220));
+  
   src.cp().process({"ZMM"})
-      .AddSyst(cb, "CMS_htt_mm_res_met_$ERA", "shape", SystMap<bin_id>::init({8}, 1.000));
-
+    .AddSyst(cb, "CMS_htt_$CHANNEL_res_met_$ERA", "shape", SystMap<bin_id>::init({8}, 1.000));
+  
   /*src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_mm_ztt_extrap_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.050));
-
-  src.cp().process({"ZMM"})
-      .AddSyst(cb, "CMS_htt_mm_zmm_extrap_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.050));*/
-
+    .AddSyst(cb, "CMS_htt_mm_ztt_extrap_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.050));
+    
+    src.cp().process({"ZMM"})
+    .AddSyst(cb, "CMS_htt_mm_zmm_extrap_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.050));*/
+  
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
-
+    .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
+  
   src.cp().process({"qqH_SM125"})
-      .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.036));
-
+    .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.036));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
-
+    .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
+  
   src.cp().process({"VH_SM125"})
-      .AddSyst(cb, "pdf_vh", "lnN", SystMap<>::init(1.010));
-
+    .AddSyst(cb, "pdf_vh", "lnN", SystMap<>::init(1.010));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<bin_id>::init
-	({8}, 1.103)
-	({9}, 1.109)
-	);
-
+    .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<bin_id>::init
+	     ({8}, 1.103)
+	     ({9}, 1.109));
+  
   src.cp().process({"qqH_SM125"})
-      .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<bin_id>::init
-	({8}, 1.034)
-	({9}, 1.008)
-	);
-
+    .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<bin_id>::init
+	     ({8}, 1.034)
+	     ({9}, 1.008));
+  
   src.cp().process({"VH_SM125"})
-      .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<>::init(1.040));
-
+    .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<>::init(1.040));
+  
   src.cp()
-      .AddSyst(cb, "UEPS", "lnN", SystMap<bin_id, process>::init
-	({8}, {"ggH_SM125"}, 1.035)
-	({8}, {"qqH_SM125", "VH_SM125"}, 1.089)
-	({9}, {"ggH_SM125"}, 0.984)
-	({9}, {"qqH_SM125", "VH_SM125"}, 1.000)
-	);
-
+    .AddSyst(cb, "UEPS", "lnN", SystMap<bin_id, process>::init
+	     ({8}, {"ggH_SM125"}, 1.035)
+	     ({8}, {"qqH_SM125", "VH_SM125"}, 1.089)
+	     ({9}, {"ggH_SM125"}, 0.984)
+	     ({9}, {"qqH_SM125", "VH_SM125"}, 1.000));
 }
 
 void AddMSSMUpdateSystematics_mm(CombineHarvester & cb) {
@@ -640,16 +529,16 @@ void AddMSSMUpdateSystematics_tt(CombineHarvester & cb, CombineHarvester src) {
       std::mem_fn(&Process::process)));
 
   src.cp().process({"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init({"8TeV"}, 1.026));
-
+    .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init({"8TeV"}, 1.026));
+  
   src.cp().process({"ggH", "bbH", "ZTT", "TT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_eff_t_tautau_$ERA", "lnN", SystMap<>::init(1.19));
-
+    .AddSyst(cb, "CMS_eff_t_tautau_$ERA", "lnN", SystMap<>::init(1.19));
+  
   src.cp().process({"ggH", "bbH"})
-      .AddSyst(cb, "CMS_eff_t_mssmHigh_tautau_$ERA", "shape", SystMap<>::init(1));
-
+    .AddSyst(cb, "CMS_eff_t_mssmHigh_tautau_$ERA", "shape", SystMap<>::init(1));
+  
   src.cp().process({"ggH", "bbH", "ZTT"})
-      .AddSyst(cb, "CMS_scale_t_tautau_$ERA", "shape", SystMap<>::init(1));
+    .AddSyst(cb, "CMS_scale_t_tautau_$ERA", "shape", SystMap<>::init(1));
 
   /*src.cp().process({"QCD"})
       .AddSyst(cb, "CMS_shift1_tauTau_nobtag_low_$ERA_QCD_fine_binning", "shape", SystMap<bin_id>::init({10}, 1.000));
@@ -674,138 +563,99 @@ void AddMSSMUpdateSystematics_tt(CombineHarvester & cb, CombineHarvester src) {
       .AddSyst(cb, "CMS_shift2_tauTau_btag_high_$ERA_QCD_fine_binning", "shape", SystMap<bin_id>::init({14}, 1.000));*/
 
   src.cp()
-      .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<process>::init
-	({"ggH"}, 1.05)
-	({"bbH"}, 1.06)
-	({"TT"}, 1.010)
-	({"VV"}, 1.030)
-	({"ggH_SM125"}, 1.050)
-	);
+    .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<process>::init
+	     ({"ggH"}, 1.05)
+	     ({"bbH"}, 1.06)
+	     ({"TT"}, 1.010)
+	     ({"VV"}, 1.030)
+	     ({"ggH_SM125"}, 1.050));
 
   src.cp()
-      .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	({10, 11, 12}, {"ggH", "bbH", "ZJ", "TT", "VV", "ZL", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
-	({13, 14}, {"ggH", "bbH", "TT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.09)
-	);
+    .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({10, 11, 12}, {"ggH", "bbH", "ZJ", "TT", "VV", "ZL", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({13, 14}, {"ggH", "bbH", "TT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.09));
 
   src.cp()
-      .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	({10, 11, 12}, {"ggH", "bbH", "ZJ", "TT", "VV", "ZL", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
-	({13, 14}, {"ggH", "bbH", "TT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.02)
-	);
-
+    .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<bin_id, process>::init
+	     ({10, 11, 12}, {"ggH", "bbH", "ZJ", "TT", "VV", "ZL", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({13, 14}, {"ggH", "bbH", "TT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.02));
+  
   src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_tautau_nobtag_low_$ERA", "lnN", SystMap<bin_id>::init({10}, 1.300));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_tautau_nobtag_medium_$ERA", "lnN", SystMap<bin_id>::init({11}, 1.300));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_tautau_nobtag_high_$ERA", "lnN", SystMap<bin_id>::init({12}, 1.300));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_tautau_btag_low_$ERA", "lnN", SystMap<bin_id>::init({13}, 1.300));
-  src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WNorm_tautau_btag_high_$ERA", "lnN", SystMap<bin_id>::init({14}, 1.500));
-
+    .AddSyst(cb, "CMS_htt_WNorm_$CHANNEL_$BIN_$ERA", "lnN", SystMap<bin_id>::init
+	     ({10, 11, 12, 13}, 1.300)
+	     ({14}, 1.500));
+  
   src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_tautau_nobtag_low_$ERA", "lnN", SystMap<bin_id>::init({10}, 1.100));
+    .AddSyst(cb, "CMS_htt_QCDSyst_$CHANNEL_$BIN_$ERA", "lnN", SystMap<bin_id>::init
+	     ({10, 11, 12}, 1.100)
+	     ({13, 14}, 1.200));
+  
   src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_tautau_nobtag_medium_$ERA", "lnN", SystMap<bin_id>::init({11}, 1.100));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_tautau_nobtag_high_$ERA", "lnN", SystMap<bin_id>::init({12}, 1.100));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_tautau_btag_low_$ERA", "lnN", SystMap<bin_id>::init({13}, 1.200));
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDSyst_tautau_btag_high_$ERA", "lnN", SystMap<bin_id>::init({14}, 1.200));
-
-  src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_htt_QCDfrShape_tautau_$ERA", "shape", SystMap<>::init(1.000));
-
+    .AddSyst(cb, "CMS_htt_QCDfrShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.000));
+  
   src.cp().process({"ZTT", "ZJ", "ZL"})
-      .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.033));
+    .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.033));
 
   src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_tautau_nobtag_low_$ERA", "lnN", SystMap<bin_id>::init({10}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_tautau_nobtag_medium_$ERA", "lnN", SystMap<bin_id>::init({11}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_tautau_nobtag_high_$ERA", "lnN", SystMap<bin_id>::init({12}, 1.050));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_tautau_btag_low_$ERA", "lnN", SystMap<bin_id>::init({13}, 1.090));
-  src.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_extrap_ztt_tautau_btag_high_$ERA", "lnN", SystMap<bin_id>::init({14}, 1.180));
+    .AddSyst(cb, "CMS_htt_extrap_ztt_$CHANNEL_$BIN_$ERA", "lnN", SystMap<bin_id>::init
+	     ({10, 11, 12}, 1.050)
+	     ({13}, 1.090)
+	     ({14}, 1.180));
 
   src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
+    .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
 
   src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_tautau_nobtag_low_$ERA", "lnN", SystMap<bin_id>::init({10}, 1.050));
+    .AddSyst(cb, "CMS_htt_ttbarNorm_$CHANNEL_$bin_$ERA", "lnN", SystMap<>::init(1.050));
+  
   src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_tautau_nobtag_medium_$ERA", "lnN", SystMap<bin_id>::init({11}, 1.050));
-  src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_tautau_nobtag_high_$ERA", "lnN", SystMap<bin_id>::init({12}, 1.050));
-  src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_tautau_btag_low_$ERA", "lnN", SystMap<bin_id>::init({13}, 1.050));
-  src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_tautau_btag_high_$ERA", "lnN", SystMap<bin_id>::init({14}, 1.050));
-
-  src.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarPtReweight_$ERA", "shape", SystMap<>::init(1.000));
-
+    .AddSyst(cb, "CMS_htt_ttbarPtReweight_$ERA", "shape", SystMap<>::init(1.000));
+  
   src.cp().process({"VV"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.150));
-
+    .AddSyst(cb, "CMS_htt_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.150));
+  
   src.cp().process({"VV"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_tautau_nobtag_low_$ERA", "lnN", SystMap<bin_id>::init({10}, 1.150));
-  src.cp().process({"VV"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_tautau_nobtag_medium_$ERA", "lnN", SystMap<bin_id>::init({11}, 1.150));
-  src.cp().process({"VV"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_tautau_nobtag_high_$ERA", "lnN", SystMap<bin_id>::init({12}, 1.150));
-  src.cp().process({"VV"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_tautau_btag_low_$ERA", "lnN", SystMap<bin_id>::init({13}, 1.150));
-  src.cp().process({"VV"})
-      .AddSyst(cb, "CMS_htt_DiBosonNorm_tautau_btag_high_$ERA", "lnN", SystMap<bin_id>::init({14}, 1.150));
-
+    .AddSyst(cb, "CMS_htt_DiBosonNorm_$CHANNEL_$BIN_$ERA", "lnN", SystMap<>::init(1.150));
+  
   src.cp().process({"ZJ"})
-      .AddSyst(cb, "CMS_htt_ZJetFakeTau_tautau_$ERA", "lnN", SystMap<>::init(1.200));
-
+    .AddSyst(cb, "CMS_htt_ZJetFakeTau_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.200));
+  
   src.cp().process({"ZL"})
-      .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_tautau_$ERA", "lnN", SystMap<>::init(1.200));
-
+    .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.200));
+  
   src.cp().process({"W"})
-      .AddSyst(cb, "CMS_htt_WShape_tautau_$ERA", "shape", SystMap<>::init(1.000));
-
+    .AddSyst(cb, "CMS_htt_WShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.000));
+  
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
-      .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
-
+    .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
-
+    .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
+  
   src.cp()
-      .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<process>::init
-	({"qqH_SM125"}, 1.036)
-	({"VH_SM125"}, 1.020)
-	);
-
+    .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<process>::init
+	     ({"qqH_SM125"}, 1.036)
+	     ({"VH_SM125"}, 1.020));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<>::init(1.205));
-
+    .AddSyst(cb, "QCDscale_ggH", "lnN", SystMap<>::init(1.205));
+  
   src.cp().process({"qqH_SM125"})
-      .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<>::init(1.012));
-
+    .AddSyst(cb, "QCDscale_qqH", "lnN", SystMap<>::init(1.012));
+  
   src.cp().process({"VH_SM125"})
-      .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<>::init(1.040));
-
+    .AddSyst(cb, "QCDscale_VH", "lnN", SystMap<>::init(1.040));
+  
   src.cp()
-      .AddSyst(cb, "UEPS", "lnN", SystMap<process>::init
-	({"ggH_SM125"}, 0.975)
-	({"qqH_SM125", "VH_SM125"}, 1.025)
-	);
-
+    .AddSyst(cb, "UEPS", "lnN", SystMap<process>::init
+	     ({"ggH_SM125"}, 0.975)
+	     ({"qqH_SM125", "VH_SM125"}, 1.025));
+  
   src.cp().process({"ggH"})
-      .AddSyst(cb, "CMS_htt_higgsPtReweight_$ERA", "shape", SystMap<>::init(1));
-
+    .AddSyst(cb, "CMS_htt_higgsPtReweight_$ERA", "shape", SystMap<>::init(1));
+  
   src.cp().process({"ggH_SM125"})
-      .AddSyst(cb, "CMS_htt_higgsPtReweightSM_$ERA", "shape", SystMap<>::init(1.000));
-
+    .AddSyst(cb, "CMS_htt_higgsPtReweightSM_$ERA", "shape", SystMap<>::init(1.000));
 }
 
 void AddMSSMUpdateSystematics_tt(CombineHarvester & cb) {
