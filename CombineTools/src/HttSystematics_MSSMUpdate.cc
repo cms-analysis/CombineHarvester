@@ -516,6 +516,12 @@ void AddMSSMUpdateSystematics_mm(CombineHarvester & cb, CombineHarvester src) {
   
   src.cp().process({"ZMM"})
     .AddSyst(cb, "CMS_htt_$CHANNEL_res_met_$ERA", "shape", SystMap<bin_id>::init({8}, 1.000));
+
+  src.cp().process({"ZTT"})
+      .AddSyst(cb, "CMS_htt_$CHANNEL_ztt_extrap_btag_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.050));
+
+  src.cp().process({"ZMM"})
+      .AddSyst(cb, "CMS_htt_$CHANNEL_zmm_extrap_btag_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.050));
     
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
@@ -626,10 +632,8 @@ void AddMSSMUpdateSystematics_tt(CombineHarvester & cb, CombineHarvester src) {
 	     ({10, 11, 12}, 1.100)
 	     ({13, 14}, 1.200));
   
-  src.cp().process({"QCD"}).channel({"mt"})
-    .AddSyst(cb, "CMS_htt_QCDfrShape_mutau_$ERA", "shape", SystMap<>::init(1.000));
-src.cp().process({"QCD"}).channel({"et"})
-    .AddSyst(cb, "CMS_htt_QCDfrShape_etau_$ERA", "shape", SystMap<>::init(1.000));
+  src.cp().process({"QCD"})
+    .AddSyst(cb, "CMS_htt_QCDfrShape_tautau_$ERA", "shape", SystMap<>::init(1.000));
   
   src.cp().process({"ZTT", "ZJ", "ZL"})
     .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.033));
@@ -661,10 +665,8 @@ src.cp().process({"QCD"}).channel({"et"})
   src.cp().process({"ZL"})
     .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.200));
   
-  src.cp().process({"W"}).channel({"mt"})
-    .AddSyst(cb, "CMS_htt_WShape_mutau_$ERA", "shape", SystMap<>::init(1.000));
- src.cp().process({"W"}).channel({"et"})
-    .AddSyst(cb, "CMS_htt_WShape_etau_$ERA", "shape", SystMap<>::init(1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_tautau_$ERA", "shape", SystMap<>::init(1.000));
   
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
