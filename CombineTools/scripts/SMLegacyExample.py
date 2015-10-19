@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import CombineHarvester.CombineTools.combineharvester as ch
+import CombineHarvester.CombineTools.ch as ch
 import CombineHarvester.CombineTools.systematics.SMLegacy as SMLegacySysts
 import ROOT as R
 import glob
