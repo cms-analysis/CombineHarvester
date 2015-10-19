@@ -182,6 +182,7 @@ int main() {
   cout << "Writing datacards ...";
   for (string chn : chns) {
     TFile output((folder + "/htt_" + chn + ".input.root").c_str(), "RECREATE");
+    cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mssm.txt", output);
     auto bins = cb.cp().channel({chn}).bin_set();
     for (auto b : bins) {
       cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
