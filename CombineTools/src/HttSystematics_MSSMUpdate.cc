@@ -62,7 +62,7 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
 //  src.cp().process({"ggH", "bbH", "ZTT", "ggH_SM125", "qqH_SM125", "VH_SM125"})
 //    .AddSyst(cb, "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<channel>::init(1));
   
-  /*src.cp().process({"W"})
+  src.cp().process({"W"})
       .AddSyst(cb, "CMS_shift1_muTau_nobtag_low_$ERA_W_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.000));
   src.cp().process({"W"})
       .AddSyst(cb, "CMS_shift2_muTau_nobtag_low_$ERA_W_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.000));
@@ -85,7 +85,7 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
   src.cp().process({"QCD"})
       .AddSyst(cb, "CMS_shift1_muTau_nobtag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
   src.cp().process({"QCD"})
-  .AddSyst(cb, "CMS_shift2_muTau_nobtag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
+      .AddSyst(cb, "CMS_shift2_muTau_nobtag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
   src.cp().process({"W"})
       .AddSyst(cb, "CMS_shift1_muTau_btag_low_$ERA_W_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {13}, 1.000));
   src.cp().process({"W"})
@@ -141,7 +141,7 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
   src.cp().process({"QCD"})
       .AddSyst(cb, "CMS_shift1_eleTau_btag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"et"}, {14}, 1.000));
   src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_shift2_eleTau_btag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"et"}, {14}, 1.000));*/
+      .AddSyst(cb, "CMS_shift2_eleTau_btag_high_$ERA_QCD_fine_binning", "shape", SystMap<channel, bin_id>::init({"et"}, {14}, 1.000));
 
   src.cp()
     .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<channel, bin_id, process>::init
@@ -249,10 +249,26 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
   src.cp().process({"ZL"}).channel({"et"})
     .AddSyst(cb, "CMS_htt_ZLScale_etau_$ERA", "shape", SystMap<>::init(1.000));
   
-  src.cp().process({"W"}).channel({"mt"})
-    .AddSyst(cb, "CMS_htt_WShape_mutau_$BIN_$ERA", "shape", SystMap<>::init(1.000));
-  src.cp().process({"W"}).channel({"et"})
-    .AddSyst(cb, "CMS_htt_WShape_etau_$BIN_$ERA", "shape", SystMap<>::init(1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_mutau_nobtag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_mutau_nobtag_medium_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {11}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_mutau_nobtag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {12}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_mutau_btag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {13}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_mutau_btag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"mt"}, {14}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_etau_nobtag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {10}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_etau_nobtag_medium_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {11}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_etau_nobtag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {12}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_etau_btag_low_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {13}, 1.000));
+  src.cp().process({"W"})
+    .AddSyst(cb, "CMS_htt_WShape_etau_btag_high_$ERA", "shape", SystMap<channel, bin_id>::init({"et"}, {14}, 1.000));
   
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
@@ -388,10 +404,14 @@ void AddMSSMUpdateSystematics_em(CombineHarvester & cb, CombineHarvester src) {
     .AddSyst(cb, "CMS_htt_ttbar_emb_$ERA", "lnN", SystMap<bin_id>::init({9}, 1.020));
   
   src.cp().process({"Fakes"})
-    .AddSyst(cb, "CMS_htt_FakeShape_$CHANNEL_$BIN_$ERA", "shape", SystMap<>::init(1.000));
+    .AddSyst(cb, "CMS_htt_FakeShape_$CHANNEL_nobtag_$ERA", "shape", SystMap<bin_id>::init({8}, 1.000));
+  src.cp().process({"Fakes"})
+    .AddSyst(cb, "CMS_htt_FakeShape_$CHANNEL_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.000));
   
   src.cp().process({"ttbar"})
-    .AddSyst(cb, "CMS_htt_TTbarShape_$CHANNEL_$BIN_$ERA", "shape", SystMap<bin_id>::init(1.000));
+    .AddSyst(cb, "CMS_htt_TTbarShape_$CHANNEL_nobtag_$ERA", "shape", SystMap<bin_id>::init({8}, 1.000));
+  src.cp().process({"ttbar"})
+    .AddSyst(cb, "CMS_htt_TTbarShape_$CHANNEL_btag_$ERA", "shape", SystMap<bin_id>::init({9}, 1.000));
   
   src.cp().process({"ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init(1.300));
@@ -556,7 +576,7 @@ void AddMSSMUpdateSystematics_tt(CombineHarvester & cb, CombineHarvester src) {
   src.cp().process({"ggH", "bbH", "ZTT"})
     .AddSyst(cb, "CMS_scale_t_tautau_$ERA", "shape", SystMap<>::init(1));
 
-  /*src.cp().process({"QCD"})
+  src.cp().process({"QCD"})
       .AddSyst(cb, "CMS_shift1_tauTau_nobtag_low_$ERA_QCD_fine_binning", "shape", SystMap<bin_id>::init({10}, 1.000));
   src.cp().process({"QCD"})
       .AddSyst(cb, "CMS_shift1_tauTau_nobtag_medium_$ERA_QCD_fine_binning", "shape", SystMap<bin_id>::init({11}, 1.000));
@@ -576,7 +596,7 @@ void AddMSSMUpdateSystematics_tt(CombineHarvester & cb, CombineHarvester src) {
   src.cp().process({"QCD"})
       .AddSyst(cb, "CMS_shift2_tauTau_btag_low_$ERA_QCD_fine_binning", "shape", SystMap<bin_id>::init({13}, 1.000));
   src.cp().process({"QCD"})
-      .AddSyst(cb, "CMS_shift2_tauTau_btag_high_$ERA_QCD_fine_binning", "shape", SystMap<bin_id>::init({14}, 1.000));*/
+      .AddSyst(cb, "CMS_shift2_tauTau_btag_high_$ERA_QCD_fine_binning", "shape", SystMap<bin_id>::init({14}, 1.000));
 
   src.cp()
     .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<process>::init
