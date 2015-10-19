@@ -3,6 +3,7 @@
 <bin file="HhhMSSMCombinationExample.cpp" name="HhhMSSMCombinationExample"></bin>
 <bin file="HhhMorphingExample.cpp" name="HhhMorphingExample"></bin>
 <bin file="MorphingMSSM-NoModel.cpp" name="MorphingMSSM-NoModel"></bin>
+<bin file="MorphingMSSMUpdate-NoModel.cpp" name="MorphingMSSMUpdate-NoModel"></bin>
 <bin file="MorphingMSSM.cpp" name="MorphingMSSM"></bin>
 <bin file="ParametricMSSM.cpp" name="ParametricMSSM"></bin>
 <bin file="PlotParametric.cpp" name="PlotParametric"></bin>
