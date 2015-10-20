@@ -9,6 +9,7 @@
 #include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/HttSystematics.h"
+#include "CombineHarvester/CombineTools/interface/BinByBin.h"
 
 using namespace std;
 
@@ -30,10 +31,10 @@ int main() {
 	string input_folders = "ULB";
 
 	map<string, VString> bkg_procs;
-	bkg_procs["et"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ"};
-	bkg_procs["mt"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ"};
-	bkg_procs["em"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ"};
-	bkg_procs["tt"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ"};
+	bkg_procs["et"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ","Zjets"};
+	bkg_procs["mt"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ","Zjets"};
+	bkg_procs["em"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ","Zjets"};
+	bkg_procs["tt"] = {"ZZ","GGToZZ2L2L","TTZ","WWZ","ZZZ","WZZ","Zjets"};
 
 	map<string,VString> sm_procs;
 	  sm_procs["et"] = {"ZH_ww125","ZH_tt125"};
@@ -84,18 +85,15 @@ int main() {
 	}
 
 
-/*
-	cout << ">> Generating bbb uncertainties...\n";
-	cb_mt.cp().bin_id({0, 1, 2}).process({"ZL","ZJ","W", "QCD","TT", "ZTT","VV"})
-		.AddBinByBin(0.1, true, &cb);
+    cout << ">> Generating bbb uncertainties...\n";
+    auto bbb = ch::BinByBinFactory()
+      .SetAddThreshold(0.1)
+      .SetFixNorm(true);
 
-	cb_et.cp().bin_id({0, 1, 2}).process({"ZL", "ZJ", "QCD", "W", "TT","ZTT","VV"})
-		.AddBinByBin(0.1, true, &cb);
-
-	cb_tt.cp().bin_id({0, 1, 2}).era({"8TeV"}).process({"ZL", "ZJ","W", "TT", "QCD", "ZTT","VV"})
-	   .AddBinByBin(0.1, true, &cb);
-*/
-	cout << ">> Setting standardised bin names...\n";
+    bbb.AddBinByBin(cb.cp().process({"Zjets"}), cb);  
+	
+    
+    cout << ">> Setting standardised bin names...\n";
 	ch::SetStandardBinNames(cb);
 
 	string folder = "output/AZh_cards";
