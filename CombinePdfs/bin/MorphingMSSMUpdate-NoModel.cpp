@@ -180,14 +180,14 @@ int main() {
   boost::filesystem::create_directories(folder);
 
   cout << "Writing datacards ...";
+  TFile output((folder + "/htt_mssm_input.root").c_str(), "RECREATE");
   for (string chn : chns) {
-    TFile output((folder + "/htt_" + chn + ".input.root").c_str(), "RECREATE");
-    cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mssm.txt", output);
     auto bins = cb.cp().channel({chn}).bin_set();
     for (auto b : bins) {
       cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
     }
-    output.Close();
   }
+  cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mssm.txt", output);
+  output.Close();
   cout << " done\n";
 }
