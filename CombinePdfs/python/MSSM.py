@@ -10,22 +10,31 @@ class MSSMHiggsModel(PhysicsModel):
         # Define the known production and decay processes
         # These are strings we will look for in the process names to
         # determine the correct normalisation scaling
-        self.ERAS = ['7TeV', '8TeV', '13TeV']
+        self.ERAS = ['7TeV', '8TeV', '13TeV', '14TeV']
         # We can't add anything here that we're not actually going to have
         # loaded from the model files. Should integrate this into the options
         # somehow.
         eras = ['8TeV']
         self.PROC_SETS = []
         self.PROC_SETS.append(
-                ([ 'ggh', 'bbh' ], [ 'htautau' ], eras)
+            ([ 'ggh', 'bbh' ], [ 'htautau' ], eras)
             )
         self.PROC_SETS.append(
-                ([ 'ggH', 'bbH' ], [ 'Htautau' ], eras)
+            ([ 'ggH', 'bbH' ], [ 'Htautau' ], eras)
             )
         self.PROC_SETS.append(
-                ([ 'ggA', 'bbA' ], [ 'Atautau' ], eras)
+            ([ 'ggA', 'bbA' ], [ 'Atautau' ], eras)
             )
-
+        self.model = 'out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root'
+        
+        
+    def setPhysicsOptions(self, physOptions):
+        """
+        Options are: model.  
+        """
+        for po in physOptions:
+            if po.startswith("model="): self.model = po.replace("model=", "")
+            
     def setModelBuilder(self, modelBuilder):
         """We're not supposed to overload this method, but we have to because 
         this is our only chance to import things into the workspace while it
@@ -34,7 +43,9 @@ class MSSMHiggsModel(PhysicsModel):
         be imported later as dependents of the normalisation terms."""
         # First call the parent class implementation
         PhysicsModel.setModelBuilder(self, modelBuilder)
-        self.buildModel(os.environ['CMSSW_BASE']+'/src/auxiliaries/models/out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root')
+        #self.buildModel(os.environ['CMSSW_BASE']+'/src/auxiliaries/models/out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root')
+        self.buildModel(os.environ['CMSSW_BASE']+'/src/auxiliaries/models/'+self.model)
+        
 
     def doHistFunc(self, name, hist, varlist, interpolate=1):
         "method to conveniently create a RooHistFunc from a TH1/TH2 input"
@@ -49,7 +60,7 @@ class MSSMHiggsModel(PhysicsModel):
         for x in xrange(1, h4f.GetNbinsX() + 1):
             for y in xrange(1, h4f.GetNbinsY() +1):
                mh = h4f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               t = math.log(mh / 4.75) - 2.
+               t = math.log(mh / 4.92) - 2.
                fourflav = h4f.GetBinContent(x, y)
                fiveflav = h5f.GetBinContent(x, y)
                sigma = (1. / (1. + t)) * (fourflav + t * fiveflav)
