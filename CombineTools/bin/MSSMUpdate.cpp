@@ -118,7 +118,7 @@ int main() {
    cout << ">> Setting standardised bin names...\n";
    ch::SetStandardBinNames(cb);
    VString droplist = ch::ParseFileLines(
-     aux_pruning + "uncertainty-pruning-drop-150602-mssm-taupt.txt");
+     aux_pruning + "uncertainty-pruning-drop-150602-mssm-taupt-CH.txt");
    cout << ">> Droplist contains " << droplist.size() << " entries\n";
 
    set<string> to_drop;
