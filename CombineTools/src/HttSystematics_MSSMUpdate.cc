@@ -34,7 +34,7 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
   
   src.cp()
     .AddSyst(cb, "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<bin_id, process>::init
-	     ({10, 11, 12, 13}, {"ggH", "bbH", "ZTT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.08)
+	     ({10, 11, 12, 13, 14}, {"ggH", "bbH", "ZTT", "VV", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.08)
 	     ({10, 11, 12}, {"TT"}, 1.080)
 	     );
   	
@@ -229,6 +229,14 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
 	     ({10, 11, 12}, 1.100)
 	     ({13, 14}, 1.200));
 
+  src.cp().process({"QCD"})
+    .AddSyst(cb, "CMS_htt_QCDfrShape_mutau_$ERA", "shape", SystMap<channel>::init({"mt"}, 1.000));
+  src.cp().process({"QCD"})
+    .AddSyst(cb, "CMS_htt_QCDfrShape_etau_$ERA", "shape", SystMap<channel>::init({"et"}, 1.000));
+
+  src.cp().process({"ZJ"})
+    .AddSyst(cb, "CMS_htt_ZJetFakeTau_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.200));
+
   src.cp().process({"ZL"})
     .AddSyst(cb, "CMS_htt_ZLeptonFakeTau_$CHANNEL_low_pTtau_$ERA", "lnN", SystMap<channel, bin_id>::init
 	     ({"mt"}, {10, 13}, 1.300)
@@ -330,36 +338,36 @@ void AddMSSMUpdateSystematics_em(CombineHarvester & cb, CombineHarvester src) {
   auto signal = Set2Vec(src.cp().signals().SetFromProcs(
       std::mem_fn(&Process::process)));
 
-  src.cp().process({"ggH", "bbH", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"})
+  src.cp().process({"ggH", "bbH", "EWK", "ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init({"8TeV"}, 1.026));
   
-  src.cp().process({"ggH", "bbH", "Ztt", "ttbar", "EKW", "Fakes", "ggH_SM125", "qqH_SM125", "VH_SM125"})
+  src.cp().process({"ggH", "bbH", "Ztt", "ttbar", "EWK", "Fakes", "ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_eff_e_$ERA", "lnN", SystMap<>::init(1.02));
   
   src.cp().process({"ggH", "bbH", "Ztt", "ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_scale_e_$ERA", "shape", SystMap<>::init(1));
   
-  /*src.cp().process({"EKW"})
+  src.cp().process({"EWK"})
     .AddSyst(cb, "CMS_shift1_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
-    src.cp().process({"EKW"})
+    src.cp().process({"EWK"})
     .AddSyst(cb, "CMS_shift1_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
     
-    src.cp().process({"EKW"})
+    src.cp().process({"EWK"})
     .AddSyst(cb, "CMS_shift2_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
-    src.cp().process({"EKW"})
-    .AddSyst(cb, "CMS_shift2_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));*/
+    src.cp().process({"EWK"})
+    .AddSyst(cb, "CMS_shift2_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
 
-  src.cp().process({"ggH", "bbH", "Ztt", "ttbar", "EKW", "Fakes", "ggH_SM125", "qqH_SM125", "VH_SM125"})
+  src.cp().process({"ggH", "bbH", "Ztt", "ttbar", "EWK", "Fakes", "ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<>::init(1.02));
 
   src.cp()
     .AddSyst(cb, "CMS_scale_j_$ERA", "lnN", SystMap<bin_id, process>::init
 	     ({8}, {"ggH", "bbH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.01)
-	     ({8}, {"ttbar", "EKW"}, 0.990)
+	     ({8}, {"ttbar", "EWK"}, 0.990)
 	     ({9}, {"ggH", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 1.04)
 	     ({9}, {"bbH"}, 1.01)
 	     ({9}, {"ttbar"}, 0.930)
-	     ({9}, {"EKW"}, 0.970));
+	     ({9}, {"EWK"}, 0.970));
 
   src.cp()
     .AddSyst(cb, "CMS_htt_scale_met_$ERA", "lnN", SystMap<bin_id, process>::init
@@ -369,18 +377,18 @@ void AddMSSMUpdateSystematics_em(CombineHarvester & cb, CombineHarvester src) {
   
   src.cp()
     .AddSyst(cb, "CMS_eff_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	     ({8}, {"ggH", "bbH", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({8}, {"ggH", "bbH", "EWK", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
 	     ({8}, {"ttbar"}, 0.950)
 	     ({9}, {"ggH", "ggH_SM125"}, 1.01)
 	     ({9}, {"bbH"}, 1.05)
 	     ({9}, {"ttbar"}, 1.020)
-	     ({9}, {"EKW"}, 1.030));
+	     ({9}, {"EWK"}, 1.030));
 
   src.cp()
     .AddSyst(cb, "CMS_fake_b_$ERA", "lnN", SystMap<bin_id, process>::init
-	     ({8}, {"ggH", "bbH", "ttbar", "EKW", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
+	     ({8}, {"ggH", "bbH", "ttbar", "EWK", "ggH_SM125", "qqH_SM125", "VH_SM125"}, 0.98)
 	     ({9}, {"ggH", "ggH_SM125"}, 1.05)
-	     ({9}, {"EKW"}, 1.030));
+	     ({9}, {"EWK"}, 1.030));
 
   src.cp().process({"Ztt"})
     .AddSyst(cb, "CMS_htt_zttNorm_$ERA", "lnN", SystMap<>::init(1.030));
@@ -391,7 +399,7 @@ void AddMSSMUpdateSystematics_em(CombineHarvester & cb, CombineHarvester src) {
   src.cp().process({"ttbar"})
     .AddSyst(cb, "CMS_htt_ttbarNorm_$ERA", "lnN", SystMap<>::init(1.100));
   
-  src.cp().process({"EKW"})
+  src.cp().process({"EWK"})
     .AddSyst(cb, "CMS_htt_DiBosonNorm_$ERA", "lnN", SystMap<>::init(1.150));
 
   src.cp().process({"Fakes"})
