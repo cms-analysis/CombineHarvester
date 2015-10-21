@@ -85,8 +85,6 @@ int main() {
   for (auto chn : chns) {
     cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["ggH"], cats[chn+"_8TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["bbH"], cats[chn+"_8TeV"], true);
-    cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["bbH"], cats[chn+"_8TeV"], true);
-    cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["ggH"], cats[chn+"_8TeV"], true);
   }
   cout << " done\n";
 
