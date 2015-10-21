@@ -349,14 +349,15 @@ void AddMSSMUpdateSystematics_em(CombineHarvester & cb, CombineHarvester src) {
   
   src.cp().process({"EWK"})
     .AddSyst(cb, "CMS_shift1_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
-    src.cp().process({"EWK"})
-    .AddSyst(cb, "CMS_shift1_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
-    
-    src.cp().process({"EWK"})
-    .AddSyst(cb, "CMS_shift2_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
-    src.cp().process({"EWK"})
-    .AddSyst(cb, "CMS_shift2_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
 
+  src.cp().process({"EWK"})
+    .AddSyst(cb, "CMS_shift1_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
+  
+  src.cp().process({"EWK"})
+    .AddSyst(cb, "CMS_shift2_emu_nobtag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({8}, 1.000));
+  src.cp().process({"EWK"})
+    .AddSyst(cb, "CMS_shift2_emu_btag_$ERA_EWK_fine_binning", "shape", SystMap<bin_id>::init({9}, 1.000));
+    
   src.cp().process({"ggH", "bbH", "Ztt", "ttbar", "EWK", "Fakes", "ggH_SM125", "qqH_SM125", "VH_SM125"})
     .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<>::init(1.02));
 
