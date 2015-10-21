@@ -2,6 +2,7 @@
 <bin file="ContourPlot.cpp" name="ContourPlot"></bin>
 <bin file="HhhMSSMCombinationExample.cpp" name="HhhMSSMCombinationExample"></bin>
 <bin file="HhhMorphingExample-NoModel.cpp" name="HhhMorphingExample-NoModel"></bin>
+<bin file="AZhMorphing-NoModel.cpp" name="AZhMorphing-NoModel"></bin>
 <bin file="HhhMorphingExample.cpp" name="HhhMorphingExample"></bin>
 <bin file="MorphingMSSM-NoModel.cpp" name="MorphingMSSM-NoModel"></bin>
 <bin file="MorphingMSSMUpdate-NoModel.cpp" name="MorphingMSSMUpdate-NoModel"></bin>

@@ -132,7 +132,6 @@ class MSSMHiggsModel(PhysicsModel):
             brtautau_h_str = "h_brtautau_h"
             brtautau_H_str = "h_brtautau_H"
             brtautau_A_str = "h_brtautau_A"
-        print "TEST_________________", ggF_xsec_h_str
         mH = self.doHistFunc('mH', f.Get(mH_str), [mA, tanb])
         mh = self.doHistFunc('mh', f.Get(mh_str), [mA, tanb])
         ggF_xsec_h = self.doHistFunc('xsec_ggh_8TeV', f.Get(ggF_xsec_h_str), [mA, tanb])

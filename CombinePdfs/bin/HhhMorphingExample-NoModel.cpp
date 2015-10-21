@@ -61,7 +61,10 @@ int main() {
 	  sm_procs["tt"] = {"ggH_SM125","VH_SM125","qqH_SM125"};
 	 */
 
-	VString sig_procs={"ggHTohhTo2Tau2B"};
+	//VString sig_procs={"ggHTohhTo2Tau2B"};
+    map<string, VString> signal_types = {
+      {"ggHTohhTo2Tau2B", {"ggH_Hhhbbtautau"}}
+    };
 
 	map<string, Categories> cats;
 	cats["et_8TeV"] = {
@@ -90,7 +93,7 @@ int main() {
 			//    cb.AddProcesses(
 			//    {"*"},{"htt"}, {era}, {chn}, sm_procs[chn], cats[chn+"_"+era],false);
 			cb.AddProcesses(
-					masses, {"htt"}, {era}, {chn}, sig_procs, cats[chn+"_"+era], true);
+					masses, {"htt"}, {era}, {chn}, signal_types["ggHTohhTo2Tau2B"], cats[chn+"_"+era], true);
 		}
 	}
 
@@ -113,8 +116,8 @@ int main() {
 				".inputs-Hhh-" + era + ".root";
 			cb.cp().channel({chn}).era({era}).backgrounds().ExtractShapes(
 					file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
-			cb.cp().channel({chn}).era({era}).signals().ExtractShapes(
-					file, "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+			cb.cp().channel({chn}).era({era}).process(signal_types["ggHTohhTo2Tau2B"]).ExtractShapes(
+					file, "$BIN/ggHTohhTo2Tau2B$MASS", "$BIN/ggHTohhTo2Tau2B$MASS_$SYSTEMATIC");
 		}
 	}
 
@@ -156,7 +159,7 @@ int main() {
 
     bool do_morphing = true;
     map<string, RooAbsReal *> mass_var = {
-      {"ggHTohhTo2Tau2B", &mH}
+      {"ggH_Hhhbbtautau", &mH}
     };
     if (do_morphing) {
       auto bins = cb.bin_set();
