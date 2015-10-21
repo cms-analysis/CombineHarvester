@@ -202,7 +202,6 @@ class CombineToolBase:
                 logname = full_script.replace('.sh', '_%J.log')
                 run_command(self.dry_run, 'bsub -o %s %s %s' % (logname, self.bopts, full_script))
         if self.job_mode == 'NAF':
-            print "NAF!!!!!", script_list
             for script in script_list:
                 full_script = os.path.abspath(script)
                 logname = full_script.replace('.sh', '_%J.log')
