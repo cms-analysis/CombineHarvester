@@ -44,8 +44,8 @@ class MSSMHhhHiggsModel(PhysicsModel):
         return self.modelBuilder.out.function(name)
 
     def buildModel(self, filename):
-        mA = ROOT.RooRealVar('mA', 'mA', 344., 90., 1000.)
-        tanb = ROOT.RooRealVar('tanb', 'tanb', 9., 1., 60.)
+        mA = ROOT.RooRealVar('mA', 'mA', 300.)
+        tanb = ROOT.RooRealVar('tanb', 'tanb', 1.)
         f = ROOT.TFile(filename)
         #Take care of different histogram names for hMSSM:
         if 'hMSSM' in self.modelname or '13TeV' in self.modelname or '14TeV' in self.modelname:

@@ -33,7 +33,8 @@ int main() {
     // RooFit will be quite noisy if we don't set this
     RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
 
-    RooRealVar mA("mA", "mA", 260., 350.);
+    //RooRealVar mA("mA", "mA", 260., 350.);
+    RooRealVar mA("mA", "mA", 300.);
 	
     string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
 	string aux_shapes   = auxiliaries +"shapes/";

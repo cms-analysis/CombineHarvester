@@ -44,19 +44,17 @@ class MSSMAZhHiggsModel(PhysicsModel):
         return self.modelBuilder.out.function(name)
 
     def buildModel(self, filename):
-        mA = ROOT.RooRealVar('mA', 'mA', 344., 90., 1000.)
-        tanb = ROOT.RooRealVar('tanb', 'tanb', 9., 1., 60.)
+        mA = ROOT.RooRealVar('mA', 'mA', 300.)
+        tanb = ROOT.RooRealVar('tanb', 'tanb', 2.)
         f = ROOT.TFile(filename)
         #Take care of different histogram names for hMSSM:
         if 'hMSSM' in self.modelname or '13TeV' in self.modelname or '14TeV' in self.modelname:
             ggF_xsec_A_str = "xs_gg_A"
             brtautau_h_str = "br_h_tautau"
-            brbb_h_str = "br_h_bb"
             brZh0_A_str="br_A_Zh"
         else :
             ggF_xsec_A_str = "h_ggF_xsec_A"
             brtautau_h_str = "h_brtautau_h"
-            brbb_h_str = "h_brbb_h"
             brZh0_A_str="h_brZh0_A"
         
         ggF_xsec_A = self.doHistFunc('xsec_ggA_8TeV', f.Get(ggF_xsec_A_str), [mA, tanb])
@@ -64,6 +62,7 @@ class MSSMAZhHiggsModel(PhysicsModel):
         total_br_hist = (f.Get(brtautau_h_str)) * (f.Get(brZh0_A_str))
         total_br_hist *= 0.10099
         brAZhLLtautau = self.doHistFunc('br_AZhLLtautau', total_br_hist, [mA, tanb])
+
 
         # Next step: creating theory uncertainties
         #  1) for each syst source build kappaHi and kappaLo TH1s by doing a *careful* divide
@@ -113,8 +112,6 @@ class MSSMAZhHiggsModel(PhysicsModel):
         
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
-            print "is signal"
-            # something going wrong here 
             (P, D, E) = self.getHiggsProdDecMode(bin, process)
             scaling = 'scaling_%s_%s_%s' % (P, D, E)
             print 'Scaling %s/%s as %s' % (bin, process, scaling)
