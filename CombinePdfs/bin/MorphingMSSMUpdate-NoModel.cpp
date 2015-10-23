@@ -14,16 +14,17 @@
 
 using namespace std;
 
-int main() {
+int main(int argc, char** argv) {
   typedef vector<pair<int, string>> Categories;
   typedef vector<string> VString;
 
   // We will need to source some inputs from the "auxiliaries" repo
+  string SM125        = "";
+  if(argc>1) SM125    = string(argv[1]);
   string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
   string aux_shapes   = auxiliaries +"shapes/";
   string aux_pruning  = auxiliaries +"pruning/";
-  string input_dir =
-      string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
+  string input_dir    = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
 
   VString chns =
       {"mt", "et", "tt", "em", "mm"};
@@ -72,6 +73,8 @@ int main() {
   for (auto chn : chns) {
     cb.AddObservations({"*"}, {"htt"}, {"8TeV"}, {chn}, cats[chn+"_8TeV"]);
     cb.AddProcesses({"*"}, {"htt"}, {"8TeV"}, {chn}, bkg_procs[chn], cats[chn+"_8TeV"], false);
+    if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], true);  
+    else if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], false);  
   }
   cout << " done\n";
   
@@ -101,6 +104,7 @@ int main() {
       ".inputs-mssm-" + "8TeV" + "-0.root";
     cb.cp().channel({chn}).era({"8TeV"}).backgrounds().ExtractShapes
       (file, "$CHANNEL/$PROCESS", "$CHANNEL/$PROCESS_$SYSTEMATIC");   
+    if(SM125==string("signal_SM125")) cb.cp().channel({chn}).era({"8TeV"}).process(SM_procs).ExtractShapes(file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
     // We have to map each Higgs signal process to the same histogram, i.e:
     // {ggh, ggH, ggA} --> ggH
     // {bbh, bbH, bbA} --> bbH

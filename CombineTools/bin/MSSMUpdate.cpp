@@ -15,17 +15,19 @@
 
 using namespace std;
 
-int main() {
+int main(int argc, char** argv) {
   ch::CombineHarvester cb;
 
   typedef vector<pair<int, string>> Categories;
   typedef vector<string> VString;
-
+  
+ 
+  string SM125        = "";
+  if(argc>1) SM125    = string(argv[1]);
   string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
   string aux_shapes   = auxiliaries +"shapes/";
   string aux_pruning  = auxiliaries +"pruning/";
-  string input_dir =
-      string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
+  string input_dir    = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
 
   VString chns =
       {"mt", "et", "tt", "em", "mm"};
@@ -46,7 +48,7 @@ int main() {
   bkg_procs["mm"] = {"ZTT", "ZMM", "QCD", "TTJ", "WJets", "Dibosons"};
   
   VString sig_procs = {"ggH", "bbH"};
-  //VString SM_procs = {"ggH_SM125", "qqH_SM125", "VH_SM125"};
+  VString SM_procs = {"ggH_SM125", "qqH_SM125", "VH_SM125"};
   
   map<string, Categories> cats;
   cats["mt_8TeV"] = {
@@ -61,8 +63,8 @@ int main() {
       {8, "mumu_nobtag"}, {9, "mumu_btag"}};
   
   auto masses = ch::MassesFromRange(
-      "90,100,120-140:10,140-200:20,200-500:50,600-1000:100"); //90,100?
-    
+      "90,100,120-140:10,140-200:20,200-500:50,600-1000:100"); 
+
   for (auto chn : chns) {
     cb.AddObservations(
       {"*"}, {"htt"}, {"8TeV"}, {chn}, cats[chn+"_8TeV"]);
@@ -70,8 +72,8 @@ int main() {
       {"*"}, {"htt"}, {"8TeV"}, {chn}, bkg_procs[chn], cats[chn+"_8TeV"], false);
     cb.AddProcesses(
       masses, {"htt"}, {"8TeV"}, {chn}, sig_procs, cats[chn+"_8TeV"], true);
-    /*cb.AddProcesses(
-      masses, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], false);*/ //true?
+    if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], true);  
+    else if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"8TeV"}, {chn}, SM_procs, cats[chn+"_8TeV"], false);  
   }
   
   ch::AddMSSMUpdateSystematics_et_mt(cb);
@@ -85,8 +87,9 @@ int main() {
                   ".inputs-mssm-" + "8TeV" + "-0.root";
     cb.cp().channel({chn}).era({"8TeV"}).backgrounds().ExtractShapes(
         file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
-    cb.cp().channel({chn}).era({"8TeV"}).signals().ExtractShapes(
+    cb.cp().channel({chn}).era({"8TeV"}).process(sig_procs).ExtractShapes(
         file, "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+    if(SM125==string("signal_SM125")) cb.cp().channel({chn}).era({"8TeV"}).process(SM_procs).ExtractShapes(file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
   }
   
   map<string, VString> signal_types = {
@@ -113,7 +116,7 @@ int main() {
    auto bbb = ch::BinByBinFactory()
        .SetAddThreshold(0.05)
        .SetFixNorm(true);
-   bbb.AddBinByBin(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}), cb); //bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+   bbb.AddBinByBin(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}), cb); 
 
    cout << ">> Setting standardised bin names...\n";
    ch::SetStandardBinNames(cb);
