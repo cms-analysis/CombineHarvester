@@ -102,6 +102,7 @@ int main() {
 		boost::filesystem::create_directories(folder+"/"+chn);
 		for (auto m:masses){
 			boost::filesystem::create_directories(folder+"/"+chn+"/"+m);
+			boost::filesystem::create_directories(folder+"/cmb/"+m);
 		}
 	}
 
@@ -117,6 +118,8 @@ int main() {
 					<< "\r" << flush;
 				cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
 						folder+"/"+chn+"/"+m+"/"+b + ".txt", output);
+				cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
+						folder+"/cmb/"+m+"/"+b + ".txt", output);
 			}
 		}
 		  output.Close();
