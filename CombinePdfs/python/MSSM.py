@@ -142,7 +142,8 @@ class MSSMHiggsModel(PhysicsModel):
         bbH_xsec_A = self.doHistFunc('xsec_bbA_8TeV', self.santanderMatching(f.Get(bbH_4f_xsec_A_str), f.Get(bbH_xsec_A_str)), [mA, tanb])
         brtautau_h = self.doHistFunc('br_htautau', f.Get(brtautau_h_str), [mA, tanb])
         brtautau_H = self.doHistFunc('br_Htautau', f.Get(brtautau_H_str), [mA, tanb])
-        ggF_xsec_A = self.doHistFunc('br_Atautau', f.Get(brtautau_A_str), [mA, tanb])
+        brtautau:A = self.doHistFunc('br_Atautau', f.Get(brtautau_A_str), [mA, tanb])
+        #print f.Get(brtautau_h_str).GetBinContent(f.Get(brtautau_h_str).GetXaxis().FindBin(mA.getVal()),f.Get(brtautau_h_str).GetYaxis().FindBin(tanb.getVal())), brtautau_h.getVal()
         # Next step: creating theory uncertainties
         #  1) for each syst source build kappaHi and kappaLo TH1s by doing a *careful* divide
         #     between nominal and shifted TH2s => "kappa_hi_xsec_ggh_8TeV_scale"
