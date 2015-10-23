@@ -54,6 +54,8 @@ int main(int argc, char** argv) {
   TH1::AddDirectory(false);
   ch::CombineHarvester cb;
 
+  VString SM_procs = {"ggH_SM125", "qqH_SM125", "VH_SM125"};
+
   map<string, Categories> cats;
   cats["mt_8TeV"] = {
     {10, "muTau_nobtag_low"}, {11, "muTau_nobtag_medium"}, {12, "muTau_nobtag_high"}, {13, "muTau_btag_low"}, {14, "muTau_btag_high"}};
@@ -166,7 +168,7 @@ int main(int argc, char** argv) {
   if (do_morphing) {
     auto bins = cb.bin_set();
     for (auto b : bins) {
-      auto procs = cb.cp().bin({b}).signals().process_set();
+      auto procs = cb.cp().bin({b}).process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),"norm", true, true, false, &demo);
       }
@@ -174,7 +176,7 @@ int main(int argc, char** argv) {
   }
   demo.Close();
   cb.AddWorkspace(ws);
-  cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
+  cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   cout << "done\n";
 
