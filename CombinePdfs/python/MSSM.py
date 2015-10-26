@@ -150,6 +150,8 @@ class MSSMHiggsModel(PhysicsModel):
             brtautau_h_str = "br_h_tautau"
             brtautau_H_str = "br_H_tautau"
             brtautau_A_str = "br_A_tautau"
+            ggF_xsec_h_scale_hi_str = "xs_gg_h_scaleUp"
+            ggF_xsec_h_scale_lo_str = "xs_gg_h_scaleDown"
         else :
             mH_str = "h_mH"
             mh_str = "h_mh"
@@ -165,6 +167,8 @@ class MSSMHiggsModel(PhysicsModel):
             brtautau_h_str = "h_brtautau_h"
             brtautau_H_str = "h_brtautau_H"
             brtautau_A_str = "h_brtautau_A"
+            ggF_xsec_h_scale_hi_str = "h_ggF_xsec05_h"
+            ggF_xsec_h_scale_lo_str = "h_ggF_xsec20_h"
         mH = self.doHistFunc('mH', f.Get(mH_str), [mA, tanb])
         mh = self.doHistFunc('mh', f.Get(mh_str), [mA, tanb])
         ggF_xsec_h = self.doHistFunc('xsec_ggh_8TeV', f.Get(ggF_xsec_h_str), [mA, tanb])
@@ -178,13 +182,13 @@ class MSSMHiggsModel(PhysicsModel):
         brtautau_A = self.doHistFunc('br_Atautau', f.Get(brtautau_A_str), [mA, tanb])
         #print f.Get(brtautau_h_str).GetBinContent(f.Get(brtautau_h_str).GetXaxis().FindBin(mA.getVal()),f.Get(brtautau_h_str).GetYaxis().FindBin(tanb.getVal())), brtautau_h.getVal()
 
-        h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get('h_ggF_xsec05_h'), f.Get('h_ggF_xsec_h'))
-        h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get('h_ggF_xsec20_h'), f.Get('h_ggF_xsec_h'))
+        h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_hi_str), f.Get(ggF_xsec_h_str))
+        h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_lo_str), f.Get(ggF_xsec_h_str))
         ggF_xsec_h_scale = self.doAsymPow('systeff_ggF_xsec_h_scale_8TeV', h_ggF_xsec_h_scale_lo, h_ggF_xsec_h_scale_hi, 'ggF_xsec_h_scale_8TeV', [mA, tanb])
-        ftest = ROOT.TFile('model_debug.root', 'RECREATE')
-        ftest.WriteTObject(h_ggF_xsec_h_scale_hi, 'h_ggF_xsec_h_scale_hi')
-        ftest.WriteTObject(h_ggF_xsec_h_scale_lo, 'h_ggF_xsec_h_scale_lo')
-        ftest.Close()
+        # ftest = ROOT.TFile('model_debug.root', 'RECREATE')
+        # ftest.WriteTObject(h_ggF_xsec_h_scale_hi, 'h_ggF_xsec_h_scale_hi')
+        # ftest.WriteTObject(h_ggF_xsec_h_scale_lo, 'h_ggF_xsec_h_scale_lo')
+        # ftest.Close()
         # Next step: creating theory uncertainties
         #  1) for each syst source build kappaHi and kappaLo TH2s by doing a *careful* divide
         #     between nominal and shifted TH2s => "kappa_hi_xsec_ggh_8TeV_scale"
