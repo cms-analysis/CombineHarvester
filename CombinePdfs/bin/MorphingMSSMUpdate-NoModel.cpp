@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
   cout << " done\n";
 
   cout << "Pruning bbb uncertainties...\n";
-  VString droplist = ch::ParseFileLines(aux_pruning + "uncertainty-pruning-drop-150602-mssm-taupt.txt");
+  VString droplist = ch::ParseFileLines(aux_pruning + "uncertainty-pruning-drop-150602-mssm-taupt-CH.txt");
   cout << ">> Droplist contains " << droplist.size() << " entries\n";
 
   set<string> to_drop;
