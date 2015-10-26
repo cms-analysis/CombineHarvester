@@ -85,6 +85,19 @@ class MSSMHiggsModel(PhysicsModel):
         self.modelBuilder.out._import(hfunc, ROOT.RooFit.RecycleConflictNodes())
         return self.modelBuilder.out.function(name)
 
+    def doAsymPow(self, name, h_kappa_lo, h_kappa_hi, param, varlist):
+        "create AsymPow rate scaler given two TH2 inputs corresponding to kappa_hi and kappa_lo"
+        param_var = self.modelBuilder.out.var(param)
+        if not param_var:
+            self.modelBuilder.doVar('%s[0,-7,7]'%param)
+            param_var = self.modelBuilder.out.var(param)
+        print param_var
+        hi = self.doHistFunc('%s_hi'%name, h_kappa_hi, varlist)
+        lo = self.doHistFunc('%s_lo'%name, h_kappa_lo, varlist)
+        asym = ROOT.AsymPow('systeff_%s'%name, '', lo, hi, param_var)
+        self.modelBuilder.out._import(asym)
+        return self.modelBuilder.out.function('systeff_%s'%name)
+
     def santanderMatching(self, h4f, h5f, mass = None):
         res = h4f.Clone()
         for x in xrange(1, h4f.GetNbinsX() + 1):
@@ -95,8 +108,28 @@ class MSSMHiggsModel(PhysicsModel):
                fiveflav = h5f.GetBinContent(x, y)
                sigma = (1. / (1. + t)) * (fourflav + t * fiveflav)
                res.SetBinContent(x, y, sigma)
-        return res  
+        return res
 
+    def safeTH2DivideForKappa(self, h1, h2):
+        """Divides two TH2s taking care of exceptions like divide by zero
+        and potentially doing more checks in the future"""
+        res = h1.Clone()
+        for x in xrange(1, h1.GetNbinsX() + 1):
+            for y in xrange(1, h2.GetNbinsY() +1):
+                val_h1 = h1.GetBinContent(x, y)
+                val_h2 = h2.GetBinContent(x, y)
+                if val_h1 == 0. or val_h2 == 0.:
+                    print ('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
+                           'with values: %g/%g, will set the kappa to 1.0 here' % (
+                                h1.GetName(), h2.GetName(), x, y, h1.GetXaxis().GetBinCenter(x),
+                                h1.GetYaxis().GetBinCenter(y), val_h1, val_h2
+                            ))
+                    new_val = 1.
+                else:
+                    new_val = val_h1 / val_h2
+                res.SetBinContent(x, y, new_val)
+        return res
+        
     def buildModel(self, filename):
         mA = ROOT.RooRealVar('mA', 'mA', 344., 90., 1000.)
         tanb = ROOT.RooRealVar('tanb', 'tanb', 9., 1., 60.)
@@ -144,9 +177,18 @@ class MSSMHiggsModel(PhysicsModel):
         brtautau_H = self.doHistFunc('br_Htautau', f.Get(brtautau_H_str), [mA, tanb])
         brtautau_A = self.doHistFunc('br_Atautau', f.Get(brtautau_A_str), [mA, tanb])
         #print f.Get(brtautau_h_str).GetBinContent(f.Get(brtautau_h_str).GetXaxis().FindBin(mA.getVal()),f.Get(brtautau_h_str).GetYaxis().FindBin(tanb.getVal())), brtautau_h.getVal()
+
+        h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get('h_ggF_xsec05_h'), f.Get('h_ggF_xsec_h'))
+        h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get('h_ggF_xsec20_h'), f.Get('h_ggF_xsec_h'))
+        ggF_xsec_h_scale = self.doAsymPow('systeff_ggF_xsec_h_scale_8TeV', h_ggF_xsec_h_scale_lo, h_ggF_xsec_h_scale_hi, 'ggF_xsec_h_scale_8TeV', [mA, tanb])
+        ftest = ROOT.TFile('model_debug.root', 'RECREATE')
+        ftest.WriteTObject(h_ggF_xsec_h_scale_hi, 'h_ggF_xsec_h_scale_hi')
+        ftest.WriteTObject(h_ggF_xsec_h_scale_lo, 'h_ggF_xsec_h_scale_lo')
+        ftest.Close()
         # Next step: creating theory uncertainties
-        #  1) for each syst source build kappaHi and kappaLo TH1s by doing a *careful* divide
+        #  1) for each syst source build kappaHi and kappaLo TH2s by doing a *careful* divide
         #     between nominal and shifted TH2s => "kappa_hi_xsec_ggh_8TeV_scale"
+
         #  2) create nuisance parameter (QCD_scale_ggH?) and constraint. Like:
         #         def preProcessNuisances(self,nuisances):
         #           if self.add_bbH and not any(row for row in nuisances if row[0] == "QCDscale_bbH"):
@@ -154,6 +196,8 @@ class MSSMHiggsModel(PhysicsModel):
         #     --> probably have to create the param ourself first, preProcessNuisances doesn't
         #     happen until later (after doParametersOfInterest)
         #  3) create AsymPow and add to the norm product
+    def preProcessNuisances(self,nuisances):
+        nuisances.append(("ggF_xsec_h_scale_8TeV",False, "param", [ "0", "1"], [] ) )
 
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
