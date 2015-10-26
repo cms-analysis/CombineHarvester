@@ -182,9 +182,9 @@ class MSSMHiggsModel(PhysicsModel):
         brtautau_A = self.doHistFunc('br_Atautau', f.Get(brtautau_A_str), [mA, tanb])
         #print f.Get(brtautau_h_str).GetBinContent(f.Get(brtautau_h_str).GetXaxis().FindBin(mA.getVal()),f.Get(brtautau_h_str).GetYaxis().FindBin(tanb.getVal())), brtautau_h.getVal()
 
-        h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_hi_str), f.Get(ggF_xsec_h_str))
-        h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_lo_str), f.Get(ggF_xsec_h_str))
-        ggF_xsec_h_scale = self.doAsymPow('systeff_ggF_xsec_h_scale_8TeV', h_ggF_xsec_h_scale_lo, h_ggF_xsec_h_scale_hi, 'ggF_xsec_h_scale_8TeV', [mA, tanb])
+        # h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_hi_str), f.Get(ggF_xsec_h_str))
+        # h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_lo_str), f.Get(ggF_xsec_h_str))
+        # ggF_xsec_h_scale = self.doAsymPow('systeff_ggF_xsec_h_scale_8TeV', h_ggF_xsec_h_scale_lo, h_ggF_xsec_h_scale_hi, 'ggF_xsec_h_scale_8TeV', [mA, tanb])
         # ftest = ROOT.TFile('model_debug.root', 'RECREATE')
         # ftest.WriteTObject(h_ggF_xsec_h_scale_hi, 'h_ggF_xsec_h_scale_hi')
         # ftest.WriteTObject(h_ggF_xsec_h_scale_lo, 'h_ggF_xsec_h_scale_lo')
@@ -200,8 +200,9 @@ class MSSMHiggsModel(PhysicsModel):
         #     --> probably have to create the param ourself first, preProcessNuisances doesn't
         #     happen until later (after doParametersOfInterest)
         #  3) create AsymPow and add to the norm product
-    def preProcessNuisances(self,nuisances):
-        nuisances.append(("ggF_xsec_h_scale_8TeV",False, "param", [ "0", "1"], [] ) )
+
+    # def preProcessNuisances(self,nuisances):
+    #     nuisances.append(("ggF_xsec_h_scale_8TeV",False, "param", [ "0", "1"], [] ) )
 
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
