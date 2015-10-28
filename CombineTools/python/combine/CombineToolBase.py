@@ -120,6 +120,10 @@ class CombineToolBase:
                            help='Print commands to the screen but do not run them')
         group.add_argument('--sub-opts', default=self.bopts,
                            help='Options for batch/crab submission')
+        group.add_argument('--memory', type=int,
+                           help='Request memory for job [MB]')
+        group.add_argument('--crab-area',
+                           help='crab working area')
         group.add_argument('--custom-crab', default=self.custom_crab,
                            help='python file containing a function with name signature "custom_crab(config)" that can be used to modify the default crab configuration')
 
@@ -139,6 +143,8 @@ class CombineToolBase:
         self.passthru.extend(unknown)
         self.bopts = self.args.sub_opts
         self.custom_crab = self.args.custom_crab
+        self.memory = self.args.memory
+        self.crab_area = self.args.crab_area
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -228,12 +234,16 @@ class CombineToolBase:
                 outscript.write('fi')
             outscript.write(CRAB_POSTFIX)
             outscript.close()
-            from HiggsAnalysis.HiggsToTauTau.combine.crab import config
+            from CombineHarvester.CombineTools.combine.crab import config
             config.General.requestName = self.task_name
             config.JobType.scriptExe = outscriptname
             config.JobType.inputFiles.extend(wsp_files)
             config.Data.totalUnits = jobs
             config.Data.publishDataName = config.General.requestName
+            if self.memory is not None:
+                config.JobType.maxMemoryMB = self.memory
+            if self.crab_area is not None:
+                config.General.workArea = self.crab_area
             if self.custom_crab is not None:
                 d = {}
                 execfile(self.custom_crab, d)
