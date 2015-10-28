@@ -306,6 +306,7 @@ class CombineHarvester {
   TH1F GetShapeWithUncertainty(RooFitResult const* fit, unsigned n_samples);
   TH1F GetShapeWithUncertainty(RooFitResult const& fit, unsigned n_samples);
   TH1F GetObservedShape();
+  TH1F GetObservedShapeNamed(std::string const& obs);
   /**@}*/
 
   /**

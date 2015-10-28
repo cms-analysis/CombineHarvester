@@ -40,6 +40,34 @@ RooArgSet ParametersByName(RooAbsReal const* pdf, RooArgSet const* dat_vars) {
   return result_set;
 }
 
+RooArgSet ObservablesByName(RooAbsReal const* pdf, RooArgSet const* dat_vars) {
+  // Get all pdf parameters first
+  // We are expected to manage the memory of the RooArgSet pointer we're given,
+  // so let's use a unique_ptr to ensure it gets cleaned up
+  std::unique_ptr<RooArgSet> all_vars(pdf->getParameters(RooArgSet()));
+  // Get the data variables and fill a set with all the names
+  std::set<std::string> names;
+  
+  RooFIter vars_it = all_vars->fwdIterator();
+  RooAbsArg *vars_arg = nullptr;
+  while((vars_arg = vars_it.next())) {
+    names.insert(vars_arg->GetName());
+  }
+  
+  RooArgSet result_set;
+  
+  RooFIter dat_it = dat_vars->fwdIterator();
+  RooAbsArg *dat_arg = nullptr;
+  while((dat_arg = dat_it.next())) {
+    if (names.count(dat_arg->GetName())) {
+      result_set.add(*dat_arg);
+      return result_set;
+    }
+  }
+
+  return result_set;
+}
+
 // ---------------------------------------------------------------------------
 // Paramter extraction/manipulation
 // ---------------------------------------------------------------------------

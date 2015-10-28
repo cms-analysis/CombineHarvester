@@ -21,6 +21,7 @@ namespace ch { class CombineHarvester; }
 
 namespace ch {
 RooArgSet ParametersByName(RooAbsReal const* pdf, RooArgSet const* dat_vars);
+RooArgSet ObservablesByName(RooAbsReal const* pdf, RooArgSet const* dat_vars);
 
 // ---------------------------------------------------------------------------
 // Paramter extraction/manipulation
