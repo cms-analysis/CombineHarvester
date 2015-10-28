@@ -2,6 +2,7 @@ import CombineHarvester.CombineTools.plotting as plot
 import ROOT
 import math
 import argparse
+import numpy
 
 def fillTH2(hist2d, graph):
     for x in xrange(1, hist2d.GetNbinsX()+1):
@@ -52,7 +53,7 @@ def CreateTransparentColor(color, alpha):
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
-parser.add_argument('--files', '-f', help='named input files')
+parser.add_argument('--file', '-f', help='named input file')
 parser.add_argument('--scenario', '-s', help='scenario for plot label e.g. [mhmax,mhmodp,mhmodm,low-tb-high]')
 parser.add_argument('--custom_y_range', help='Fix y axis range', default=False)
 parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=0.0)
@@ -63,78 +64,22 @@ parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
 args = parser.parse_args()
 
-myfile = open(args.files, 'r')
-filestring = ''
-for line in myfile:
-    filestring += line
- 
-infiles = filestring.split(',')
 
-ROOT.gROOT.ProcessLine(
-    "struct staff_t {\
-    Float_t quantileExpected;\
-    Float_t mh;\
-    Double_t limit;\
-    }" )
-
-n=0
-graph_exp = ROOT.TGraph2D()
-graph_minus2sigma = ROOT.TGraph2D()
-graph_minus1sigma = ROOT.TGraph2D()
-graph_plus2sigma = ROOT.TGraph2D()
-graph_plus1sigma = ROOT.TGraph2D()
-graph_obs = ROOT.TGraph2D()
 #Store the mA and tanb list being used for the interpolation
-tanb_list=[]
-mA_list=[]
-for f in infiles:
-    if plot.TFileIsGood(f) :
-        # Extract the relevant values from the file. This implementation is lifted from HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py
-        file = ROOT.TFile(f, 'r')
-        if file.GetListOfKeys().Contains("limit") :
-            #First find the mA and tanb value indicated by the filename
-            mA = plot.ParamFromFilename(f, "mA")
-            tanb = plot.ParamFromFilename(f, "tanb")
-            mA_list.append(mA)
-            tanb_list.append(tanb)
-            tree = file.Get("limit")
-            staff = ROOT.staff_t()
-            tree.SetBranchAddress("quantileExpected",ROOT.AddressOf(staff,"quantileExpected"))
-            tree.SetBranchAddress("mh",ROOT.AddressOf(staff,"mh"))
-            tree.SetBranchAddress("limit",ROOT.AddressOf(staff,"limit"))
-            #Set not excluded by default in case a fit fails
-            minus2sigma=1000
-            minus1sigma=1000
-            exp=1000
-            plus1sigma=1000
-            plus2sigma=1000
-            obs=1000
-            for i in range(tree.GetEntries()) :
-                tree.GetEntry(i);
-                if abs(staff.quantileExpected-0.025) < 0.01  :
-                    minus2sigma=staff.limit
-                if abs(staff.quantileExpected-0.160) < 0.01  :
-                    minus1sigma=staff.limit
-                if abs(staff.quantileExpected-0.500) < 0.01  :
-                    exp=staff.limit
-                if abs(staff.quantileExpected-0.840) < 0.01  :
-                    plus1sigma=staff.limit
-                if abs(staff.quantileExpected-0.975) < 0.01  :
-                    plus2sigma=staff.limit
-                if abs(staff.quantileExpected+1.000) < 0.01  :
-                    obs=staff.limit           
-            if int(args.verbosity) > 0 :
-                print "Tested points: ", mA, tanb, minus2sigma, minus1sigma, exp, plus1sigma, plus2sigma, obs
-            #Fill TGraphs with the values of each CLs
-            graph_exp.SetPoint(n, mA, tanb, exp)
-            graph_minus2sigma.SetPoint(n, mA, tanb, minus2sigma)
-            graph_minus1sigma.SetPoint(n, mA, tanb, minus1sigma)
-            graph_plus2sigma.SetPoint(n, mA, tanb, plus2sigma)
-            graph_plus1sigma.SetPoint(n, mA, tanb, plus1sigma)
-            graph_obs.SetPoint(n, mA, tanb, obs)
-            n=n+1 
-        ROOT.TFile.Close(file)
+file = ROOT.TFile(args.file, 'r')
+print args.file
+graph_obs         = file.Get("observed")
+graph_minus2sigma = file.Get("minus2sigma")
+graph_minus1sigma = file.Get("minus1sigma")
+graph_exp         = file.Get("expected")
+graph_plus1sigma  = file.Get("plus1sigma")
+graph_plus2sigma  = file.Get("plus2sigma")
 
+mA_list=[]
+tanb_list=[]
+for i in range(graph_exp.GetN()) :
+    mA_list.append(float(graph_exp.GetX()[i]))
+    tanb_list.append(float(graph_exp.GetY()[i]))
 tanb_list = sorted(set(tanb_list))
 mA_list = sorted(set(mA_list))
 tanb_bins=len(tanb_list)
@@ -179,8 +124,7 @@ fillTH2(h_minus2sigma, graph_minus2sigma)
 fillTH2(h_plus2sigma, graph_plus2sigma)
 axis.Draw()
 #Possibility to draw CLs heat map, would be a useful option, using e.g.
-#h_obs.Draw("colzsame")
-
+#h_exp.Draw("colzsame")
 
 #Extract exclusion contours from the TH2Ds, use threshold 1.0 for limit and 0.05 for CLs
 threshold=0.05
@@ -191,7 +135,6 @@ cont_minus1sigma = plot.contourFromTH2(h_minus1sigma, threshold, 20)
 cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, threshold, 20)
 cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, threshold, 20)
 cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, threshold, 20)
-
 
 if args.scenario == "low-tb-high":
     graph_higgshBand = higgsConstraint(args.scenario, "h")
@@ -270,28 +213,28 @@ for p in cont_obs :
     #p.Draw("L SAME")
     #p.Draw("F SAME")
 
-for p in cont_higgshlow:
-    p.SetLineWidth(-402)
-    p.SetFillStyle(3005)
-    p.SetFillColor(ROOT.kRed)
-    p.SetLineColor(ROOT.kRed)
-    pads[1].cd()
-    p.Draw("L SAME")
+#for p in cont_higgshlow:
+#    p.SetLineWidth(-402)
+#    p.SetFillStyle(3005)
+#    p.SetFillColor(ROOT.kRed)
+#    p.SetLineColor(ROOT.kRed)
+#    pads[1].cd()
+#    p.Draw("L SAME")
 
-for p in cont_higgshlow:
-    p.SetLineWidth(402)
-    p.SetFillStyle(3005)
-    p.SetFillColor(ROOT.kRed)
-    p.SetLineColor(ROOT.kRed)
-    pads[1].cd()
-    p.Draw("L SAME")
+#for p in cont_higgshlow:
+#    p.SetLineWidth(402)
+#    p.SetFillStyle(3005)
+#    p.SetFillColor(ROOT.kRed)
+#    p.SetLineColor(ROOT.kRed)
+#    pads[1].cd()
+#    p.Draw("L SAME")
 
-for p in cont_higgsh:
-    p.SetLineWidth(2)
-    p.SetLineColor(ROOT.kRed)
-    p.SetLineStyle(7)
-    pads[1].cd()
-    p.Draw("L SAME")
+#for p in cont_higgsh:
+#    p.SetLineWidth(2)
+#    p.SetLineColor(ROOT.kRed)
+#    p.SetLineStyle(7)
+#    pads[1].cd()
+#    p.Draw("L SAME")
 
 
 #Set some common scenario labels
