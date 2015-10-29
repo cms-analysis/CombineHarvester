@@ -134,10 +134,10 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
                 self.modelBuilder.doVar("mA[%g]" % self.options.mass)
         if self.modelBuilder.out.var("mh"):
             self.modelBuilder.out.var("mh").removeRange()
-            self.modelBuilder.out.var("mh").setVal(0)
+            self.modelBuilder.out.var("mh").setVal(340)
         if self.modelBuilder.out.var("mH"):
              self.modelBuilder.out.var("mH").removeRange()
-             self.modelBuilder.out.var("mH").setVal(0)   
+             self.modelBuilder.out.var("mH").setVal(340)   
         ## define set of POIs
         self.modelBuilder.doSet("POI",poi)
     def getHiggsSignalYieldScale(self,production,decay, energy):
