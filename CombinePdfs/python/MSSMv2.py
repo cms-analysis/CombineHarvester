@@ -17,27 +17,33 @@ class MSSMHiggsModel(PhysicsModel):
             'mh'  : 'h_mh',
             'mHp' : 'h_mHp',
             'br_tHpb'       : 'h_brHpb_t',
-            'br_Hptaunu'    : 'h_brtaunu_Hp'
+            'br_Hptaunu'    : 'h_brtaunu_Hp',
+            'br_Hhh'        : 'h_brh0h0_H',
+            'br_AZh'        : 'h_brZh0_A'
         }
         self.h_dict[1] = {
             'mH'  : 'm_H',
             'mh'  : 'm_h',
-            'mHp' : 'FIXME',
-            'br_tHpb'       : 'FIXME',
-            'br_Hptaunu'    : 'FIXME'
+            'mHp' : 'm_Hp',
+            'br_tHpb'       : 'br_t_Hpb',
+            'br_Hptaunu'    : 'br_Hp_taunu',
+            'br_Hhh'        : 'br_H_hh',
+            'br_AZh'        : 'br_A_Zh'
         }
         for X in ['h', 'H', 'A']:
             self.h_dict[0].update({
                 'xs_gg%s'%X     : 'h_ggF_xsec_%s'%X,
                 'xs_bb4f%s'%X   : 'h_bbH4f_xsec_%s'%X,
                 'xs_bb5f%s'%X   : 'h_bbH_xsec_%s'%X,
-                'br_%stautau'%X : 'h_brtautau_%s'%X
+                'br_%stautau'%X : 'h_brtautau_%s'%X,
+                'br_%sbb'%X     : 'h_brbb_%s'%X,
                 })
             self.h_dict[1].update({
                 'xs_gg%s'%X     : 'xs_gg_%s'%X,
                 'xs_bb4f%s'%X   : 'xs_bb4F_%s'%X,
                 'xs_bb5f%s'%X   : 'xs_bb5F_%s'%X,
-                'br_%stautau'%X : 'br_%s_tautau'%X
+                'br_%stautau'%X : 'br_%s_tautau'%X,
+                'br_%sbb'%X     : 'br_%s_bb'%X
                 })
         # Define the known production and decay processes
         # These are strings we will look for in the process names to
@@ -96,11 +102,15 @@ class MSSMHiggsModel(PhysicsModel):
         for x in xrange(1, h4f.GetNbinsX() + 1):
             for y in xrange(1, h4f.GetNbinsY() +1):
                mh = h4f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               t = math.log(mh / 4.92) - 2.
-               fourflav = h4f.GetBinContent(x, y)
-               fiveflav = h5f.GetBinContent(x, y)
-               sigma = (1. / (1. + t)) * (fourflav + t * fiveflav)
-               res.SetBinContent(x, y, sigma)
+               if mh <= 0:
+                    print 'santanderMatching: Have mh = %f at (%f,%f), using h4f value' % (mh,  h4f.GetXaxis().GetBinCenter(x),  h4f.GetYaxis().GetBinCenter(y))
+                    res.SetBinContent(x, y, h4f.GetBinContent(x, y))
+               else:
+                    t = math.log(mh / 4.92) - 2.
+                    fourflav = h4f.GetBinContent(x, y)
+                    fiveflav = h5f.GetBinContent(x, y)
+                    sigma = (1. / (1. + t)) * (fourflav + t * fiveflav)
+                    res.SetBinContent(x, y, sigma)
         return res
 
     def safeTH2DivideForKappa(self, h1, h2):
@@ -159,14 +169,21 @@ class MSSMHiggsModel(PhysicsModel):
                     f.Get(hd['xs_bb5f%s'%X]),
                     None if X=='A' else f.Get(hd['m%s'%X])), pars)
                 self.doHistFunc('br_%stautau_%s' % (X, era), f.Get(hd['br_%stautau'%X]), pars)
+                self.doHistFunc('br_%sbb_%s' % (X, era), f.Get(hd['br_%sbb'%X]), pars)
                 # Make a note of what we've built, will be used to create scaling expressions later
-                self.PROC_SETS.append(([ 'gg%s'%X, 'bb%s'%X ], [ '%stautau'%X], [era])
+                self.PROC_SETS.append(([ 'gg%s'%X, 'bb%s'%X ], [ '%stautau'%X, '%sbb'%X], [era])
             )
-
             # Do the BRs for the charged Higgs
             self.doHistFunc('br_tHpb_%s'%era, f.Get(hd['br_tHpb']), pars)
             self.doHistFunc('br_Hptaunu_%s'%era, f.Get(hd['br_Hptaunu']), pars)
             self.PROC_SETS.append((['tt'], ['HptaunubHptaunub', 'HptaunubWb', 'WbWb'], [era]))
+            # And the extra term we need for H->hh
+            self.doHistFunc('br_Hhh_%s'%era, f.Get(hd['br_Hhh']), pars)
+            self.PROC_SETS.append((['ggH'], ['Hhhbbtautau'], [era]))
+            # And the extra term we need for A->Zh
+            self.doHistFunc('br_AZh_%s'%era, f.Get(hd['br_AZh']), pars)
+            self.PROC_SETS.append((['ggA'], ['AZhLLtautau'], [era]))
+
         # h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_hi_str), f.Get(ggF_xsec_h_str))
         # h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_lo_str), f.Get(ggF_xsec_h_str))
         # ggF_xsec_h_scale = self.doAsymPow('systeff_ggF_xsec_h_scale_8TeV', h_ggF_xsec_h_scale_lo, h_ggF_xsec_h_scale_hi, 'ggF_xsec_h_scale_8TeV', [mA, tanb])
@@ -192,6 +209,11 @@ class MSSMHiggsModel(PhysicsModel):
             self.modelBuilder.factory_('expr::br_HptaunubHptaunub_%s("@0*@0*@1*@1", br_tHpb_%s,br_Hptaunu_%s)' % (E,E,E))
             self.modelBuilder.factory_('expr::br_HptaunubWb_%s("2 * (1-@0)*@0*@1", br_tHpb_%s,br_Hptaunu_%s)' % (E,E,E))
             self.modelBuilder.factory_('expr::br_WbWb_%s("(1-@0)*(1-@0)", br_tHpb_%s)' % (E,E))
+
+        # Build the intermediate terms for H->hh->bbtautau and A->Zh->LLtautau scaling
+        for E in self.modelFiles:
+            self.modelBuilder.factory_('expr::br_Hhhbbtautau_%s("2*@0*@1*@2", br_Hhh_%s,br_htautau_%s,br_hbb_%s)' % (E,E,E,E))
+            self.modelBuilder.factory_('expr::br_AZhLLtautau_%s("0.10099*@0*@1", br_AZh_%s,br_htautau_%s)' % (E,E,E))
 
         for proc_set in self.PROC_SETS:
             for (P, D, E) in itertools.product(*proc_set):
