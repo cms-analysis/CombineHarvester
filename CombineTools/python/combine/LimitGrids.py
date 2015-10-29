@@ -4,7 +4,6 @@ import itertools
 import glob
 import sys
 import re
-import numpy as n
 from array import array
 
 import CombineHarvester.CombineTools.combine.utils as utils
@@ -125,6 +124,109 @@ class AsymptoticGrid(CombineToolBase):
     #  for j in xrange(1, hist.GetNbinsY()+1):
     #    hist.SetBinContent(i, j, graph.Interpolate(hist.GetXaxis().GetBinCenter(i), hist.GetYaxis().GetBinCenter(j)))
     fout = ROOT.TFile('asymptotic_grid.root', 'RECREATE')
+    fout.WriteTObject(graph_m2s, 'minus2sigma')
+    fout.WriteTObject(graph_m1s, 'minus1sigma')
+    fout.WriteTObject(graph_exp, 'expected')
+    fout.WriteTObject(graph_p1s, 'plus1sigma')
+    fout.WriteTObject(graph_p2s, 'plus2sigma')
+    fout.WriteTObject(graph_obs, 'observed')
+    #fout.WriteTObject(hist)
+    fout.Close()
+    # Next step: open output files
+    # Fill TGraph2D with CLs, CLs+b
+
+
+class Limit1D(CombineToolBase):
+  description = 'Calculate asymptotic limits on parameter grids' 
+  requires_root = True
+
+  def __init__(self):
+    CombineToolBase.__init__(self)
+
+  def attach_intercept_args(self, group):
+    CombineToolBase.attach_intercept_args(self, group)
+
+  def attach_args(self, group):
+    CombineToolBase.attach_args(self, group)
+    group.add_argument('config', help='json config file')
+
+  def run_method(self):
+    # Step 1 - open the json config file
+    with open(self.args.config) as json_file:    
+        cfg = json.load(json_file)
+    # to do - have to handle the case where it doesn't exist
+    points = []; blacklisted_points = []
+    for igrid in cfg['grids']:
+      assert(len(igrid) == 1)
+      points.extend(itertools.product(utils.split_vals(igrid[0])))
+    POIs = cfg['POIs']
+
+    file_dict = { }
+    for p in points:
+      file_dict[p] = []
+
+    for f in glob.glob('higgsCombine.%s.*.Asymptotic.mH*.root' % (POIs[0])):
+      rgx = re.compile('higgsCombine\.%s\.(?P<p1>.*)\.Asymptotic\.mH.*\.root' % (POIs[0]))
+      matches = rgx.search(f)
+      p = (matches.group('p1'),)
+      if p in file_dict:
+        file_dict[p].append(f)
+
+    for key,val in file_dict.iteritems():
+      name = '%s.%s' % (POIs[0], key[0])
+      print '>> Point %s' % name
+      if len(val) == 0:
+        print 'Going to run limit for point %s' % (key)
+        point_args = '-n .%s --setPhysicsModelParameters %s=%s --freezeNuisances %s' % (name, POIs[0], key[0], POIs[0])
+        cmd = ' '.join(['combine -M Asymptotic', cfg['opts'], point_args] + self.passthru)
+        self.job_queue.append(cmd)
+
+    bail_out = len(self.job_queue) > 0
+    self.flush_queue()
+
+    if bail_out: 
+        print ">> New jobs were created / run in this cycle, run the script again to collect the output"
+        sys.exit(0)
+
+    xvals = []
+    zvals_m2s = []; zvals_m1s = []; zvals_exp = []; zvals_p1s = []; zvals_p2s = []; zvals_obs = []
+    for key,val in file_dict.iteritems():
+      for filename in val:
+        fin = ROOT.TFile(filename)
+        if fin.IsZombie(): continue
+        tree = fin.Get('limit')
+        for evt in tree:
+          if abs(evt.quantileExpected+1)<0.01:
+            xvals.append(float(key[0]))
+            #print 'At point %s have observed CLs = %f' % (key, evt.limit)
+            zvals_obs.append(float(evt.limit))
+          if abs(evt.quantileExpected-0.025)<0.01:
+            #print 'At point %s have -2sigma CLs = %f' % (key, evt.limit)
+            zvals_m2s.append(float(evt.limit))
+          if abs(evt.quantileExpected-0.16)<0.01:
+            #print 'At point %s have -1sigma CLs = %f' % (key, evt.limit)
+            zvals_m1s.append(float(evt.limit))
+          if abs(evt.quantileExpected-0.5)<0.01:
+            #print 'At point %s have expected CLs = %f' % (key, evt.limit)
+            zvals_exp.append(float(evt.limit))
+          if abs(evt.quantileExpected-0.84)<0.01:
+            #print 'At point %s have +1sigma CLs = %f' % (key, evt.limit)
+            zvals_p1s.append(float(evt.limit))
+          if abs(evt.quantileExpected-0.975)<0.01:
+            #print 'At point %s have +2sigma CLs = %f' % (key, evt.limit)
+            zvals_p2s.append(float(evt.limit))
+    graph_m2s = ROOT.TGraph(len(zvals_m2s), array('d', xvals), array('d', zvals_m2s))
+    graph_m1s = ROOT.TGraph(len(zvals_m1s), array('d', xvals), array('d', zvals_m1s))
+    graph_exp = ROOT.TGraph(len(zvals_exp), array('d', xvals), array('d', zvals_exp))
+    graph_p1s = ROOT.TGraph(len(zvals_p1s), array('d', xvals), array('d', zvals_p1s))
+    graph_p2s = ROOT.TGraph(len(zvals_p2s), array('d', xvals), array('d', zvals_p2s))
+    graph_obs = ROOT.TGraph(len(zvals_obs), array('d', xvals), array('d', zvals_obs))
+    #h_bins = cfg['hist_binning']
+    #hist = ROOT.TH2F('h_observed', '', h_bins[0], h_bins[1], h_bins[2], h_bins[3], h_bins[4], h_bins[5])
+    #for i in xrange(1, hist.GetNbinsX()+1):
+    #  for j in xrange(1, hist.GetNbinsY()+1):
+    #    hist.SetBinContent(i, j, graph.Interpolate(hist.GetXaxis().GetBinCenter(i), hist.GetYaxis().GetBinCenter(j)))
+    fout = ROOT.TFile('asymptotic_1Dlimit.root', 'RECREATE')
     fout.WriteTObject(graph_m2s, 'minus2sigma')
     fout.WriteTObject(graph_m1s, 'minus1sigma')
     fout.WriteTObject(graph_exp, 'expected')
