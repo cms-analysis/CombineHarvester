@@ -7,7 +7,7 @@ from CombineHarvester.CombineTools.combine.EnhancedCombine import EnhancedCombin
 from CombineHarvester.CombineTools.combine.Impacts import Impacts
 from CombineHarvester.CombineTools.combine.Workspace import PrintWorkspace, ModifyDataSet
 from CombineHarvester.CombineTools.combine.CovMatrix import CovMatrix
-from CombineHarvester.CombineTools.combine.LimitGrids import AsymptoticGrid
+from CombineHarvester.CombineTools.combine.LimitGrids import AsymptoticGrid, Limit1D
 from CombineHarvester.CombineTools.combine.Output import PrintSingles, CollectLimits
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -34,6 +34,7 @@ register_method(parser, methods, CollectLimits)
 register_method(parser, methods, CovMatrix)
 register_method(parser, methods, PrintSingles)
 register_method(parser, methods, AsymptoticGrid)
+register_method(parser, methods, Limit1D)
 
 parser.add_argument('-M', '--method')
 
