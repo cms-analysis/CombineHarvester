@@ -56,10 +56,10 @@ int main(int argc, char* argv[]) {
   cb.ForEachObj([&](ch::Object *obj) {
     if (!obj->signal()) obj->set_mass("*");
     if (obj->signal() && starts_with(obj->process(), "HH")) {
-      obj->set_process("tt_ttHchHch");
+      obj->set_process("tt_HptaunubHptaunub");
     }
     if (obj->signal() && starts_with(obj->process(), "HW")) {
-      obj->set_process("tt_ttHchW");
+      obj->set_process("tt_HptaunubWb");
     }
   });
 
@@ -70,14 +70,14 @@ int main(int argc, char* argv[]) {
     if (obj->signal() && starts_with(obj->name(), "HH"+obj->mass())) {
       std::string old_name = obj->name();
       std::string new_name = old_name;
-      boost::replace_all(new_name, "HH"+obj->mass(), "tt_ttHchHch");
+      boost::replace_all(new_name, "HH"+obj->mass(), "tt_HptaunubHptaunub");
       obj->set_name(new_name);
       cb.RenameParameter(old_name, new_name);
     }
     if (obj->signal() && starts_with(obj->name(), "HW"+obj->mass())) {
       std::string old_name = obj->name();
       std::string new_name = old_name;
-      boost::replace_all(new_name, "HW"+obj->mass(), "tt_ttHchW");
+      boost::replace_all(new_name, "HW"+obj->mass(), "tt_HptaunubWb");
       obj->set_name(new_name);
       cb.RenameParameter(old_name, new_name);
     }
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
       auto procs = cb.cp().bin({b}).signals().process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, mHp,
-                             "norm", true, true, false, &demo);
+                             "norm", true, true, true, &demo);
       }
     }
   }
