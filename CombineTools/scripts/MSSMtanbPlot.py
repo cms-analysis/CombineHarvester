@@ -2,54 +2,7 @@ import CombineHarvester.CombineTools.plotting as plot
 import ROOT
 import math
 import argparse
-import numpy
 
-def fillTH2(hist2d, graph):
-    for x in xrange(1, hist2d.GetNbinsX()+1):
-        for y in xrange(1, hist2d.GetNbinsY()+1):
-            xc = hist2d.GetXaxis().GetBinCenter(x)
-            yc = hist2d.GetYaxis().GetBinCenter(y)
-            val = graph.Interpolate(xc, yc)
-            hist2d.SetBinContent(x, y, val)
-
-def makeHist(name, xbins, ybins, graph2d):
-    len_x = graph2d.GetXmax() - graph2d.GetXmin()
-    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
-    len_y = graph2d.GetYmax() - graph2d.GetYmin()
-    binw_y = (len_y * 0.5 / (float(ybins) - 1.)) - 1E-5
-    hist = ROOT.TH2F(name, '', xbins, graph2d.GetXmin()-binw_x, graph2d.GetXmax()+binw_x, ybins, graph2d.GetYmin()-binw_y, graph2d.GetYmax()+binw_y)
-    return hist
-
-# Should find another location for this function, and make more general. Ideally use the model files rather than the .dat files too
-def higgsConstraint(model, higgstype) :
-    higgsBand=ROOT.TGraph2D()
-    masslow = 150
-    masshigh = 500
-    massstep = 10
-    n=0
-    for mass in range (masslow, masshigh, massstep):
-        myfile = open("../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/"+model+"/higgs_"+str(mass)+".dat", 'r')
-        for line in myfile:
-            tanb = (line.split())[0]
-            mh = float((line.split())[1])
-            mH = float((line.split())[3])
-            if higgstype=="h" :
-                 higgsBand.SetPoint(n, mass, float(tanb), mh)
-            elif higgstype=="H" :
-                 higgsBand.SetPoint(n, mass, float(tanb), mH)
-            n=n+1 
-        myfile.close()    
-    return higgsBand
-
-col_store = []
-def CreateTransparentColor(color, alpha):
-  adapt   = ROOT.gROOT.GetColor(color)
-  new_idx = ROOT.gROOT.GetListOfColors().GetSize() + 1
-  trans = ROOT.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
-  col_store.append(trans)
-  trans.SetName('userColor%i' % new_idx)
-  return new_idx
-    
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
@@ -93,7 +46,7 @@ plot.ModTDRStyle(width=600, l=0.12)
 #Slightly thicker frame to ensure contour edges dont overlay the axis
 ROOT.gStyle.SetFrameLineWidth(2)
 c1=ROOT.TCanvas()
-axis = makeHist('hist2d', mA_bins, tanb_bins, graph_exp)
+axis = plot.makeHist2D('hist2d', mA_bins, tanb_bins, graph_exp)
 axis.GetYaxis().SetTitle("tan#beta")
 if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), float(args.y_axis_max))
 axis.GetXaxis().SetTitle("m_{A} (GeV)")
@@ -110,18 +63,18 @@ pads[1].cd()
 
 #Note the binning of the TH2D for the interpolation should ~ match the initial input grid
 #Could in future implement variable binning here
-h_exp = makeHist("h_exp", mA_bins, tanb_bins, graph_exp)
-h_obs = makeHist("h_obs", mA_bins, tanb_bins, graph_obs)
-h_minus1sigma = makeHist("h_minus1sigma", mA_bins, tanb_bins, graph_minus1sigma)
-h_plus1sigma = makeHist("h_plus1sigma", mA_bins, tanb_bins, graph_plus1sigma)
-h_minus2sigma = makeHist("h_minus2sigma", mA_bins, tanb_bins, graph_minus2sigma)
-h_plus2sigma = makeHist("h_plus2sigma", mA_bins, tanb_bins, graph_plus2sigma)
-fillTH2(h_exp, graph_exp)
-fillTH2(h_obs, graph_obs)
-fillTH2(h_minus1sigma, graph_minus1sigma)
-fillTH2(h_plus1sigma, graph_plus1sigma)
-fillTH2(h_minus2sigma, graph_minus2sigma)
-fillTH2(h_plus2sigma, graph_plus2sigma)
+h_exp = plot.makeHist2D("h_exp", mA_bins, tanb_bins, graph_exp)
+h_obs = plot.makeHist2D("h_obs", mA_bins, tanb_bins, graph_obs)
+h_minus1sigma = plot.makeHist2D("h_minus1sigma", mA_bins, tanb_bins, graph_minus1sigma)
+h_plus1sigma = plot.makeHist2D("h_plus1sigma", mA_bins, tanb_bins, graph_plus1sigma)
+h_minus2sigma = plot.makeHist2D("h_minus2sigma", mA_bins, tanb_bins, graph_minus2sigma)
+h_plus2sigma = plot.makeHist2D("h_plus2sigma", mA_bins, tanb_bins, graph_plus2sigma)
+plot.fillTH2(h_exp, graph_exp)
+plot.fillTH2(h_obs, graph_obs)
+plot.fillTH2(h_minus1sigma, graph_minus1sigma)
+plot.fillTH2(h_plus1sigma, graph_plus1sigma)
+plot.fillTH2(h_minus2sigma, graph_minus2sigma)
+plot.fillTH2(h_plus2sigma, graph_plus2sigma)
 axis.Draw()
 #Possibility to draw CLs heat map, would be a useful option, using e.g.
 #h_exp.Draw("colzsame")
@@ -136,10 +89,10 @@ cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, threshold, 20)
 cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, threshold, 20)
 cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, threshold, 20)
 
-if args.scenario == "low-tb-high":
-    graph_higgshBand = higgsConstraint(args.scenario, "h")
-    plane_higgshBand = makeHist('plane_higgshBand', 36, 91, graph_higgshBand)
-    fillTH2(plane_higgshBand, graph_higgshBand)
+if args.scenario != "hMSSM" and "2HDM" not in args.scenario :
+    graph_higgshBand = plot.higgsConstraint(args.scenario, "h")
+    plane_higgshBand = plot.makeHist2D('plane_higgshBand', 36, 91, graph_higgshBand)
+    plot.fillTH2(plane_higgshBand, graph_higgshBand)
     plane_higgshBand.SaveAs("plane_higgshBand.C")
     cont_higgshlow = plot.contourFromTH2(plane_higgshBand, 122, 5)
     cont_higgshhigh = plot.contourFromTH2(plane_higgshBand, 128, 5)
@@ -188,53 +141,56 @@ for p in cont_obs :
     p.SetMarkerSize(1.0)
     p.SetMarkerColor(ROOT.kBlack)
     p.SetFillStyle(1001)
-    p.SetFillColor(CreateTransparentColor(ROOT.kAzure+6,0.5))
+    p.SetFillColor(plot.CreateTransparentColor(ROOT.kAzure+6,0.5))
     pads[1].cd()
     p.Draw("F SAME")
     p.Draw("L SAME")
 
-#for p in cont_higgsHlow:      
-#    print "higgsHlow"
-#    p.SetLineWidth(9902)
-#    p.SetFillStyle(1001)
-#    p.SetFillColor(ROOT.kGreen) 
-#    p.SetLineColor(ROOT.kGreen+3)
-#    p.SetLineStyle(3)
-    #p.Draw("L SAME")
-    #p.Draw("F SAME")
+#if cont_higgsHlow :
+#    for p in cont_higgsHlow:   
+#        p.SetLineWidth(9902)
+#        p.SetFillStyle(1001)
+#        p.SetFillColor(ROOT.kGreen) 
+#        p.SetLineColor(ROOT.kGreen+3)
+#        p.SetLineStyle(3)
+#        p.Draw("L SAME")
+#        p.Draw("F SAME")
 
-#for p in cont_higgsHhigh:      
-#    print "higgsHhigh"
-#    p.SetLineWidth(-9902)
-#    p.SetFillStyle(1001)
-#    p.SetFillColor(ROOT.kGreen) 
-#    p.SetLineColor(ROOT.kGreen+3)
-#    p.SetLineStyle(3)
-    #p.Draw("L SAME")
-    #p.Draw("F SAME")
+#if cont_higgsHhigh :
+#    for p in cont_higgsHhigh:  
+#        p.SetLineWidth(-9902)
+#        p.SetFillStyle(1001)
+#        p.SetFillColor(ROOT.kGreen) 
+#        p.SetLineColor(ROOT.kGreen+3)
+#        p.SetLineStyle(3)
+#        p.Draw("L SAME")
+#        p.Draw("F SAME")
+     
+if cont_higgshhigh :   
+    for p in cont_higgshhigh:
+        p.SetLineWidth(-402)
+        p.SetFillStyle(3005)
+        p.SetFillColor(ROOT.kRed)
+        p.SetLineColor(ROOT.kRed)
+        pads[1].cd()
+        p.Draw("L SAME")
 
-#for p in cont_higgshlow:
-#    p.SetLineWidth(-402)
-#    p.SetFillStyle(3005)
-#    p.SetFillColor(ROOT.kRed)
-#    p.SetLineColor(ROOT.kRed)
-#    pads[1].cd()
-#    p.Draw("L SAME")
+if cont_higgshlow :
+    for p in cont_higgshlow:
+        p.SetLineWidth(402)
+        p.SetFillStyle(3005)
+        p.SetFillColor(ROOT.kRed)
+        p.SetLineColor(ROOT.kRed)
+        pads[1].cd()
+        p.Draw("L SAME")
 
-#for p in cont_higgshlow:
-#    p.SetLineWidth(402)
-#    p.SetFillStyle(3005)
-#    p.SetFillColor(ROOT.kRed)
-#    p.SetLineColor(ROOT.kRed)
-#    pads[1].cd()
-#    p.Draw("L SAME")
-
-#for p in cont_higgsh:
-#    p.SetLineWidth(2)
-#    p.SetLineColor(ROOT.kRed)
-#    p.SetLineStyle(7)
-#    pads[1].cd()
-#    p.Draw("L SAME")
+if cont_higgsh :
+    for p in cont_higgsh:
+        p.SetLineWidth(2)
+        p.SetLineColor(ROOT.kRed)
+        p.SetLineStyle(7)
+        pads[1].cd()
+        p.Draw("L SAME")
 
 
 #Set some common scenario labels

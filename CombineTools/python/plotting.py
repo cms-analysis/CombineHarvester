@@ -4,7 +4,7 @@ import os
 from functools import partial
 from array import array
 import re
-
+import collections
 
 def SetTDRStyle():
   # For the canvas:
@@ -782,3 +782,69 @@ def frameTH2D(hist, threshold, mult = 1.0):
 def FixOverlay():
   R.gPad.GetFrame().Draw()
   R.gPad.RedrawAxis()
+
+def makeHist1D(name, xbins, graph):
+    len_x = graph.GetX()[graph.GetN()-1] - graph.GetX()[0]
+    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
+    hist = R.TH1F(name, '', xbins, graph.GetX()[0]-binw_x, graph.GetX()[graph.GetN()-1]+binw_x)
+    return hist
+
+def makeHist2D(name, xbins, ybins, graph2d):
+    len_x = graph2d.GetXmax() - graph2d.GetXmin()
+    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
+    len_y = graph2d.GetYmax() - graph2d.GetYmin()
+    binw_y = (len_y * 0.5 / (float(ybins) - 1.)) - 1E-5
+    hist = R.TH2F(name, '', xbins, graph2d.GetXmin()-binw_x, graph2d.GetXmax()+binw_x, ybins, graph2d.GetYmin()-binw_y, graph2d.GetYmax()+binw_y)
+    return hist
+
+def fillTH2(hist2d, graph):
+    for x in xrange(1, hist2d.GetNbinsX()+1):
+        for y in xrange(1, hist2d.GetNbinsY()+1):
+            xc = hist2d.GetXaxis().GetBinCenter(x)
+            yc = hist2d.GetYaxis().GetBinCenter(y)
+            val = graph.Interpolate(xc, yc)
+            hist2d.SetBinContent(x, y, val)
+
+def higgsConstraint(model, higgstype) :
+    higgsBand=R.TGraph2D()
+    masslow = 150
+    masshigh = 500
+    massstep = 10
+    n=0
+    for mass in range (masslow, masshigh, massstep):
+        myfile = open("../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/"+model+"/higgs_"+str(mass)+".dat", 'r')
+        for line in myfile:
+            tanb = (line.split())[0]
+            mh = float((line.split())[1])
+            mH = float((line.split())[3])
+            if higgstype=="h" :
+                 higgsBand.SetPoint(n, mass, float(tanb), mh)
+            elif higgstype=="H" :
+                 higgsBand.SetPoint(n, mass, float(tanb), mH)
+            n=n+1 
+        myfile.close()    
+    return higgsBand
+
+def MakeErrorBand(LowerGraph, UpperGraph) :
+  errorBand = R.TGraphAsymmErrors()
+  lower_list=[]; upper_list=[]
+  for i in range(LowerGraph.GetN()):
+    lower_list.append((float(LowerGraph.GetX()[i]),  float(LowerGraph.GetY()[i])))
+    upper_list.append((float(UpperGraph.GetX()[i]),  float(UpperGraph.GetY()[i])))
+  lower_list=sorted(set(lower_list))
+  upper_list=sorted(set(upper_list))
+  for i in range(LowerGraph.GetN()):
+    errorBand.SetPoint(i, lower_list[i][0], lower_list[i][1])
+    errorBand.SetPointEYlow (i, lower_list[i][1]-lower_list[i][1])
+    errorBand.SetPointEYhigh(i, upper_list[i][1]-lower_list[i][1])
+  return errorBand
+
+def SortGraph(Graph) :
+  sortedGraph = R.TGraph()
+  graph_list=[]
+  for i in range(Graph.GetN()):
+    graph_list.append((float(Graph.GetX()[i]),  float(Graph.GetY()[i])))
+  graph_list=sorted(set(graph_list))
+  for i in range(Graph.GetN()):
+    sortedGraph.SetPoint(i, graph_list[i][0], graph_list[i][1])
+  return sortedGraph

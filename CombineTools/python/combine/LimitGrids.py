@@ -8,6 +8,7 @@ from array import array
 
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+from CombineHarvester.CombineTools.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
 
 class AsymptoticGrid(CombineToolBase):
   description = 'Calculate asymptotic limits on parameter grids' 
@@ -177,7 +178,12 @@ class Limit1D(CombineToolBase):
       print '>> Point %s' % name
       if len(val) == 0:
         print 'Going to run limit for point %s' % (key)
-        point_args = '-n .%s --setPhysicsModelParameters %s=%s --freezeNuisances %s' % (name, POIs[0], key[0], POIs[0])
+        r_process = cfg['r']
+        point_args = ''
+        if r_process[0] == "r_ggA" :
+          point_args = '-n .%s --setPhysicsModelParameters %s=%s --setPhysicsModelParameterRanges %s=0,%s --freezeNuisances %s' % (name, POIs[0], key[0], r_process[0], str(bounds["ggH-bbH",key[0]][0]), POIs[0])
+        elif r_process[0] == "r_bbA" :
+          point_args = '-n .%s --setPhysicsModelParameters %s=%s --setPhysicsModelParameterRanges %s=0,%s --freezeNuisances %s' % (name, POIs[0], key[0], r_process[0], str(bounds["ggH-bbH",key[0]][1]), POIs[0])
         cmd = ' '.join(['combine -M Asymptotic', cfg['opts'], point_args] + self.passthru)
         self.job_queue.append(cmd)
 
