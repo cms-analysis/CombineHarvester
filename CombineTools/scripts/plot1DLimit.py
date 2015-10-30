@@ -42,9 +42,9 @@ plot.ModTDRStyle(width=600, l=0.12)
 ROOT.gStyle.SetFrameLineWidth(2)
 c1=ROOT.TCanvas()
 axis = plot.makeHist1D('hist1d', mass_bins, graph_exp)
-if process_label = "gg#phi" :
+if process_label == "gg#phi" :
     axis.GetYaxis().SetTitle("95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
-elif process_label = "bb#phi" :
+elif process_label == "bb#phi" :
     axis.GetYaxis().SetTitle("95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
 else:
     exit("Currently process is not supported")
