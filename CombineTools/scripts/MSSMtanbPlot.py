@@ -4,6 +4,16 @@ import math
 import argparse
 
 
+col_store = []
+def CreateTransparentColor(color, alpha):
+  adapt   = ROOT.gROOT.GetColor(color)
+  new_idx = ROOT.gROOT.GetListOfColors().GetSize() + 1
+  trans = ROOT.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
+  col_store.append(trans)
+  trans.SetName('userColor%i' % new_idx)
+  return new_idx
+
+
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', '-f', help='named input file')
@@ -141,7 +151,7 @@ for p in cont_obs :
     p.SetMarkerSize(1.0)
     p.SetMarkerColor(ROOT.kBlack)
     p.SetFillStyle(1001)
-    p.SetFillColor(plot.CreateTransparentColor(ROOT.kAzure+6,0.5))
+    p.SetFillColor(CreateTransparentColor(ROOT.kAzure+6,0.5))
     pads[1].cd()
     p.Draw("F SAME")
     p.Draw("L SAME")
