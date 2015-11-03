@@ -58,9 +58,7 @@ ROOT.gStyle.SetFrameLineWidth(2)
 c1=ROOT.TCanvas()
 axis = plot.makeHist2D('hist2d', mA_bins, tanb_bins, graph_exp)
 axis.GetYaxis().SetTitle("tan#beta")
-if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), float(args.y_axis_max))
 axis.GetXaxis().SetTitle("m_{A} (GeV)")
-if args.custom_x_range : axis.GetXaxis().SetRangeUser(float(args.x_axis_min), float(args.x_axis_max))
 #Create two pads, one is just for the Legend
 pad1 = ROOT.TPad("pad1","pad1",0,0.82,1,1)
 pad1.SetFillStyle(4000)
@@ -241,6 +239,9 @@ if(cont_obs[0]) :
     legline.SetLineColor(ROOT.kBlack)
     legline.DrawLineNDC(legend.GetX1()+0.0106, legend.GetY2()-0.36, legend.GetX1()+0.0516, legend.GetY2()-0.36)
 
+if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), float(args.y_axis_max))
+axis.GetXaxis().SetTitle("m_{A} (GeV)")
+if args.custom_x_range : axis.GetXaxis().SetRangeUser(float(args.x_axis_min), float(args.x_axis_max))
 plot.DrawCMSLogo(pads[1], 'Combine Harvester', scenario_label, 11, 0.045, 0.035, 1.2)
 plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
 plot.FixOverlay()
