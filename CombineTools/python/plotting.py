@@ -786,7 +786,7 @@ def FixOverlay():
 def makeHist1D(name, xbins, graph):
     len_x = graph.GetX()[graph.GetN()-1] - graph.GetX()[0]
     binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
-    hist = R.TH1F(name, '', xbins, graph.GetX()[0]-binw_x, graph.GetX()[graph.GetN()-1]+binw_x)
+    hist = R.TH1F(name, '', xbins, graph.GetX()[0], graph.GetX()[graph.GetN()-1]+binw_x)
     return hist
 
 def makeHist2D(name, xbins, ybins, graph2d):

@@ -8,12 +8,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--file', '-f', help='named input file')
 parser.add_argument('--process', help='The process on which a limit has been calculated. [gg#phi, bb#phi]', default="gg#phi")
 parser.add_argument('--custom_y_range', help='Fix y axis range', default=False)
-parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=0.0001)
+parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=0.001)
 parser.add_argument('--y_axis_max',  help='Fix y axis maximum', default=100.0)
 parser.add_argument('--custom_x_range', help='Fix x axis range', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
+parser.add_argument('--log', help='Set log range for x and y axis', default=False)
 args = parser.parse_args()
 
 
@@ -52,14 +53,21 @@ if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), fl
 axis.GetXaxis().SetTitle("m_{#phi} [GeV]")
 if args.custom_x_range : axis.GetXaxis().SetRangeUser(float(args.x_axis_min), float(args.x_axis_max))
 #Create two pads, one is just for the Legend
-pad1 = ROOT.TPad("pad1","pad1",0,0.82,1,1)
-pad1.SetFillStyle(4000)
-pad1.Draw()
-pad2 = ROOT.TPad("pad2","pad2",0,0,1,0.82)
-pad2.SetFillStyle(4000)
-pad2.Draw()
-pads=[pad1,pad2]
+pad_leg = ROOT.TPad("pad_leg","pad_leg",0,0.82,1,1)
+pad_leg.SetFillStyle(4000)
+pad_leg.Draw()
+pad_plot = ROOT.TPad("pad_plot","pad_plot",0,0,1,0.82)
+pad_plot.SetFillStyle(4000)
+pad_plot.Draw()
+pads=[pad_leg,pad_plot]
 pads[1].cd()
+if args.log :
+    pad_plot.SetLogx(1);
+    pad_plot.SetLogy(1);
+    axis.SetNdivisions(50005, "X");
+    axis.GetXaxis().SetMoreLogLabels();
+    axis.GetXaxis().SetNoExponent();
+    axis.GetXaxis().SetLabelSize(0.040);
 axis.Draw()
 
 innerBand=plot.MakeErrorBand(graph_minus1sigma, graph_plus1sigma)
@@ -107,7 +115,7 @@ legend.AddEntry(graph_exp,"Expected", "L")
 legend.AddEntry(outerBand, "#pm 2#sigma Expected", "F")
 legend.Draw("same")
 
-plot.DrawCMSLogo(pads[1], '', process_label, 11, 0.045, 0.035, 1.2)
+plot.DrawCMSLogo(pads[1], '', '', 11, 0.045, 0.035, 1.2)
 plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
 plot.FixOverlay()
 c1.SaveAs("mssm_limit.pdf")
