@@ -174,31 +174,32 @@ for p in cont_obs :
 #        p.Draw("L SAME")
 #        p.Draw("F SAME")
      
-if cont_higgshhigh :   
-    for p in cont_higgshhigh:
-        p.SetLineWidth(-402)
-        p.SetFillStyle(3005)
-        p.SetFillColor(ROOT.kRed)
-        p.SetLineColor(ROOT.kRed)
-        pads[1].cd()
-        p.Draw("L SAME")
+if args.scenario != "hMSSM" and "2HDM" not in args.scenario :
+    if cont_higgshhigh :   
+        for p in cont_higgshhigh:
+            p.SetLineWidth(-402)
+            p.SetFillStyle(3005)
+            p.SetFillColor(ROOT.kRed)
+            p.SetLineColor(ROOT.kRed)
+            pads[1].cd()
+            p.Draw("L SAME")
 
-if cont_higgshlow :
-    for p in cont_higgshlow:
-        p.SetLineWidth(402)
-        p.SetFillStyle(3005)
-        p.SetFillColor(ROOT.kRed)
-        p.SetLineColor(ROOT.kRed)
-        pads[1].cd()
-        p.Draw("L SAME")
+    if cont_higgshlow :
+        for p in cont_higgshlow:
+            p.SetLineWidth(402)
+            p.SetFillStyle(3005)
+            p.SetFillColor(ROOT.kRed)
+            p.SetLineColor(ROOT.kRed)
+            pads[1].cd()
+            p.Draw("L SAME")
 
-if cont_higgsh :
-    for p in cont_higgsh:
-        p.SetLineWidth(2)
-        p.SetLineColor(ROOT.kRed)
-        p.SetLineStyle(7)
-        pads[1].cd()
-        p.Draw("L SAME")
+    if cont_higgsh :
+        for p in cont_higgsh:
+            p.SetLineWidth(2)
+            p.SetLineColor(ROOT.kRed)
+            p.SetLineStyle(7)
+            pads[1].cd()
+            p.Draw("L SAME")
 
 
 #Set some common scenario labels
