@@ -56,7 +56,8 @@ plot.ModTDRStyle(width=600, l=0.12)
 #Slightly thicker frame to ensure contour edges dont overlay the axis
 ROOT.gStyle.SetFrameLineWidth(2)
 c1=ROOT.TCanvas()
-axis = plot.makeHist2D('hist2d', mA_bins, tanb_bins, graph_exp)
+#axis = plot.makeHist2D('hist2d', mA_bins, tanb_bins, graph_exp)
+axis = plot.makeVarBinHist2D('hist2d', mA_list, tanb_list, graph_exp)
 axis.GetYaxis().SetTitle("tan#beta")
 axis.GetXaxis().SetTitle("m_{A} (GeV)")
 #Create two pads, one is just for the Legend
@@ -71,12 +72,12 @@ pads[1].cd()
 
 #Note the binning of the TH2D for the interpolation should ~ match the initial input grid
 #Could in future implement variable binning here
-h_exp = plot.makeHist2D("h_exp", mA_bins, tanb_bins, graph_exp)
-h_obs = plot.makeHist2D("h_obs", mA_bins, tanb_bins, graph_obs)
-h_minus1sigma = plot.makeHist2D("h_minus1sigma", mA_bins, tanb_bins, graph_minus1sigma)
-h_plus1sigma = plot.makeHist2D("h_plus1sigma", mA_bins, tanb_bins, graph_plus1sigma)
-h_minus2sigma = plot.makeHist2D("h_minus2sigma", mA_bins, tanb_bins, graph_minus2sigma)
-h_plus2sigma = plot.makeHist2D("h_plus2sigma", mA_bins, tanb_bins, graph_plus2sigma)
+h_exp = plot.makeVarBinHist2D("h_exp", mA_list, tanb_list, graph_exp)
+h_obs = plot.makeVarBinHist2D("h_obs", mA_list, tanb_list, graph_obs)
+h_minus1sigma = plot.makeVarBinHist2D("h_minus1sigma", mA_list, tanb_list, graph_minus1sigma)
+h_plus1sigma = plot.makeVarBinHist2D("h_plus1sigma", mA_list, tanb_list, graph_plus1sigma)
+h_minus2sigma = plot.makeVarBinHist2D("h_minus2sigma", mA_list, tanb_list, graph_minus2sigma)
+h_plus2sigma = plot.makeVarBinHist2D("h_plus2sigma", mA_list, tanb_list, graph_plus2sigma)
 plot.fillTH2(h_exp, graph_exp)
 plot.fillTH2(h_obs, graph_obs)
 plot.fillTH2(h_minus1sigma, graph_minus1sigma)
@@ -97,52 +98,63 @@ cont_plus1sigma = plot.contourFromTH2(h_plus1sigma, threshold, 20)
 cont_minus2sigma = plot.contourFromTH2(h_minus2sigma, threshold, 20)
 cont_plus2sigma = plot.contourFromTH2(h_plus2sigma, threshold, 20)
 
-if args.scenario != "hMSSM" and "2HDM" not in args.scenario :
-    graph_higgshBand = plot.higgsConstraint(args.scenario, "h")
-    plane_higgshBand = plot.makeHist2D('plane_higgshBand', 36, 91, graph_higgshBand)
-    plot.fillTH2(plane_higgshBand, graph_higgshBand)
-    plane_higgshBand.SaveAs("plane_higgshBand.C")
-    cont_higgshlow = plot.contourFromTH2(plane_higgshBand, 122, 5)
-    cont_higgshhigh = plot.contourFromTH2(plane_higgshBand, 128, 5)
-    cont_higgsh = plot.contourFromTH2(plane_higgshBand, 125, 5)
+#if args.scenario != "hMSSM" and "2HDM" not in args.scenario :
+#    graph_higgshBand = plot.higgsConstraint(args.scenario, "h")
+#    plane_higgshBand = plot.makeHist2D('plane_higgshBand', 36, 91, graph_higgshBand)
+#    plot.fillTH2(plane_higgshBand, graph_higgshBand)
+#    cont_higgshlow = plot.contourFromTH2(plane_higgshBand, 122, 5)
+#    cont_higgshhigh = plot.contourFromTH2(plane_higgshBand, 128, 5)
+#    cont_higgsh = plot.contourFromTH2(plane_higgshBand, 125, 5)
 
-for p in cont_minus2sigma :
+if int(args.verbosity) > 0 : outf = ROOT.TFile('plotting_debug.root', 'RECREATE')
+if int(args.verbosity) > 0 : outf.WriteTObject(h_minus2sigma, 'h_minus2sigma')
+for i, p in enumerate(cont_minus2sigma):
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kGray+1)
     p.SetFillStyle(1001)
     pads[1].cd()
     p.Draw("F SAME")
+    if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_minus2sigma_%i'%i)
 
-for p in cont_minus1sigma :
+if int(args.verbosity) > 0 : outf.WriteTObject(h_minus1sigma, 'h_minus1sigma')
+for i, p in enumerate(cont_minus1sigma):
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kGray+2)
     p.SetFillStyle(1001)
     pads[1].cd()
     p.Draw("F SAME")
+    if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_minus1sigma_%i'%i)
 
-for p in cont_plus1sigma :
+if int(args.verbosity) > 0 : outf.WriteTObject(h_plus1sigma, 'h_plus1sigma')
+for i, p in enumerate(cont_plus1sigma):
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kGray+1)
     p.SetFillStyle(1001)
     pads[1].cd()
     p.Draw("F SAME")
+    if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_plus1sigma_%i'%i)
 
-for p in cont_plus2sigma :
+if int(args.verbosity) > 0 : outf.WriteTObject(h_plus2sigma, 'h_plus2sigma')
+for i, p in enumerate(cont_plus2sigma):
     p.SetLineColor(0)
     p.SetFillColor(ROOT.kWhite)
     p.SetFillStyle(1001)
     pads[1].cd()
     p.Draw("F SAME")
+    if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_plus2sigma_%i'%i)
 
-for p in cont_exp :
+if int(args.verbosity) > 0 : outf.WriteTObject(h_exp, 'h_exp')
+for i, p in enumerate(cont_exp):
     p.SetLineColor(ROOT.kBlack)
     p.SetLineWidth(2)
     p.SetLineStyle(2)
     p.SetFillColor(100)
     pads[1].cd()
     p.Draw("L SAME")
+    if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_exp_%i'%i)
 
-for p in cont_obs :
+if int(args.verbosity) > 0 : outf.WriteTObject(h_obs, 'h_obs')
+for i,p in enumerate(cont_obs):
     p.SetLineColor(ROOT.kBlack)
     p.SetLineWidth(2)
     p.SetMarkerStyle(20)
@@ -153,53 +165,36 @@ for p in cont_obs :
     pads[1].cd()
     p.Draw("F SAME")
     p.Draw("L SAME")
+    if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_obs_%i'%i)
 
-#if cont_higgsHlow :
-#    for p in cont_higgsHlow:   
-#        p.SetLineWidth(9902)
-#        p.SetFillStyle(1001)
-#        p.SetFillColor(ROOT.kGreen) 
-#        p.SetLineColor(ROOT.kGreen+3)
-#        p.SetLineStyle(3)
-#        p.Draw("L SAME")
-#        p.Draw("F SAME")
-
-#if cont_higgsHhigh :
-#    for p in cont_higgsHhigh:  
-#        p.SetLineWidth(-9902)
-#        p.SetFillStyle(1001)
-#        p.SetFillColor(ROOT.kGreen) 
-#        p.SetLineColor(ROOT.kGreen+3)
-#        p.SetLineStyle(3)
-#        p.Draw("L SAME")
-#        p.Draw("F SAME")
+if int(args.verbosity) > 0 : outf.Close()
      
-if args.scenario != "hMSSM" and "2HDM" not in args.scenario :
-    if cont_higgshhigh :   
-        for p in cont_higgshhigh:
-            p.SetLineWidth(-402)
-            p.SetFillStyle(3005)
-            p.SetFillColor(ROOT.kRed)
-            p.SetLineColor(ROOT.kRed)
-            pads[1].cd()
-            p.Draw("L SAME")
+#if args.scenario != "hMSSM" and "2HDM" not in args.scenario :
+#    if cont_higgshhigh :   
+#        for p in cont_higgshhigh:
+#            p.SetLineWidth(-402)
+#            p.SetFillStyle(3005)
+#            p.SetFillColor(ROOT.kRed)
+#            p.SetLineColor(ROOT.kRed)
+#            pads[1].cd()
+#            p.Draw("L SAME")
 
-    if cont_higgshlow :
-        for p in cont_higgshlow:
-            p.SetLineWidth(402)
-            p.SetFillStyle(3005)
-            p.SetFillColor(ROOT.kRed)
-            p.SetLineColor(ROOT.kRed)
-            pads[1].cd()
-            p.Draw("L SAME")
+#    if cont_higgshlow :
+#        for p in cont_higgshlow:
+#            p.SetLineWidth(402)
+#            p.SetFillStyle(3005)
+#            p.SetFillColor(ROOT.kRed)
+#            p.SetLineColor(ROOT.kRed)
+#            pads[1].cd()
+#            p.Draw("L SAME")
 
-    if cont_higgsh :
-        for p in cont_higgsh:
-            p.SetLineWidth(2)
-            p.SetLineColor(ROOT.kRed)
-            p.SetLineStyle(7)
-            pads[1].cd()
-            p.Draw("L SAME")
+#    if cont_higgsh :
+#        for p in cont_higgsh:
+#            p.SetLineWidth(2)
+#            p.SetLineColor(ROOT.kRed)
+#            p.SetLineStyle(7)
+#            pads[1].cd()
+#            p.Draw("L SAME")
 
 
 #Set some common scenario labels
