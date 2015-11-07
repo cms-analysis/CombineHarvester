@@ -795,48 +795,31 @@ def makeHist2D(name, xbins, ybins, graph2d):
     len_y = graph2d.GetYmax() - graph2d.GetYmin()
     binw_y = (len_y * 0.5 / (float(ybins) - 1.)) - 1E-5
     hist = R.TH2F(name, '', xbins, graph2d.GetXmin()-binw_x, graph2d.GetXmax()+binw_x, ybins, graph2d.GetYmin()-binw_y, graph2d.GetYmax()+binw_y)
-    #hist.SaveAs("constant_bin_hist.C")
     return hist
 
-def makeVarBinHist2D(name, xbins, ybins, graph2d):
+def makeVarBinHist2D(name, xbins, ybins):
     #create new arrays in which bin low edge is adjusted to make measured points at the bin centres
     xbins_new=[None]*(len(xbins)+1)
     for i in xrange(len(xbins)-1):
-   #     print "i, xbins[i]: ", i, xbins[i]
-   #     print "i, xbins[i+1]: ", i, xbins[i+1]
-        xbins_new[i] = xbins[i] - ((xbins[i+1]-xbins[i])/2)
-   #     print "i, xbins_new[i]: ", i, xbins_new[i]
-    xbins_new[len(xbins)-1] = xbins[len(xbins)-2] + ((xbins[len(xbins)-2]-xbins[len(xbins)-3])/2)
-    xbins_new[len(xbins)] = xbins[len(xbins)-1] + ((xbins[len(xbins)-1]-xbins[len(xbins)-2])/2)
-    #print "i, xbins_new[len(xbins)-1]: ", len(xbins)-1, xbins_new[len(xbins)-1]
-    #print "i, xbins_new[len(xbins)]: ", len(xbins), xbins_new[len(xbins)]
+        xbins_new[i] = xbins[i] - ((xbins[i+1]-xbins[i])/2) + 1E-5
+    xbins_new[len(xbins)-1] = xbins[len(xbins)-2] + ((xbins[len(xbins)-2]-xbins[len(xbins)-3])/2) + 1E-5
+    xbins_new[len(xbins)] = xbins[len(xbins)-1] + ((xbins[len(xbins)-1]-xbins[len(xbins)-2])/2) - 1E-5 
+    
     ybins_new=[None]*(len(ybins)+1)
     for i in xrange(len(ybins)-1):
-        #print "ybins[i]: ", ybins[i]
-        #print "ybins[i+1]: ", ybins[i+1]
-        ybins_new[i] = ybins[i] - ((ybins[i+1]-ybins[i])/2)
-        #print "ybins_new[i]: ", ybins_new[i]
-    ybins_new[len(ybins)-1] = ybins[len(ybins)-2] + ((ybins[len(ybins)-2]-ybins[len(ybins)-3])/2)
-    ybins_new[len(ybins)] = ybins[len(ybins)-1] + ((ybins[len(ybins)-1]-ybins[len(ybins)-2])/2)
-    #print "i, ybins_new[len(ybins)-1]: ", len(ybins)-1, ybins_new[len(ybins)-1]
-    #print "i, ybins_new[len(ybins)]: ", len(ybins), ybins_new[len(ybins)]
-    #print xbins_new
-    #print ybins_new
+        ybins_new[i] = ybins[i] - ((ybins[i+1]-ybins[i])/2) + 1E-5
+    ybins_new[len(ybins)-1] = ybins[len(ybins)-2] + ((ybins[len(ybins)-2]-ybins[len(ybins)-3])/2) + 1E-5
+    ybins_new[len(ybins)] = ybins[len(ybins)-1] + ((ybins[len(ybins)-1]-ybins[len(ybins)-2])/2) - 1E-5
     hist = R.TH2F(name, '', len(xbins_new)-1, array('d',xbins_new), len(ybins_new)-1, array('d',ybins_new))
-    #hist.SaveAs("variable_bin_hist.C")
     return hist
 
 def fillTH2(hist2d, graph):
     for x in xrange(1, hist2d.GetNbinsX()+1):
         for y in xrange(1, hist2d.GetNbinsY()+1):
-         #   print "binx, biny", x, y
             xc = hist2d.GetXaxis().GetBinCenter(x)
             yc = hist2d.GetYaxis().GetBinCenter(y)
-          #  print "bincx, bincy", xc, yc
             val = graph.Interpolate(xc, yc)
-      #      print val
             hist2d.SetBinContent(x, y, val)
-    #hist2d.SaveAs("filled_hist.C")        
 
 def higgsConstraint(model, higgstype) :
     higgsBand=R.TGraph2D()
