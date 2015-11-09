@@ -1,4 +1,5 @@
 import CombineHarvester.CombineTools.plotting as plot 
+import CombineHarvester.CombineTools.maketable as maketable
 import ROOT
 import math
 import argparse
@@ -15,6 +16,7 @@ parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
 parser.add_argument('--log', help='Set log range for x and y axis', default=False)
+parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
 
@@ -120,3 +122,4 @@ plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
 plot.FixOverlay()
 c1.SaveAs("mssm_limit.pdf")
 c1.SaveAs("mssm_limit.png")
+maketable.Tablefrom1DGraph(args.table_vals, args.file, mass_list, "mssm_limit_table.txt")
