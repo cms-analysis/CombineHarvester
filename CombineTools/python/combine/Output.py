@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import ROOT
+import json
 
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.opts import OPTS
+import CombineHarvester.CombineTools.maketable as maketable
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 
@@ -71,5 +73,5 @@ class CollectLimits(CombineToolBase):
             js_out, sort_keys=True, indent=2, separators=(',', ': '))
         print jsondata
         if self.args.output is not None:
-            with open(args.output, 'w') as out_file:
+            with open(self.args.output, 'w') as out_file:
                 out_file.write(jsondata)

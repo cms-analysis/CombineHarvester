@@ -3,11 +3,17 @@ import sys
 import ROOT
 import math
 # from functools import partial
-import Tools.Plotting.plotting as plot
+import CombineHarvester.CombineTools.plotting as plot
 import json
-# import argparse
+import argparse
 # import os.path
 from array import array
+import CombineHarvester.CombineTools.maketable as maketable
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--file', '-f', help='named input file')
+parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
+args = parser.parse_args()
 
 
 def LimitTGraphFromJSON(js, label):
@@ -47,7 +53,7 @@ canv = ROOT.TCanvas('limit', 'limit')
 pads = plot.OnePad()
 
 data = {}
-with open('cmb_limits.json') as jsonfile:
+with open(args.file) as jsonfile:
     data = json.load(jsonfile)
 
 g_obs = LimitTGraphFromJSON(data, 'observed')
@@ -93,7 +99,7 @@ legend.AddEntry(g_exp2, '#pm2#sigma Expected', 'F')
 legend.Draw()
 
 
-plot.DrawCMSLogo(pads[0], 'CMS', 'Internal', 11, 0.045, 0.035, 1.0, '', 1.0)
+plot.DrawCMSLogo(pads[0], 'CMS', 'Internal', 11, 0.045, 0.035, 1.0)
 plot.DrawTitle(pads[0], '4.9 fb^{-1} (7 TeV) + 19.7 fb^{-1} (8 TeV)', 3)
 plot.DrawTitle(pads[0], 'H#rightarrow#tau#tau', 1)
 
@@ -103,3 +109,4 @@ plot.DrawTitle(pads[0], 'H#rightarrow#tau#tau', 1)
 canv.Print('.pdf')
 canv.Print('.png')
 # canv.Print('.C')
+maketable.TablefromJson(args.table_vals, args.file, "TablefromJson.txt")
