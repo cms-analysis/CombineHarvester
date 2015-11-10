@@ -797,6 +797,24 @@ def makeHist2D(name, xbins, ybins, graph2d):
     hist = R.TH2F(name, '', xbins, graph2d.GetXmin()-binw_x, graph2d.GetXmax()+binw_x, ybins, graph2d.GetYmin()-binw_y, graph2d.GetYmax()+binw_y)
     return hist
 
+def makeVarBinHist2D(name, xbins, ybins):
+    #create new arrays in which bin low edge is adjusted to make measured points at the bin centres
+    xbins_new=[None]*(len(xbins)+1)
+    for i in xrange(len(xbins)-1):
+        if i == 0 or i == 1: xbins_new[i] = xbins[i] - ((xbins[i+1]-xbins[i])/2) + 1E-5
+        else: xbins_new[i] = xbins[i] - ((xbins[i+1]-xbins[i])/2) 
+    xbins_new[len(xbins)-1] = xbins[len(xbins)-2] + ((xbins[len(xbins)-2]-xbins[len(xbins)-3])/2) 
+    xbins_new[len(xbins)] = xbins[len(xbins)-1] + ((xbins[len(xbins)-1]-xbins[len(xbins)-2])/2) - 1E-5 
+    
+    ybins_new=[None]*(len(ybins)+1)
+    for i in xrange(len(ybins)-1):
+        if i == 0 or i == 1: ybins_new[i] = ybins[i] - ((ybins[i+1]-ybins[i])/2) + 1E-5
+        else: ybins_new[i] = ybins[i] - ((ybins[i+1]-ybins[i])/2)
+    ybins_new[len(ybins)-1] = ybins[len(ybins)-2] + ((ybins[len(ybins)-2]-ybins[len(ybins)-3])/2) 
+    ybins_new[len(ybins)] = ybins[len(ybins)-1] + ((ybins[len(ybins)-1]-ybins[len(ybins)-2])/2) - 1E-5
+    hist = R.TH2F(name, '', len(xbins_new)-1, array('d',xbins_new), len(ybins_new)-1, array('d',ybins_new))
+    return hist
+
 def fillTH2(hist2d, graph):
     for x in xrange(1, hist2d.GetNbinsX()+1):
         for y in xrange(1, hist2d.GetNbinsY()+1):
