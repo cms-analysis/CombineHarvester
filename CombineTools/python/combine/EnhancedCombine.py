@@ -49,15 +49,14 @@ class EnhancedCombine(CombineToolBase):
             subbed_vars[('MASS',)] = [(mval,) for mval in mass_vals]
             self.passthru.extend(['-m', '%(MASS)s'])
             
-        if self.args.Pmodel is not None:
-            
+        if self.args.Pmodel is not None:        
             subbed_vars = {}
             mass_vals = utils.split_vals(self.args.mass)
             if self.args.Pmodel == 'bbH' : t=1
             elif self.args.Pmodel == 'ggH' : t=0
             else : exit("Physic model '%s' not recognized" % self.args.Pmodel)
             subbed_vars[('MASS', 'MODEL', 'BOUND')] = [(mval, self.args.Pmodel, bounds["ggH-bbH", mval][t]) for mval in mass_vals]
-            self.passthru.extend(['--setPhysicsModelParameters', 'r_%(MODEL)s=r_%(MODEL)s', '--setPhysicsModelParameterRanges',  'r_%(MODEL)s=0,%(BOUND)s'])
+            self.passthru.extend(['--setPhysicsModelParameters', 'r_%(MODEL)s=r_%(MODEL)s', '--setPhysicsModelParameterRanges',  'r_%(MODEL)s=0,%(BOUND)s', '--freezeNuisances MH'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])
