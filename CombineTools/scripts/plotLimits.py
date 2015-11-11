@@ -16,31 +16,6 @@ parser.add_argument('--table_vals', help='Amount of values to be written in a ta
 args = parser.parse_args()
 
 
-def LimitTGraphFromJSON(js, label):
-    xvals = []
-    yvals = []
-    for key in js:
-        xvals.append(float(key))
-        yvals.append(js[key][label])
-    graph = ROOT.TGraph(len(xvals), array('d', xvals), array('d', yvals))
-    graph.Sort()
-    return graph
-
-def LimitBandTGraphFromJSON(js, central, lo, hi):
-    xvals = []
-    yvals = []
-    yvals_lo = []
-    yvals_hi = []
-    for key in js:
-        xvals.append(float(key))
-        yvals.append(js[key][central])
-        yvals_lo.append(js[key][central] - js[key][lo])
-        yvals_hi.append(js[key][hi] - js[key][central])
-    graph = ROOT.TGraphAsymmErrors(len(xvals), array('d', xvals), array('d', yvals), array('d', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
-    graph.Sort()
-    return graph
-
-
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
@@ -56,17 +31,17 @@ data = {}
 with open(args.file) as jsonfile:
     data = json.load(jsonfile)
 
-g_obs = LimitTGraphFromJSON(data, 'observed')
+g_obs = plot.LimitTGraphFromJSON(data, 'observed')
 g_obs.SetLineWidth(2)
 axishist = plot.CreateAxisHist(g_obs, True)
 
-g_exp = LimitTGraphFromJSON(data, 'expected')
+g_exp = plot.LimitTGraphFromJSON(data, 'expected')
 g_exp.SetLineWidth(2)
 g_exp.SetLineColor(ROOT.kRed)
 # g_exp.SetLineStyle(9)
-g_exp1 = LimitBandTGraphFromJSON(data, 'expected', '-1', '+1')
+g_exp1 = plot.LimitBandTGraphFromJSON(data, 'expected', '-1', '+1')
 g_exp1.SetFillColor(ROOT.kGreen)
-g_exp2 = LimitBandTGraphFromJSON(data, 'expected', '-2', '+2')
+g_exp2 = plot.LimitBandTGraphFromJSON(data, 'expected', '-2', '+2')
 g_exp2.SetFillColor(ROOT.kYellow)
 # print ROOT.gPad
 

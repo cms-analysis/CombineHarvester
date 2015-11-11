@@ -3,6 +3,7 @@ import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+from CombineHarvester.CombineTools.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
 
 
 class EnhancedCombine(CombineToolBase):
@@ -18,6 +19,8 @@ class EnhancedCombine(CombineToolBase):
             '-m', '--mass', help='Supports range strings for multiple masses, e.g. "120:130:5,140 will produce three combine calls with mass values of 120, 125, 130 and 140"')
         group.add_argument(
             '--points', help='For use with "-M MultiDimFit --algo grid" to split scan points into separate jobs')
+        group.add_argument(
+            '--Pmodel', help='Set range of physical parameters depending on the given mass and given physics model')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
 
@@ -45,6 +48,16 @@ class EnhancedCombine(CombineToolBase):
             mass_vals = utils.split_vals(self.args.mass)
             subbed_vars[('MASS',)] = [(mval,) for mval in mass_vals]
             self.passthru.extend(['-m', '%(MASS)s'])
+            
+        if self.args.Pmodel is not None:
+            
+            subbed_vars = {}
+            mass_vals = utils.split_vals(self.args.mass)
+            if self.args.Pmodel == 'bbH' : t=1
+            elif self.args.Pmodel == 'ggH' : t=0
+            else : exit("Physic model '%s' not recognized" % self.args.Pmodel)
+            subbed_vars[('MASS', 'MODEL', 'BOUND')] = [(mval, self.args.Pmodel, bounds["ggH-bbH", mval][t]) for mval in mass_vals]
+            self.passthru.extend(['--setPhysicsModelParameters', 'r_%(MODEL)s=r_%(MODEL)s', '--setPhysicsModelParameterRanges',  'r_%(MODEL)s=0,%(BOUND)s'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])

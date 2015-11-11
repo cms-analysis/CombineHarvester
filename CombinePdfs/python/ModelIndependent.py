@@ -169,12 +169,12 @@ class FloatingMSSMXSHiggs2(MSSMLikeHiggsModel):
         for po in physOptions:
             #if po.startswith("tanb="): self.tanb = po.replace("tanb=", "")
             if po.startswith("modes="): self.modes = po.replace("modes=","").split(",")
-            if po.startswith("mARange="):
-                self.mARange = po.replace("mARange=","").split(":")
-                if len(self.mARange) != 2:
-                    raise RuntimeError, "Definition of mA range requires two extrema, separated by ':'"
-                elif float(self.mARange[0]) >= float(self.mARange[1]):
-                    raise RuntimeError, "Extrema for mA range defined with inverterd order. Second element must be larger than first element"
+            #if po.startswith("mARange="):
+            #    self.mARange = po.replace("mARange=","").split(":")
+            #    if len(self.mARange) != 2:
+            #        raise RuntimeError, "Definition of mA range requires two extrema, separated by ':'"
+            #    elif float(self.mARange[0]) >= float(self.mARange[1]):
+            #        raise RuntimeError, "Extrema for mA range defined with inverterd order. Second element must be larger than first element"
             if po.startswith("ggHRange="):
                 self.ggHRange = po.replace("ggHRange=","").split(":")
                 if len(self.ggHRange) != 2:
@@ -208,8 +208,8 @@ class FloatingMSSMXSHiggs2(MSSMLikeHiggsModel):
         ## as fixed. NOTE: this is only left here as an extended example. It's not useful to have mA floating at the moment.
         if self.modelBuilder.out.var("MH"):
             if len(self.mHRange):
-                print 'MH will be left floating within', self.mARange[0], 'and', self.mARange[1]
-                self.modelBuilder.out.var("MH").setRange(float(self.mARange[0]),float(self.mARange[1]))
+                print 'MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1]
+                self.modelBuilder.out.var("MH").setRange(float(self.mHRange[0]),float(self.mHRange[1]))
                 self.modelBuilder.out.var("MH").setConstant(False)
                 poi+=',MH'
             else:
@@ -217,9 +217,9 @@ class FloatingMSSMXSHiggs2(MSSMLikeHiggsModel):
                 self.modelBuilder.out.var("MH").removeRange()
                 self.modelBuilder.out.var("MH").setVal(self.options.mass)
         else:
-            if len(self.mARange):
-                print 'MH will be left floating within', self.mARange[0], 'and', self.mARange[1]
-                self.modelBuilder.doVar("MH[%s,%s]" % (self.mARange[0],self.mARange[1]))
+            if len(self.mHRange):
+                print 'MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1]
+                self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0],self.mHRange[1]))
                 poi+=',MH'
             else:
                 print 'MH (not there before) will be assumed to be', self.options.mass

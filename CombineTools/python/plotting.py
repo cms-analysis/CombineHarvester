@@ -866,3 +866,27 @@ def SortGraph(Graph) :
   for i in range(Graph.GetN()):
     sortedGraph.SetPoint(i, graph_list[i][0], graph_list[i][1])
   return sortedGraph
+
+def LimitTGraphFromJSON(js, label):
+    xvals = []
+    yvals = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][label])
+    graph = R.TGraph(len(xvals), array('d', xvals), array('d', yvals))
+    graph.Sort()
+    return graph
+
+def LimitBandTGraphFromJSON(js, central, lo, hi):
+    xvals = []
+    yvals = []
+    yvals_lo = []
+    yvals_hi = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][central])
+        yvals_lo.append(js[key][central] - js[key][lo])
+        yvals_hi.append(js[key][hi] - js[key][central])
+    graph = R.TGraphAsymmErrors(len(xvals), array('d', xvals), array('d', yvals), array('d', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
+    graph.Sort()
+    return graph

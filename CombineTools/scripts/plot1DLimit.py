@@ -3,6 +3,7 @@ import CombineHarvester.CombineTools.maketable as maketable
 import ROOT
 import math
 import argparse
+import json
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
@@ -20,15 +21,31 @@ parser.add_argument('--table_vals', help='Amount of values to be written in a ta
 args = parser.parse_args()
 
 
-#Store the mass list
-file = ROOT.TFile(args.file, 'r')
-print args.file
-graph_obs         = plot.SortGraph(file.Get("observed"))
-graph_minus2sigma = plot.SortGraph(file.Get("minus2sigma"))
-graph_minus1sigma = plot.SortGraph(file.Get("minus1sigma"))
-graph_exp         = plot.SortGraph(file.Get("expected"))
-graph_plus1sigma  = plot.SortGraph(file.Get("plus1sigma"))
-graph_plus2sigma  = plot.SortGraph(file.Get("plus2sigma"))
+#Store the mass list convert from json file or directly via tgraphs
+graph_obs         = ROOT.TGraph()
+graph_minus2sigma = ROOT.TGraph()
+graph_minus1sigma = ROOT.TGraph()
+graph_exp         = ROOT.TGraph()
+graph_plus1sigma  = ROOT.TGraph()
+graph_plus2sigma  = ROOT.TGraph()
+if ".root" in args.file :
+    file = ROOT.TFile(args.file, 'r')
+    graph_obs         = plot.SortGraph(file.Get("observed"))
+    graph_minus2sigma = plot.SortGraph(file.Get("minus2sigma"))
+    graph_minus1sigma = plot.SortGraph(file.Get("minus1sigma"))
+    graph_exp         = plot.SortGraph(file.Get("expected"))
+    graph_plus1sigma  = plot.SortGraph(file.Get("plus1sigma"))
+    graph_plus2sigma  = plot.SortGraph(file.Get("plus2sigma"))
+else :
+    data = {}
+    with open(args.file) as jsonfile:
+        data = json.load(jsonfile)
+    graph_obs         = plot.LimitTGraphFromJSON(data, 'observed')
+    graph_minus2sigma = plot.LimitTGraphFromJSON(data, '-2')
+    graph_minus1sigma = plot.LimitTGraphFromJSON(data, '-1')
+    graph_exp         = plot.LimitTGraphFromJSON(data, 'expected')
+    graph_plus1sigma  = plot.LimitTGraphFromJSON(data, '+1')
+    graph_plus2sigma  = plot.LimitTGraphFromJSON(data, '+2')
 
 process_label=args.process
 
@@ -122,4 +139,8 @@ plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
 plot.FixOverlay()
 c1.SaveAs("mssm_limit.pdf")
 c1.SaveAs("mssm_limit.png")
-maketable.Tablefrom1DGraph(args.table_vals, args.file, mass_list, "mssm_limit_table.txt")
+if ".root" in args.file :
+    maketable.Tablefrom1DGraph(args.table_vals, args.file, mass_list, "mssm_limit_table.txt")
+else :
+    maketable.TablefromJson(args.table_vals, args.file, "mssm_limit_table.txt")
+    
