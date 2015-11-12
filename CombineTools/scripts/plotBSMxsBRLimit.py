@@ -17,7 +17,7 @@ parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
 parser.add_argument('--log', help='Set log range for x and y axis', default=False)
-parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
+#parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
 
@@ -28,6 +28,7 @@ graph_minus1sigma = ROOT.TGraph()
 graph_exp         = ROOT.TGraph()
 graph_plus1sigma  = ROOT.TGraph()
 graph_plus2sigma  = ROOT.TGraph()
+
 if ".root" in args.file :
     file = ROOT.TFile(args.file, 'r')
     graph_obs         = plot.SortGraph(file.Get("observed"))
@@ -36,6 +37,7 @@ if ".root" in args.file :
     graph_exp         = plot.SortGraph(file.Get("expected"))
     graph_plus1sigma  = plot.SortGraph(file.Get("plus1sigma"))
     graph_plus2sigma  = plot.SortGraph(file.Get("plus2sigma"))
+    maketable.Tablefrom1DGraph(args.file, "mssm_limit_table.txt")
 else :
     data = {}
     with open(args.file) as jsonfile:
@@ -46,6 +48,7 @@ else :
     graph_exp         = plot.LimitTGraphFromJSON(data, 'expected')
     graph_plus1sigma  = plot.LimitTGraphFromJSON(data, '+1')
     graph_plus2sigma  = plot.LimitTGraphFromJSON(data, '+2')
+    maketable.TablefromJson(args.file, "mssm_limit_table.txt")
 
 process_label=args.process
 
@@ -139,8 +142,4 @@ plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
 plot.FixOverlay()
 c1.SaveAs("mssm_limit.pdf")
 c1.SaveAs("mssm_limit.png")
-if ".root" in args.file :
-    maketable.Tablefrom1DGraph(args.table_vals, args.file, mass_list, "mssm_limit_table.txt")
-else :
-    maketable.TablefromJson(args.table_vals, args.file, "mssm_limit_table.txt")
     
