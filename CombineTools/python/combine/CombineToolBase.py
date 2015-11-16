@@ -239,7 +239,7 @@ class CombineToolBase:
             config.JobType.scriptExe = outscriptname
             config.JobType.inputFiles.extend(wsp_files)
             config.Data.totalUnits = jobs
-            config.Data.publishDataName = config.General.requestName
+            config.Data.outputDatasetTag = config.General.requestName
             if self.memory is not None:
                 config.JobType.maxMemoryMB = self.memory
             if self.crab_area is not None:

@@ -20,6 +20,8 @@ class EnhancedCombine(CombineToolBase):
         group.add_argument(
             '--points', help='For use with "-M MultiDimFit --algo grid" to split scan points into separate jobs')
         group.add_argument(
+            '--singlePoint', help='Supports range strings for multiple points to test, uses the same format as the --mass argument')
+        group.add_argument(
             '--Pmodel', help='Set range of physical parameters depending on the given mass and given physics model')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
@@ -48,6 +50,12 @@ class EnhancedCombine(CombineToolBase):
             mass_vals = utils.split_vals(self.args.mass)
             subbed_vars[('MASS',)] = [(mval,) for mval in mass_vals]
             self.passthru.extend(['-m', '%(MASS)s'])
+
+        if self.args.singlePoint is not None:
+            single_points = utils.split_vals(self.args.singlePoint)
+            subbed_vars[('SINGLEPOINT',)] = [(pval,) for pval in single_points]
+            self.passthru.extend(['--singlePoint', '%(SINGLEPOINT)s'])
+            self.args.name += '.POINT.%(SINGLEPOINT)s'
             
         if self.args.Pmodel is not None:        
             subbed_vars = {}

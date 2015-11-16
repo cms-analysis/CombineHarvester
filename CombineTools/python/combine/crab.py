@@ -18,12 +18,12 @@ config.JobType.outputFiles = ['combine_output.tar']
 # config.JobType.maxMemoryMB = args.maxMemory
 
 config.section_('Data')
-config.Data.primaryDataset = 'Combine'
+config.Data.outputPrimaryDataset = 'Combine'
 config.Data.splitting = 'EventBased'
 config.Data.unitsPerJob = 1
 config.Data.totalUnits = 1
 config.Data.publication = False
-config.Data.publishDataName = ''
+config.Data.outputDatasetTag = ''
 
 config.section_('User')
 
