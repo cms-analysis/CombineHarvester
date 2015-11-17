@@ -10,7 +10,7 @@ from array import array
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 from CombineHarvester.CombineTools.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-import Tools.Plotting.plotting as plot
+import CombineHarvester.CombineTools.plotting as plot
 
 class AsymptoticGrid(CombineToolBase):
   description = 'Calculate asymptotic limits on parameter grids' 
