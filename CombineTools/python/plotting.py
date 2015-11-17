@@ -903,3 +903,7 @@ def LimitBandTGraphFromJSON(js, central, lo, hi):
     graph = R.TGraphAsymmErrors(len(xvals), array('d', xvals), array('d', yvals), array('d', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
     graph.Sort()
     return graph
+
+def Set(obj, **kwargs):
+  for key, value in kwargs.iteritems():
+    getattr(obj, 'Set'+key)(value)

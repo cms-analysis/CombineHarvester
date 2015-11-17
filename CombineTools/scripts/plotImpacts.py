@@ -60,13 +60,9 @@ for page in xrange(n):
         y1 = y1 + float(i) * h
         y2 = y1 + h
         box = ROOT.TPaveText(0, y1, 1, y2, 'NDC')
-        box.SetTextSize(0.02)
-        box.SetBorderSize(0)
-        box.SetFillColor(0)
+        plot.Set(box, TextSize=0.02, BorderSize=0, FillColor=0, TextAlign=12, Margin=0.005)
         if i % 2 == 0:
             box.SetFillColor(18)
-        box.SetTextAlign(12)
-        box.SetMargin(0.005)
         box.AddText('%i' % (n_params - i + page * show))
         box.Draw()
         boxes.append(box)
@@ -102,31 +98,23 @@ for page in xrange(n):
             i + 1, (Translate(pdata[p]['name'], translate)))
 
     # Style and draw the pulls histo
-    h_pulls.GetXaxis().SetTitleSize(0.04)
-    h_pulls.GetXaxis().SetLabelSize(0.03)
-    h_pulls.GetXaxis().SetTitle('(#hat{#theta}-#theta_{0})/#Delta#theta')
+    plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
+    plot.Set(h_pulls.GetYaxis(), LabelSize=0.022, TickLength=0.0)
     h_pulls.GetYaxis().LabelsOption('v')
-    h_pulls.GetYaxis().SetLabelSize(0.022)
-    h_pulls.GetYaxis().SetTickLength(0.0)
     h_pulls.Draw()
 
     # Go to the other pad and draw the impacts histo
     pads[1].cd()
     h_impacts = ROOT.TH2F(
         "impacts", "impacts", 6, -max_impact * 1.1, max_impact * 1.1, n_params, 0, n_params)
-    h_impacts.GetXaxis().SetLabelSize(0.03)
-    h_impacts.GetXaxis().SetTitleSize(0.04)
-    h_impacts.GetXaxis().SetNdivisions(505)
-    h_impacts.GetXaxis().SetTitle(
+    plot.Set(h_impacts.GetXaxis(), LabelSize=0.03, TitleSize=0.04, Ndivisions=505, Title=
         '#Delta#hat{%s}' % (Translate(POIs[0], translate)))
-    h_impacts.GetYaxis().SetLabelSize(0)
-    h_impacts.GetYaxis().SetTickLength(0.0)
+    plot.Set(h_impacts.GetYaxis(), LabelSize=0, TickLength=0.0)
     h_impacts.Draw()
     
     # Back to the first pad to graph the pulls graph
     pads[0].cd()
-    g_pulls.SetMarkerSize(0.8)
-    g_pulls.SetLineWidth(2)
+    plot.Set(g_pulls, MarkerSize=0.8, LineWidth=2)
     g_pulls.Draw('PSAME')
 
     # And back to the second pad to draw the impacts graphs
