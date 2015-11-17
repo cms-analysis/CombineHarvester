@@ -1,6 +1,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "boost/algorithm/string/predicate.hpp"
+#include "boost/program_options.hpp"
 #include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/TFileIO.h"
@@ -13,14 +15,26 @@
 #include "TH2.h"
 
 using namespace std;
+using boost::starts_with;
+namespace po = boost::program_options;
 
 int main(int argc, char** argv) {
+  string SM125= "";
+  string mass = "mA";
+  po::variables_map vm;
+  po::options_description config("configuration");
+  config.add_options()
+    ("mass,m", po::value<string>(&mass)->default_value(mass))
+    ("SM125,h", po::value<string>(&SM125)->default_value(SM125));
+  po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
+  po::notify(vm);
+  
   typedef vector<pair<int, string>> Categories;
   typedef vector<string> VString;
 
   // We will need to source some inputs from the "auxiliaries" repo
-  string SM125        = "";
-  if(argc>1) SM125    = string(argv[1]);
+  //string SM125        = "";
+  //if(argc>1) SM125    = string(argv[1]);
   string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
   string aux_shapes   = auxiliaries +"shapes/";
   string aux_pruning  = auxiliaries +"pruning/";
@@ -40,7 +54,7 @@ int main(int argc, char** argv) {
   // RooFit will be quite noisy if we don't set this
   // RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
 
-  RooRealVar mA("mA", "mA", 90., 1000.);
+  RooRealVar mA(mass.c_str(), mass.c_str(), 90., 1000.);
   RooRealVar mH("mH", "mH", 90., 1000.);
   RooRealVar mh("mh", "mh", 90., 1000.);
   
@@ -87,6 +101,12 @@ int main(int argc, char** argv) {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
     {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
   };
+  if(mass=="MH"){
+    signal_types = {
+      {"ggH", {"ggH"}},
+      {"bbH", {"bbH"}}
+    };
+  }
   for (auto chn : chns) {
     cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["ggH"], cats[chn+"_8TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["bbH"], cats[chn+"_8TeV"], true);
@@ -165,6 +185,12 @@ int main(int argc, char** argv) {
     {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA},
     {"bbh_htautau", &mh}, {"bbH_Htautau", &mH}, {"bbA_Atautau", &mA}
   };
+  if(mass=="MH"){
+    mass_var = {
+      {"ggH", &mA},
+      {"bbH", &mA}
+    };
+  }
   if (do_morphing) {
     auto bins = cb.bin_set();
     for (auto b : bins) {

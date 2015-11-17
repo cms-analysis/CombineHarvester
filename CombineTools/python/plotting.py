@@ -243,7 +243,7 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY):
   if (iPosX / 10 == 1): alignX_ = 1
   if (iPosX / 10 == 2): alignX_ = 2
   if (iPosX / 10 == 3): alignX_ = 3
-  if (iPosX == 0): relPosX = 0.14
+  # if (iPosX == 0): relPosX = 0.14
   align_ = 10 * alignX_ + alignY_
 
   l = pad.GetLeftMargin()
@@ -526,6 +526,19 @@ def TwoPadSplit(split_point, gap_low, gap_high) :
     lower.Draw()
     upper.cd()
     result = [upper,lower]
+    return result
+
+def TwoPadSplitColumns(split_point, gap_left, gap_right) :
+    left = R.TPad('left', 'left', 0., 0., 1., 1.)
+    left.SetRightMargin(1 - split_point + gap_right)
+    left.SetFillStyle(4000)
+    left.Draw()
+    right = R.TPad('right', 'right', 0., 0., 1., 1.)
+    right.SetLeftMargin(split_point + gap_left)
+    right.SetFillStyle(4000)
+    right.Draw()
+    left.cd()
+    result = [left,right]
     return result
 
 def ImproveMinimum(graph, func):
@@ -866,3 +879,31 @@ def SortGraph(Graph) :
   for i in range(Graph.GetN()):
     sortedGraph.SetPoint(i, graph_list[i][0], graph_list[i][1])
   return sortedGraph
+
+def LimitTGraphFromJSON(js, label):
+    xvals = []
+    yvals = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][label])
+    graph = R.TGraph(len(xvals), array('d', xvals), array('d', yvals))
+    graph.Sort()
+    return graph
+
+def LimitBandTGraphFromJSON(js, central, lo, hi):
+    xvals = []
+    yvals = []
+    yvals_lo = []
+    yvals_hi = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][central])
+        yvals_lo.append(js[key][central] - js[key][lo])
+        yvals_hi.append(js[key][hi] - js[key][central])
+    graph = R.TGraphAsymmErrors(len(xvals), array('d', xvals), array('d', yvals), array('d', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
+    graph.Sort()
+    return graph
+
+def Set(obj, **kwargs):
+  for key, value in kwargs.iteritems():
+    getattr(obj, 'Set'+key)(value)
