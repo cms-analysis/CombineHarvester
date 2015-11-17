@@ -289,7 +289,7 @@ int main() {
       for (auto p : procs) {
         string pdf_name = b + "_" + p + "_morph";
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                             "eff_acc", true, true, &demo);
+                             "eff_acc", true, true, false, &demo);
             std::string prod_name = pdf_name + "_eff_acc";
             RooAbsReal *norm =  ws.function(prod_name.c_str());
             RooProduct full_norm((pdf_name + "_norm").c_str(), "",

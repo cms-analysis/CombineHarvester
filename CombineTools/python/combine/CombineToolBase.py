@@ -17,6 +17,30 @@ cd %(PWD)s
     'PWD': os.environ['PWD']
 })
 
+JOB_NAF_PREFIX = """#!/bin/sh
+ulimit -s unlimited
+cd %(CMSSW_BASE)s/src
+linux_ver=`lsb_release -s -r`
+echo $linux_ver
+if [[ $linux_ver < 6.0 ]];
+then
+     eval "`/afs/desy.de/common/etc/local/ini/ini.pl cmssw_cvmfs`"
+     export SCRAM_ARCH=slc5_amd64_gcc472
+     export SCRAM_ARCH=%(SCRAM_ARCH)s
+else
+     source /cvmfs/cms.cern.ch/cmsset_default.sh
+     export SCRAM_ARCH=slc6_amd64_gcc472
+     export SCRAM_ARCH=%(SCRAM_ARCH)s
+fi
+
+eval `scramv1 runtime -sh`
+cd %(PWD)s
+""" % ({
+    'CMSSW_BASE': os.environ['CMSSW_BASE'],
+    'SCRAM_ARCH': os.environ['SCRAM_ARCH'],
+    'PWD': os.environ['PWD']
+})
+
 CRAB_PREFIX = """
 set -x
 set -e
@@ -85,7 +109,7 @@ class CombineToolBase:
 
     def attach_job_args(self, group):
         group.add_argument('--job-mode', default=self.job_mode, choices=[
-                           'interactive', 'script', 'lxbatch', 'crab3'], help='Task execution mode')
+                           'interactive', 'script', 'lxbatch', 'NAF', 'crab3'], help='Task execution mode')
         group.add_argument('--task-name', default=self.task_name,
                            help='Task name, used for job script and log filenames for batch system tasks')
         group.add_argument('--parallel', type=int, default=self.parallel,
@@ -96,6 +120,10 @@ class CombineToolBase:
                            help='Print commands to the screen but do not run them')
         group.add_argument('--sub-opts', default=self.bopts,
                            help='Options for batch/crab submission')
+        group.add_argument('--memory', type=int,
+                           help='Request memory for job [MB]')
+        group.add_argument('--crab-area',
+                           help='crab working area')
         group.add_argument('--custom-crab', default=self.custom_crab,
                            help='python file containing a function with name signature "custom_crab(config)" that can be used to modify the default crab configuration')
 
@@ -115,6 +143,8 @@ class CombineToolBase:
         self.passthru.extend(unknown)
         self.bopts = self.args.sub_opts
         self.custom_crab = self.args.custom_crab
+        self.memory = self.args.memory
+        self.crab_area = self.args.crab_area
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -125,7 +155,8 @@ class CombineToolBase:
         fname = script_filename
         logname = script_filename.replace('.sh', '.log')
         with open(fname, "w") as text_file:
-            text_file.write(JOB_PREFIX)
+            if self.job_mode=='lxbatch': text_file.write(JOB_PREFIX)
+            elif self.job_mode=='NAF': text_file.write(JOB_NAF_PREFIX)
             for i, command in enumerate(commands):
                 tee = 'tee' if i == 0 else 'tee -a'
                 log_part = '\n'
@@ -162,7 +193,7 @@ class CombineToolBase:
             result = pool.map(
                 partial(run_command, self.dry_run), self.job_queue)
         script_list = []
-        if self.job_mode in ['script', 'lxbatch']:
+        if self.job_mode in ['script', 'lxbatch', 'NAF']:
             for i, j in enumerate(range(0, len(self.job_queue), self.merge)):
                 script_name = 'job_%s_%i.sh' % (self.task_name, i)
                 # each job is given a slice from the list of combine commands of length 'merge'
@@ -176,6 +207,11 @@ class CombineToolBase:
                 full_script = os.path.abspath(script)
                 logname = full_script.replace('.sh', '_%J.log')
                 run_command(self.dry_run, 'bsub -o %s %s %s' % (logname, self.bopts, full_script))
+        if self.job_mode == 'NAF':
+            for script in script_list:
+                full_script = os.path.abspath(script)
+                logname = full_script.replace('.sh', '_%J.log')
+                run_command(self.dry_run, 'qsub -o %s %s %s' % (logname, self.bopts, full_script))
         if self.job_mode == 'crab3':
             #import the stuff we need
             from CRABAPI.RawCommand import crabCommand
@@ -198,12 +234,16 @@ class CombineToolBase:
                 outscript.write('fi')
             outscript.write(CRAB_POSTFIX)
             outscript.close()
-            from HiggsAnalysis.HiggsToTauTau.combine.crab import config
+            from CombineHarvester.CombineTools.combine.crab import config
             config.General.requestName = self.task_name
             config.JobType.scriptExe = outscriptname
             config.JobType.inputFiles.extend(wsp_files)
             config.Data.totalUnits = jobs
-            config.Data.publishDataName = config.General.requestName
+            config.Data.outputDatasetTag = config.General.requestName
+            if self.memory is not None:
+                config.JobType.maxMemoryMB = self.memory
+            if self.crab_area is not None:
+                config.General.workArea = self.crab_area
             if self.custom_crab is not None:
                 d = {}
                 execfile(self.custom_crab, d)

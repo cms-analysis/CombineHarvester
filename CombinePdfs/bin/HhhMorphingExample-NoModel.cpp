@@ -36,89 +36,11 @@ int main() {
 
     // RooFit will be quite noisy if we don't set this
     RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
-  
-    // In the first part of this code we will construct our MSSM signal model.
-    // This means declaring mA and tanb as our free parameters, and defining all
-    // other Higgs masses, cross sections and branching ratios as a function of
-    // these. Note that this example is very verbose and explicit in the
-    // construction - one could imagine developing a more generic and efficient
-    // tool to do this.
-
-    // Define mA and tanb as RooRealVars
-    // Here I do not declare a range and it is decided automatically from 
-    // the inputs once the first RooDataHist is created. 
-    // There were some issues found with declaring a range by hand.
-    RooRealVar mA("mA", "mA", 300.);
-    RooRealVar tanb("tanb", "tanb", 1.);
-
-    // All the other inputs we need to build the model can be found in one of the
-    // LHCXSWG scans. Here we use the low-tanb-high scenario. This file contains a
-    // large number of 2D histograms, all binned in mA and tanb, that each provide
-    // a different mass, xsec or BR.
-    TFile inputs(TString(auxiliaries) +
-               "models/out.low-tb-high-8TeV-tanbAll-nnlo.root");
-    // Get the TH2Fs for the masses of the h and H bosons.
-    TH2F h_mH = ch::OpenFromTFile<TH2F>(&inputs, "h_mH");
-    TH2F h_mh = ch::OpenFromTFile<TH2F>(&inputs, "h_mh");
-    // Now two more steps are needed: we have to convert each TH2F to a
-    // RooDataHist, then build a RooHistFunc from the RooDataHist. These steps
-    // will be repeated for every TH2F we import below.
-    RooDataHist dh_mH("dh_mH", "dh_mH", RooArgList(mA, tanb),
-                    RooFit::Import(h_mH));
-    RooDataHist dh_mh("dh_mh", "dh_mh", RooArgList(mA, tanb),
-                    RooFit::Import(h_mh));
-    RooHistFunc mH("mH", "mH", RooArgList(mA, tanb), dh_mH);
-    RooHistFunc mh("mh", "mh", RooArgList(mA, tanb), dh_mh);
-    // There is also the possibility to interpolate mass values rather than just
-    // take the value of the enclosing histogram bin, but we'll leave this off for
-    // now.
-    // mH.setInterpolationOrder(1);
-
-    // Now we'll do the same for the cross section
-    TH2F h_ggF_xsec_H = ch::OpenFromTFile<TH2F>(&inputs, "h_ggF_xsec_H");
-    RooDataHist dh_ggF_xsec_H("dh_ggF_xsec_H", "dh_ggF_xsec_H",
-                            RooArgList(mA, tanb), RooFit::Import(h_ggF_xsec_H));
-    RooHistFunc ggF_xsec_H("ggF_xsec_H", "ggF_xsec_H", RooArgList(mA, tanb),
-                         dh_ggF_xsec_H);
-
-    // Now the branching ratios to hh, tau tau and bb
-    TH2F h_brh0h0_H = ch::OpenFromTFile<TH2F>(&inputs, "h_brh0h0_H");
-    // Add factor of 2 here for h->tautau, h->bb and reverse
-    h_brh0h0_H = 2*h_brh0h0_H;
-    TH2F h_brtautau_h = ch::OpenFromTFile<TH2F>(&inputs, "h_brtautau_h");
-    TH2F h_brbb_h = ch::OpenFromTFile<TH2F>(&inputs, "h_brbb_h");
-    RooDataHist dh_brh0h0_H("dh_brh0h0_H", "dh_brh0h0_H",
-                            RooArgList(mA, tanb),
-                            RooFit::Import(h_brh0h0_H));
-    RooDataHist dh_brtautau_h("dh_brtautau_h", "dh_brtautau_h",
-                            RooArgList(mA, tanb),
-                            RooFit::Import(h_brtautau_h));
-    RooDataHist dh_brbb_h("dh_brbb_h", "dh_brbb_h",
-                            RooArgList(mA, tanb),
-                            RooFit::Import(h_brbb_h));
-    RooHistFunc brh0h0_H("brh0h0_H", "brh0h0_H", RooArgList(mA, tanb),
-                         dh_brh0h0_H);
-    RooHistFunc brtautau_h("brtautau_h", "brtautau_h", RooArgList(mA, tanb),
-                         dh_brtautau_h);
-    RooHistFunc brbb_h("brbb_h", "brbb_h", RooArgList(mA, tanb),
-                         dh_brbb_h);
-    // We can build the xsec * BR products
-    RooProduct ggF_xsec_br_H("ggF_xsec_br_H", "",
-                           RooArgList(ggF_xsec_H, brh0h0_H, brtautau_h, brbb_h));
-    // Let's print out the values of all of these objects
-    cout << "mA: " << mA.getVal() << "\n";
-    cout << "tanb: " << tanb.getVal() << "\n\n";
-    cout << "mH: " << mH.getVal() << "\n";
-    cout << "mh: " << mh.getVal() << "\n";
-    cout << "ggF_xsec_H: " << ggF_xsec_H.getVal() << "\n";
-    cout << "brh0h0_H: " << brh0h0_H.getVal()/2<< "\n";
-    cout << "brtautau_h: " << brtautau_h.getVal() << "\n";
-    cout << "brbb_h: " << brbb_h.getVal() << "\n";
-    cout << "ggF_xsec_br_H: " << ggF_xsec_br_H.getVal() << "\n";
-  
-    map<string, RooAbsArg *> xs_map;
-    xs_map["ggHTohhTo2Tau2B"] = &ggF_xsec_br_H;
     
+    RooRealVar mA("mA", "mA", 260., 350.);
+    RooRealVar mH("mH", "mH", 260., 350.);
+    RooRealVar mh("mh", "mh", 260., 350.);
+  
     VString chns =
 	{"et", "mt","tt"};
 
@@ -139,7 +61,10 @@ int main() {
 	  sm_procs["tt"] = {"ggH_SM125","VH_SM125","qqH_SM125"};
 	 */
 
-	VString sig_procs={"ggHTohhTo2Tau2B"};
+	//VString sig_procs={"ggHTohhTo2Tau2B"};
+    map<string, VString> signal_types = {
+      {"ggHTohhTo2Tau2B", {"ggH_Hhhbbtautau"}}
+    };
 
 	map<string, Categories> cats;
 	cats["et_8TeV"] = {
@@ -168,7 +93,7 @@ int main() {
 			//    cb.AddProcesses(
 			//    {"*"},{"htt"}, {era}, {chn}, sm_procs[chn], cats[chn+"_"+era],false);
 			cb.AddProcesses(
-					masses, {"htt"}, {era}, {chn}, sig_procs, cats[chn+"_"+era], true);
+					masses, {"htt"}, {era}, {chn}, signal_types["ggHTohhTo2Tau2B"], cats[chn+"_"+era], true);
 		}
 	}
 
@@ -191,8 +116,8 @@ int main() {
 				".inputs-Hhh-" + era + ".root";
 			cb.cp().channel({chn}).era({era}).backgrounds().ExtractShapes(
 					file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
-			cb.cp().channel({chn}).era({era}).signals().ExtractShapes(
-					file, "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+			cb.cp().channel({chn}).era({era}).process(signal_types["ggHTohhTo2Tau2B"]).ExtractShapes(
+					file, "$BIN/ggHTohhTo2Tau2B$MASS", "$BIN/ggHTohhTo2Tau2B$MASS_$SYSTEMATIC");
 		}
 	}
 
@@ -233,23 +158,16 @@ int main() {
     TFile demo("Hhh_demo.root", "RECREATE");
 
     bool do_morphing = true;
-    string postfix = "_eff_acc";
     map<string, RooAbsReal *> mass_var = {
-      {"ggHTohhTo2Tau2B", &mH}
+      {"ggH_Hhhbbtautau", &mH}
     };
     if (do_morphing) {
       auto bins = cb.bin_set();
       for (auto b : bins) {
         auto procs = cb.cp().bin({b}).signals().process_set();
         for (auto p : procs) {
-          string pdf_name = b + "_" + p + "_morph";
           ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                               "eff_acc", true, true, true, &demo);
-          std::string prod_name = pdf_name + "_eff_acc";
-          RooAbsReal *norm =  ws.function(prod_name.c_str());
-          RooProduct full_norm((pdf_name + "_norm").c_str(), "",
-                                 RooArgList(*norm, *(xs_map[p])));
-          ws.import(full_norm, RooFit::RecycleConflictNodes());
+                               "norm", true, true, true, &demo);
         }
       }
     }
@@ -259,7 +177,7 @@ int main() {
     cb.PrintAll();
     
 
-	string folder = "output/hhh_cards";
+	string folder = "output/hhh_cards_nomodel";
 	boost::filesystem::create_directories(folder);
   
     TFile output((folder + "/htt_input.Hhh.root").c_str(), "RECREATE");

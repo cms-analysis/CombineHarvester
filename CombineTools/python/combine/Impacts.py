@@ -56,14 +56,14 @@ class Impacts(CombineToolBase):
     name        = self.args.name if self.args.name is not None else ''
     named = []
     if self.args.named is not None:
-      named = args.named.split(',')
+      named = self.args.named.split(',')
     # Put intercepted args back
     passthru.extend(['-m', mh])
     passthru.extend(['-d', ws])
     pass_str = ' '.join(passthru)
     paramList = []
     if self.args.redefineSignalPOIs is not None:
-      poiList = args.redefineSignalPOIs.split(',')
+      poiList = self.args.redefineSignalPOIs.split(',')
     else:
       poiList = utils.list_from_workspace(ws, 'w', 'ModelConfig_POI')
     #print 'Have nuisance parameters: ' + str(paramList)
@@ -87,8 +87,8 @@ class Impacts(CombineToolBase):
     res = { }
     res["POIs"] = []
     res["params"] = []
-    # for poi in poiList:
-    #   res["POIs"].append({"name" : poi, "fit" : initialRes[poi][poi]})
+    for poi in poiList:
+      res["POIs"].append({"name" : poi, "fit" : initialRes[poi][poi]})
 
     missing = [ ]
     for param in paramList:
@@ -97,7 +97,7 @@ class Impacts(CombineToolBase):
       if self.args.doFits:
         self.job_queue.append('combine -M MultiDimFit -n _paramFit_%(name)s_%(param)s --algo singles --redefineSignalPOIs %(param)s,%(poistr)s -P %(param)s --floatOtherPOIs 1 --saveInactivePOI 1 %(pass_str)s --altCommit' % vars())
       else:
-        paramScanRes = get_singles_results('higgsCombine_paramFit_%(name)s_%(param)s.MultiDimFit.mH%(mh)s.root' % vars(), [param], poiList + [param])
+        paramScanRes = utils.get_singles_results('higgsCombine_paramFit_%(name)s_%(param)s.MultiDimFit.mH%(mh)s.root' % vars(), [param], poiList + [param])
         if paramScanRes is None:
           missing.append(param)
           continue
@@ -109,7 +109,7 @@ class Impacts(CombineToolBase):
     jsondata = json.dumps(res, sort_keys=True, indent=2, separators=(',', ': '))
     print jsondata
     if self.args.output is not None:
-      with open(args.output, 'w') as out_file:
+      with open(self.args.output, 'w') as out_file:
         out_file.write(jsondata)
     if len(missing) > 0:
       print 'Missing inputs: ' + ','.join(missing)

@@ -1,9 +1,10 @@
+import CombineHarvester.CombineTools.ch as ch
 import ROOT as R
 import os
 from functools import partial
 from array import array
 import re
-
+import collections
 
 def SetTDRStyle():
   # For the canvas:
@@ -242,7 +243,7 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY):
   if (iPosX / 10 == 1): alignX_ = 1
   if (iPosX / 10 == 2): alignX_ = 2
   if (iPosX / 10 == 3): alignX_ = 3
-  if (iPosX == 0): relPosX = 0.14
+  # if (iPosX == 0): relPosX = 0.14
   align_ = 10 * alignX_ + alignY_
 
   l = pad.GetLeftMargin()
@@ -453,7 +454,7 @@ def CreateTransparentColor(color, alpha):
 def TFileIsGood(filename):
     if not os.path.exists(filename): return False
     fin = R.TFile.Open(filename)
-    R.TFile.Close(fin)
+    if fin: R.TFile.Close(fin)
     if not fin: return False
     return True
 
@@ -512,6 +513,32 @@ def OnePad():
     pad.Draw()
     pad.cd()
     result = [pad]
+    return result
+
+def TwoPadSplit(split_point, gap_low, gap_high) :
+    upper = R.TPad('upper', 'upper', 0., 0., 1., 1.)
+    upper.SetBottomMargin(split_point + gap_high)
+    upper.SetFillStyle(4000)
+    upper.Draw()
+    lower = R.TPad('lower', 'lower', 0., 0., 1., 1.)
+    lower.SetTopMargin(1 - split_point + gap_low)
+    lower.SetFillStyle(4000)
+    lower.Draw()
+    upper.cd()
+    result = [upper,lower]
+    return result
+
+def TwoPadSplitColumns(split_point, gap_left, gap_right) :
+    left = R.TPad('left', 'left', 0., 0., 1., 1.)
+    left.SetRightMargin(1 - split_point + gap_right)
+    left.SetFillStyle(4000)
+    left.Draw()
+    right = R.TPad('right', 'right', 0., 0., 1., 1.)
+    right.SetLeftMargin(split_point + gap_left)
+    right.SetFillStyle(4000)
+    right.Draw()
+    left.cd()
+    result = [left,right]
     return result
 
 def ImproveMinimum(graph, func):
@@ -768,3 +795,115 @@ def frameTH2D(hist, threshold, mult = 1.0):
 def FixOverlay():
   R.gPad.GetFrame().Draw()
   R.gPad.RedrawAxis()
+
+def makeHist1D(name, xbins, graph):
+    len_x = graph.GetX()[graph.GetN()-1] - graph.GetX()[0]
+    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
+    hist = R.TH1F(name, '', xbins, graph.GetX()[0], graph.GetX()[graph.GetN()-1]+binw_x)
+    return hist
+
+def makeHist2D(name, xbins, ybins, graph2d):
+    len_x = graph2d.GetXmax() - graph2d.GetXmin()
+    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
+    len_y = graph2d.GetYmax() - graph2d.GetYmin()
+    binw_y = (len_y * 0.5 / (float(ybins) - 1.)) - 1E-5
+    hist = R.TH2F(name, '', xbins, graph2d.GetXmin()-binw_x, graph2d.GetXmax()+binw_x, ybins, graph2d.GetYmin()-binw_y, graph2d.GetYmax()+binw_y)
+    return hist
+
+def makeVarBinHist2D(name, xbins, ybins):
+    #create new arrays in which bin low edge is adjusted to make measured points at the bin centres
+    xbins_new=[None]*(len(xbins)+1)
+    for i in xrange(len(xbins)-1):
+        if i == 0 or i == 1: xbins_new[i] = xbins[i] - ((xbins[i+1]-xbins[i])/2) + 1E-5
+        else: xbins_new[i] = xbins[i] - ((xbins[i+1]-xbins[i])/2) 
+    xbins_new[len(xbins)-1] = xbins[len(xbins)-2] + ((xbins[len(xbins)-2]-xbins[len(xbins)-3])/2) 
+    xbins_new[len(xbins)] = xbins[len(xbins)-1] + ((xbins[len(xbins)-1]-xbins[len(xbins)-2])/2) - 1E-5 
+    
+    ybins_new=[None]*(len(ybins)+1)
+    for i in xrange(len(ybins)-1):
+        if i == 0 or i == 1: ybins_new[i] = ybins[i] - ((ybins[i+1]-ybins[i])/2) + 1E-5
+        else: ybins_new[i] = ybins[i] - ((ybins[i+1]-ybins[i])/2)
+    ybins_new[len(ybins)-1] = ybins[len(ybins)-2] + ((ybins[len(ybins)-2]-ybins[len(ybins)-3])/2) 
+    ybins_new[len(ybins)] = ybins[len(ybins)-1] + ((ybins[len(ybins)-1]-ybins[len(ybins)-2])/2) - 1E-5
+    hist = R.TH2F(name, '', len(xbins_new)-1, array('d',xbins_new), len(ybins_new)-1, array('d',ybins_new))
+    return hist
+
+def fillTH2(hist2d, graph):
+    for x in xrange(1, hist2d.GetNbinsX()+1):
+        for y in xrange(1, hist2d.GetNbinsY()+1):
+            xc = hist2d.GetXaxis().GetBinCenter(x)
+            yc = hist2d.GetYaxis().GetBinCenter(y)
+            val = graph.Interpolate(xc, yc)
+            hist2d.SetBinContent(x, y, val)
+
+def higgsConstraint(model, higgstype) :
+    higgsBand=R.TGraph2D()
+    masslow = 150
+    masshigh = 500
+    massstep = 10
+    n=0
+    for mass in range (masslow, masshigh, massstep):
+        myfile = open("../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/"+model+"/higgs_"+str(mass)+".dat", 'r')
+        for line in myfile:
+            tanb = (line.split())[0]
+            mh = float((line.split())[1])
+            mH = float((line.split())[3])
+            if higgstype=="h" :
+                 higgsBand.SetPoint(n, mass, float(tanb), mh)
+            elif higgstype=="H" :
+                 higgsBand.SetPoint(n, mass, float(tanb), mH)
+            n=n+1 
+        myfile.close()    
+    return higgsBand
+
+def MakeErrorBand(LowerGraph, UpperGraph) :
+  errorBand = R.TGraphAsymmErrors()
+  lower_list=[]; upper_list=[]
+  for i in range(LowerGraph.GetN()):
+    lower_list.append((float(LowerGraph.GetX()[i]),  float(LowerGraph.GetY()[i])))
+    upper_list.append((float(UpperGraph.GetX()[i]),  float(UpperGraph.GetY()[i])))
+  lower_list=sorted(set(lower_list))
+  upper_list=sorted(set(upper_list))
+  for i in range(LowerGraph.GetN()):
+    errorBand.SetPoint(i, lower_list[i][0], lower_list[i][1])
+    errorBand.SetPointEYlow (i, lower_list[i][1]-lower_list[i][1])
+    errorBand.SetPointEYhigh(i, upper_list[i][1]-lower_list[i][1])
+  return errorBand
+
+def SortGraph(Graph) :
+  sortedGraph = R.TGraph()
+  graph_list=[]
+  for i in range(Graph.GetN()):
+    graph_list.append((float(Graph.GetX()[i]),  float(Graph.GetY()[i])))
+  graph_list=sorted(set(graph_list))
+  for i in range(Graph.GetN()):
+    sortedGraph.SetPoint(i, graph_list[i][0], graph_list[i][1])
+  return sortedGraph
+
+def LimitTGraphFromJSON(js, label):
+    xvals = []
+    yvals = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][label])
+    graph = R.TGraph(len(xvals), array('d', xvals), array('d', yvals))
+    graph.Sort()
+    return graph
+
+def LimitBandTGraphFromJSON(js, central, lo, hi):
+    xvals = []
+    yvals = []
+    yvals_lo = []
+    yvals_hi = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][central])
+        yvals_lo.append(js[key][central] - js[key][lo])
+        yvals_hi.append(js[key][hi] - js[key][central])
+    graph = R.TGraphAsymmErrors(len(xvals), array('d', xvals), array('d', yvals), array('d', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
+    graph.Sort()
+    return graph
+
+def Set(obj, **kwargs):
+  for key, value in kwargs.iteritems():
+    getattr(obj, 'Set'+key)(value)

@@ -127,7 +127,7 @@ int main() {
     TH2F h_bbH4f_xsec_A = ch::OpenFromTFile<TH2F>(&inputs, "h_bbH4f_xsec_A");
     TH2F h_bbH_xsec_h = SantanderMatching(h_bbH4f_xsec_h, h_bbH5f_xsec_h, &h_mh);
     TH2F h_bbH_xsec_H = SantanderMatching(h_bbH4f_xsec_H, h_bbH5f_xsec_H, &h_mH);
-    TH2F h_bbH_xsec_A = SantanderMatching(h_bbH4f_xsec_H, h_bbH5f_xsec_H, nullptr);
+    TH2F h_bbH_xsec_A = SantanderMatching(h_bbH4f_xsec_A, h_bbH5f_xsec_A, nullptr);
     RooDataHist dh_bbH_xsec_h("dh_bbH_xsec_h", "dh_bbH_xsec_h",
                             RooArgList(mA, tanb), RooFit::Import(h_bbH_xsec_h));
     RooDataHist dh_bbH_xsec_H("dh_bbH_xsec_H", "dh_bbH_xsec_H",
@@ -390,8 +390,11 @@ int main() {
         for (auto p : procs) {
           std::cout << "morphing process: " << p << std::endl;
           string pdf_name = b + "_" + p + "_morph";
+          // Set option to force signal to 0 outside of template range for H->hh only
+          bool force_template_limit = true;
+          if(b.find("8")!=string::npos && b.find("9")!=string::npos) force_template_limit=false;
           ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                               "eff_acc", true, true, &demo);
+                               "eff_acc", true, true, force_template_limit, &demo);
           std::string prod_name = pdf_name + "_eff_acc";
           RooAbsReal *norm =  ws.function(prod_name.c_str());
           RooProduct full_norm((pdf_name + "_norm").c_str(), "",
