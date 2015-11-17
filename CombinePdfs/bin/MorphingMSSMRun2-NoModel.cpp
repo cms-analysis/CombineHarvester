@@ -63,13 +63,18 @@ int main() {
 
       vector<string> masses = {"160","500","1000"};
 
+  map<string, VString> signal_types = {
+    {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
+    {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
+  };
     vector<string> sig_procs = {"ggH","bbH"};
   for(auto chn : chns){
     cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn+"_13TeV"]);
 
     cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn+"_13TeV"], false);
   
-    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, sig_procs, cats[chn+"_13TeV"], true);
+    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
+    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
     }
 
 
@@ -150,10 +155,14 @@ int main() {
         input_dir + "htt_"+chn+".inputs-mssm-13TeV-mvis.root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
-    cb.cp().channel({chn}).signals().ExtractShapes(
+    cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
         input_dir + "htt_"+chn+".inputs-mssm-13TeV-mvis.root",
-        "$BIN/$PROCESS$MASS",
-        "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+        "$BIN/ggH$MASS",
+        "$BIN/ggH$MASS_$SYSTEMATIC");
+    cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-mvis.root",
+        "$BIN/bbH$MASS",
+        "$BIN/bbH$MASS_$SYSTEMATIC");
    }
 
   // This function modifies every entry to have a standardised bin name of
