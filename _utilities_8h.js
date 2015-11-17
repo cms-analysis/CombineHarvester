@@ -20,6 +20,7 @@ var _utilities_8h =
     [ "RestoreBinning", "_utilities_8h.html#a23cd9444931a49de080638458f722501", null ],
     [ "GenerateCombinations", "_utilities_8h.html#a98ec286981dda179332f736f113ab8a5", null ],
     [ "ParseFileLines", "_utilities_8h.html#a23a4079d5c68e21d9697570255e08224", null ],
+    [ "is_float", "_utilities_8h.html#acde782eef7132d07c095b4468de17dff", null ],
     [ "MassesFromRange", "_utilities_8h.html#a9aa7fae276e9a3482b0e2e0b7adf779b", null ],
     [ "ValsFromRange", "_utilities_8h.html#aafb5cab1f237067be3553e893ca0a7b9", null ],
     [ "HasNegativeBins", "_utilities_8h.html#a7825c01633c16c8c5d7c46f78acf6d4c", null ],

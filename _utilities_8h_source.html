@@ -106,205 +106,210 @@ $(document).ready(function(){initNavTree('_utilities_8h_source.html','');});
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;boost/algorithm/string.hpp&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;boost/lexical_cast.hpp&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;boost/regex.hpp&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;boost/filesystem.hpp&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;TGraph.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;RooFitResult.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;RooArgSet.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_parameter_8h.html">CombineHarvester/CombineTools/interface/Parameter.h</a>&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_systematic_8h.html">CombineHarvester/CombineTools/interface/Systematic.h</a>&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_process_8h.html">CombineHarvester/CombineTools/interface/Process.h</a>&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_logging_8h.html">CombineHarvester/CombineTools/interface/Logging.h</a>&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacech.html">ch</a> { <span class="keyword">class </span>CombineHarvester; }</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacech.html">ch</a> {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;RooArgSet <a class="code" href="namespacech.html#aef408f71dec36c69cd2e145505212c49">ParametersByName</a>(RooAbsReal <span class="keyword">const</span>* pdf, RooArgSet <span class="keyword">const</span>* dat_vars);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">// Paramter extraction/manipulation</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;std::vector&lt;ch::Parameter&gt; <a class="code" href="namespacech.html#a49fb1eb0d277893e0f6a9cc099d4cf28">ExtractFitParameters</a>(RooFitResult <span class="keyword">const</span>&amp; res);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;std::vector&lt;ch::Parameter&gt; <a class="code" href="namespacech.html#a9ba092c0c88fd0a122b927b83d91a4de">ExtractSampledFitParameters</a>(RooFitResult <span class="keyword">const</span>&amp; res);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;boost/algorithm/string.hpp&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;boost/lexical_cast.hpp&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;boost/regex.hpp&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;boost/filesystem.hpp&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;TGraph.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;RooFitResult.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;RooArgSet.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_parameter_8h.html">CombineHarvester/CombineTools/interface/Parameter.h</a>&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_systematic_8h.html">CombineHarvester/CombineTools/interface/Systematic.h</a>&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_process_8h.html">CombineHarvester/CombineTools/interface/Process.h</a>&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_logging_8h.html">CombineHarvester/CombineTools/interface/Logging.h</a>&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacech.html">ch</a> { <span class="keyword">class </span>CombineHarvester; }</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacech.html">ch</a> {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;RooArgSet <a class="code" href="namespacech.html#aef408f71dec36c69cd2e145505212c49">ParametersByName</a>(RooAbsReal <span class="keyword">const</span>* pdf, RooArgSet <span class="keyword">const</span>* dat_vars);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">// Paramter extraction/manipulation</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;std::vector&lt;ch::Parameter&gt; <a class="code" href="namespacech.html#a49fb1eb0d277893e0f6a9cc099d4cf28">ExtractFitParameters</a>(RooFitResult <span class="keyword">const</span>&amp; res);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;std::vector&lt;ch::Parameter&gt; <a class="code" href="namespacech.html#a9ba092c0c88fd0a122b927b83d91a4de">ExtractSampledFitParameters</a>(RooFitResult <span class="keyword">const</span>&amp; res);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">// Property matching &amp; editing</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a99d1b22dfcd46bfde6a31a7a5765cd2b">SetStandardBinNames</a>(</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    CombineHarvester&amp; cb,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    std::string <span class="keyword">const</span>&amp; pattern = <span class="stringliteral">&quot;$ANALYSIS_$CHANNEL_$BINID_$ERA&quot;</span>);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a1a29f03f52660fd3a9fce0c353e3eee5">SetStandardBinName</a>(<a class="code" href="classch_1_1_object.html">ch::Object</a>* obj, std::string pattern);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> U&gt;</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="namespacech.html#a9c09b4e5a6dbbd49dfebd9235a2f60b5">   42</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacech.html#a9c09b4e5a6dbbd49dfebd9235a2f60b5">MatchingProcess</a>(T <span class="keyword">const</span>&amp; first, U <span class="keyword">const</span>&amp; second) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">if</span> (first.bin()         == second.bin()         &amp;&amp;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      first.process()     == second.process()     &amp;&amp;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      first.signal()      == second.signal()      &amp;&amp;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      first.analysis()    == second.analysis()    &amp;&amp;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      first.era()         == second.era()         &amp;&amp;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      first.channel()     == second.channel()     &amp;&amp;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      first.bin_id()      == second.bin_id()      &amp;&amp;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      first.mass()        == second.mass()) {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> U&gt;</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">   58</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">SetProperties</a>(T * first, U <span class="keyword">const</span>* second) {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  first-&gt;set_bin(second-&gt;bin());</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  first-&gt;set_process(second-&gt;process());</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  first-&gt;set_signal(second-&gt;signal());</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  first-&gt;set_analysis(second-&gt;analysis());</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  first-&gt;set_era(second-&gt;era());</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  first-&gt;set_channel(second-&gt;channel());</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  first-&gt;set_bin_id(second-&gt;bin_id());</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  first-&gt;set_mass(second-&gt;mass());</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#af9aa1e238306d161656d15f0bf4fb8d4">SetFromBinName</a>(<a class="code" href="classch_1_1_object.html">ch::Object</a> *input, std::string parse_rules);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">// Rate scaling</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;TGraph <a class="code" href="namespacech.html#a847fd9dc77ba21e35a6b531e1d26902a">TGraphFromTable</a>(std::string filename, std::string <span class="keyword">const</span>&amp; x_column,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                       std::string <span class="keyword">const</span>&amp; y_column);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">// Misc</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="namespacech.html#a6c065d2d25d44e2ca91d56cf6f97964f">   81</a></span>&#160;std::vector&lt;T&gt; <a class="code" href="namespacech.html#a6c065d2d25d44e2ca91d56cf6f97964f">Join</a>(std::vector&lt;std::vector&lt;T&gt;&gt; <span class="keyword">const</span>&amp; in) {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">unsigned</span> size = 0;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; x : in) size += x.size();</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  std::vector&lt;T&gt; res(size);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">unsigned</span> i = 0;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; x : in) {</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; y : x) {</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      res[i] = y;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      ++i;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  }</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#abfd9e94a6fd4c33abe1bbd5fb03e7f28">JoinStr</a>(</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    std::vector&lt;std::vector&lt;std::string&gt;&gt; <span class="keyword">const</span>&amp; in);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="namespacech.html#a5e23234ab65cfa48c99b83d94e291125">   99</a></span>&#160;std::vector&lt;T&gt; <a class="code" href="namespacech.html#a5e23234ab65cfa48c99b83d94e291125">Set2Vec</a>(std::set&lt;T&gt; <span class="keyword">const</span>&amp; in) {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">return</span> std::vector&lt;T&gt;(in.begin(), in.end());</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;RooDataHist <a class="code" href="namespacech.html#a1347e48be022e182e17dfc421bf12680">TH1F2Data</a>(TH1F <span class="keyword">const</span>&amp; hist, RooRealVar <span class="keyword">const</span>&amp; x,</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                      std::string <span class="keyword">const</span>&amp; name);</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;TH1F <a class="code" href="namespacech.html#a2cbcfd049543bfe9f63958bc671deeae">RebinHist</a>(TH1F <span class="keyword">const</span>&amp; hist);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;TH1F <a class="code" href="namespacech.html#a23cd9444931a49de080638458f722501">RestoreBinning</a>(TH1F <span class="keyword">const</span>&amp; src, TH1F <span class="keyword">const</span>&amp; ref);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">// Property matching &amp; editing</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a99d1b22dfcd46bfde6a31a7a5765cd2b">SetStandardBinNames</a>(</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    CombineHarvester&amp; cb,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    std::string <span class="keyword">const</span>&amp; pattern = <span class="stringliteral">&quot;$ANALYSIS_$CHANNEL_$BINID_$ERA&quot;</span>);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a1a29f03f52660fd3a9fce0c353e3eee5">SetStandardBinName</a>(<a class="code" href="classch_1_1_object.html">ch::Object</a>* obj, std::string pattern);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> U&gt;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="namespacech.html#a9c09b4e5a6dbbd49dfebd9235a2f60b5">   43</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacech.html#a9c09b4e5a6dbbd49dfebd9235a2f60b5">MatchingProcess</a>(T <span class="keyword">const</span>&amp; first, U <span class="keyword">const</span>&amp; second) {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">if</span> (first.bin()         == second.bin()         &amp;&amp;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      first.process()     == second.process()     &amp;&amp;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      first.signal()      == second.signal()      &amp;&amp;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      first.analysis()    == second.analysis()    &amp;&amp;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      first.era()         == second.era()         &amp;&amp;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      first.channel()     == second.channel()     &amp;&amp;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      first.bin_id()      == second.bin_id()      &amp;&amp;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      first.mass()        == second.mass()) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> U&gt;</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">   59</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">SetProperties</a>(T * first, U <span class="keyword">const</span>* second) {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  first-&gt;set_bin(second-&gt;bin());</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  first-&gt;set_process(second-&gt;process());</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  first-&gt;set_signal(second-&gt;signal());</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  first-&gt;set_analysis(second-&gt;analysis());</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  first-&gt;set_era(second-&gt;era());</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  first-&gt;set_channel(second-&gt;channel());</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  first-&gt;set_bin_id(second-&gt;bin_id());</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  first-&gt;set_mass(second-&gt;mass());</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#af9aa1e238306d161656d15f0bf4fb8d4">SetFromBinName</a>(<a class="code" href="classch_1_1_object.html">ch::Object</a> *input, std::string parse_rules);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">// Rate scaling</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;TGraph <a class="code" href="namespacech.html#a847fd9dc77ba21e35a6b531e1d26902a">TGraphFromTable</a>(std::string filename, std::string <span class="keyword">const</span>&amp; x_column,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                       std::string <span class="keyword">const</span>&amp; y_column);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">// Misc</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="namespacech.html#a6c065d2d25d44e2ca91d56cf6f97964f">   82</a></span>&#160;std::vector&lt;T&gt; <a class="code" href="namespacech.html#a6c065d2d25d44e2ca91d56cf6f97964f">Join</a>(std::vector&lt;std::vector&lt;T&gt;&gt; <span class="keyword">const</span>&amp; in) {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">unsigned</span> size = 0;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; x : in) size += x.size();</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::vector&lt;T&gt; res(size);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordtype">unsigned</span> i = 0;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; x : in) {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; y : x) {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      res[i] = y;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      ++i;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    }</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#abfd9e94a6fd4c33abe1bbd5fb03e7f28">JoinStr</a>(</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    std::vector&lt;std::vector&lt;std::string&gt;&gt; <span class="keyword">const</span>&amp; in);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="namespacech.html#a5e23234ab65cfa48c99b83d94e291125">  100</a></span>&#160;std::vector&lt;T&gt; <a class="code" href="namespacech.html#a5e23234ab65cfa48c99b83d94e291125">Set2Vec</a>(std::set&lt;T&gt; <span class="keyword">const</span>&amp; in) {</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">return</span> std::vector&lt;T&gt;(in.begin(), in.end());</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;RooDataHist <a class="code" href="namespacech.html#a1347e48be022e182e17dfc421bf12680">TH1F2Data</a>(TH1F <span class="keyword">const</span>&amp; hist, RooRealVar <span class="keyword">const</span>&amp; x,</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                      std::string <span class="keyword">const</span>&amp; name);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;TH1F <a class="code" href="namespacech.html#a2cbcfd049543bfe9f63958bc671deeae">RebinHist</a>(TH1F <span class="keyword">const</span>&amp; hist);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;TH1F <a class="code" href="namespacech.html#a23cd9444931a49de080638458f722501">RestoreBinning</a>(TH1F <span class="keyword">const</span>&amp; src, TH1F <span class="keyword">const</span>&amp; ref);</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;std::vector&lt;std::vector&lt;unsigned&gt;&gt; <a class="code" href="namespacech.html#a98ec286981dda179332f736f113ab8a5">GenerateCombinations</a>(</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    std::vector&lt;unsigned&gt; vec);</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#a23a4079d5c68e21d9697570255e08224">ParseFileLines</a>(std::string <span class="keyword">const</span>&amp; file_name);</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#a9aa7fae276e9a3482b0e2e0b7adf779b">MassesFromRange</a>(std::string <span class="keyword">const</span>&amp; input,</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                                         std::string <span class="keyword">const</span>&amp; fmt = <span class="stringliteral">&quot;%.0f&quot;</span>);</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#aafb5cab1f237067be3553e893ca0a7b9">ValsFromRange</a>(std::string <span class="keyword">const</span>&amp; input,</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;                                       std::string <span class="keyword">const</span>&amp; fmt = <span class="stringliteral">&quot;%.0f&quot;</span>);</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacech.html#a7825c01633c16c8c5d7c46f78acf6d4c">HasNegativeBins</a>(TH1 <span class="keyword">const</span>* h);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#ad95e5447b9cb0676428f86b1fd018a97">ZeroNegativeBins</a>(TH1 *h);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;std::vector&lt;std::vector&lt;unsigned&gt;&gt; <a class="code" href="namespacech.html#a98ec286981dda179332f736f113ab8a5">GenerateCombinations</a>(</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    std::vector&lt;unsigned&gt; vec);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#a23a4079d5c68e21d9697570255e08224">ParseFileLines</a>(std::string <span class="keyword">const</span>&amp; file_name);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacech.html#acde782eef7132d07c095b4468de17dff">is_float</a>(std::string <span class="keyword">const</span>&amp; str);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#a9aa7fae276e9a3482b0e2e0b7adf779b">MassesFromRange</a>(std::string <span class="keyword">const</span>&amp; input,</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;                                         std::string <span class="keyword">const</span>&amp; fmt = <span class="stringliteral">&quot;%.0f&quot;</span>);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;std::vector&lt;std::string&gt; <a class="code" href="namespacech.html#aafb5cab1f237067be3553e893ca0a7b9">ValsFromRange</a>(std::string <span class="keyword">const</span>&amp; input,</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                                       std::string <span class="keyword">const</span>&amp; fmt = <span class="stringliteral">&quot;%.0f&quot;</span>);</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="comment">// Tuple Printing</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment">// Most of this is just implementation detail, so we&#39;ll hide it away in a</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">// namespace:</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno"><a class="line" href="namespacech_1_1tupleprint.html">  171</a></span>&#160;<span class="keyword">namespace </span>tupleprint {</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">// Have stolen tuple printing routines from here:</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment">// http://en.cppreference.com/w/cpp/utility/tuple/tuple_cat</span></div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Tuple, std::<span class="keywordtype">size_t</span> N&gt;</div>
-<div class="line"><a name="l00175"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer.html">  175</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">TuplePrinter</a> {</div>
-<div class="line"><a name="l00176"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">  176</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">print</a>(<span class="keyword">const</span> Tuple &amp;t, std::stringstream &amp; str) {</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">TuplePrinter&lt;Tuple, N - 1&gt;::print</a>(t, str);</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    str &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; std::get&lt;N - 1&gt;(t);</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  }</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;};</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Tuple&gt;</div>
-<div class="line"><a name="l00183"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html">  183</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">TuplePrinter</a>&lt;Tuple, 1&gt; {</div>
-<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html#a4792690e23c8eab9d9857a1aebd9059b">  184</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html#a4792690e23c8eab9d9857a1aebd9059b">print</a>(<span class="keyword">const</span> Tuple &amp; t, std::stringstream &amp; str) {</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    str &lt;&lt; std::get&lt;0&gt;(t);</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  }</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;};</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">// Have to add this because we do make use of empty tuples</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">// Would lead to infinite recursion otherwise</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Tuple&gt;</div>
-<div class="line"><a name="l00192"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html">  192</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">TuplePrinter</a>&lt;Tuple, 0&gt; {</div>
-<div class="line"><a name="l00193"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html#ade2db8176ec0411cc79bb931d63bde09">  193</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html#ade2db8176ec0411cc79bb931d63bde09">print</a>(<span class="keyword">const</span> Tuple &amp; <span class="comment">/*t*/</span>, std::stringstream &amp; <span class="comment">/*str*/</span>) {  }</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;};</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span>... Args&gt;</div>
-<div class="line"><a name="l00209"></a><span class="lineno"><a class="line" href="namespacech.html#ae779412e6479bbc7bdc933fcb00f0fe2">  209</a></span>&#160;std::string <a class="code" href="namespacech.html#ae779412e6479bbc7bdc933fcb00f0fe2">Tuple2String</a>(<span class="keyword">const</span> std::tuple&lt;Args...&gt; &amp;t) {</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  std::stringstream str;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  str &lt;&lt; <span class="stringliteral">&quot;(&quot;</span>;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">tupleprint::TuplePrinter</a>&lt;decltype(t), <span class="keyword">sizeof</span>...(Args)&gt;::print(t, str);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  str &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keywordflow">return</span> str.str();</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;}</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment">// Filesystem Additions</span></div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment"></span>boost::filesystem::path <a class="code" href="namespacech.html#a2f4db67e7b9039935a58ea60b650041a">make_relative</a>(boost::filesystem::path p_from,</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                                      boost::filesystem::path p_to);</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacech.html#a7825c01633c16c8c5d7c46f78acf6d4c">HasNegativeBins</a>(TH1 <span class="keyword">const</span>* h);</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#ad95e5447b9cb0676428f86b1fd018a97">ZeroNegativeBins</a>(TH1 *h);</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment">// Tuple Printing</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment">// Most of this is just implementation detail, so we&#39;ll hide it away in a</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="comment">// namespace:</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno"><a class="line" href="namespacech_1_1tupleprint.html">  175</a></span>&#160;<span class="keyword">namespace </span>tupleprint {</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment">// Have stolen tuple printing routines from here:</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment">// http://en.cppreference.com/w/cpp/utility/tuple/tuple_cat</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Tuple, std::<span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a name="l00179"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer.html">  179</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">TuplePrinter</a> {</div>
+<div class="line"><a name="l00180"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">  180</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">print</a>(<span class="keyword">const</span> Tuple &amp;t, std::stringstream &amp; str) {</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">TuplePrinter&lt;Tuple, N - 1&gt;::print</a>(t, str);</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    str &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; std::get&lt;N - 1&gt;(t);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  }</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;};</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Tuple&gt;</div>
+<div class="line"><a name="l00187"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html">  187</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">TuplePrinter</a>&lt;Tuple, 1&gt; {</div>
+<div class="line"><a name="l00188"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html#a4792690e23c8eab9d9857a1aebd9059b">  188</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html#a4792690e23c8eab9d9857a1aebd9059b">print</a>(<span class="keyword">const</span> Tuple &amp; t, std::stringstream &amp; str) {</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    str &lt;&lt; std::get&lt;0&gt;(t);</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;};</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment">// Have to add this because we do make use of empty tuples</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment">// Would lead to infinite recursion otherwise</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Tuple&gt;</div>
+<div class="line"><a name="l00196"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html">  196</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">TuplePrinter</a>&lt;Tuple, 0&gt; {</div>
+<div class="line"><a name="l00197"></a><span class="lineno"><a class="line" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html#ade2db8176ec0411cc79bb931d63bde09">  197</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html#ade2db8176ec0411cc79bb931d63bde09">print</a>(<span class="keyword">const</span> Tuple &amp; <span class="comment">/*t*/</span>, std::stringstream &amp; <span class="comment">/*str*/</span>) {  }</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;};</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;}</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span>... Args&gt;</div>
+<div class="line"><a name="l00213"></a><span class="lineno"><a class="line" href="namespacech.html#ae779412e6479bbc7bdc933fcb00f0fe2">  213</a></span>&#160;std::string <a class="code" href="namespacech.html#ae779412e6479bbc7bdc933fcb00f0fe2">Tuple2String</a>(<span class="keyword">const</span> std::tuple&lt;Args...&gt; &amp;t) {</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  std::stringstream str;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  str &lt;&lt; <span class="stringliteral">&quot;(&quot;</span>;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <a class="code" href="structch_1_1tupleprint_1_1_tuple_printer.html">tupleprint::TuplePrinter</a>&lt;decltype(t), <span class="keyword">sizeof</span>...(Args)&gt;::print(t, str);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  str &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  <span class="keywordflow">return</span> str.str();</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;}</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="comment">// Filesystem Additions</span></div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment"></span>boost::filesystem::path <a class="code" href="namespacech.html#a2f4db67e7b9039935a58ea60b650041a">make_relative</a>(boost::filesystem::path p_from,</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;                                      boost::filesystem::path p_to);</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;}</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="namespacech_html_af9aa1e238306d161656d15f0bf4fb8d4"><div class="ttname"><a href="namespacech.html#af9aa1e238306d161656d15f0bf4fb8d4">ch::SetFromBinName</a></div><div class="ttdeci">void SetFromBinName(ch::Object *input, std::string parse_rules)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00096">Utilities.cc:96</a></div></div>
 <div class="ttc" id="namespacech_html_a98ec286981dda179332f736f113ab8a5"><div class="ttname"><a href="namespacech.html#a98ec286981dda179332f736f113ab8a5">ch::GenerateCombinations</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned &gt; &gt; GenerateCombinations(std::vector&lt; unsigned &gt; vec)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00190">Utilities.cc:190</a></div></div>
 <div class="ttc" id="namespacech_html_a9ba092c0c88fd0a122b927b83d91a4de"><div class="ttname"><a href="namespacech.html#a9ba092c0c88fd0a122b927b83d91a4de">ch::ExtractSampledFitParameters</a></div><div class="ttdeci">std::vector&lt; ch::Parameter &gt; ExtractSampledFitParameters(RooFitResult const &amp;res)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00060">Utilities.cc:60</a></div></div>
 <div class="ttc" id="namespacech_html_a23cd9444931a49de080638458f722501"><div class="ttname"><a href="namespacech.html#a23cd9444931a49de080638458f722501">ch::RestoreBinning</a></div><div class="ttdeci">TH1F RestoreBinning(TH1F const &amp;src, TH1F const &amp;ref)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00180">Utilities.cc:180</a></div></div>
 <div class="ttc" id="namespacech_html_a49fb1eb0d277893e0f6a9cc099d4cf28"><div class="ttname"><a href="namespacech.html#a49fb1eb0d277893e0f6a9cc099d4cf28">ch::ExtractFitParameters</a></div><div class="ttdeci">std::vector&lt; ch::Parameter &gt; ExtractFitParameters(RooFitResult const &amp;res)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00046">Utilities.cc:46</a></div></div>
 <div class="ttc" id="namespacech_html_a1347e48be022e182e17dfc421bf12680"><div class="ttname"><a href="namespacech.html#a1347e48be022e182e17dfc421bf12680">ch::TH1F2Data</a></div><div class="ttdeci">RooDataHist TH1F2Data(TH1F const &amp;hist, RooRealVar const &amp;x, std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00158">Utilities.cc:158</a></div></div>
-<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_html_ac56a48381e7a162e1d0c4508045678ff"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">ch::tupleprint::TuplePrinter::print</a></div><div class="ttdeci">static void print(const Tuple &amp;t, std::stringstream &amp;str)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00176">Utilities.h:176</a></div></div>
-<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4_html_a4792690e23c8eab9d9857a1aebd9059b"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html#a4792690e23c8eab9d9857a1aebd9059b">ch::tupleprint::TuplePrinter&lt; Tuple, 1 &gt;::print</a></div><div class="ttdeci">static void print(const Tuple &amp;t, std::stringstream &amp;str)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00184">Utilities.h:184</a></div></div>
+<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_html_ac56a48381e7a162e1d0c4508045678ff"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer.html#ac56a48381e7a162e1d0c4508045678ff">ch::tupleprint::TuplePrinter::print</a></div><div class="ttdeci">static void print(const Tuple &amp;t, std::stringstream &amp;str)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00180">Utilities.h:180</a></div></div>
+<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4_html_a4792690e23c8eab9d9857a1aebd9059b"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_011_01_4.html#a4792690e23c8eab9d9857a1aebd9059b">ch::tupleprint::TuplePrinter&lt; Tuple, 1 &gt;::print</a></div><div class="ttdeci">static void print(const Tuple &amp;t, std::stringstream &amp;str)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00188">Utilities.h:188</a></div></div>
 <div class="ttc" id="namespacech_html_a99d1b22dfcd46bfde6a31a7a5765cd2b"><div class="ttname"><a href="namespacech.html#a99d1b22dfcd46bfde6a31a7a5765cd2b">ch::SetStandardBinNames</a></div><div class="ttdeci">void SetStandardBinNames(CombineHarvester &amp;cb, std::string const &amp;pattern=&quot;$ANALYSIS_$CHANNEL_$BINID_$ERA&quot;)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00078">Utilities.cc:78</a></div></div>
 <div class="ttc" id="_process_8h_html"><div class="ttname"><a href="_process_8h.html">Process.h</a></div></div>
-<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_html"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer.html">ch::tupleprint::TuplePrinter</a></div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00175">Utilities.h:175</a></div></div>
-<div class="ttc" id="namespacech_html_ad95e5447b9cb0676428f86b1fd018a97"><div class="ttname"><a href="namespacech.html#ad95e5447b9cb0676428f86b1fd018a97">ch::ZeroNegativeBins</a></div><div class="ttdeci">void ZeroNegativeBins(TH1 *h)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00340">Utilities.cc:340</a></div></div>
-<div class="ttc" id="namespacech_html_a0ea5d53cb275e53807f576a4020cf15e"><div class="ttname"><a href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">ch::SetProperties</a></div><div class="ttdeci">void SetProperties(T *first, U const *second)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00058">Utilities.h:58</a></div></div>
+<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_html"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer.html">ch::tupleprint::TuplePrinter</a></div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00179">Utilities.h:179</a></div></div>
+<div class="ttc" id="namespacech_html_ad95e5447b9cb0676428f86b1fd018a97"><div class="ttname"><a href="namespacech.html#ad95e5447b9cb0676428f86b1fd018a97">ch::ZeroNegativeBins</a></div><div class="ttdeci">void ZeroNegativeBins(TH1 *h)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00348">Utilities.cc:348</a></div></div>
+<div class="ttc" id="namespacech_html_a0ea5d53cb275e53807f576a4020cf15e"><div class="ttname"><a href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">ch::SetProperties</a></div><div class="ttdeci">void SetProperties(T *first, U const *second)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00059">Utilities.h:59</a></div></div>
 <div class="ttc" id="_systematic_8h_html"><div class="ttname"><a href="_systematic_8h.html">Systematic.h</a></div></div>
-<div class="ttc" id="namespacech_html_a9aa7fae276e9a3482b0e2e0b7adf779b"><div class="ttname"><a href="namespacech.html#a9aa7fae276e9a3482b0e2e0b7adf779b">ch::MassesFromRange</a></div><div class="ttdeci">std::vector&lt; std::string &gt; MassesFromRange(std::string const &amp;input, std::string const &amp;fmt=&quot;%.0f&quot;)</div><div class="ttdoc">Generate a vector of mass values using ranges and intervals specified in a string. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00240">Utilities.cc:240</a></div></div>
-<div class="ttc" id="namespacech_html_a9c09b4e5a6dbbd49dfebd9235a2f60b5"><div class="ttname"><a href="namespacech.html#a9c09b4e5a6dbbd49dfebd9235a2f60b5">ch::MatchingProcess</a></div><div class="ttdeci">bool MatchingProcess(T const &amp;first, U const &amp;second)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00042">Utilities.h:42</a></div></div>
-<div class="ttc" id="namespacech_html_a6c065d2d25d44e2ca91d56cf6f97964f"><div class="ttname"><a href="namespacech.html#a6c065d2d25d44e2ca91d56cf6f97964f">ch::Join</a></div><div class="ttdeci">std::vector&lt; T &gt; Join(std::vector&lt; std::vector&lt; T &gt;&gt; const &amp;in)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00081">Utilities.h:81</a></div></div>
+<div class="ttc" id="namespacech_html_a9aa7fae276e9a3482b0e2e0b7adf779b"><div class="ttname"><a href="namespacech.html#a9aa7fae276e9a3482b0e2e0b7adf779b">ch::MassesFromRange</a></div><div class="ttdeci">std::vector&lt; std::string &gt; MassesFromRange(std::string const &amp;input, std::string const &amp;fmt=&quot;%.0f&quot;)</div><div class="ttdoc">Generate a vector of mass values using ranges and intervals specified in a string. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00248">Utilities.cc:248</a></div></div>
+<div class="ttc" id="namespacech_html_a9c09b4e5a6dbbd49dfebd9235a2f60b5"><div class="ttname"><a href="namespacech.html#a9c09b4e5a6dbbd49dfebd9235a2f60b5">ch::MatchingProcess</a></div><div class="ttdeci">bool MatchingProcess(T const &amp;first, U const &amp;second)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00043">Utilities.h:43</a></div></div>
+<div class="ttc" id="namespacech_html_a6c065d2d25d44e2ca91d56cf6f97964f"><div class="ttname"><a href="namespacech.html#a6c065d2d25d44e2ca91d56cf6f97964f">ch::Join</a></div><div class="ttdeci">std::vector&lt; T &gt; Join(std::vector&lt; std::vector&lt; T &gt;&gt; const &amp;in)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00082">Utilities.h:82</a></div></div>
 <div class="ttc" id="namespacech_html_a847fd9dc77ba21e35a6b531e1d26902a"><div class="ttname"><a href="namespacech.html#a847fd9dc77ba21e35a6b531e1d26902a">ch::TGraphFromTable</a></div><div class="ttdeci">TGraph TGraphFromTable(std::string filename, std::string const &amp;x_column, std::string const &amp;y_column)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00121">Utilities.cc:121</a></div></div>
 <div class="ttc" id="namespacech_html"><div class="ttname"><a href="namespacech.html">ch</a></div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00010">Algorithm.h:10</a></div></div>
-<div class="ttc" id="namespacech_html_a7825c01633c16c8c5d7c46f78acf6d4c"><div class="ttname"><a href="namespacech.html#a7825c01633c16c8c5d7c46f78acf6d4c">ch::HasNegativeBins</a></div><div class="ttdeci">bool HasNegativeBins(TH1 const *h)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00330">Utilities.cc:330</a></div></div>
+<div class="ttc" id="namespacech_html_a7825c01633c16c8c5d7c46f78acf6d4c"><div class="ttname"><a href="namespacech.html#a7825c01633c16c8c5d7c46f78acf6d4c">ch::HasNegativeBins</a></div><div class="ttdeci">bool HasNegativeBins(TH1 const *h)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00338">Utilities.cc:338</a></div></div>
+<div class="ttc" id="namespacech_html_acde782eef7132d07c095b4468de17dff"><div class="ttname"><a href="namespacech.html#acde782eef7132d07c095b4468de17dff">ch::is_float</a></div><div class="ttdeci">bool is_float(std::string const &amp;str)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00240">Utilities.cc:240</a></div></div>
 <div class="ttc" id="namespacech_html_a23a4079d5c68e21d9697570255e08224"><div class="ttname"><a href="namespacech.html#a23a4079d5c68e21d9697570255e08224">ch::ParseFileLines</a></div><div class="ttdeci">std::vector&lt; std::string &gt; ParseFileLines(std::string const &amp;file_name)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00223">Utilities.cc:223</a></div></div>
 <div class="ttc" id="namespacech_html_abfd9e94a6fd4c33abe1bbd5fb03e7f28"><div class="ttname"><a href="namespacech.html#abfd9e94a6fd4c33abe1bbd5fb03e7f28">ch::JoinStr</a></div><div class="ttdeci">std::vector&lt; std::string &gt; JoinStr(std::vector&lt; std::vector&lt; std::string &gt;&gt; const &amp;in)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00153">Utilities.cc:153</a></div></div>
 <div class="ttc" id="namespacech_html_a2cbcfd049543bfe9f63958bc671deeae"><div class="ttname"><a href="namespacech.html#a2cbcfd049543bfe9f63958bc671deeae">ch::RebinHist</a></div><div class="ttdeci">TH1F RebinHist(TH1F const &amp;hist)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00170">Utilities.cc:170</a></div></div>
 <div class="ttc" id="namespacech_html_a1a29f03f52660fd3a9fce0c353e3eee5"><div class="ttname"><a href="namespacech.html#a1a29f03f52660fd3a9fce0c353e3eee5">ch::SetStandardBinName</a></div><div class="ttdeci">void SetStandardBinName(ch::Object *obj, std::string pattern)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00084">Utilities.cc:84</a></div></div>
 <div class="ttc" id="_parameter_8h_html"><div class="ttname"><a href="_parameter_8h.html">Parameter.h</a></div></div>
-<div class="ttc" id="namespacech_html_aafb5cab1f237067be3553e893ca0a7b9"><div class="ttname"><a href="namespacech.html#aafb5cab1f237067be3553e893ca0a7b9">ch::ValsFromRange</a></div><div class="ttdeci">std::vector&lt; std::string &gt; ValsFromRange(std::string const &amp;input, std::string const &amp;fmt=&quot;%.0f&quot;)</div><div class="ttdoc">Generate a vector of values using ranges and intervals specified in a string. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00272">Utilities.cc:272</a></div></div>
-<div class="ttc" id="namespacech_html_ae779412e6479bbc7bdc933fcb00f0fe2"><div class="ttname"><a href="namespacech.html#ae779412e6479bbc7bdc933fcb00f0fe2">ch::Tuple2String</a></div><div class="ttdeci">std::string Tuple2String(const std::tuple&lt; Args...&gt; &amp;t)</div><div class="ttdoc">Format any std::tuple as a string. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00209">Utilities.h:209</a></div></div>
-<div class="ttc" id="namespacech_html_a5e23234ab65cfa48c99b83d94e291125"><div class="ttname"><a href="namespacech.html#a5e23234ab65cfa48c99b83d94e291125">ch::Set2Vec</a></div><div class="ttdeci">std::vector&lt; T &gt; Set2Vec(std::set&lt; T &gt; const &amp;in)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00099">Utilities.h:99</a></div></div>
+<div class="ttc" id="namespacech_html_aafb5cab1f237067be3553e893ca0a7b9"><div class="ttname"><a href="namespacech.html#aafb5cab1f237067be3553e893ca0a7b9">ch::ValsFromRange</a></div><div class="ttdeci">std::vector&lt; std::string &gt; ValsFromRange(std::string const &amp;input, std::string const &amp;fmt=&quot;%.0f&quot;)</div><div class="ttdoc">Generate a vector of values using ranges and intervals specified in a string. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00280">Utilities.cc:280</a></div></div>
+<div class="ttc" id="namespacech_html_ae779412e6479bbc7bdc933fcb00f0fe2"><div class="ttname"><a href="namespacech.html#ae779412e6479bbc7bdc933fcb00f0fe2">ch::Tuple2String</a></div><div class="ttdeci">std::string Tuple2String(const std::tuple&lt; Args...&gt; &amp;t)</div><div class="ttdoc">Format any std::tuple as a string. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00213">Utilities.h:213</a></div></div>
+<div class="ttc" id="namespacech_html_a5e23234ab65cfa48c99b83d94e291125"><div class="ttname"><a href="namespacech.html#a5e23234ab65cfa48c99b83d94e291125">ch::Set2Vec</a></div><div class="ttdeci">std::vector&lt; T &gt; Set2Vec(std::set&lt; T &gt; const &amp;in)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00100">Utilities.h:100</a></div></div>
 <div class="ttc" id="classch_1_1_object_html"><div class="ttname"><a href="classch_1_1_object.html">ch::Object</a></div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00007">Object.h:7</a></div></div>
 <div class="ttc" id="namespacech_html_aef408f71dec36c69cd2e145505212c49"><div class="ttname"><a href="namespacech.html#aef408f71dec36c69cd2e145505212c49">ch::ParametersByName</a></div><div class="ttdeci">RooArgSet ParametersByName(RooAbsReal const *pdf, RooArgSet const *dat_vars)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00018">Utilities.cc:18</a></div></div>
 <div class="ttc" id="_logging_8h_html"><div class="ttname"><a href="_logging_8h.html">Logging.h</a></div></div>
-<div class="ttc" id="namespacech_html_a2f4db67e7b9039935a58ea60b650041a"><div class="ttname"><a href="namespacech.html#a2f4db67e7b9039935a58ea60b650041a">ch::make_relative</a></div><div class="ttdeci">boost::filesystem::path make_relative(boost::filesystem::path p_from, boost::filesystem::path p_to)</div><div class="ttdoc">Determine the relative path from one file to another. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00304">Utilities.cc:304</a></div></div>
-<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4_html_ade2db8176ec0411cc79bb931d63bde09"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html#ade2db8176ec0411cc79bb931d63bde09">ch::tupleprint::TuplePrinter&lt; Tuple, 0 &gt;::print</a></div><div class="ttdeci">static void print(const Tuple &amp;, std::stringstream &amp;)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00193">Utilities.h:193</a></div></div>
+<div class="ttc" id="namespacech_html_a2f4db67e7b9039935a58ea60b650041a"><div class="ttname"><a href="namespacech.html#a2f4db67e7b9039935a58ea60b650041a">ch::make_relative</a></div><div class="ttdeci">boost::filesystem::path make_relative(boost::filesystem::path p_from, boost::filesystem::path p_to)</div><div class="ttdoc">Determine the relative path from one file to another. </div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8cc_source.html#l00312">Utilities.cc:312</a></div></div>
+<div class="ttc" id="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4_html_ade2db8176ec0411cc79bb931d63bde09"><div class="ttname"><a href="structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html#ade2db8176ec0411cc79bb931d63bde09">ch::tupleprint::TuplePrinter&lt; Tuple, 0 &gt;::print</a></div><div class="ttdeci">static void print(const Tuple &amp;, std::stringstream &amp;)</div><div class="ttdef"><b>Definition:</b> <a href="_utilities_8h_source.html#l00197">Utilities.h:197</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.6-->

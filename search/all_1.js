@@ -15,5 +15,5 @@ var searchData=
   ['binbybinfactory',['BinByBinFactory',['../classch_1_1_bin_by_bin_factory.html#ad83ac54b41f5ee9eabc33866bb61b834',1,'ch::BinByBinFactory']]],
   ['bkginfo',['BkgInfo',['../struct_bkg_info.html',1,'BkgInfo'],['../struct_bkg_info.html#a0ea51e03c4a8105333b7272e8532861c',1,'BkgInfo::BkgInfo()']]],
   ['boost_5fpython_5fmodule',['BOOST_PYTHON_MODULE',['../_combine_harvester___python_8cc.html#ad143df8635f271b58faa7864c2e1b423',1,'CombineHarvester_Python.cc']]],
-  ['buildroomorphing',['BuildRooMorphing',['../namespacech.html#a63d12dd31fe27e1c93f913bbc6a10a30',1,'ch']]]
+  ['buildroomorphing',['BuildRooMorphing',['../namespacech.html#ad991a3a9ee12cbe111efb5a938672534',1,'ch']]]
 ];
