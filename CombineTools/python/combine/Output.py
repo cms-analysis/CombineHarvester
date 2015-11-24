@@ -2,6 +2,7 @@
 
 import ROOT
 import json
+import os
 
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.opts import OPTS
@@ -9,8 +10,8 @@ from CombineHarvester.CombineTools.combine.opts import OPTS
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 
 
-class PrintSingles(CombineToolBase):
-    description = 'Print the output of MultimDitFit --algo singles'
+class PrintFit(CombineToolBase):
+    description = 'Print the output of MultimDitFit'
     requires_root = True
 
     def __init__(self):
@@ -20,14 +21,38 @@ class PrintSingles(CombineToolBase):
         CombineToolBase.attach_args(self, group)
         group.add_argument('input', help='The input file')
         group.add_argument(
+            '--algo', help='The algo used in MultiDimFit', default='none')
+        group.add_argument(
             '-P', '--POIs', help='The params that were scanned (in scan order)')
+        group.add_argument(
+            '--json', help='Write json output (format file.json:key1:key2..')
 
     def run_method(self):
-        POIs = args.POIs.split(',')
-        res = get_singles_results(args.input, POIs, POIs)
-        for p in POIs:
-            val = res[p][p]
-            print '%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1])
+        if self.args.json is not None:
+            json_structure = self.args.json.split(':')
+            assert(len(json_structure) >= 1)
+            if os.path.isfile(json_structure[0]):
+                with open(json_structure[0]) as jsonfile: js = json.load(jsonfile)
+            else:
+                js = {}
+            js_target = js
+            if (len(json_structure) >= 2):
+                for key in json_structure[1:]:
+                    js_target[key] = {}
+                    js_target = js_target[key]
+        POIs = self.args.POIs.split(',')
+        if self.args.algo == 'none':
+            res = utils.get_none_results(self.args.input, POIs)
+            if self.args.json is not None:
+              for key,val in res.iteritems():
+                js_target[key] = { 'Val' : val }
+            with open(json_structure[0], 'w') as outfile:
+              json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+        elif self.args.algo == 'singles':
+            res = utils.get_singles_results(self.args.input, POIs, POIs)
+            for p in POIs:
+                val = res[p][p]
+                print '%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1])
 
 
 class CollectLimits(CombineToolBase):
