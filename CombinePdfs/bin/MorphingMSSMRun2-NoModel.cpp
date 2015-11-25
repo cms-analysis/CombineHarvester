@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 #include <cstdlib>
+#include "boost/algorithm/string/predicate.hpp"
+#include "boost/program_options.hpp"
 #include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Process.h"
@@ -17,11 +19,21 @@
 #include "TH2.h"
 
 using namespace std;
+using boost::starts_with;
+namespace po = boost::program_options;
 
-int main() {
-  //! [part1]
+int main(int argc, char** argv) {
   // First define the location of the "auxiliaries" directory where we can
   // source the input files containing the datacard shapes
+  string SM125= "";
+  string mass = "mA";
+  po::variables_map vm;
+  po::options_description config("configuration");
+  config.add_options()
+    ("mass,m", po::value<string>(&mass)->default_value(mass))
+    ("SM125,h", po::value<string>(&SM125)->default_value(SM125));
+  po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
+  po::notify(vm);
   
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
@@ -31,7 +43,7 @@ int main() {
   VString chns =
       {"mt"};
 
-  RooRealVar mA("mA", "mA", 160., 1000.);
+  RooRealVar mA(mass.c_str(), mass.c_str(), 160., 1000.);
   RooRealVar mH("mH", "mH", 160., 1000.);
   RooRealVar mh("mh", "mh", 160., 1000.);
 
@@ -61,12 +73,18 @@ int main() {
     {9, "mt_btag"}
     };
 
-      vector<string> masses = {"160","500","1000"};
+      vector<string> masses = {"160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
     {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
   };
+  if(mass=="MH"){
+    signal_types = {
+      {"ggH", {"ggH"}},
+      {"bbH", {"bbH"}}
+    };
+  }
     vector<string> sig_procs = {"ggH","bbH"};
   for(auto chn : chns){
     cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn+"_13TeV"]);
@@ -182,6 +200,12 @@ int main() {
     {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA},
     {"bbh_htautau", &mh}, {"bbH_Htautau", &mH}, {"bbA_Atautau", &mA}
   };
+  if(mass=="MH"){
+    mass_var = {
+      {"ggH", &mA},
+      {"bbH", &mA}
+    };
+  }
   if (do_morphing) {
     auto bins = cb.bin_set();
     for (auto b : bins) {
@@ -194,33 +218,25 @@ int main() {
   }
   demo.Close();
   cb.AddWorkspace(ws);
-  cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
+  //cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
+  cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
-  // This method will produce a set of unique bin names by considering all
-  // Observation, Process and Systematic entries in the CombineHarvester
-  // instance.
-
-  // We create the output root file that will contain all the shapes.
-
-  // Finally we iterate through each bin,mass combination and write a
-  // datacard.
+  
   string folder = "output/mssm_run2";
   boost::filesystem::create_directories(folder);
+  
+  cout << "Writing datacards ...";
+  TFile output((folder + "/htt_mssm_input.root").c_str(), "RECREATE");
   for (string chn : chns) {
-    TFile output(("htt_" + chn + ".input.root").c_str(),
-                 "RECREATE");
     auto bins = cb.cp().channel({chn}).bin_set();
     for (auto b : bins) {
-      for (auto m : masses) {
-        cout << ">> Writing datacard for bin: " << b //<< " and mass: " << m
-                  << "\r" << flush;
-        cb.cp().channel({chn}).bin({b}).mass({m,"*"}).WriteDatacard(
-            folder+"/"+b+"_"+m+".txt", output);
-      }
+      cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
     }
-    output.Close();
   }
+  cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mssm.txt", output);
+  output.Close();
+  cout << " done\n";
 
-  //! [part9]
 
 }
+
