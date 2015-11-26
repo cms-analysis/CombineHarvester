@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
   cout << "Extracting histograms from input root files...";
   for (string chn : chns) {
     string file = aux_shapes + input_folders[chn] + "/htt_" + chn +
-      ".inputs-mssm-" + "8TeV" + "-0.root";
+      ".inputs-mssm-" + "8TeV" + "-0-CH-HIG-14-029.root";
     cb.cp().channel({chn}).era({"8TeV"}).backgrounds().ExtractShapes
       (file, "$CHANNEL/$PROCESS", "$CHANNEL/$PROCESS_$SYSTEMATIC");   
     if(SM125==string("signal_SM125")) cb.cp().channel({chn}).era({"8TeV"}).process(SM_procs).ExtractShapes(file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");

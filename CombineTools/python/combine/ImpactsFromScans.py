@@ -67,8 +67,8 @@ class ImpactsFromScans(CombineToolBase):
     for POI in POIs:
       if not self.args.do_fits: break
       arg_str = '-M MultiDimFit --algo fixed --saveInactivePOI 1 --floatOtherPOIs 1 -P %s' % POI
-      cmd_hi = arg_str + ' -n %s --setPhysicsModelParametersForGrid %s=%f' % (self.args.name+'.%s.Hi'%POI, POI, js[POI]["Val"] + js[POI]["ErrorHi"])
-      cmd_lo = arg_str + ' -n %s --setPhysicsModelParametersForGrid %s=%f' % (self.args.name+'.%s.Lo'%POI, POI, js[POI]["Val"] + js[POI]["ErrorLo"])
+      cmd_hi = arg_str + ' -n %s --fixedPointPOIs %s=%f' % (self.args.name+'.%s.Hi'%POI, POI, js[POI]["Val"] + js[POI]["ErrorHi"])
+      cmd_lo = arg_str + ' -n %s --fixedPointPOIs %s=%f' % (self.args.name+'.%s.Lo'%POI, POI, js[POI]["Val"] + js[POI]["ErrorLo"])
       self.job_queue.append('combine %s %s' % (cmd_hi, ' '.join(self.passthru)))  
       self.job_queue.append('combine %s %s' % (cmd_lo, ' '.join(self.passthru)))
     self.flush_queue()

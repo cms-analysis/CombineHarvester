@@ -1,10 +1,8 @@
-import CombineHarvester.CombineTools.ch as ch
 import ROOT as R
 import os
 from functools import partial
 from array import array
 import re
-import collections
 
 def SetTDRStyle():
   # For the canvas:
@@ -215,17 +213,18 @@ def ModTDRStyle(width=600, height=600, t=0.06, b=0.12, l=0.16, r=0.04):
 
   R.gROOT.ForceStyle()
 
-def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY):
+def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, extraText2='', cmsTextSize=0.8):
   pad.cd()
   cmsTextFont = 62 # default is helvetic-bold
 
   writeExtraText = len(extraText) > 0
+  writeExtraText2 = len(extraText2) > 0
   extraTextFont = 52
 
   # text sizes and text offsets with respect to the top frame
   # in unit of the top margin size
   lumiTextOffset = 0.2
-  cmsTextSize = 0.8
+  # cmsTextSize = 0.8
   # float cmsTextOffset    = 0.1;  // only used in outOfFrame version
 
   # ratio of 'CMS' and extra text size
@@ -287,6 +286,7 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY):
       latex.SetTextAlign(align_)
       latex.SetTextSize(extraTextSize * t * pad_ratio)
       latex.DrawLatex(posX_, posY_ - relExtraDY * cmsTextSize * t, extraText)
+      if writeExtraText2: latex.DrawLatex(posX_, posY_ - 1.8 * relExtraDY * cmsTextSize * t, extraText2)
   elif writeExtraText:
     if iPosX == 0:
       posX_ = l + relPosX * (1 - l - r)
@@ -500,6 +500,15 @@ def RemoveGraphYAll(graph, val):
             RemoveGraphYAll(graph, val)
             break
 
+def RemoveSmallDelta(graph, val):
+    for i in xrange(graph.GetN()):
+        diff = abs(graph.GetY()[i])
+        if diff < val:
+            print '[RemoveSmallDelta] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
+            graph.RemovePoint(i)
+            RemoveSmallDelta(graph, val)
+            break
+
 def RemoveGraphYAbove(graph, val):
     for i in xrange(graph.GetN()):
         if graph.GetY()[i] > val:
@@ -541,21 +550,42 @@ def TwoPadSplitColumns(split_point, gap_left, gap_right) :
     result = [left,right]
     return result
 
-def ImproveMinimum(graph, func):
+def ImproveMinimum(graph, func, doIt = False):
     fit_x = 0.
-    fit_y = 0.
+    fit_y = 999.
     fit_i = 0
     for i in xrange(graph.GetN()):
-        if graph.GetY()[i] == 0.:
+        if graph.GetY()[i] < fit_y:
             fit_i= i
             fit_x = graph.GetX()[i]
             fit_y = graph.GetY()[i]
-            break
-    if fit_i == 0 or fit_i == (graph.GetN() - 1): return
-    min_x = func.GetMinimumX(graph.GetX()[fit_i-1], graph.GetX()[fit_i+1])
+    if fit_i == 0 or fit_i == (graph.GetN() - 1):
+      if doIt:
+        min_x = graph.GetX()[fit_i]
+        min_y = graph.GetY()[fit_i]
+        for i in xrange(graph.GetN()):
+          before = graph.GetY()[i]
+          graph.GetY()[i] -= min_y
+          after = graph.GetY()[i]
+          print 'Point %i, before=%f, after=%f' % (i, before, after)
+      return (fit_x, fit_y)
+    search_min = fit_i-2 if fit_i >= 2 else fit_i-1
+    search_max = fit_i+2 if fit_i+2 < graph.GetN() else fit_i+1
+    min_x = func.GetMinimumX(graph.GetX()[search_min], graph.GetX()[search_max])
     min_y = func.Eval(min_x)
     print '[ImproveMinimum] Fit minimum was (%f, %f)' % (fit_x, fit_y)
     print '[ImproveMinimum] Better minimum was (%f, %f)' % (min_x, min_y)
+    if doIt:
+      for i in xrange(graph.GetN()):
+        before = graph.GetY()[i]
+        graph.GetY()[i] -= min_y
+        after = graph.GetY()[i]
+        print 'Point %i, before=%f, after=%f' % (i, before, after)
+      graph.Set(graph.GetN()+1)
+      graph.SetPoint(graph.GetN()-1, min_x, 0)
+      graph.Sort()
+    return (min_x, min_y)
+
 
 
 def FindCrossingsWithSpline(graph, func, yval):
@@ -675,6 +705,7 @@ def ReZeroTGraph(gr, doIt=False):
           gr.GetY()[i] -= min_y
           after = gr.GetY()[i]
           print 'Point %i, before=%f, after=%f' % (i, before, after)
+    return min_y
 
 def RemoveNearMin(graph, val, spacing = None):
     # assume graph is sorted:
@@ -907,3 +938,11 @@ def LimitBandTGraphFromJSON(js, central, lo, hi):
 def Set(obj, **kwargs):
   for key, value in kwargs.iteritems():
     getattr(obj, 'Set'+key)(value)
+
+def SetBirdPalette():
+  nRGBs = 9
+  stops   = array('d', [0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000])
+  red     = array('d', [0.2082, 0.0592, 0.0780, 0.0232, 0.1802, 0.5301, 0.8186, 0.9956, 0.9764])
+  green   = array('d', [0.1664, 0.3599, 0.5041, 0.6419, 0.7178, 0.7492, 0.7328, 0.7862, 0.9832])
+  blue    = array('d', [0.5293, 0.8684, 0.8385, 0.7914, 0.6425, 0.4662, 0.3499, 0.1968, 0.0539])
+  R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)

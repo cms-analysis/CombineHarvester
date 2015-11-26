@@ -5,10 +5,11 @@ import ROOT
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 from CombineHarvester.CombineTools.combine.EnhancedCombine import EnhancedCombine
 from CombineHarvester.CombineTools.combine.Impacts import Impacts
+from CombineHarvester.CombineTools.combine.ImpactsFromScans import ImpactsFromScans
 from CombineHarvester.CombineTools.combine.Workspace import PrintWorkspace, ModifyDataSet
 from CombineHarvester.CombineTools.combine.CovMatrix import CovMatrix
 from CombineHarvester.CombineTools.combine.LimitGrids import AsymptoticGrid, HybridNewGrid, Limit1D
-from CombineHarvester.CombineTools.combine.Output import PrintSingles, CollectLimits
+from CombineHarvester.CombineTools.combine.Output import PrintFit, CollectLimits
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
@@ -30,9 +31,10 @@ register_method(parser, methods, EnhancedCombine)
 register_method(parser, methods, PrintWorkspace)
 register_method(parser, methods, ModifyDataSet)
 register_method(parser, methods, Impacts)
+register_method(parser, methods, ImpactsFromScans)
 register_method(parser, methods, CollectLimits)
 register_method(parser, methods, CovMatrix)
-register_method(parser, methods, PrintSingles)
+register_method(parser, methods, PrintFit)
 register_method(parser, methods, AsymptoticGrid)
 register_method(parser, methods, HybridNewGrid)
 register_method(parser, methods, Limit1D)
