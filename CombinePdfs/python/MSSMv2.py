@@ -50,6 +50,7 @@ class MSSMHiggsModel(PhysicsModel):
         # determine the correct normalisation scaling
         self.ERAS = ['7TeV', '8TeV', '13TeV', '14TeV']
         self.PROC_SETS = []
+        self.SMSignal  = "SM125" #SM signal
 
     def setPhysicsOptions(self,physOptions):
         for po in physOptions:
@@ -183,6 +184,9 @@ class MSSMHiggsModel(PhysicsModel):
             # And the extra term we need for A->Zh
             self.doHistFunc('br_AZh_%s'%era, f.Get(hd['br_AZh']), pars)
             self.PROC_SETS.append((['ggA'], ['AZhLLtautau'], [era]))
+            # And the SM terms
+            for X in ['ggH', 'qqH', 'VH']:
+                self.PROC_SETS.append((['%s'%X], ['SM125'], [era]))
 
         # h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_hi_str), f.Get(ggF_xsec_h_str))
         # h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_lo_str), f.Get(ggF_xsec_h_str))
@@ -198,7 +202,13 @@ class MSSMHiggsModel(PhysicsModel):
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
         self.modelBuilder.doVar("r[1,0,20]")
-        self.modelBuilder.doSet('POI', 'r')
+
+        #MSSMvsMS
+        self.modelBuilder.doVar("x[1,0,1]")
+        self.modelBuilder.factory_("expr::not_x(\"(1-@0)\", x)")
+        self.sigNorms = { True:'x', False:'not_x' }
+
+        self.modelBuilder.doSet('POI', 'x,r')
         # We don't intend on actually floating these in any fits...
         self.modelBuilder.out.var('mA').setConstant(True)
         self.modelBuilder.out.var('tanb').setConstant(True)
@@ -218,8 +228,12 @@ class MSSMHiggsModel(PhysicsModel):
         for proc_set in self.PROC_SETS:
             for (P, D, E) in itertools.product(*proc_set):
                 # print (P, D, E)
-                terms = ['xs_%s_%s' % (P, E), 'br_%s_%s'% (D, E)]
-                terms += ['r']
+                if ((self.SMSignal not in D) and ("ww125" not in P) and ("tt125" not in P)): #altenative hypothesis if SMSignal not in process name
+                    terms = ['xs_%s_%s' % (P, E), 'br_%s_%s'% (D, E)]
+                    terms += ['r']
+                    terms += [self.sigNorms[1]]
+                else:
+                    terms = [self.sigNorms[0]]
                 self.modelBuilder.factory_('prod::scaling_%s_%s_%s(%s)' % (P,D,E,','.join(terms)))
                 self.modelBuilder.out.function('scaling_%s_%s_%s' % (P,D,E)).Print('')
 
