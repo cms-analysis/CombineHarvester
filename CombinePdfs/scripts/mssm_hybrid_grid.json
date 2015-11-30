@@ -1,8 +1,27 @@
 {
-  "opts" : "--testStat=TEV --frequentist -d htt_mt_mssm.root --singlePoint 1.0 --saveHybridResult --clsAcc 0 --fullBToys --fork 0",
+  "verbose" : false,
+  "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --clsAcc 0 --fullBToys --fork 0",
   "POIs" : ["mA", "tanb"],
   "grids" : [
-    ["500", "25", ""]
+    ["580:600:20", "10:30:4", ""]
   ],
-  "toys_per_cycle" : 500
+  "toys_per_cycle"  : 500,
+  "min_toys"        : 500,
+  "max_toys"        : 5000,
+  "signif"          : 3.0,
+  "CL"              : 0.95,
+  "contours"        : ["obs", "exp-2", "exp-1", "exp0", "exp+1", "exp+2"],
+  "make_plots"      : true,
+  "plot_settings" : {
+      "one_sided"     : false,
+      "model_label"   : "m_{H}^{mod+}",
+      "poi_labels"    : ["m_{A}", "tan#beta"],
+      "null_label"    : "SM",
+      "alt_label"     : "MSSM",
+      "cms_subtitle"  : "Internal",
+      "formats"       : [".pdf", ".png"]
+  },
+  "zipfile"         : "collected.zip",
+  "output"          : "HybridNewGridMSSM.root",
+  "output_incomplete" : true
 }

@@ -452,11 +452,17 @@ def CreateTransparentColor(color, alpha):
     return new_idx
 
 def TFileIsGood(filename):
-    if not os.path.exists(filename): return False
+    # if not os.path.exists(filename): return False
     fin = R.TFile.Open(filename)
-    if fin: R.TFile.Close(fin)
     if not fin: return False
-    return True
+    if fin and not fin.IsOpen():
+      return False
+    elif fin and fin.IsOpen() and fin.IsZombie():
+      fin.Close()
+      return False
+    else:
+      fin.Close()
+      return True
 
 def MakeTChain(files, tree):
     chain = R.TChain(tree)
@@ -634,7 +640,6 @@ def FindCrossingsWithSpline(graph, func, yval):
 def GetAxisHist(pad):
   pad_obs = pad.GetListOfPrimitives()
   if pad_obs is None: return None
-  nextit = R.TIter(pad_obs)
   obj = None
   for obj in pad_obs:
     if obj.InheritsFrom(R.TH1.Class()):
@@ -646,6 +651,49 @@ def GetAxisHist(pad):
     if obj.InheritsFrom(R.THStack.Class()):
         return hs.GetHistogram()
   return None
+
+
+def FixTopRange(pad, fix_y, fraction):
+  hobj = GetAxisHist(pad)
+  ymin = hobj.GetMinimum()
+  hobj.SetMaximum((fix_y - fraction * ymin) / (1. - fraction))
+  if R.gPad.GetLogy():
+    if ymin == 0.:
+      print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
+      return
+    maxval = (math.log10(fix_y) - fraction * math.log10(ymin)) / (1 - fraction)
+    maxval = math.pow(10, maxval)
+    hobj.SetMaximum(maxval)
+
+def GetPadYMaxInRange(pad, x_min, x_max):
+  pad_obs = pad.GetListOfPrimitives()
+  if pad_obs is None: return 0.
+  h_max = -99999.
+  for obj in pad_obs:
+    if obj.InheritsFrom(R.TH1.Class()):
+      hobj = obj
+      for j in xrange(1, hobj.GetNbinsX()):
+        if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
+            hobj.GetBinLowEdge(j) > x_max): continue
+        if (hobj.GetBinContent(j) + hobj.GetBinError(j) > h_max):
+          h_max = hobj.GetBinContent(j) + hobj.GetBinError(j)
+
+    if obj.InheritsFrom(R.TGraph.Class()):
+      gobj = obj
+      n = gobj.GetN()
+      for k in xrange(0, n):
+        x = gobs.GetX()[k]
+        y = gobs.GetY()[k]
+        if x < x_min or x > x_max: continue
+        if y > h_max: h_max = y
+  return h_max
+
+def GetPadYMax(pad):
+  pad_obs = pad.GetListOfPrimitives()
+  if pad_obs is None: return 0.
+  xmin = GetAxisHist(pad).GetXaxis().GetXmin()
+  xmax = GetAxisHist(pad).GetXaxis().GetXmax()
+  return GetPadYMaxInRange(pad, xmin, xmax)
 
 def DrawHorizontalLine(pad, line, yval):
   axis = GetAxisHist(pad)
