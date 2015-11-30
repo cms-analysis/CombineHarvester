@@ -6,7 +6,6 @@
 <bin file="AZhMorphing.cpp" name="AZhMorphing"></bin>
 <bin file="HhhMorphingExample.cpp" name="HhhMorphingExample"></bin>
 <bin file="MorphingMSSM-NoModel.cpp" name="MorphingMSSM-NoModel"></bin>
-<bin file="MorphingMSSMRun2-NoModel.cpp" name="MorphingMSSMRun2-NoModel"></bin>
 <bin file="MorphingMSSMUpdate-NoModel.cpp" name="MorphingMSSMUpdate-NoModel"></bin>
 <bin file="MorphingMSSM.cpp" name="MorphingMSSM"></bin>
 <bin file="ParametricMSSM.cpp" name="ParametricMSSM"></bin>

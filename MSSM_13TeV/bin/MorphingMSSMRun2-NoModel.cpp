@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     {9, "mt_btag"}
     };
 
-      vector<string> masses = {"160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000"};
+      vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -170,15 +170,15 @@ int main(int argc, char** argv) {
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-mvis.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-new.root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-mvis.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-new.root",
         "$BIN/ggH$MASS",
         "$BIN/ggH$MASS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-mvis.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-new.root",
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
@@ -222,7 +222,7 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   
-  string folder = "output/mssm_run2";
+  string folder = "output/mssm_run2_mhmodp";
   boost::filesystem::create_directories(folder);
   
   cout << "Writing datacards ...";
