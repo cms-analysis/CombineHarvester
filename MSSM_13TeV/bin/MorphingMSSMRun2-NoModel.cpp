@@ -14,6 +14,7 @@
 #include "CombineHarvester/CombineTools/interface/Systematics.h"
 #include "CombineHarvester/CombineTools/interface/BinByBin.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
+#include "CombineHarvester/CombineTools/interface/HttSystematics.h"
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
 #include "TH2.h"
@@ -96,77 +97,8 @@ int main(int argc, char** argv) {
     }
 
 
-  //Some of the code for this is in a nested namespace, so
-  // we'll make some using declarations first to simplify things a bit.
-  using ch::syst::SystMap;
-  using ch::syst::era;
-  using ch::syst::bin_id;
-  using ch::syst::process;
-
-
-  //cb.cp().process({"ggH","bbH"})
-  //    .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
-
-  cb.cp().process(ch::JoinStr({sig_procs, {"ZTT", "TT"}}))
-      .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
-
-  cb.cp().process(ch::JoinStr({sig_procs, {"TT","VV","ZLL","ZTT","W"}})).channel({"em"})
-      .AddSyst(cb, "CMS_eff_e", "lnN", SystMap<>::init(1.02));
-
-//  cb.cp().channel({"em"}).process(ch::JoinStr({sig_procs, {"TT","VV","ZLL","ZTT","W"}})).AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
-
-//  cb.cp().channel({"em"}).AddSyst(cb, "CMS_scale_j_13TeV", "lnN", SystMap<era,process>::init
- //     ({"13TeV"}, {"TT"},          0.91)
-  //    ({"13TeV"}, {"VV"},            0.98));
-
-
- // cb.cp().process(ch::JoinStr({sig_procs, {"TT","VV","ZL","W","ZJ","ZTT"}})).channel({"et"})
- //     .AddSyst(cb, "CMS_eff_e", "lnN", SystMap<>::init(1.02));
+  ch::AddMSSMRun2Systematics(cb);
   
-  cb.cp().process({"TT","VV","ZL","W","ZJ","ZTT","ZLL"}).AddSyst(cb, "lumi_13TeV", "lnN", SystMap<>::init(1.026));
-
-  cb.cp().process({"ZTT"})
-      .AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
-
-  cb.cp().process(sig_procs).AddSyst(cb, "lumi_13TeV", "lnN", SystMap<>::init(1.026));
-
-//  cb.cp().channel({"em"}).process({"ZLL"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
-//  cb.cp().channel({"et"}).process({"ZL","ZJ"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
-  cb.cp().channel({"mt"}).process({"ZL","ZJ"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
-
-  cb.cp().process({"TT"})
-      .AddSyst(cb, "CMS_htt_ttbarNorm_13TeV", "lnN", SystMap<era>::init
-        ({"13TeV"}, 1.10));
-
-/*  cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
-      "CMS_htt_em_QCD_13TeV","lnN",SystMap<>::init(1.3));
-
- cb.cp().process({"QCD"}).channel({"et"}).AddSyst(cb,
-      "CMS_htt_et_QCD_13TeV","lnN",SystMap<>::init(1.3));*/
-
- cb.cp().process({"QCD"}).channel({"mt"}).AddSyst(cb,
-      "CMS_htt_mt_QCD_13TeV","lnN",SystMap<>::init(1.3));
-
-  cb.cp().process({"VV"}).AddSyst(cb,
-      "CMS_htt_VVNorm_13TeV", "lnN", SystMap<>::init(1.15));
-
-  cb.cp().process({"W"}).channel({"mt"}).AddSyst(cb,
-     "CMS_htt_WNorm_13TeV","lnN",SystMap<>::init(1.2));
-
-/*  cb.cp()
-      .AddSyst(cb,
-        "CMS_scale_j_$ERA", "lnN", SystMap<era, bin_id, process>::init
-        ({"8TeV"}, {1},     {"ggH"},        1.04)
-        ({"8TeV"}, {1},     {"qqH"},        0.99)
-        ({"8TeV"}, {2},     {"ggH"},        1.10)
-        ({"8TeV"}, {2},     {"qqH"},        1.04)
-        ({"8TeV"}, {2},     {"TT"},         1.05));
-*/
-
-//  cb.cp().process(ch::JoinStr({sig_procs, {"ZTT"}}))
- //     .AddSyst(cb, "CMS_scale_t_mutau_$ERA", "shape", SystMap<>::init(1.00));
-  //! [part6]
-
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
@@ -222,7 +154,7 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   
-  string folder = "output/mssm_run2_mhmodp";
+  string folder = "output/mssm_run2";
   boost::filesystem::create_directories(folder);
   
   cout << "Writing datacards ...";
