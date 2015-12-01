@@ -149,7 +149,8 @@ class HybridNewGrid(CombineToolBase):
 
     def attach_intercept_args(self, group):
         CombineToolBase.attach_intercept_args(self, group)
-
+        group.add_argument('--setPhysicsModelParameters', default=None)
+        group.add_argument('--freezeNuisances', default=None)
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
         group.add_argument('config', help='json config file')
@@ -271,6 +272,19 @@ class HybridNewGrid(CombineToolBase):
         incomplete      = cfg.get('output_incomplete', False)
         outfile         = cfg.get('output','hybrid_grid.root')
         # NB: blacklisting not yet implemented for this method
+
+        # Have to merge some arguments from both the command line and the "opts" in the json file
+        to_freeze = []
+        to_set = []
+        set_opt, opts = self.extract_arg('--setPhysicsModelParameters', opts)
+        if set_opt is not None: to_set.append(set_opt)
+        freeze_opt, opts = self.extract_arg('--freezeNuisances', opts)
+        if freeze_opt is not None: to_freeze.append(freeze_opt)
+        if hasattr(self.args, 'setPhysicsModelParameters') and self.args.setPhysicsModelParameters is not None:
+            to_set.append(self.args.setPhysicsModelParameters)
+        if hasattr(self.args, 'freezeNuisances') and self.args.freezeNuisances is not None:
+            to_freeze.append(self.args.freezeNuisances)
+
         points = []; blacklisted_points = []
         for igrid in grids:
             assert(len(igrid) == 3)
@@ -395,7 +409,9 @@ class HybridNewGrid(CombineToolBase):
                 
                 # Build to combine command. Here we'll take responsibility for setting the name and the
                 # model parameters, making sure the latter are frozen
-                point_args = '-n .%s --setPhysicsModelParameters %s=%s,%s=%s --freezeNuisances %s,%s' % (name, POIs[0], key[0], POIs[1], key[1], POIs[0], POIs[1])
+                set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
+                freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
+                point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
                 # Build a command for each job cycle setting the number of toys and random seed and passing through any other
                 # user options from the config file or the command line
                 for idx in new_cycles:

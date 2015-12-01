@@ -151,6 +151,18 @@ class CombineToolBase:
             self.passthru.extend([target_name, getattr(self.args, arg_name)])
             delattr(self.args, arg_name)
 
+    def extract_arg(self, arg, args_str):
+        args_str = args_str.replace(arg+'=', arg+' ')
+        args = args_str.split()
+        if arg in args:
+            idx = args.index(arg)
+            assert idx != -1 and idx < len(args)
+            val = args[idx+1]
+            del args[idx:idx+2]
+            return val, (' '.join(args))
+        else:
+            return None, args_str
+
     def create_job_script(self, commands, script_filename, do_log = False):
         fname = script_filename
         logname = script_filename.replace('.sh', '.log')
