@@ -994,3 +994,16 @@ def SetBirdPalette():
   green   = array('d', [0.1664, 0.3599, 0.5041, 0.6419, 0.7178, 0.7492, 0.7328, 0.7862, 0.9832])
   blue    = array('d', [0.5293, 0.8684, 0.8385, 0.7914, 0.6425, 0.4662, 0.3499, 0.1968, 0.0539])
   R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
+
+def bestFit(tree, x, y, cut):
+  nfind = tree.Draw(y+":"+x, cut + "deltaNLL == 0")
+  gr0 = R.TGraph(1)
+  if (nfind == 0):
+    gr0.SetPoint(0,-999,-999)
+  else:
+    grc = R.gROOT.FindObject("Graph").Clone()
+    if (grc.GetN() > 1): grc.Set(1)
+    gr0.SetPoint(0,grc.GetXmax(),grc.GetYmax())
+  gr0.SetMarkerStyle(34)
+  gr0.SetMarkerSize(2.0)
+  return gr0
