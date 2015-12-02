@@ -460,6 +460,9 @@ def TFileIsGood(filename):
     elif fin and fin.IsOpen() and fin.IsZombie():
       fin.Close()
       return False
+    elif fin and fin.IsOpen() and fin.TestBit(R.TFile.kRecovered):
+      # don't consider a recovered file to be ok
+      return False
     else:
       fin.Close()
       return True

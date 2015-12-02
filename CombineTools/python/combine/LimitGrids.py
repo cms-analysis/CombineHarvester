@@ -161,15 +161,22 @@ class HybridNewGrid(CombineToolBase):
         if len(files) == 0: return None
         results = []
         for file in files:
+            found_res = False
             f = ROOT.TFile(file)
             ROOT.gDirectory.cd('toys')
             for key in ROOT.gDirectory.GetListOfKeys():
                 if ROOT.gROOT.GetClass(key.GetClassName()).InheritsFrom(ROOT.RooStats.HypoTestResult.Class()):
                     results.append(ROOT.gDirectory.Get(key.GetName()))
+                    found_res = True
             f.Close()
+            if not found_res:
+                print '>> Warning, did not find a HypoTestResult object in file %s' % file
         if (len(results)) > 1:
           for r in results[1:]:
             results[0].Append(r)
+        ntoys = min(results[0].GetNullDistribution().GetSize(), results[0].GetAltDistribution().GetSize())
+        if ntoys == 0:
+            print '>> Warning, HypoTestResult from file(s) %s does not contain any toy results, did something go wrong in your fits?' % '+'.join(files)
         return results[0]
 
     def ValidateHypoTest(self, hyp_res, min_toys, max_toys, contours, signif, cl, output=False, verbose=False):
@@ -327,13 +334,13 @@ class HybridNewGrid(CombineToolBase):
             seed = int(matches.group('toy'))
             if p in file_dict:
                 # Don't add this file to the list if its seed number is already
-                # a value in the dict. We also check that the output file is valid
-                # at this stage as we don't want to use or copy an output file for
-                # a job that is still running or that failed
-                if seed not in file_dict[p] and plot.TFileIsGood(f):
+                # a value in the dict.
+                if seed not in file_dict[p]:
                     # If we're using the zipfile we'll add this now and
                     # then delete it from the local directory
-                    if zipname:
+                    # But: only in the file is good, we don't want to pollute the zip
+                    # file with incomplete or failed jobs
+                    if zipname and plot.TFileIsGood(f):
                         zipf.write(f) # assume this throws if it fails
                         print 'Adding %s to %s' % (f, zipname)
                         file_dict[p][seed] = zipname+'#'+f
@@ -361,7 +368,7 @@ class HybridNewGrid(CombineToolBase):
         for key,val in file_dict.iteritems():
             total_points += 1
             name = '%s.%s.%s.%s' % (POIs[0], key[0], POIs[1], key[1])
-            files = [x for x in val.values()]
+            files = [x for x in val.values() if plot.TFileIsGood(x)]
             # Merge the HypoTestResult objects from each file into one
             res = self.GetCombinedHypoTest(files)
 
@@ -432,11 +439,14 @@ class HybridNewGrid(CombineToolBase):
            fout.Close()
 
     def PlotTestStat(self, result, name, opts, poi_vals):
+      null_vals = [x * -2. for x in result.GetNullDistribution().GetSamplingDistribution()]
+      alt_vals = [x * -2. for x in result.GetAltDistribution().GetSamplingDistribution()]
+      if len(null_vals) == 0 or len(alt_vals) == 0:
+        print '>> Errror in PlotTestStat for %s, null and/or alt distributions are empty'
+        return
       plot.ModTDRStyle()
       canv = ROOT.TCanvas(name, name)
       pad = plot.OnePad()[0]
-      null_vals = [x * -2. for x in result.GetNullDistribution().GetSamplingDistribution()]
-      alt_vals = [x * -2. for x in result.GetAltDistribution().GetSamplingDistribution()]
       min_val = min(min(alt_vals), min(null_vals))
       max_val = max(max(alt_vals), max(null_vals))
       min_plot_range = min_val - 0.05 * (max_val - min_val)
