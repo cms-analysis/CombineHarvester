@@ -23,12 +23,17 @@ class AsymptoticGrid(CombineToolBase):
 
   def attach_intercept_args(self, group):
     CombineToolBase.attach_intercept_args(self, group)
+    group.add_argument('--setPhysicsModelParameters', default=None)
+    group.add_argument('--freezeNuisances', default=None)
 
   def attach_args(self, group):
     CombineToolBase.attach_args(self, group)
     group.add_argument('config', help='json config file')
 
   def run_method(self):
+    ROOT.PyConfig.IgnoreCommandLineOptions = True
+    ROOT.gROOT.SetBatch(ROOT.kTRUE)
+
     # This is what the logic should be:
     #  - get the list of model points
     #  - figure out which files are:
@@ -50,6 +55,19 @@ class AsymptoticGrid(CombineToolBase):
       if igrid[2]=='' : points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1])))
       else : blacklisted_points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1]), utils.split_vals(igrid[2])))
     POIs = cfg['POIs']
+    opts = cfg['opts']
+
+    # Have to merge some arguments from both the command line and the "opts" in the json file
+    to_freeze = []
+    to_set = []
+    set_opt, opts = self.extract_arg('--setPhysicsModelParameters', opts)
+    if set_opt is not None: to_set.append(set_opt)
+    freeze_opt, opts = self.extract_arg('--freezeNuisances', opts)
+    if freeze_opt is not None: to_freeze.append(freeze_opt)
+    if hasattr(self.args, 'setPhysicsModelParameters') and self.args.setPhysicsModelParameters is not None:
+        to_set.append(self.args.setPhysicsModelParameters)
+    if hasattr(self.args, 'freezeNuisances') and self.args.freezeNuisances is not None:
+        to_freeze.append(self.args.freezeNuisances)
 
     file_dict = { }
     for p in points:
@@ -68,8 +86,10 @@ class AsymptoticGrid(CombineToolBase):
       print '>> Point %s' % name
       if len(val) == 0:
         print 'Going to run limit for point %s' % (key,)
-        point_args = '-n .%s --setPhysicsModelParameters %s=%s,%s=%s --freezeNuisances %s,%s' % (name, POIs[0], key[0], POIs[1], key[1], POIs[0], POIs[1])
-        cmd = ' '.join(['combine -M Asymptotic', cfg['opts'], point_args] + self.passthru)
+        set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
+        freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
+        point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
+        cmd = ' '.join(['combine -M Asymptotic', opts, point_args] + self.passthru)
         self.job_queue.append(cmd)
 
     bail_out = len(self.job_queue) > 0
