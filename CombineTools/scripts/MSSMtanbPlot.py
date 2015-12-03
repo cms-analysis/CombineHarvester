@@ -25,6 +25,9 @@ parser.add_argument('--custom_x_range', help='Fix x axis range', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
+parser.add_argument('--expected_only', help='Do not plot observed', default=False)
+parser.add_argument('--lumi_label', '-l', help='lumi label e.g. 19.7 fb^{-1} (8TeV)', default='19.7 fb^{-1} (8TeV)')
+parser.add_argument('--ana_label', '-a', help='analysis label (for now just for filename but can also include label on plot) e.g. Hhh, AZh, mssm', default='mssm')
 args = parser.parse_args()
 
 
@@ -72,12 +75,18 @@ pads[1].cd()
 
 #Note the binning of the TH2D for the interpolation should ~ match the initial input grid
 #Could in future implement variable binning here
-h_exp = plot.makeVarBinHist2D("h_exp", mA_list, tanb_list)
-h_obs = plot.makeVarBinHist2D("h_obs", mA_list, tanb_list)
-h_minus1sigma = plot.makeVarBinHist2D("h_minus1sigma", mA_list, tanb_list)
-h_plus1sigma = plot.makeVarBinHist2D("h_plus1sigma", mA_list, tanb_list)
-h_minus2sigma = plot.makeVarBinHist2D("h_minus2sigma", mA_list, tanb_list)
-h_plus2sigma = plot.makeVarBinHist2D("h_plus2sigma", mA_list, tanb_list)
+#h_exp = plot.makeVarBinHist2D("h_exp", mA_list, tanb_list)
+#h_obs = plot.makeVarBinHist2D("h_obs", mA_list, tanb_list)
+#h_minus1sigma = plot.makeVarBinHist2D("h_minus1sigma", mA_list, tanb_list)
+#h_plus1sigma = plot.makeVarBinHist2D("h_plus1sigma", mA_list, tanb_list)
+#h_minus2sigma = plot.makeVarBinHist2D("h_minus2sigma", mA_list, tanb_list)
+#h_plus2sigma = plot.makeVarBinHist2D("h_plus2sigma", mA_list, tanb_list)
+h_exp = plot.makeHist2D("h_exp", mA_bins, tanb_bins, graph_exp)
+h_obs = plot.makeHist2D("h_obs", mA_bins, tanb_bins, graph_obs)
+h_minus1sigma = plot.makeHist2D("h_minus1sigma", mA_bins, tanb_bins, graph_minus1sigma)
+h_plus1sigma = plot.makeHist2D("h_plus1sigma", mA_bins, tanb_bins, graph_plus1sigma)
+h_minus2sigma = plot.makeHist2D("h_minus2sigma", mA_bins, tanb_bins, graph_minus2sigma)
+h_plus2sigma = plot.makeHist2D("h_plus2sigma", mA_bins, tanb_bins, graph_plus2sigma)
 plot.fillTH2(h_exp, graph_exp)
 plot.fillTH2(h_obs, graph_obs)
 plot.fillTH2(h_minus1sigma, graph_minus1sigma)
@@ -163,8 +172,9 @@ for i,p in enumerate(cont_obs):
     p.SetFillStyle(1001)
     p.SetFillColor(CreateTransparentColor(ROOT.kAzure+6,0.5))
     pads[1].cd()
-    p.Draw("F SAME")
-    p.Draw("L SAME")
+    if not args.expected_only:
+        p.Draw("F SAME")
+        p.Draw("L SAME")
     if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_obs_%i'%i)
 
 if int(args.verbosity) > 0 : outf.Close()
@@ -219,10 +229,10 @@ legend.SetTextSize(0.15)
 legend.SetTextFont(62)
 legend.SetHeader("95% CL Excluded:")
 # Stupid hack to get legend entry looking correct
-if cont_obs[0] : 
-    alt_cont_obs = cont_obs[0].Clone()
-    alt_cont_obs.SetLineColor(ROOT.kWhite)
-    legend.AddEntry(alt_cont_obs,"Observed", "F")
+if cont_obs[0] and not args.expected_only: 
+     alt_cont_obs = cont_obs[0].Clone()
+     alt_cont_obs.SetLineColor(ROOT.kWhite)
+     legend.AddEntry(alt_cont_obs,"Observed", "F")
 if cont_minus1sigma[0] : legend.AddEntry(cont_minus1sigma[0], "#pm 1#sigma Expected", "F")
 if cont_exp[0] : legend.AddEntry(cont_exp[0],"Expected", "L")
 if cont_minus2sigma[0] : legend.AddEntry(cont_minus2sigma[0], "#pm 2#sigma Expected", "F")
@@ -239,8 +249,9 @@ if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), fl
 axis.GetXaxis().SetTitle("m_{A} (GeV)")
 if args.custom_x_range : axis.GetXaxis().SetRangeUser(float(args.x_axis_min), float(args.x_axis_max))
 plot.DrawCMSLogo(pads[1], 'Combine Harvester', scenario_label, 11, 0.045, 0.035, 1.2)
-plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
+plot.DrawTitle(pads[1], args.lumi_label, 3);
 plot.FixOverlay()
-c1.SaveAs("mssm_"+args.scenario+".pdf")
-c1.SaveAs("mssm_"+args.scenario+".png")
+c1.SaveAs(args.ana_label+"_"+args.scenario+".pdf")
+c1.SaveAs(args.ana_label+"_"+args.scenario+".png")
+c1.SaveAs(args.ana_label+"_"+args.scenario+".C")
 
