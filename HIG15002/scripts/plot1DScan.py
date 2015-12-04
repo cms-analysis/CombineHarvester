@@ -472,7 +472,7 @@ if len(other_scans) >= 3:
         legend = ROOT.TLegend(0.58, 0.79, 0.95, 0.93, '', 'NBNDC')
         legend.SetNColumns(2)
     else:
-        legend = ROOT.TLegend(0.42 + (0.04 if args.pub else 0.), 0.85, 0.95, 0.93, '', 'NBNDC')
+        legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
         legend.SetNColumns(2)
 
 legend.AddEntry(main_scan['func'], args.main_label, 'L')

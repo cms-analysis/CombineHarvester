@@ -49,7 +49,7 @@ def makeHist(name, bins, graph2d):
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
-plot.ModTDRStyle(l=0.13, b=0.10, r=0.15)
+plot.ModTDRStyle(l=0.13, b=0.10, r=0.19)
 plot.SetBirdPalette()
 
 # ROOT.gStyle.SetNdivisions(510, "XYZ")
@@ -69,7 +69,17 @@ parser.add_argument('--x-axis', default='#kappa_{V}')
 parser.add_argument('--y-axis', default='#kappa_{F}')
 parser.add_argument('--axis-hist', default=None)
 parser.add_argument('--layout', type=int, default=1)
+parser.add_argument('--sm-point', default='1,1')
+parser.add_argument('--translate', help='json file with POI name translation')
+parser.add_argument('--title-right', default='', help='title text')
+
+
+
 args = parser.parse_args()
+
+if args.translate is not None:
+    with open(args.translate) as jsonfile:    
+        name_translate = json.load(jsonfile)
 
 infile = args.file
 
@@ -85,8 +95,15 @@ else:
     axis = makeHist('hist2d', 40 * args.multi, graph_test)
 
 # axis = None
-axis.GetXaxis().SetTitle(args.x_axis)
-axis.GetYaxis().SetTitle(args.y_axis)
+x_axis = args.x_axis
+if x_axis in name_translate:
+    x_axis = name_translate[x_axis]
+y_axis = args.y_axis
+if y_axis in name_translate:
+    y_axis = name_translate[y_axis]
+axis.GetXaxis().SetTitle(x_axis)
+axis.GetYaxis().SetTitle(y_axis)
+
 
 canv = ROOT.TCanvas(args.output, args.output)
 pads = plot.OnePad()
@@ -123,6 +140,8 @@ for scan in order:
     fillTH2(hists[scan], graphs[scan])
     outfile.WriteTObject(hists[scan], hists[scan].GetName()+'_input')
     fixZeros(hists[scan])
+    hists[scan].GetZaxis().SetTitle('-2 #Delta ln #Lambda(%s,%s)' %( x_axis, y_axis))
+    # hists[scan].GetZaxis().SetTitleOffset(0)
     hists[scan].Draw('COLZSAME')
     hists[scan].SetMinimum(0)
     hists[scan].SetMaximum(10)
@@ -146,7 +165,7 @@ for scan in order:
     if scan in conts95:
         for i, c in enumerate(conts95[scan]):
             c.SetLineWidth(3)
-            c.SetLineStyle(9)
+            c.SetLineStyle(7)
             pads[0].cd()
             outfile.WriteTObject(c, 'graph95_%s_%i' % (scan, i))
     legend.AddEntry(conts68[scan][0], 'Scan', 'F')
@@ -164,9 +183,9 @@ for scan in order:
     bestfits[scan].Draw('PSAME')
 
 sm_point = ROOT.TGraph()
-sm_point.SetPoint(0, 1, 1)
+sm_point.SetPoint(0, *[float(x) for x in args.sm_point.split(',')])
 # sm_point.SetMarkerColor(ROOT.TColor.GetColor(249, 71, 1))
-sm_point.SetMarkerColor(ROOT.kBlack)
+sm_point.SetMarkerColor(ROOT.kRed)
 sm_point.SetMarkerStyle(33)
 sm_point.SetMarkerSize(2)
 sm_point.Draw('PSAME')
@@ -175,7 +194,7 @@ sm_point.Draw('PSAME')
 # legend.Draw()
 
 if args.layout == 1:
-    legend2 = ROOT.TLegend(0.15, 0.11, 0.94, 0.15, '', 'NBNDC')
+    legend2 = ROOT.TLegend(0.14, 0.13, 0.79, 0.17, '', 'NBNDC')
     legend2.SetNColumns(4)
 if args.layout == 2:
     legend2 = ROOT.TLegend(0.14, 0.53, 0.34, 0.74, '', 'NBNDC')
@@ -192,9 +211,14 @@ legend2.Draw()
 box = ROOT.TPave(0.15, 0.82, 0.41, 0.92, 0, 'NBNDC')
 # box.Draw()
 plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1}', 11, 0.025, 0.035, 1.1, extraText2='#it{Internal}')
+plot.DrawTitle(pads[0], args.title_right, 3)
 
 axis.SetMinimum(0)
 axis.SetMaximum(6)
+
+axis.GetZaxis().SetTitleOffset(0)
+
+pads[0].RedrawAxis()
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{+}CMS', '#it{LHC Run 1}', 11, 0.02, 0.035, 1.1, extraText2='#it{Internal}')
 # pads[0].RedrawAxis()
 canv.Print('.pdf')

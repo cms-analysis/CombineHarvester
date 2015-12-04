@@ -159,5 +159,8 @@
 "mu_XS_VBF_BR_tautau"     : "#mu_{VBF}^{#tau#tau}",
 "mu_XS_WH_BR_tautau"      : "#mu_{WH}^{#tau#tau}",
 "mu_XS_ZH_BR_tautau"      : "#mu_{ZH}^{#tau#tau}",
-"mu_XS_ttHtH_BR_tautau"   : "#mu_{ttH}^{#tau#tau}"
+"mu_XS_ttHtH_BR_tautau"   : "#mu_{ttH}^{#tau#tau}",
+
+"M" : "M",
+"eps" : "#epsilon"
 }
