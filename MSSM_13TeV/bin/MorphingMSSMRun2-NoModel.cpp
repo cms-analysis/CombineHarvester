@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   string input_dir =
-      string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombinePdfs/";
+      string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
 
   VString chns =
       {"mt"};
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
   RooRealVar mh("mh", "mh", 160., 1000.);
 
   map<string, VString> bkg_procs;
-  //bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
+  bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
   bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
 //  bkg_procs["em"] = {"QCD", "ZLL", "TT", "VV", "W","ZTT"};
 
@@ -64,10 +64,10 @@ int main(int argc, char** argv) {
   // the vector below specifies a bin name and corresponding bin_id.
   //
   map<string,Categories> cats;
-  /*cats["et_13TeV"] = {
-    {8, "et_nobtag"},
-    {9, "et_btag"}
-    };*/
+  cats["et_13TeV"] = {
+    {8, "et_nobtagnotwoprong"},
+    {9, "et_btagnotwoprong"}
+    };
   
   cats["mt_13TeV"] = {
     {8, "mt_nobtag"},
@@ -102,15 +102,15 @@ int main(int argc, char** argv) {
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-new.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-DefaultSVFit.root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-new.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-DefaultSVFit.root",
         "$BIN/ggH$MASS",
         "$BIN/ggH$MASS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-new.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-DefaultSVFit.root",
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
