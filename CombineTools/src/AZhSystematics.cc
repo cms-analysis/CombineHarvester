@@ -71,7 +71,7 @@ void AddSystematics_AZh(CombineHarvester & cb, CombineHarvester src) {
   
   src.cp().process({"ZZ"})
       .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init
-      (1.06));
+      (1.05));
 
   src.cp().process({"ZZ_tt125"})
       .AddSyst(cb, "CMS_htt_SM125_mu", "lnN", SystMap<>::init
