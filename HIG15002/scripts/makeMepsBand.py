@@ -87,7 +87,10 @@ parser.add_argument('--best-fit-input', help='input file containing the best fit
 parser.add_argument('--kappa-results', help='json file containing kappa-model fit results')
 parser.add_argument('--title-right', default='', help='title text')
 parser.add_argument('--output', default='Meps', help='output filename')
+parser.add_argument('--fix', action='store_true', help='fix drawing of the kappa_mu bar')
 parser.add_argument('--masses', help='particle masses')
+parser.add_argument('--x-range', default='0.07,300', help='custom x-axis range')
+parser.add_argument('--y-range', default=None, help='custom y-axis range')
 args = parser.parse_args()
 
 SM_VEV = 246.22
@@ -99,7 +102,8 @@ plot.ModTDRStyle(l=0.18)
 hist_nll = GetFromTFile(*args.th2_input.split(':'))
 best_fit = GetFromTFile(*args.best_fit_input.split(':'))
 
-c68, c95, sm = m6bandFromVEps(hist_nll, best_fit, 0.07, 300, 40, 20000)
+
+c68, c95, sm = m6bandFromVEps(hist_nll, best_fit, float(args.x_range.split(',')[0]), float(args.x_range.split(',')[1]), 40, 20000)
 
 best_line = c68.Clone()
 
@@ -119,6 +123,7 @@ for m in masses:
 
 kappa_graph = ROOT.TGraphAsymmErrors(len(k1_res.keys()))
 
+kappa_graph_fix = ROOT.TGraphAsymmErrors(1)
 
 
 canv = ROOT.TCanvas(args.output, args.output)
@@ -128,11 +133,17 @@ haxis = plot.CreateAxisHist(c68, True)
 haxis.GetXaxis().SetTitle('Particle mass [GeV]')
 haxis.GetYaxis().SetTitle('#kappa_{F}#frac{m_{F}}{v} or #sqrt{#kappa_{V}}#frac{m_{V}}{v}')
 haxis.GetYaxis().SetTitleOffset(haxis.GetYaxis().GetTitleOffset()* 0.9)
-haxis.SetMinimum(1E-4)
+haxis.SetMinimum(7E-5)
 pads[0].SetLogx(True)
 pads[0].SetLogy(True)
 pads[0].cd()
+if args.x_range is not None:
+    haxis.GetXaxis().SetLimits(float(args.x_range.split(',')[0]),float(args.x_range.split(',')[1]))
+if args.y_range is not None:
+    haxis.SetMinimum(float(args.y_range.split(',')[0]))
+    haxis.SetMaximum(float(args.y_range.split(',')[1]))
 haxis.Draw()
+
 c95.Draw('SAME3')
 c68.Draw('SAME3')
 sm.Draw('LSAME')
@@ -164,7 +175,9 @@ for i, POI in enumerate(k1_res):
     err_lo = (abs(k1_res[POI]['ErrorLo'])) * mass / SM_VEV
     kappa_graph.SetPoint(i, mass, reduced)
     kappa_graph.SetPointError(i, 0, 0, err_lo, err_hi)
-    print (particle, reduced, reduced+err_hi)
+    if args.fix and particle == 'mu':
+        kappa_graph.SetPointError(i, 0, 0, 0, err_hi)
+    print (particle, reduced, reduced+err_hi, reduced-err_lo)
     pad_x = (math.log(mass) - math.log(xmin))/(math.log(xmax) - math.log(xmin))
     pad_y = (math.log(reduced+err_hi) - math.log(ymin))/(math.log(ymax) - math.log(ymin))
     pad_x = pl + (1-pl-pr) * pad_x
@@ -175,9 +188,16 @@ for i, POI in enumerate(k1_res):
     if particle in ['tau', 'mu']:
         text = '#' + text
     latex.DrawLatex(pad_x, pad_y, text)
+    if particle == 'mu':
+        kappa_graph_fix.SetPoint(i, mass, reduced)
+        kappa_graph_fix.SetPointError(i, 0, 0, err_lo, err_hi)
+
 
 plot.Set(kappa_graph, LineWidth=3)
+plot.Set(kappa_graph_fix, LineWidth=3)
 kappa_graph.Draw('P0SAME')
+if args.fix:
+    kappa_graph_fix.Draw('P0ZSAME')
 
 legend = ROOT.TLegend(0.20, 0.68, 0.6, 0.78, '', 'NBNDC')
 legend.AddEntry(kappa_graph, 'Observed (68% CL)', 'EP')

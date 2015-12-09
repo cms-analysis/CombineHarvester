@@ -46,6 +46,7 @@
 "mu_BR_bb":"#mu^{bb}",
 "mu_BR_gamgam":"#mu^{#gamma#gamma}",
 "mu_BR_tautau":"#mu^{#tau#tau}",
+"mu_BR_mumu":"#mu^{#mu#mu}",
 
 "mu_XS_ggFbbH":"#mu_{ggF}",
 "mu_XS_VBF":"#mu_{VBF}",
