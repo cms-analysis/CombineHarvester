@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
       string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
 
   VString chns =
-      {"mt"};
+      {"mt","et"};
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 160., 1000.);
   RooRealVar mH("mH", "mH", 160., 1000.);
@@ -70,8 +70,8 @@ int main(int argc, char** argv) {
     };
   
   cats["mt_13TeV"] = {
-    {8, "mt_nobtag"},
-    {9, "mt_btag"}
+    {8, "mt_nobtagnotwoprong"},
+    {9, "mt_btagnotwoprong"}
     };
 
       vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000"};
@@ -102,15 +102,15 @@ int main(int argc, char** argv) {
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-DefaultSVFit.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-DefaultSVFit.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
         "$BIN/ggH$MASS",
         "$BIN/ggH$MASS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-DefaultSVFit.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
   // First we generate a set of bin names:
   RooWorkspace ws("htt", "htt");
 
-  TFile demo("htt_mt_mssm_demo.root", "RECREATE");
+  TFile demo("htt_mssm_demo.root", "RECREATE");
 
   bool do_morphing = true;
   map<string, RooAbsReal *> mass_var = {
@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   
-  string folder = "output/mssm_run2";
+  string folder = "output/mssm_run2/cmb";
   boost::filesystem::create_directories(folder);
   
   cout << "Writing datacards ...";
@@ -167,6 +167,15 @@ int main(int argc, char** argv) {
   }
   cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mssm.txt", output);
   output.Close();
+
+  for (string chn : chns) {
+     string folderchn = "output/mssm_run2/"+chn;
+     boost::filesystem::create_directories(folderchn);
+     TFile outputchn((folderchn + "/htt_"+chn+"_mssm_input.root").c_str(), "RECREATE");
+     cb.cp().channel({chn}).mass({"*"}).WriteDatacard(folderchn + "/htt_"+chn+"_mssm.txt", outputchn);
+     outputchn.Close();
+  }
+     
   cout << " done\n";
 
 

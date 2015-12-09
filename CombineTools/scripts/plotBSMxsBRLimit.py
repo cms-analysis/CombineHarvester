@@ -17,7 +17,7 @@ parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
 parser.add_argument('--log', help='Set log range for x and y axis', default=False)
-parser.add_argument('--expected', help='Plot expected only', default=False)
+parser.add_argument('--expected_only', help='Plot expected only', action='store_true', default=False)
 #parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
@@ -119,7 +119,7 @@ graph_exp.SetLineStyle(1);
 #      }
 graph_exp.Draw("L");
 
-if not args.expected:
+if not args.expected_only:
   graph_obs.SetMarkerColor(ROOT.kBlack);
   graph_obs.SetMarkerSize(1.0);
   graph_obs.SetMarkerStyle(20);
@@ -133,7 +133,7 @@ legend.SetFillStyle(1001)
 legend.SetTextSize(0.15)
 legend.SetTextFont(62)
 legend.SetHeader("95% CL Excluded:")
-if not args.expected:
+if not args.expected_only:
   legend.AddEntry(graph_obs,"Observed", "L")
 legend.AddEntry(innerBand, "#pm 1#sigma Expected", "F")
 legend.AddEntry(graph_exp,"Expected", "L")

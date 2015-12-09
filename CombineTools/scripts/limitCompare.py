@@ -26,13 +26,6 @@ parser.add_argument('--relative',help='Relative difference in limit',action='sto
 args = parser.parse_args()
 
 
-#Store the mass list convert from json file or directly via tgraphs
-#graph_obs         = ROOT.TGraph()
-#graph_minus2sigma = ROOT.TGraph()
-#graph_minus1sigma = ROOT.TGraph()
-#graph_exp         = ROOT.TGraph()
-#graph_plus1sigma  = ROOT.TGraph()
-#graph_plus2sigma  = ROOT.TGraph()
 colourlist=[ROOT.kGreen+3,ROOT.kRed,ROOT.kBlue,ROOT.kBlack,ROOT.kYellow+2,ROOT.kOrange+10,ROOT.kCyan+3,ROOT.kMagenta+2,ROOT.kViolet-5,ROOT.kGray]
 files = (args.file).split(',')
 if args.labels:
