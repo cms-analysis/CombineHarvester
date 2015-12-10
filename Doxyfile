@@ -765,6 +765,12 @@ INPUT  = CombineTools/interface \
          docs/Example2.md \
          docs/PythonInterface.md \
          docs/PostFitShapes.md \
+         docs/RooMorphingPdf.md \
+         docs/ReproduceRun1HTTDatacards.md \
+         docs/ChargedHiggs.md \
+         #docs/BSM-ModelIndependent-Limits.md \
+         #docs/mA-tanb-Limits.md \
+         #docs/HybridNewGrid.md \
         # docs/BuildSystem.md \
         # docs/MSSMWithMorphing.md
 
@@ -842,6 +848,9 @@ EXCLUDE_SYMBOLS        =
 # command).
 
 EXAMPLE_PATH           = CombineTools/bin \
+                         CombinePdfs/bin \
+                         CombinePdfs/src \
+                         CombineTools/src \
                          CombineTools/input/examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
