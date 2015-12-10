@@ -116,18 +116,13 @@ int main(int argc, char** argv) {
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
    //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding 
-    for (string chn:chns){
-        auto bins = cb.cp().channel({chn}).bin_set();
-        for (auto b : bins) {
-            double total_bkg=0;
-            cb.cp().process(bkg_procs[chn]).channel({chn}).bin({b}).ForEachProc([&](ch::Process *proc){
-                total_bkg += proc->rate(); 
-            });
-            cb.cp().channel({chn}).bin({b}).ForEachObs([&](ch::Observation *obs) {
-                obs->set_rate(total_bkg);
-            });
-        }
-    }
+    auto bins = cb.cp().bin_set();
+    for (auto b : bins) {
+        cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
+        obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
+        });
+    } 
+
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
