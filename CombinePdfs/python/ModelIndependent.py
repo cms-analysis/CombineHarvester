@@ -64,92 +64,8 @@ class MSSMLikeHiggsModel(PhysicsModel):
             print "Warning: decay string %s does not contain any known energy, assuming %s" % (decaySource, foundEnergy)
         return self.getHiggsSignalYieldScale(processSource, foundDecay, foundEnergy)
 
-class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
-    """
-    Trivial model to float ggA and bbA independently. At the moment only ggA and bbh are supported. Extensions to the other
-    production channels channels are given in comments. Also the principle how to deal with manipulations of the POI's and
-    other defined roofit variables are shown in comments. 
-    """
-    def __init__(self):
-        MSSMLikeHiggsModel.__init__(self) # not using 'super(x,self).__init__' since I don't understand it
-        self.modes    = [ "ggA", "bbA" ]
-        self.mARange  = []
-        self.ggARange = ['0','20']
-        self.bbARange = ['0','20']
-    def setPhysicsOptions(self,physOptions):
-        """
-        Options are: modes. Examples for options like mARange are given in comments. 
-        """
-        for po in physOptions:
-            if po.startswith("modes="): self.modes = po.replace("modes=","").split(",")
-            if po.startswith("mARange="):
-                self.mARange = po.replace("mARange=","").split(":")
-                if len(self.mARange) != 2:
-                    raise RuntimeError, "Definition of mA range requires two extrema, separated by ':'"
-                elif float(self.mARange[0]) >= float(self.mARange[1]):
-                    raise RuntimeError, "Extrema for mA range defined with inverterd order. Second element must be larger than first element"
-            if po.startswith("ggARange="):
-                self.ggARange = po.replace("ggARange=","").split(":")
-                if len(self.ggARange) != 2:
-                    raise RuntimeError, "ggA signal strength range requires minimal and maximal value"
-                elif float(self.ggARange[0]) >= float(self.ggARange[1]):
-                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"
-            if po.startswith("bbARange="):
-                self.bbARange = po.replace("bbARange=","").split(":")
-                if len(self.bbARange) != 2:
-                    raise RuntimeError, "bbA signal strength range requires minimal and maximal value"
-                elif float(self.bbARange[0]) >= float(self.bbARange[1]):
-                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"                 
-    def doParametersOfInterest(self):
-        """
-        Create POI and other parameters, and define the POI set. E.g. Evaluate cross section for given values of mA and tanb
-        """
-        # Define signal strengths on ggA and bbA as POI, NOTE: the range of the POIs is defined here
-        self.modelBuilder.doVar("r_ggA[%s,%s,%s]" % (str((float(self.ggARange[0])+float(self.ggARange[1]))/2.), self.ggARange[0], self.ggARange[1]));
-        self.modelBuilder.doVar("r_bbA[%s,%s,%s]" % (str((float(self.bbARange[0])+float(self.bbARange[1]))/2.), self.bbARange[0], self.bbARange[1]));
-        self.modelBuilder.doVar("r_ggh[0]" );
-        self.modelBuilder.doVar("r_bbh[0]" );
-        self.modelBuilder.doVar("r_ggH[0]" );
-        self.modelBuilder.doVar("r_bbH[0]" );
-        poi = ",".join(["r_"+m for m in self.modes])
-        ## Define Higgs boson mass as another parameter. It will be floating if mARange is set otherwise it will be treated
-        ## as fixed. NOTE: this is only left here as an extended example. It's not useful to have mA floating at the moment.
-        if self.modelBuilder.out.var("mA"):
-            if len(self.mARange):
-                print 'mA will be left floating within', self.mARange[0], 'and', self.mARange[1]
-                self.modelBuilder.out.var("mA").setRange(float(self.mARange[0]),float(self.mARange[1]))
-                self.modelBuilder.out.var("mA").setConstant(False)
-                poi+=',mA'
-            else:
-                print 'mA will be assumed to be', self.options.mass
-                self.modelBuilder.out.var("mA").removeRange()
-                self.modelBuilder.out.var("mA").setVal(self.options.mass)
-        else:
-            if len(self.mARange):
-                print 'mA will be left floating within', self.mARange[0], 'and', self.mARange[1]
-                self.modelBuilder.doVar("mA[%s,%s]" % (self.mARange[0],self.mARange[1]))
-                poi+=',mA'
-            else:
-                print 'mA (not there before) will be assumed to be', self.options.mass
-                self.modelBuilder.doVar("mA[%g]" % self.options.mass)
-        if self.modelBuilder.out.var("mh"):
-            self.modelBuilder.out.var("mh").removeRange()
-            self.modelBuilder.out.var("mh").setVal(340)
-        if self.modelBuilder.out.var("mH"):
-             self.modelBuilder.out.var("mH").removeRange()
-             self.modelBuilder.out.var("mH").setVal(340)   
-        ## define set of POIs
-        self.modelBuilder.doSet("POI",poi)
-    def getHiggsSignalYieldScale(self,production,decay, energy):
-        if production == "ggh" or production == "bbh" or production == "ggA" or production == "bbA" or  production == "ggH" or production == "bbH" :
-            ## This is the trivial model that we follow now. We just pass on the values themselves. Yes this is just a
-            ## trivial renaming, but we leave it in as an example. Instead also r_ggA and r_bbA could be passed on directly
-            ## in the return function instead of the newly defined variables ggA_yields or bbA_yield.
-            self.modelBuilder.factory_('expr::%s_yield("@0", r_%s)' % (production, production))
-            return "%s_yield" % production
-        raise RuntimeError, "Unknown production mode '%s'" % production
 
-class FloatingMSSMXSHiggs2(MSSMLikeHiggsModel):
+class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
     """
     Trivial model to float ggH and bbH independently. At the moment only ggH and bbh are supported. Extensions to the other
     production channels channels are given in comments. Also the principle how to deal with manipulations of the POI's and
@@ -253,5 +169,4 @@ class FloatingMSSMXSHiggs2(MSSMLikeHiggsModel):
 brChargedHiggs = BRChargedHiggs()
 
 #Model independent xs*BR limits
-floatingMSSMXSHiggs = FloatingMSSMXSHiggs()    #with A,H,h
-floatingMSSMXSHiggs2 = FloatingMSSMXSHiggs2()  #with A
+floatingMSSMXSHiggs = FloatingMSSMXSHiggs()   
