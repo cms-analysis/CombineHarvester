@@ -8,6 +8,7 @@ parser.add_argument('-i', help='input file')
 parser.add_argument('-l', help='output label')
 parser.add_argument('--POI', help='POI to scan')
 parser.add_argument('--range', type=float, help='scan range')
+parser.add_argument('--saveInactivePOI', action='store_true', help='save other param values in tree')
 parser.add_argument('-p', type=int, help='scan points')
 parser.add_argument('-t', help='type', default=None)
 args = parser.parse_args()
@@ -235,6 +236,44 @@ if type == 'B1ZZ_THtoB1WW_TH':
   pdf.Print('tree')
   wfinal = wnew
 
+# A1_5PD --> A1_mu
+if type == 'A1_5PDtoA1_mu':
+  wnew = ROOT.RooWorkspace()
+  wnew.factory('mu[1,0.0,2.0]')
+  for P in ['ggFbbH', 'VBF', 'WH', 'ZH', 'ttHtH']:
+    for D in ['WW', 'ZZ', 'gamgam', 'tautau', 'bb']:
+      wnew.factory('expr::mu_XS_%s_BR_%s("@0", mu)' % (P, D))
+  getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
+  pdf = wnew.pdf('pdf')
+  pdf.Print('tree')
+  wfinal = wnew
+
+# A1_5PD --> A1_5P
+if type == 'A1_5PDtoA1_5P':
+  wnew = ROOT.RooWorkspace()
+  for P in ['mu_XS_ggFbbH', 'mu_XS_VBF', 'mu_XS_WH', 'mu_XS_ZH', 'mu_XS_ttHtH']:
+    wnew.factory('%s[1,-10.0,10.0]' % P)
+  for P in ['ggFbbH', 'VBF', 'WH', 'ZH', 'ttHtH']:
+    for D in ['WW', 'ZZ', 'gamgam', 'tautau', 'bb']:
+      wnew.factory('expr::mu_XS_%s_BR_%s("@0", mu_XS_%s)' % (P, D, P))
+  getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
+  pdf = wnew.pdf('pdf')
+  pdf.Print('tree')
+  wfinal = wnew
+
+# A1_5PD --> A1_5D
+if type == 'A1_5PDtoA1_5D':
+  wnew = ROOT.RooWorkspace()
+  for D in ['mu_BR_WW', 'mu_BR_ZZ', 'mu_BR_bb', 'mu_BR_gamgam', 'mu_BR_tautau']:
+    wnew.factory('%s[1,-10.0,10.0]' % D)
+  for P in ['ggFbbH', 'VBF', 'WH', 'ZH', 'ttHtH']:
+    for D in ['WW', 'ZZ', 'gamgam', 'tautau', 'bb']:
+      wnew.factory('expr::mu_XS_%s_BR_%s("@0", mu_BR_%s)' % (P, D, D))
+  getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
+  pdf = wnew.pdf('pdf')
+  pdf.Print('tree')
+  wfinal = wnew
+
 nll = pdf.createNLL(data)
 
 minim = ROOT.RooMinimizer(nll)
@@ -247,6 +286,15 @@ nll0 = nll.getVal()
 
 param = wfinal.var(POI)
 param.setConstant()
+
+# Figure out the other floating parameters
+params = pdf.getParameters(data)
+param_it = params.createIterator()
+var = param_it.Next()
+float_params = set()
+while var:
+    if not var.isConstant(): float_params.add(var.GetName())
+    var = param_it.Next()
 
 fit_range = args.range
 points = args.p
@@ -264,16 +312,25 @@ a_r = array( 'f', [ param.getVal() ] )
 a_deltaNLL = array( 'f', [ 0 ] )
 a_quantileExpected = array( 'f', [ 1 ] )
 
+float_arrs = []
+for var in float_params:
+  float_arrs.append(array('f', [0.]))
+  tout.Branch(var, float_arrs[-1], '%s/f' % var)
+
 tout.Branch( POI, a_r, '%s/f'%POI )
 tout.Branch( 'deltaNLL', a_deltaNLL, 'deltaNLL/f' )
 tout.Branch( 'quantileExpected', a_quantileExpected, 'quantileExpected/f' )
 
+for i, var in enumerate(float_params):
+  float_arrs[i][0] = wfinal.var(var).getVal()
 tout.Fill()
 
 for p in xrange(points):
   param.setVal(r)
   a_r[0] = r
   minim.minimize('Minuit2', 'migrad')
+  for i, var in enumerate(float_params):
+    float_arrs[i][0] = wfinal.var(var).getVal()
   nllf = nll.getVal()
   print '%s = %f; nll0 = %f; nll = %f, deltaNLL = %f' % (POI, r, nll0, nllf,  nllf - nll0)
   a_deltaNLL[0] = nllf - nll0

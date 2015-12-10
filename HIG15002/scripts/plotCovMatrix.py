@@ -14,7 +14,7 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 plot.ModTDRStyle(width=750, height=600, l = 0.15, b = 0.07, r = 0.17)
 plot.SetBirdPalette()
 ROOT.gStyle.SetNdivisions(510, "XYZ")
-ROOT.gStyle.SetMarkerSize(1.3)
+ROOT.gStyle.SetMarkerSize(0.7)
 ROOT.gStyle.SetPaintTextFormat('.2f')
 
 

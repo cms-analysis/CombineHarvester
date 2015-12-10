@@ -452,11 +452,20 @@ def CreateTransparentColor(color, alpha):
     return new_idx
 
 def TFileIsGood(filename):
-    if not os.path.exists(filename): return False
+    # if not os.path.exists(filename): return False
     fin = R.TFile.Open(filename)
-    if fin: R.TFile.Close(fin)
     if not fin: return False
-    return True
+    if fin and not fin.IsOpen():
+      return False
+    elif fin and fin.IsOpen() and fin.IsZombie():
+      fin.Close()
+      return False
+    elif fin and fin.IsOpen() and fin.TestBit(R.TFile.kRecovered):
+      # don't consider a recovered file to be ok
+      return False
+    else:
+      fin.Close()
+      return True
 
 def MakeTChain(files, tree):
     chain = R.TChain(tree)
@@ -634,7 +643,6 @@ def FindCrossingsWithSpline(graph, func, yval):
 def GetAxisHist(pad):
   pad_obs = pad.GetListOfPrimitives()
   if pad_obs is None: return None
-  nextit = R.TIter(pad_obs)
   obj = None
   for obj in pad_obs:
     if obj.InheritsFrom(R.TH1.Class()):
@@ -646,6 +654,49 @@ def GetAxisHist(pad):
     if obj.InheritsFrom(R.THStack.Class()):
         return hs.GetHistogram()
   return None
+
+
+def FixTopRange(pad, fix_y, fraction):
+  hobj = GetAxisHist(pad)
+  ymin = hobj.GetMinimum()
+  hobj.SetMaximum((fix_y - fraction * ymin) / (1. - fraction))
+  if R.gPad.GetLogy():
+    if ymin == 0.:
+      print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
+      return
+    maxval = (math.log10(fix_y) - fraction * math.log10(ymin)) / (1 - fraction)
+    maxval = math.pow(10, maxval)
+    hobj.SetMaximum(maxval)
+
+def GetPadYMaxInRange(pad, x_min, x_max):
+  pad_obs = pad.GetListOfPrimitives()
+  if pad_obs is None: return 0.
+  h_max = -99999.
+  for obj in pad_obs:
+    if obj.InheritsFrom(R.TH1.Class()):
+      hobj = obj
+      for j in xrange(1, hobj.GetNbinsX()):
+        if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
+            hobj.GetBinLowEdge(j) > x_max): continue
+        if (hobj.GetBinContent(j) + hobj.GetBinError(j) > h_max):
+          h_max = hobj.GetBinContent(j) + hobj.GetBinError(j)
+
+    if obj.InheritsFrom(R.TGraph.Class()):
+      gobj = obj
+      n = gobj.GetN()
+      for k in xrange(0, n):
+        x = gobs.GetX()[k]
+        y = gobs.GetY()[k]
+        if x < x_min or x > x_max: continue
+        if y > h_max: h_max = y
+  return h_max
+
+def GetPadYMax(pad):
+  pad_obs = pad.GetListOfPrimitives()
+  if pad_obs is None: return 0.
+  xmin = GetAxisHist(pad).GetXaxis().GetXmin()
+  xmax = GetAxisHist(pad).GetXaxis().GetXmax()
+  return GetPadYMaxInRange(pad, xmin, xmax)
 
 def DrawHorizontalLine(pad, line, yval):
   axis = GetAxisHist(pad)
@@ -958,3 +1009,34 @@ def SetBirdPalette():
   green   = array('d', [0.1664, 0.3599, 0.5041, 0.6419, 0.7178, 0.7492, 0.7328, 0.7862, 0.9832])
   blue    = array('d', [0.5293, 0.8684, 0.8385, 0.7914, 0.6425, 0.4662, 0.3499, 0.1968, 0.0539])
   R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
+
+def bestFit(tree, x, y, cut):
+  nfind = tree.Draw(y+":"+x, cut + "deltaNLL == 0")
+  gr0 = R.TGraph(1)
+  if (nfind == 0):
+    gr0.SetPoint(0,-999,-999)
+  else:
+    grc = R.gROOT.FindObject("Graph").Clone()
+    if (grc.GetN() > 1): grc.Set(1)
+    gr0.SetPoint(0,grc.GetXmax(),grc.GetYmax())
+  gr0.SetMarkerStyle(34)
+  gr0.SetMarkerSize(2.0)
+  return gr0
+
+def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
+    t.Draw("2*deltaNLL:%s:%s>>%s_prof(%d,%10g,%10g,%d,%10g,%10g)" % (y, x, name, xbins, xmin, xmax, ybins, ymin, ymax), cut + "deltaNLL != 0", "PROF")
+    prof = R.gROOT.FindObject(name+"_prof")
+    h2d = R.TH2D(name, name, xbins, xmin, xmax, ybins, ymin, ymax)
+    for ix in xrange(1,xbins+1):
+        for iy in xrange(1,ybins+1):
+            z = prof.GetBinContent(ix,iy)
+            if (z == 0.0): # protect agains NANs
+                if ("bayes" in name):
+                    z = 0
+                else:
+                    z = 999
+            h2d.SetBinContent(ix, iy, z)
+    h2d.GetXaxis().SetTitle(x)
+    h2d.GetYaxis().SetTitle(y)
+    h2d.SetDirectory(0)
+    return h2d
