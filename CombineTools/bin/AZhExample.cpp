@@ -84,6 +84,15 @@ int main() {
 		}
 	}
 
+    //This part is rather hacky, but needed to reproduce the legacy results. 
+    //The legacy results are set in fb, so the signal processes are all divided
+    //by 1000. Here the precision is also explicitly set to match that
+    //in the legacy datacards.
+    
+    cb.cp().process({"AZh"}).ForEachProc([&](ch::Process *proc) {
+        proc->set_rate(std::roundf(((proc->rate() / 1000)*10000.0))/10000.0 );
+        
+    });
 
     cout << ">> Generating bbb uncertainties...\n";
     auto bbb = ch::BinByBinFactory()
@@ -96,7 +105,7 @@ int main() {
     cout << ">> Setting standardised bin names...\n";
 	ch::SetStandardBinNames(cb);
 
-	string folder = "output/AZh_cards";
+	string folder = "output/AZh_cards_fb";
 	boost::filesystem::create_directories(folder);
 	for (string chn :chns){
 		boost::filesystem::create_directories(folder+"/"+chn);

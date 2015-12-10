@@ -1010,3 +1010,21 @@ def bestFit(tree, x, y, cut):
   gr0.SetMarkerStyle(34)
   gr0.SetMarkerSize(2.0)
   return gr0
+
+def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
+    t.Draw("2*deltaNLL:%s:%s>>%s_prof(%d,%10g,%10g,%d,%10g,%10g)" % (y, x, name, xbins, xmin, xmax, ybins, ymin, ymax), cut + "deltaNLL != 0", "PROF")
+    prof = R.gROOT.FindObject(name+"_prof")
+    h2d = R.TH2D(name, name, xbins, xmin, xmax, ybins, ymin, ymax)
+    for ix in xrange(1,xbins+1):
+        for iy in xrange(1,ybins+1):
+            z = prof.GetBinContent(ix,iy)
+            if (z == 0.0): # protect agains NANs
+                if ("bayes" in name):
+                    z = 0
+                else:
+                    z = 999
+            h2d.SetBinContent(ix, iy, z)
+    h2d.GetXaxis().SetTitle(x)
+    h2d.GetYaxis().SetTitle(y)
+    h2d.SetDirectory(0)
+    return h2d
