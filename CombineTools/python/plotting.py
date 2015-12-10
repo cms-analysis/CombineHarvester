@@ -1171,7 +1171,7 @@ def rebin(hist, firstInterpolationDirection):
   for iX in xrange(1,hist.GetNbinsX()+1):
     for iY in xrange(1,hist.GetNbinsY()+1):
       binContent = hist.GetBinContent(iX, iY)
-      histRebinned.SetBinContent(2*iX-2, 2*iY-1, binContent)
+      histRebinned.SetBinContent(2*iX-1, 2*iY-1, binContent)
   histRebinned.SetMaximum(hist.GetMaximum())
   histRebinned.SetMinimum(hist.GetMinimum())
   
