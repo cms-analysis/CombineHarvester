@@ -233,7 +233,6 @@ class MSSMHiggsModel(PhysicsModel):
         mA = ROOT.RooRealVar('mA', 'm_{A} [GeV]', 120.)
         tanb = ROOT.RooRealVar('tanb', 'tan#beta', 20.)
         pars = [mA, tanb]
-
         doneMasses = False
 
         for era, (file, version) in self.modelFiles.iteritems():
@@ -299,7 +298,6 @@ class MSSMHiggsModel(PhysicsModel):
                 self.SYST_DICT['xs_bb%s_%s' % (X, era)].append('systeff_xs_bb%s_scale_%s' % (X,era))
                 self.SYST_DICT['xs_bb%s_%s' % (X, era)].append('systeff_xs_bb%s_pdf_%s' % (X,era))
 
-
                 self.doHistFunc('br_%stautau_%s' % (X, era), f.Get(hd['br_%stautau'%X]), pars)
                 self.doHistFunc('br_%sbb_%s' % (X, era), f.Get(hd['br_%sbb'%X]), pars)
                 # Make a note of what we've built, will be used to create scaling expressions later
@@ -342,7 +340,6 @@ class MSSMHiggsModel(PhysicsModel):
             print 'Add nuisance parameter %s to datacard' % param
             nuisances.append((param,False, "param", [ "0", "1"], [] ) )
 
-
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
         self.modelBuilder.doVar("r[1,0,20]")
@@ -354,6 +351,7 @@ class MSSMHiggsModel(PhysicsModel):
         self.sigNorms = { True:'x', False:'not_x' }
 
         self.modelBuilder.doSet('POI', 'r')
+        
         # We don't intend on actually floating these in any fits...
         self.modelBuilder.out.var('mA').setConstant(True)
         self.modelBuilder.out.var('tanb').setConstant(True)
