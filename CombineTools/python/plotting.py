@@ -1011,20 +1011,171 @@ def bestFit(tree, x, y, cut):
   gr0.SetMarkerSize(2.0)
   return gr0
 
-def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
+def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins, firstInterpolationDirection):
     t.Draw("2*deltaNLL:%s:%s>>%s_prof(%d,%10g,%10g,%d,%10g,%10g)" % (y, x, name, xbins, xmin, xmax, ybins, ymin, ymax), cut + "deltaNLL != 0", "PROF")
     prof = R.gROOT.FindObject(name+"_prof")
     h2d = R.TH2D(name, name, xbins, xmin, xmax, ybins, ymin, ymax)
     for ix in xrange(1,xbins+1):
         for iy in xrange(1,ybins+1):
             z = prof.GetBinContent(ix,iy)
-            if (z == 0.0): # protect agains NANs
-                if ("bayes" in name):
-                    z = 0
-                else:
-                    z = 999
+            if (z != z): # protect agains NANs
+                z=0
             h2d.SetBinContent(ix, iy, z)
     h2d.GetXaxis().SetTitle(x)
     h2d.GetYaxis().SetTitle(y)
     h2d.SetDirectory(0)
+    h2d = NewInterpolate(h2d, firstInterpolationDirection)
     return h2d
+
+# Functions 'NewInterpolate', 'alongDiagonal' and 'rebin' are taken and translated into python from:
+# https://indico.cern.ch/event/256523/contribution/2/attachments/450198/624259/07JUN2013_cawest.pdf
+# http://hep.ucsb.edu/people/cawest/interpolation/interpolate.h
+def NewInterpolate(hist, firstInterpolationDirection):
+  histCopy = hist.Clone()
+
+  if(firstInterpolationDirection=="SW") or (firstInterpolationDirection=="NE") or (firstInterpolationDirection=="Santa Fe"):
+    xStepPlus = 1
+    xStepMinus = -1
+    yStepPlus = 1
+    yStepMinus = -1
+  elif(firstInterpolationDirection=="NW") or (firstInterpolationDirection=="SE"):
+    xStepPlus = -1
+    xStepMinus = 1
+    yStepPlus = 1
+    yStepMinus = -1
+  elif(firstInterpolationDirection=="N") or (firstInterpolationDirection=="S") or (firstInterpolationDirection=="NS") or (firstInterpolationDirection=="SN"):
+    xStepPlus = 0
+    xStepMinus = 0
+    yStepPlus = 1
+    yStepMinus = -1
+  elif(firstInterpolationDirection=="E") or (firstInterpolationDirection=="W") or (firstInterpolationDirection=="EW") or (firstInterpolationDirection=="WE"):
+    xStepPlus = 1
+    xStepMinus = -1
+    yStepPlus = 0
+    yStepMinus = 0
+  else:
+    # to avoid uninitialized variable warnings
+    xStepPlus=0
+    xStepMinus=0
+    yStepPlus=0
+    yStepMinus=0
+    print firstInterpolationDirection + " is not an allowed smearing first interpolation direction."
+    print "Allowed first interpolation directions are SW (equivalently NE), SE (equivalently NW), NS, EW"
+    return hist
+
+  # make temporary histograms to store the results of both steps
+  hist_step1 = histCopy.Clone()
+  hist_step1.Reset()
+  hist_step2 = histCopy.Clone()
+  hist_step2.Reset()
+
+  nBinsX = histCopy.GetNbinsX()
+  nBinsY = histCopy.GetNbinsY()
+
+  xMin=histCopy.GetNbinsX() # maximum possible minimum -- large dummy value
+  yMin=histCopy.GetNbinsY() # large dummy value
+  xMax=0
+  yMax=0
+
+  for iX in xrange(1,histCopy.GetNbinsX()+1):
+    for iY in xrange(1,histCopy.GetNbinsY()+1):
+      if (histCopy.GetBinContent(iX, iY)>1e-10):
+        if(iX<xMin): xMin=iX
+	if(iY<yMin): yMin=iY
+        if(iX>xMax): xMax=iX
+	if(iY>yMax): yMax=iY
+   
+  for i in xrange(1,nBinsX+1):
+    for j in xrange(1,nBinsY+1):
+      # do not extrapolate outside the scan
+      if (i<xMin) or (i>xMax) or (j<yMin) or (j>yMax): continue 
+      if (not alongDiagonal(histCopy, i,j)): # point is not along the diagonal
+        binContent = histCopy.GetBinContent(i, j)
+        binContentPlusStep = histCopy.GetBinContent(i+xStepPlus, j+yStepPlus)
+        binContentMinusStep = histCopy.GetBinContent(i+xStepMinus, j+yStepMinus)
+        nFilled = 0
+        if(binContentPlusStep>0): nFilled+=1
+        if(binContentMinusStep>0): nFilled+=1
+        # if we are at an empty bin and there are neighbors
+        # in specified direction with non-zero entries
+        if (binContent==0) and (nFilled>0):
+          # average over non-zero entries
+	  binContent = (binContentPlusStep+binContentMinusStep)/nFilled
+	  hist_step1.SetBinContent(i,j,binContent)
+
+      else: #point is along the diagonal; average SW-NE direction
+	binContent = histCopy.GetBinContent(i, j)
+	binContentPlusStep = histCopy.GetBinContent(i+1, j+1)
+	binContentMinusStep = histCopy.GetBinContent(i-1, j-1)
+	nFilled = 0
+	if(binContentPlusStep>0): nFilled+=1
+	if(binContentMinusStep>0): nFilled+=1
+	# if we are at an empty bin and there are neighbors
+	# in specified direction with non-zero entries
+	if(binContent==0) and (nFilled==2):
+	  # average over non-zero entries
+	  binContent = (binContentPlusStep+binContentMinusStep)/nFilled
+	  hist_step1.SetBinContent(i,j,binContent)
+
+   # add result of interpolation
+  histCopy.Add(hist_step1)
+
+  for i in xrange(1,nBinsX):
+    for j in xrange(1,nBinsY):
+      if(i<xMin) or (i>xMax) or (j<yMin) or (j>yMax) or (alongDiagonal(histCopy, i,j)): continue
+      binContent = histCopy.GetBinContent(i, j)
+      # get entries for "Swiss Cross" average
+      binContentUp = histCopy.GetBinContent(i, j+1)
+      binContentDown = histCopy.GetBinContent(i, j-1)
+      binContentLeft = histCopy.GetBinContent(i-1, j)
+      binContentRight = histCopy.GetBinContent(i+1, j)
+      nFilled=0
+      if(binContentUp>0): nFilled+=1
+      if(binContentDown>0): nFilled+=1
+      if(binContentRight>0): nFilled+=1
+      if(binContentLeft>0): nFilled+=1
+      if(binContent==0) and (nFilled>0):
+        # only average over non-zero entries
+	binContent = (binContentUp+binContentDown+binContentRight+binContentLeft)/nFilled
+	hist_step2.SetBinContent(i,j,binContent)
+  # add "Swiss Cross" average
+  histCopy.Add(hist_step2)
+
+  return histCopy
+
+def alongDiagonal(h, iX, iY):
+  # calculate three most "northwestern" neigbors
+  sumNW = h.GetBinContent(iX, iY+1)+h.GetBinContent(iX-1, iY+1)+h.GetBinContent(iX-1, iY)
+  # calculate three most "southeastern" neigbors
+  sumSE = h.GetBinContent(iX, iY-1)+h.GetBinContent(iX+1, iY-1)+h.GetBinContent(iX+1, iY)
+  # etc.
+  sumSW = h.GetBinContent(iX, iY-1)+h.GetBinContent(iX-1, iY-1)+h.GetBinContent(iX-1, iY)
+  sumNE = h.GetBinContent(iX, iY+1)+h.GetBinContent(iX+1, iY+1)+h.GetBinContent(iX+1, iY)
+
+  if( ((sumNW==0) and (sumSE!=0)) or ((sumNW!=0) and (sumSE==0)) or ((sumSW==0) and (sumNE!=0)) or ((sumSW!=0) and (sumNE==0)) ): return 1
+  else: return 0
+
+def rebin(hist, firstInterpolationDirection):
+  histName = hist.GetName()
+  histName+="_rebin"
+
+#  # bin widths are needed so as to not shift histogram by half a bin with each rebinning
+#  # assume constant binning
+#  binWidthX = hist.GetXaxis().GetBinWidth(1)
+#  binWidthY = hist.GetYaxis().GetBinWidth(1)
+
+#  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX(), hist.GetXaxis().GetXmin()+binWidthX/4, hist.GetXaxis().GetXmax()+binWidthX/4, 2*hist.GetNbinsY(), hist.GetYaxis().GetXmin()+binWidthY/4, hist.GetYaxis().GetXmax()+binWidthY/4)
+  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX()-1, hist.GetXaxis().GetXmin(), hist.GetXaxis().GetXmax(), 2*hist.GetNbinsY()-1, hist.GetYaxis().GetXmin(), hist.GetYaxis().GetXmax())
+
+  # copy results from previous histogram
+  for iX in xrange(1,hist.GetNbinsX()+1):
+    for iY in xrange(1,hist.GetNbinsY()+1):
+      binContent = hist.GetBinContent(iX, iY)
+      histRebinned.SetBinContent(2*iX-1, 2*iY-1, binContent)
+  histRebinned.SetMaximum(hist.GetMaximum())
+  histRebinned.SetMinimum(hist.GetMinimum())
+  
+  # use interpolation to re-fill histogram
+  histRebinnedInterpolated = NewInterpolate(histRebinned, firstInterpolationDirection)
+  
+  return histRebinnedInterpolated

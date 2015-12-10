@@ -1,14 +1,20 @@
 from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+import CombineHarvester.CombineTools.plotting as plot
 import os
 import ROOT
 import math
 import itertools
 import pprint
 import sys
+from collections import defaultdict
 
 class MSSMHiggsModel(PhysicsModel):
     def __init__(self):
         PhysicsModel.__init__(self)
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+        plot.ModTDRStyle(l=0.13, b=0.10, r=0.19)
+        ROOT.gStyle.SetNdivisions(510, "Z")
+        plot.SetBirdPalette()
         self.filePrefix = ''
         self.modelFiles = {}
         self.h_dict = {}
@@ -37,20 +43,52 @@ class MSSMHiggsModel(PhysicsModel):
                 'xs_bb5f%s'%X   : 'h_bbH_xsec_%s'%X,
                 'br_%stautau'%X : 'h_brtautau_%s'%X,
                 'br_%sbb'%X     : 'h_brbb_%s'%X,
+                'xs_gg%s_scale_lo'%X    : 'h_ggF_xsec20_%s'%X, # nominal - uncert
+                'xs_gg%s_scale_hi'%X    : 'h_ggF_xsec05_%s'%X, # nominal + uncert
+                'xs_bb4f%s_scale_lo'%X : 'h_bbH4f_xsec_%s_low'%X,  # nominal + uncert
+                'xs_bb4f%s_scale_hi'%X : 'h_bbH4f_xsec_%s_high'%X,    # nominal - uncert
+                'xs_bb5f%s_scale_lo'%X : 'h_bbH_mudown_%s'%X,  # nominal + uncert
+                'xs_bb5f%s_scale_hi'%X : 'h_bbH_muup_%s'%X,    # nominal - uncert
+                'xs_gg%s_pdf_hi'%X      : 'h_ggF_pdfup_%s'%X,   # abs(+uncert)
+                'xs_gg%s_pdf_lo'%X      : 'h_ggF_pdfdown_%s'%X, # abs(-uncert)
+                'xs_gg%s_alphas_hi'%X   : 'h_ggF_alphasup_%s'%X,   # abs(+uncert)
+                'xs_gg%s_alphas_lo'%X   : 'h_ggF_alphasdown_%s'%X, # abs(-uncert)
+                'xs_bb5f%s_pdf_hi'%X    : 'h_bbH_pdf68up_%s'%X,   # abs(+uncert)
+                'xs_bb5f%s_pdf_lo'%X    : 'h_bbH_pdf68down_%s'%X, # abs(-uncert)
+                'xs_bb5f%s_alphas_hi'%X : 'h_bbH_pdfalphas68up_%s'%X,   # abs(+uncert)
+                'xs_bb5f%s_alphas_lo'%X : 'h_bbH_pdfalphas68down_%s'%X, # abs(-uncert)
                 })
             self.h_dict[1].update({
                 'xs_gg%s'%X     : 'xs_gg_%s'%X,
                 'xs_bb4f%s'%X   : 'xs_bb4F_%s'%X,
                 'xs_bb5f%s'%X   : 'xs_bb5F_%s'%X,
                 'br_%stautau'%X : 'br_%s_tautau'%X,
-                'br_%sbb'%X     : 'br_%s_bb'%X
+                'br_%sbb'%X     : 'br_%s_bb'%X,
+                'xs_gg%s_scale_lo'%X    : 'h_ggF_xsecDown_%s'%X, # nominal - uncert
+                'xs_gg%s_scale_hi'%X    : 'h_ggF_xsecUp_%s'%X, # nominal + uncert
+                'xs_bb4f%s_scale_lo'%X  : 'h_bbH4f_xsec_%s_low'%X,  # nominal + uncert
+                'xs_bb4f%s_scale_hi'%X  : 'h_bbH4f_xsec_%s_high'%X,    # nominal - uncert
+                'xs_bb5f%s_scale_lo'%X  : 'h_bbH_xsecDown_%s'%X,  # nominal + uncert
+                'xs_bb5f%s_scale_hi'%X  : 'h_bbH_xsecUp_%s'%X,    # nominal - uncert
+                'xs_gg%s_pdf_hi'%X      : 'h_ggF_pdfalphasUp_%s'%X,   # abs(+uncert)
+                'xs_gg%s_pdf_lo'%X      : 'h_ggF_pdfalphasDown_%s'%X, # abs(-uncert)
+                'xs_gg%s_alphas_hi'%X   : '',
+                'xs_gg%s_alphas_lo'%X   : '',
+                'xs_bb5f%s_pdf_hi'%X    : 'h_bbH_pdfalphasUp_%s'%X,   # abs(+uncert)
+                'xs_bb5f%s_pdf_lo'%X    : 'h_bbH_pdfalphasDown_%s'%X, # abs(-uncert)
+                'xs_bb5f%s_alphas_hi'%X : '',
+                'xs_bb5f%s_alphas_lo'%X : ''
                 })
         # Define the known production and decay processes
         # These are strings we will look for in the process names to
         # determine the correct normalisation scaling
         self.ERAS = ['7TeV', '8TeV', '13TeV', '14TeV']
         self.PROC_SETS = []
+        self.SYST_DICT = defaultdict(list)
+        self.NUISANCES = set()
         self.SMSignal  = "SM125" #SM signal
+        self.dbg_file = None
+        self.mk_plots = False
 
     def setPhysicsOptions(self,physOptions):
         for po in physOptions:
@@ -65,9 +103,14 @@ class MSSMHiggsModel(PhysicsModel):
                         raise RuntimeError, 'Model file argument %s should be in the format ERA,FILE,VERSION' % cfg
                     self.modelFiles[cfgSplit[0]] = (cfgSplit[1], int(cfgSplit[2]))
                 pprint.pprint(self.modelFiles)
+            if po.startswith('debugFile='):
+                self.dbg_file = ROOT.TFile(po.replace('debugFile=', ''), 'RECREATE')
+                print 'Write debug output to: %s' % self.dbg_file.GetName()
+            if po.startswith("makePlots"):
+                self.mk_plots = True
 
     def setModelBuilder(self, modelBuilder):
-        """We're not supposed to overload this method, but we have to because 
+        """We're not supposed to overload this method, but we have to because
         this is our only chance to import things into the workspace while it
         is completely empty. This is primary so we can define some of our MSSM
         Higgs boson masses as functions instead of the free variables that would
@@ -79,6 +122,20 @@ class MSSMHiggsModel(PhysicsModel):
     def doHistFunc(self, name, hist, varlist, interpolate=0):
         "method to conveniently create a RooHistFunc from a TH1/TH2 input"
         print 'Doing histFunc %s...' % name
+        if self.dbg_file:
+            self.dbg_file.WriteTObject(hist, name)
+        if self.mk_plots:
+            canv = ROOT.TCanvas(name, name)
+            pads = plot.OnePad()
+            hist.GetXaxis().SetTitle(varlist[0].GetTitle())
+            hist.GetYaxis().SetTitle(varlist[1].GetTitle())
+            hist.Draw('COLZ')
+            plot.DrawTitle(pads[0], name, 3)
+            canv.Print('model_'+name+'.pdf')
+            canv.Print('model_'+name+'.png')
+            pads[0].SetLogz(True)
+            canv.Print('model_'+name+'_log.pdf')
+            canv.Print('model_'+name+'_log.png')
         dh = ROOT.RooDataHist('dh_%s'%name, 'dh_%s'%name, ROOT.RooArgList(*varlist), ROOT.RooFit.Import(hist))
         hfunc = ROOT.RooHistFunc(name, name, ROOT.RooArgSet(*varlist), dh)
         hfunc.setInterpolationOrder(interpolate)
@@ -91,10 +148,10 @@ class MSSMHiggsModel(PhysicsModel):
         if not param_var:
             self.modelBuilder.doVar('%s[0,-7,7]'%param)
             param_var = self.modelBuilder.out.var(param)
-        print param_var
+        self.NUISANCES.add(param)
         hi = self.doHistFunc('%s_hi'%name, h_kappa_hi, varlist)
         lo = self.doHistFunc('%s_lo'%name, h_kappa_lo, varlist)
-        asym = ROOT.AsymPow('systeff_%s'%name, '', lo, hi, param_var)
+        asym = ROOT.AsymPow(name, '', lo, hi, param_var)
         self.modelBuilder.out._import(asym)
         return self.modelBuilder.out.function('systeff_%s'%name)
 
@@ -111,6 +168,21 @@ class MSSMHiggsModel(PhysicsModel):
                     fourflav = h4f.GetBinContent(x, y)
                     fiveflav = h5f.GetBinContent(x, y)
                     sigma = (1. / (1. + t)) * (fourflav + t * fiveflav)
+                    res.SetBinContent(x, y, sigma)
+        return res
+
+    def santanderPdfUncert(self, h5f, mass = None):
+        res = h5f.Clone()
+        for x in xrange(1, h5f.GetNbinsX() + 1):
+            for y in xrange(1, h5f.GetNbinsY() +1):
+               mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
+               if mh <= 0:
+                    print 'santanderPdfUncert: Have mh = %f at (%f,%f), using h5f value' % (mh,  h5f.GetXaxis().GetBinCenter(x),  h5f.GetYaxis().GetBinCenter(y))
+                    res.SetBinContent(x, y, h5f.GetBinContent(x, y))
+               else:
+                    t = math.log(mh / 4.92) - 2.
+                    fiveflav = h5f.GetBinContent(x, y)
+                    sigma = (1. / (1. + t)) * (fiveflav)
                     res.SetBinContent(x, y, sigma)
         return res
 
@@ -133,18 +205,35 @@ class MSSMHiggsModel(PhysicsModel):
                     new_val = val_h1 / val_h2
                 res.SetBinContent(x, y, new_val)
         return res
-        
+
+    def safeTH2DivideForKappaDelta(self, h1, h2, coeff=1.):
+        """Divides two TH2s taking care of exceptions like divide by zero
+        and potentially doing more checks in the future"""
+        res = h1.Clone()
+        for x in xrange(1, h1.GetNbinsX() + 1):
+            for y in xrange(1, h2.GetNbinsY() +1):
+                val_h1 = h1.GetBinContent(x, y)
+                val_h2 = h2.GetBinContent(x, y)
+                if val_h1 == 0. or val_h2 == 0.:
+                    print ('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
+                           'with values: %g/%g, will set the kappa to 1.0 here' % (
+                                h1.GetName(), h2.GetName(), x, y, h1.GetXaxis().GetBinCenter(x),
+                                h1.GetYaxis().GetBinCenter(y), val_h1, val_h2
+                            ))
+                    new_val = 1.
+                else:
+                    new_val = (val_h2 + coeff*val_h1) / val_h2
+                res.SetBinContent(x, y, new_val)
+        return res
+
     def buildModel(self):
         # It's best not to set ranges for the model parameters here.
         # RooFit will create them automatically from the x- and y-axis
         # ranges of the input histograms
-        mA = ROOT.RooRealVar('mA', 'mA', 120.)
-        tanb = ROOT.RooRealVar('tanb', 'tanb', 20.)
+        mA = ROOT.RooRealVar('mA', 'm_{A} [GeV]', 120.)
+        tanb = ROOT.RooRealVar('tanb', 'tan#beta', 20.)
         pars = [mA, tanb]
-        #  ggF_xsec_h_scale_hi_str = "xs_gg_h_scaleUp"
-        #  ggF_xsec_h_scale_lo_str = "xs_gg_h_scaleDown"
-        #  ggF_xsec_h_scale_hi_str = "h_ggF_xsec05_h"
-        #  ggF_xsec_h_scale_lo_str = "h_ggF_xsec20_h"
+
         doneMasses = False
 
         for era, (file, version) in self.modelFiles.iteritems():
@@ -162,13 +251,55 @@ class MSSMHiggsModel(PhysicsModel):
             # Do the xsecs and BRs for the three neutral Higgs bosons
             for X in ['h', 'H', 'A']:
                 self.doHistFunc('xs_gg%s_%s' % (X, era), f.Get(hd['xs_gg%s'%X]), pars)
+                # QCD scale uncertainty
+                self.doAsymPow('systeff_xs_gg%s_scale_%s' % (X,era),
+                    self.safeTH2DivideForKappa(f.Get(hd['xs_gg%s_scale_lo'%X]), f.Get(hd['xs_gg%s'%X])),
+                    self.safeTH2DivideForKappa(f.Get(hd['xs_gg%s_scale_hi'%X]), f.Get(hd['xs_gg%s'%X])),
+                    'xs_gg%s_scale_%s' % (X,era), pars)
+                # PDF uncertainty
+                self.doAsymPow('systeff_xs_gg%s_pdf_%s' % (X,era),
+                    self.safeTH2DivideForKappaDelta(f.Get(hd['xs_gg%s_pdf_lo'%X]), f.Get(hd['xs_gg%s'%X]), -1.),
+                    self.safeTH2DivideForKappaDelta(f.Get(hd['xs_gg%s_pdf_hi'%X]), f.Get(hd['xs_gg%s'%X]), +1.),
+                    'xs_gg%s_pdf_%s' % (X,era), pars)
+                # Register that this uncertainty scaling should affect any normalisation term that
+                # contains the cross section we defined above
+                self.SYST_DICT['xs_gg%s_%s' % (X, era)].append('systeff_xs_gg%s_scale_%s' % (X,era))
+                self.SYST_DICT['xs_gg%s_%s' % (X, era)].append('systeff_xs_gg%s_pdf_%s' % (X,era))
+
                 # Build the Santander-matched bbX cross section. The matching depends
                 # on the mass of the Higgs boson in question, so for the h and H we
                 # pass the mh or mH TH2 as an additional argument
-                self.doHistFunc('xs_bb%s_%s' % (X, era), self.santanderMatching(
-                    f.Get(hd['xs_bb4f%s'%X]),
-                    f.Get(hd['xs_bb5f%s'%X]),
-                    None if X=='A' else f.Get(hd['m%s'%X])), pars)
+                hist_bb_nominal = self.santanderMatching(f.Get(hd['xs_bb4f%s'%X]), f.Get(hd['xs_bb5f%s'%X]), None if X=='A' else f.Get(hd['m%s'%X]))
+                self.doHistFunc('xs_bb%s_%s' % (X, era), hist_bb_nominal, pars)
+
+                # QCD scale uncertainty
+                self.doAsymPow('systeff_xs_bb%s_scale_%s' % (X,era),
+                    self.safeTH2DivideForKappa(
+                        self.santanderMatching(f.Get(hd['xs_bb4f%s_scale_lo'%X]), f.Get(hd['xs_bb5f%s_scale_lo'%X]), None if X=='A' else f.Get(hd['m%s'%X])),
+                        hist_bb_nominal
+                        ),
+                    self.safeTH2DivideForKappa(
+                        self.santanderMatching(f.Get(hd['xs_bb4f%s_scale_hi'%X]), f.Get(hd['xs_bb5f%s_scale_hi'%X]), None if X=='A' else f.Get(hd['m%s'%X])),
+                        hist_bb_nominal
+                        ),
+                    'xs_bb%s_scale_%s' % (X,era), pars)
+
+                # PDF uncertainty
+                self.doAsymPow('systeff_xs_bb%s_pdf_%s' % (X,era),
+                    self.safeTH2DivideForKappaDelta(
+                        self.santanderPdfUncert(f.Get(hd['xs_bb5f%s_pdf_lo'%X]), None if X=='A' else f.Get(hd['m%s'%X])),
+                        hist_bb_nominal, -1.
+                        ),
+                    self.safeTH2DivideForKappaDelta(
+                        self.santanderPdfUncert(f.Get(hd['xs_bb5f%s_pdf_hi'%X]), None if X=='A' else f.Get(hd['m%s'%X])),
+                        hist_bb_nominal, +1.
+                        ),
+                    'xs_bb%s_pdf_%s' % (X,era), pars)
+
+                self.SYST_DICT['xs_bb%s_%s' % (X, era)].append('systeff_xs_bb%s_scale_%s' % (X,era))
+                self.SYST_DICT['xs_bb%s_%s' % (X, era)].append('systeff_xs_bb%s_pdf_%s' % (X,era))
+
+
                 self.doHistFunc('br_%stautau_%s' % (X, era), f.Get(hd['br_%stautau'%X]), pars)
                 self.doHistFunc('br_%sbb_%s' % (X, era), f.Get(hd['br_%sbb'%X]), pars)
                 # Make a note of what we've built, will be used to create scaling expressions later
@@ -176,7 +307,15 @@ class MSSMHiggsModel(PhysicsModel):
             )
             # Do the BRs for the charged Higgs
             self.doHistFunc('br_tHpb_%s'%era, f.Get(hd['br_tHpb']), pars)
-            self.doHistFunc('br_Hptaunu_%s'%era, f.Get(hd['br_Hptaunu']), pars)
+
+            # Add a fixed 5% uncertainty on BR(Hp -> tau nu)
+            self.doHistFunc('br_Hptaunu_%s_pre'%era, f.Get(hd['br_Hptaunu']), pars)
+            if not self.modelBuilder.out.var('br_Hptaunu_uncert'):
+                self.modelBuilder.doVar('br_Hptaunu_uncert[0,-7,7]')
+                self.NUISANCES.add('br_Hptaunu_uncert')
+            self.modelBuilder.doObj('syst_eff_br_Hptaunu_uncert_%s' % era, 'AsymPow', '0.95,1.05,br_Hptaunu_uncert')
+            self.modelBuilder.factory_('expr::br_Hptaunu_%s("@0*@1", br_Hptaunu_%s_pre, syst_eff_br_Hptaunu_uncert_%s)' % (era, era, era))
+
             self.PROC_SETS.append((['tt'], ['HptaunubHptaunub', 'HptaunubWb', 'WbWb'], [era]))
             # And the extra term we need for H->hh
             self.doHistFunc('br_Hhh_%s'%era, f.Get(hd['br_Hhh']), pars)
@@ -188,27 +327,33 @@ class MSSMHiggsModel(PhysicsModel):
             for X in ['ggH', 'qqH', 'VH']:
                 self.PROC_SETS.append((['%s'%X], ['SM125'], [era]))
 
-        # h_ggF_xsec_h_scale_hi = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_hi_str), f.Get(ggF_xsec_h_str))
-        # h_ggF_xsec_h_scale_lo = self.safeTH2DivideForKappa(f.Get(ggF_xsec_h_scale_lo_str), f.Get(ggF_xsec_h_str))
-        # ggF_xsec_h_scale = self.doAsymPow('systeff_ggF_xsec_h_scale_8TeV', h_ggF_xsec_h_scale_lo, h_ggF_xsec_h_scale_hi, 'ggF_xsec_h_scale_8TeV', [mA, tanb])
-        # ftest = ROOT.TFile('model_debug.root', 'RECREATE')
-        # ftest.WriteTObject(h_ggF_xsec_h_scale_hi, 'h_ggF_xsec_h_scale_hi')
-        # ftest.WriteTObject(h_ggF_xsec_h_scale_lo, 'h_ggF_xsec_h_scale_lo')
-        # ftest.Close()
+    def preProcessNuisances(self,nuisances):
+        doParams = set()
+        for bin in self.DC.bins:
+            for proc in self.DC.exp[bin].keys():
+                if self.DC.isSignal[proc]:
+                    (P, D, E) = self.getHiggsProdDecMode(bin, proc)
+                    scaling = 'scaling_%s_%s_%s' % (P, D, E)
+                    params = self.modelBuilder.out.function(scaling).getParameters(ROOT.RooArgSet()).contentsString().split(',')
+                    for param in params:
+                        if param in self.NUISANCES:
+                            doParams.add(param)
+        for param in doParams:
+            print 'Add nuisance parameter %s to datacard' % param
+            nuisances.append((param,False, "param", [ "0", "1"], [] ) )
 
-    # def preProcessNuisances(self,nuisances):
-    #     nuisances.append(("ggF_xsec_h_scale_8TeV",False, "param", [ "0", "1"], [] ) )
 
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
         self.modelBuilder.doVar("r[1,0,20]")
 
-        #MSSMvsMS
+        #MSSMvsSM
         self.modelBuilder.doVar("x[1,0,1]")
+        self.modelBuilder.out.var('x').setConstant(True)
         self.modelBuilder.factory_("expr::not_x(\"(1-@0)\", x)")
         self.sigNorms = { True:'x', False:'not_x' }
 
-        self.modelBuilder.doSet('POI', 'x,r')
+        self.modelBuilder.doSet('POI', 'r')
         # We don't intend on actually floating these in any fits...
         self.modelBuilder.out.var('mA').setConstant(True)
         self.modelBuilder.out.var('tanb').setConstant(True)
@@ -234,6 +379,12 @@ class MSSMHiggsModel(PhysicsModel):
                     terms += [self.sigNorms[1]]
                 else:
                     terms = [self.sigNorms[0]]
+                # Now scan terms and add theory uncerts
+                extra = []
+                for term in terms:
+                    if term in self.SYST_DICT:
+                        extra += self.SYST_DICT[term]
+                terms += extra
                 self.modelBuilder.factory_('prod::scaling_%s_%s_%s(%s)' % (P,D,E,','.join(terms)))
                 self.modelBuilder.out.function('scaling_%s_%s_%s' % (P,D,E)).Print('')
 
@@ -242,7 +393,7 @@ class MSSMHiggsModel(PhysicsModel):
         """Return a triple of (production, decay, energy)"""
         P = ''
         D = ''
-        if "_" in process: 
+        if "_" in process:
             (P, D) = process.split("_")
         else:
             raise RuntimeError, 'Expected signal process %s to be of the form PROD_DECAY' % process
@@ -254,7 +405,7 @@ class MSSMHiggsModel(PhysicsModel):
         if not E:
                 raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
         return (P, D, E)
-        
+
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
             (P, D, E) = self.getHiggsProdDecMode(bin, process)
