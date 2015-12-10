@@ -73,8 +73,9 @@ int main(int argc, char** argv) {
     {8, "mt_nobtagnotwoprong"},
     {9, "mt_btagnotwoprong"}
     };
+ 
 
-      vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000"};
+  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -114,6 +115,19 @@ int main(int argc, char** argv) {
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
+   //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding 
+    for (string chn:chns){
+        auto bins = cb.cp().channel({chn}).bin_set();
+        for (auto b : bins) {
+            double total_bkg=0;
+            cb.cp().process(bkg_procs[chn]).channel({chn}).bin({b}).ForEachProc([&](ch::Process *proc){
+                total_bkg += proc->rate(); 
+            });
+            cb.cp().channel({chn}).bin({b}).ForEachObs([&](ch::Observation *obs) {
+                obs->set_rate(total_bkg);
+            });
+        }
+    }
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
