@@ -58,7 +58,6 @@ class EnhancedCombine(CombineToolBase):
             self.args.name += '.POINT.%(SINGLEPOINT)s'
 
         if self.args.boundlist is not None:
-          print "what"
           subbed_vars = {}
           with open(self.args.boundlist) as json_file:
             bnd = json.load(json_file)
