@@ -8,7 +8,7 @@ from CombineHarvester.CombineTools.combine.Impacts import Impacts
 from CombineHarvester.CombineTools.combine.ImpactsFromScans import ImpactsFromScans
 from CombineHarvester.CombineTools.combine.Workspace import PrintWorkspace, ModifyDataSet
 from CombineHarvester.CombineTools.combine.CovMatrix import CovMatrix
-from CombineHarvester.CombineTools.combine.LimitGrids import AsymptoticGrid, HybridNewGrid, Limit1D
+from CombineHarvester.CombineTools.combine.LimitGrids import AsymptoticGrid, HybridNewGrid
 from CombineHarvester.CombineTools.combine.Output import PrintFit, CollectLimits
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
