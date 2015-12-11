@@ -137,3 +137,72 @@ text2workspace.py -b combinedCard.txt -o combinedCard.root
 
  where in this case the mass must be specified.
 
+Creating 1 or 3 Higgs bosons for an MSSM analysis {#MSSMMorph}
+=========================
+
+For an MSSM or 2HDM interpretation, datacards must be setup containing 3 neutral Higgs
+bosons. The extension of the previous description to create datacards with
+three Higgs bosons in and a signal PDF for each is simple:
+
+\snippet CombinePdfs/bin/MorphingMSSMUpdate-NoModel.cpp part4
+
+In this case the BuildRooMorphing function is passed the signal process
+corresponding to each of the three Higgs bosons, each controlled by their
+separate mass terms. Note the option "mass", which if set to "MH" will only
+build the datacards with one Higgs boson - this is reserved for the case of
+running the single resonance model independent limits and will instead place
+only one Higgs boson in the datacards.
+
+Applying a model at text2workspace step {#MSSMModel}
+=========================
+
+Having produced datacards containing signal PDFs for the appropriate number of
+Higgs bosons, we can go one step further and make extra use of the normalisation
+term associated with the PDFs. One specific use of this, as discussed in the
+introduction, is in the model dependent exclusions provided for example in the
+MSSM H->tautau analysis. In this case, each point in mA-tanb
+phase space has a different signal model containing contributions from the three
+Higgs bosons. At each point the masses of the Higgs bosons and the
+cross-sections times branching ratios are different. The normal procedure in
+this case would be to produce a workspace for each model point with a specific
+signal template built and added by hand.
+
+Now that we have RooMorphingPdfs we can do this in a more clever way, by
+attaching terms controlling the normalisation of the signal to its normalisation
+term. This can be done within the text2workspace.py step, where the .txt
+datacard is converted into a RooWorkspace as input to combine. In this step, it
+is possible to apply a physics model which performs some scaling and
+manipulation to the different quantities in the datacards. By designing an
+appropriate physics model, we can add terms to the normalisation to control the
+cross section times branching ratio of the three Higgs bosons.
+These can be added as a function of mA and tanb which can be
+made parameters of the workspace as RooRealVars:
+
+\snippet CombinePdfs/python/MSSM.py part1
+
+The histograms containing the information on the different cross-sections and
+branching ratios are included as TH2Ds inside a file for a particular model.
+These are read in and turned into a RooHistFunc via a helper function called
+doHistFunc:
+
+\snippet CombinePdfs/python/MSSM.py part2
+
+Note the option 'interpolate' which is off by default - this allows the
+possibility of interpolating the model inputs to reach values beyond the
+granularity that is provided.
+
+RooHistFuncs are then built for the mass terms controlling the two Higgs bosons
+which are not the A boson (since this is already controlled by the parameter
+mA, as well as the cross-section and branching ratio, for example using
+terms:
+
+\snippet CombinePdfs/python/MSSM.py part3
+
+In this code snippet, 'era' controls the centre of mass energy of the model,
+currently either 7TeV, 8TeV or 13TeV. Note that theoretical uncertainties,
+which are also provided from the model inputs as a function of mA and
+tanb, are applied at this stage as well by building the relevant terms
+and adding them to the workspace. Finally the relevant parameters are combined
+to give a complete term used to control the normalisation of the signal.
+
+

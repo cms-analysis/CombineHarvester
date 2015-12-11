@@ -850,6 +850,7 @@ EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           = CombineTools/bin \
                          CombinePdfs/bin \
                          CombinePdfs/src \
+                         CombinePdfs/python \
                          CombineTools/src \
                          CombineTools/input/examples
 

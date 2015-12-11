@@ -119,6 +119,7 @@ class MSSMHiggsModel(PhysicsModel):
         PhysicsModel.setModelBuilder(self, modelBuilder)
         self.buildModel()
 
+    #! [part2]
     def doHistFunc(self, name, hist, varlist, interpolate=0):
         "method to conveniently create a RooHistFunc from a TH1/TH2 input"
         print 'Doing histFunc %s...' % name
@@ -141,6 +142,7 @@ class MSSMHiggsModel(PhysicsModel):
         hfunc.setInterpolationOrder(interpolate)
         self.modelBuilder.out._import(hfunc, ROOT.RooFit.RecycleConflictNodes())
         return self.modelBuilder.out.function(name)
+    #! [part2]
 
     def doAsymPow(self, name, h_kappa_lo, h_kappa_hi, param, varlist):
         "create AsymPow rate scaler given two TH2 inputs corresponding to kappa_hi and kappa_lo"
@@ -242,14 +244,18 @@ class MSSMHiggsModel(PhysicsModel):
             # We take the masses from the 1st model file, under the
             # assumption that they are the same in all model files
             if not doneMasses:
+            #! [part1]
                 self.doHistFunc('mH', f.Get(hd['mH']), pars)
                 self.doHistFunc('mh', f.Get(hd['mh']), pars)
+            #! [part1]
                 self.doHistFunc('mHp', f.Get(hd['mHp']), pars)
                 doneMasses = True
 
             # Do the xsecs and BRs for the three neutral Higgs bosons
+            #! [part3]
             for X in ['h', 'H', 'A']:
                 self.doHistFunc('xs_gg%s_%s' % (X, era), f.Get(hd['xs_gg%s'%X]), pars)
+            #! [part3]
                 # QCD scale uncertainty
                 self.doAsymPow('systeff_xs_gg%s_scale_%s' % (X,era),
                     self.safeTH2DivideForKappa(f.Get(hd['xs_gg%s_scale_lo'%X]), f.Get(hd['xs_gg%s'%X])),
