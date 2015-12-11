@@ -1,4 +1,4 @@
-BSM Model independent Limits using MorphingMSSMUpdate-NoModel {#MSSMUpdateNoModel}
+BSM Model independent Limits using MorphingMSSMUpdate {#MSSMUpdateNoModel}
 =================================================================
 
 These instruction shall elaborate how to produce model independent limits using the 8TeV part of the MSSM (CMS-HIG-14-039) analysis. Below there will be given instruction how to set limits on one signal process (ggH) while another is left floating (bbH).
@@ -6,12 +6,12 @@ These instruction shall elaborate how to produce model independent limits using 
 Creating datacards {#p1}
 ========================
 
-The first step is to create the datacards, which will be used to produce the limit later on. To do this, go into the Folder CombineHarvester/CombinePdfs/ and then execute MorphingMSSMUpdate-NoModel. All of the programs in the following steps also need to be executed from this folder. Also make sure that all the files have been computed beforehand:
+The first step is to create the datacards, which will be used to produce the limit later on. To do this, go into the Folder CombineHarvester/Run1BSMComb/ and then execute MorphingMSSMUpdate. All of the programs in the following steps also need to be executed from this folder. Also make sure that all the files have been computed beforehand:
 
-    cd CombineHarvester/CombinePdfs/
-    MorphingMSSMUpdate-NoModel -m MH
+    cd CombineHarvester/Run1BSMComb/
+    MorphingMSSMUpdate -m MH
 
-MorphingMSSMUpdate-NoModel.cpp is set up similarly like Example2.cpp. More information about the datacard steps could be found in the respective example. Adding the option "-m MH" when executing MorphingMSSMUpdate-NoModel is necessary to ensure that the signal types are set to only assume one single narrow resonance produced via ggH and bbH instead of distinguishing between the three neutral MSSM bosons h, A and H.
+MorphingMSSMUpdate.cpp is set up similarly like Example2.cpp. More information about the datacard steps could be found in the respective example. Adding the option "-m MH" when executing MorphingMSSMUpdate is necessary to ensure that the signal types are set to only assume one single narrow resonance produced via ggH and bbH instead of distinguishing between the three neutral MSSM bosons h, A and H.
 It should be mentioned that CombineHarvester needs to use specific shape-rootfiles, which have been edited to reproduce the original result, since tail-fitting is not yet included in Combine Harvester.
 The output will be a set of datacards. The special point is that not for each mass a datacard is created. In contrast a workspace is given for the signals which contain all centrally produced mass hypothesis. In the calculating process the signal will be morphed to the chosen mass. If, for example, MC signal templates exist for m=100GeV and 200GeV one could still calculate limits for m=150GeV ("combine -m 150 ..."). The created root file, named "htt_mssm_demo.root", will be in the CombinePdfs folder. It contains the centrally available MC signals for each channel, category and mass. Per default a combined datacard "htt_mssm.txt" is created, which contains all the information of the other datacards together.
 

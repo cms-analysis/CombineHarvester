@@ -144,7 +144,7 @@ For an MSSM or 2HDM interpretation, datacards must be setup containing 3 neutral
 bosons. The extension of the previous description to create datacards with
 three Higgs bosons in and a signal PDF for each is simple:
 
-\snippet CombinePdfs/bin/MorphingMSSMUpdate-NoModel.cpp part4
+\snippet Run1BSMComb/bin/MorphingMSSMUpdate.cpp part4
 
 In this case the BuildRooMorphing function is passed the signal process
 corresponding to each of the three Higgs bosons, each controlled by their
