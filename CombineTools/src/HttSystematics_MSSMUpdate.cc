@@ -68,8 +68,10 @@ void AddMSSMUpdateSystematics_et_mt(CombineHarvester & cb, CombineHarvester src)
 //  src.cp().process(JoinStr({signal,{"ZTT", "ggH_SM125", "qqH_SM125", "VH_SM125"}}))
 //    .AddSyst(cb, "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<channel>::init(1));
   
+  //! [part1]
   src.cp().process({"W"})
       .AddSyst(cb, "CMS_shift1_muTau_nobtag_low_$ERA_W_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.000));
+  //! [part1]
   src.cp().process({"W"})
       .AddSyst(cb, "CMS_shift2_muTau_nobtag_low_$ERA_W_fine_binning", "shape", SystMap<channel, bin_id>::init({"mt"}, {10}, 1.000));
   src.cp().process({"QCD"})

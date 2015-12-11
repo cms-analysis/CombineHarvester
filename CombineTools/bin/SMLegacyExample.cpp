@@ -134,6 +134,7 @@ int main() {
     }
   }
 
+  //! [part1]
   cout << ">> Scaling signal process rates...\n";
   map<string, TGraph> xs;
   // Get the table of H->tau tau BRs vs mass
@@ -149,6 +150,7 @@ int main() {
       });
     }
   }
+  //! [part1]
   xs["hww_over_htt"] = ch::TGraphFromTable(input_dir+"/xsecs_brs/hww_over_htt.txt", "mH", "ratio");
   for (string const& e : {"7TeV", "8TeV"}) {
     for (string const& p : {"ggH", "qqH"}) {
@@ -162,10 +164,12 @@ int main() {
 
   cout << ">> Merging bin errors and generating bbb uncertainties...\n";
 
+  //! [part2]
   auto bbb = ch::BinByBinFactory()
       .SetAddThreshold(0.1)
       .SetMergeThreshold(0.5)
       .SetFixNorm(true);
+  //! [part2]
 
   ch::CombineHarvester cb_et = cb.cp().channel({"et"});
   bbb.MergeAndAdd(cb_et.cp().era({"7TeV"}).bin_id({1, 2}).process({"ZL", "ZJ", "QCD", "W"}), cb);
@@ -173,7 +177,9 @@ int main() {
   bbb.MergeAndAdd(cb_et.cp().era({"8TeV"}).bin_id({1, 2}).process({"ZL", "ZJ", "QCD", "W"}), cb);
   bbb.MergeAndAdd(cb_et.cp().era({"8TeV"}).bin_id({3, 5}).process({"W"}), cb);
   bbb.MergeAndAdd(cb_et.cp().era({"7TeV"}).bin_id({6}).process({"ZL", "ZJ", "W", "ZTT"}), cb);
+  //! [part3]
   bbb.MergeAndAdd(cb_et.cp().era({"8TeV"}).bin_id({6}).process({"ZL", "ZJ", "W"}), cb);
+  //! [part3]
   bbb.MergeAndAdd(cb_et.cp().era({"8TeV"}).bin_id({7}).process({"ZL", "ZJ", "W", "ZTT"}), cb);
 
   ch::CombineHarvester cb_mt = cb.cp().channel({"mt"});
@@ -201,6 +207,7 @@ int main() {
 
   cout << ">> Setting standardised bin names...\n";
   ch::SetStandardBinNames(cb);
+  //! [part4]
   VString droplist = ch::ParseFileLines(
     aux_pruning + "uncertainty-pruning-drop-131128-sm.txt");
   cout << ">> Droplist contains " << droplist.size() << " entries\n";
@@ -213,6 +220,7 @@ int main() {
   auto post_drop = cb.syst_name_set();
   cout << ">> Systematics dropped: " << pre_drop.size() - post_drop.size()
             << "\n";
+  //! [part4]
 
   // The following is an example of duplicating existing objects and modifying
   // them in the process. Here we clone all mH=125 signals, adding "_SM125" to

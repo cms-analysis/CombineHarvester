@@ -61,15 +61,19 @@ class EnhancedCombine(CombineToolBase):
           subbed_vars = {}
           with open(self.args.boundlist) as json_file:
             bnd = json.load(json_file)
-          command=['' for i in mass_vals]
+          command1=['' for i in mass_vals]
+          command2=['' for i in mass_vals]
           i=0
           for mval in mass_vals:
             for model in bnd:
-              if not (command[i]==''): command[i]=command[i]+':'
-              command[i]=command[i]+'r_'+model+'=0,'+str(bnd[model][mval])
+              if not (command1[i]==''): command1[i]=command1[i]+':'
+              if not (command2[i]==''): command2[i]=command2[i]+','
+              command1[i]=command1[i]+'r_'+model+'=0,'+str(bnd[model][mval])
+              command2[i]=command2[i]+'r_'+model+'='+str(float(bnd[model][mval])/2.0)
             i+=1
-          subbed_vars[('MASS', 'MODELBOUND')] = [(mass_vals[i], command[i]) for i in range(len(mass_vals))]
-          self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUND)s'])
+          subbed_vars[('MASS', 'MODELBOUNDONE', 'MODELBOUNDTWO')] = [(mass_vals[i], command1[i], command2[i]) for i in range(len(mass_vals))]
+          self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUNDONE)s'])
+          self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])
