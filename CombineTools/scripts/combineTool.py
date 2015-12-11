@@ -37,7 +37,6 @@ register_method(parser, methods, CovMatrix)
 register_method(parser, methods, PrintFit)
 register_method(parser, methods, AsymptoticGrid)
 register_method(parser, methods, HybridNewGrid)
-register_method(parser, methods, Limit1D)
 
 parser.add_argument('-M', '--method')
 
