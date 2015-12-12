@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
   string aux_cards   = "Hbb";
 
-  auto masses = ch::MassesFromRange("100,140,160");
+  auto masses = ch::MassesFromRange("100,140,160,200,300,350,400,500");
 
   // RooFit will be quite noisy if we don't set this
   // RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
@@ -95,31 +95,44 @@ int main(int argc, char* argv[]) {
   }
 
   // Unscale the signal cross sections
-  TFile model_file(TString(auxiliaries) +
+  std::map<std::string, TH2F*> hmap;
+  TFile model_file_8TeV(TString(auxiliaries) +
                "models/out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root");
-  TH2F *h_xs_bbA = (TH2F*)(gDirectory->Get("h_bbH_xsec_A")->Clone());
-  TH2F *h_xs_bbH = (TH2F*)(gDirectory->Get("h_bbH_xsec_H")->Clone());
-  TH2F *h_xs_bbh = (TH2F*)(gDirectory->Get("h_bbH_xsec_h")->Clone());
-  TH2F *h_br_Abb = (TH2F*)(gDirectory->Get("h_brbb_A")->Clone());
-  TH2F *h_br_Hbb = (TH2F*)(gDirectory->Get("h_brbb_H")->Clone());
-  TH2F *h_br_hbb = (TH2F*)(gDirectory->Get("h_brbb_h")->Clone());
+  hmap["h_xs_bbA_8TeV"] = (TH2F*)(gDirectory->Get("h_bbH_xsec_A")->Clone());
+  hmap["h_xs_bbH_8TeV"] = (TH2F*)(gDirectory->Get("h_bbH_xsec_H")->Clone());
+  hmap["h_xs_bbh_8TeV"] = (TH2F*)(gDirectory->Get("h_bbH_xsec_h")->Clone());
+  hmap["h_br_Abb_8TeV"] = (TH2F*)(gDirectory->Get("h_brbb_A")->Clone());
+  hmap["h_br_Hbb_8TeV"] = (TH2F*)(gDirectory->Get("h_brbb_H")->Clone());
+  hmap["h_br_hbb_8TeV"] = (TH2F*)(gDirectory->Get("h_brbb_h")->Clone());
+  model_file_8TeV.Close();
+  TFile model_file_7TeV(TString(auxiliaries) +
+               "models/out.mhmax-mu+200-7TeV-tanbHigh-nnlo.root");
+  hmap["h_xs_bbA_7TeV"] = (TH2F*)(gDirectory->Get("h_bbH_xsec_A")->Clone());
+  hmap["h_xs_bbH_7TeV"] = (TH2F*)(gDirectory->Get("h_bbH_xsec_H")->Clone());
+  hmap["h_xs_bbh_7TeV"] = (TH2F*)(gDirectory->Get("h_bbH_xsec_h")->Clone());
+  hmap["h_br_Abb_7TeV"] = (TH2F*)(gDirectory->Get("h_brbb_A")->Clone());
+  hmap["h_br_Hbb_7TeV"] = (TH2F*)(gDirectory->Get("h_brbb_H")->Clone());
+  hmap["h_br_hbb_7TeV"] = (TH2F*)(gDirectory->Get("h_brbb_h")->Clone());
+  model_file_7TeV.Close();
+
   double fixed_tanb = 30.;
 
   cb.cp().signals().ForEachProc([&](ch::Process *p) {
     double m = boost::lexical_cast<double>(p->mass());
-    double tot = h_xs_bbA->GetBinContent(h_xs_bbA->FindBin(m, fixed_tanb)) *
-                 h_br_Abb->GetBinContent(h_br_Abb->FindBin(m, fixed_tanb));
+    auto e = p->era();
+    double tot = hmap["h_xs_bbA_"+e]->GetBinContent(hmap["h_xs_bbA_"+e]->FindBin(m, fixed_tanb)) *
+                 hmap["h_br_Abb_"+e]->GetBinContent(hmap["h_br_Abb_"+e]->FindBin(m, fixed_tanb));
     if (m < 125.) {
-      tot += h_xs_bbh->GetBinContent(h_xs_bbh->FindBin(m, fixed_tanb)) *
-             h_br_hbb->GetBinContent(h_br_hbb->FindBin(m, fixed_tanb));
+      tot += hmap["h_xs_bbh_"+e]->GetBinContent(hmap["h_xs_bbh_"+e]->FindBin(m, fixed_tanb)) *
+             hmap["h_br_hbb_"+e]->GetBinContent(hmap["h_br_hbb_"+e]->FindBin(m, fixed_tanb));
     } else if (m < 135.) {
-      tot += h_xs_bbh->GetBinContent(h_xs_bbh->FindBin(m, fixed_tanb)) *
-             h_br_hbb->GetBinContent(h_br_hbb->FindBin(m, fixed_tanb));
-      tot += h_xs_bbH->GetBinContent(h_xs_bbH->FindBin(m, fixed_tanb)) *
-             h_br_Hbb->GetBinContent(h_br_Hbb->FindBin(m, fixed_tanb));
+      tot += hmap["h_xs_bbh_"+e]->GetBinContent(hmap["h_xs_bbh_"+e]->FindBin(m, fixed_tanb)) *
+             hmap["h_br_hbb_"+e]->GetBinContent(hmap["h_br_hbb_"+e]->FindBin(m, fixed_tanb));
+      tot += hmap["h_xs_bbH_"+e]->GetBinContent(hmap["h_xs_bbH_"+e]->FindBin(m, fixed_tanb)) *
+             hmap["h_br_Hbb_"+e]->GetBinContent(hmap["h_br_Hbb_"+e]->FindBin(m, fixed_tanb));
     } else {
-      tot += h_xs_bbH->GetBinContent(h_xs_bbH->FindBin(m, fixed_tanb)) *
-             h_br_Hbb->GetBinContent(h_br_Hbb->FindBin(m, fixed_tanb));
+      tot += hmap["h_xs_bbH_"+e]->GetBinContent(hmap["h_xs_bbH_"+e]->FindBin(m, fixed_tanb)) *
+             hmap["h_br_Hbb_"+e]->GetBinContent(hmap["h_br_Hbb_"+e]->FindBin(m, fixed_tanb));
     }
     p->set_rate(p->rate() / tot);
   });
@@ -159,7 +172,7 @@ int main(int argc, char* argv[]) {
       auto procs = cb.cp().bin({b}).signals().process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var.at(p)),
-                             "norm", false, true, false, &debug);
+                             "norm", false, true, true, &debug);
       }
     }
   }
