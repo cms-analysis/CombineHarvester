@@ -102,6 +102,10 @@ int main() {
 		}
 	}
 
+    cb.cp().signals().ForEachProc([&](ch::Process *proc) {
+        proc->set_rate(std::roundf(((proc->rate() / 1000)*10000.0))/10000.0 );
+        
+    });
 
     cout << ">> Generating bbb uncertainties...\n";
     auto bbb = ch::BinByBinFactory()

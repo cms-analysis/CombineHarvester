@@ -768,7 +768,8 @@ INPUT  = CombineTools/interface \
          docs/RooMorphingPdf.md \
          docs/ReproduceRun1HTTDatacards.md \
          docs/ChargedHiggs.md \
-         docs/BSM-ModelIndependent-Limits.md \
+         docs/BSM-ModelIndependent-Limits-MSSMHTT.md \
+         docs/BSM-ModelIndependent-Limits-HhhAZh.md \
          docs/mA-tanb-Limits.md \
          docs/HybridNewGrid.md \
         # docs/BuildSystem.md \
