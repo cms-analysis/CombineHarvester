@@ -25,11 +25,22 @@ void AddMSSMRun2Systematics(CombineHarvester & cb) {
   //src.cp().process({"ggH","bbH"})
   //    .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(1.097));
 
-  src.cp().process(ch::JoinStr({signal, {"ZTT", "TT"}}))
+  src.cp().process(ch::JoinStr({signal, {"ZTT", "TT","VV","W"}})).channel({"em","mt"})
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
+
+  src.cp().process(ch::JoinStr({signal, {"ZLL"}})).channel({"em"})
+      .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
+
+  src.cp().process(ch::JoinStr({signal, {"ZL","ZJ"}})).channel({"mt"})
+      .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
+
 
   src.cp().process(ch::JoinStr({signal, {"TT","VV","ZLL","ZTT","W"}})).channel({"em"})
       .AddSyst(cb, "CMS_eff_e", "lnN", SystMap<>::init(1.02));
+
+  src.cp().process(ch::JoinStr({signal, {"TT","VV","ZL","ZJ","ZTT","W"}})).channel({"et"})
+      .AddSyst(cb, "CMS_eff_e", "lnN", SystMap<>::init(1.02));
+
 
 //  src.cp().channel({"em"}).process(ch::JoinStr({signal, {"TT","VV","ZLL","ZTT","W"}})).AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
@@ -48,9 +59,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb) {
 
   src.cp().process(signal).AddSyst(cb, "lumi_13TeV", "lnN", SystMap<>::init(1.026));
 
-//  src.cp().channel({"em"}).process({"ZLL"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
+  src.cp().channel({"em"}).process({"ZLL"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
 //  src.cp().channel({"et"}).process({"ZL","ZJ"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
-  src.cp().channel({"mt"}).process({"ZL","ZJ"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
+  src.cp().channel({"et","tt","mt"}).process({"ZL","ZJ"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
 
   src.cp().process({"TT"})
       .AddSyst(cb, "CMS_htt_ttbarNorm_13TeV", "lnN", SystMap<era>::init
@@ -62,8 +73,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb) {
  src.cp().process({"QCD"}).channel({"et"}).AddSyst(cb,
       "CMS_htt_et_QCD_13TeV","lnN",SystMap<>::init(1.3));*/
 
- src.cp().process({"QCD"}).channel({"mt"}).AddSyst(cb,
-      "CMS_htt_mt_QCD_13TeV","lnN",SystMap<>::init(1.3));
+ src.cp().process({"QCD"}).channel({"et","em","tt","mt"}).AddSyst(cb,
+      "CMS_htt_QCD_13TeV","lnN",SystMap<>::init(1.3));
 
   src.cp().process({"VV"}).AddSyst(cb,
       "CMS_htt_VVNorm_13TeV", "lnN", SystMap<>::init(1.15));
