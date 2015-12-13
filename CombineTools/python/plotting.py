@@ -4,6 +4,8 @@ from functools import partial
 from array import array
 import re
 
+COL_STORE = []
+
 def SetTDRStyle():
   # For the canvas:
   R.gStyle.SetCanvasBorderMode(0)
@@ -446,14 +448,15 @@ class Graph:
 
 def CreateTransparentColor(color, alpha):
     adapt   = R.gROOT.GetColor(color)
-    new_idx = R.gROOT.GetListOfColors().GetSize() + 1
+    new_idx = R.gROOT.GetListOfColors().GetLast() + 1
     trans = R.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
+    COL_STORE.append(trans)
     trans.SetName('userColor%i' % new_idx)
     return new_idx
 
 def TFileIsGood(filename):
     # if not os.path.exists(filename): return False
-    fin = R.TFile.Open(filename)
+    fin = R.TFile(filename)
     if not fin: return False
     if fin and not fin.IsOpen():
       return False
@@ -461,6 +464,7 @@ def TFileIsGood(filename):
       fin.Close()
       return False
     elif fin and fin.IsOpen() and fin.TestBit(R.TFile.kRecovered):
+      fin.Close()
       # don't consider a recovered file to be ok
       return False
     else:
@@ -779,22 +783,64 @@ def RemoveNearMin(graph, val, spacing = None):
             RemoveNearMin(graph, val, spacing)
             break
 
-def contourFromTH2(h2in, threshold, minPoints=10, mult = 1.0):
-  # std::cout << "Getting contour at threshold " << threshold << " from "
-  #           << h2in->GetName() << std::endl;
+
+def TH2FromTGraph2D(graph, method='BinEdgeAligned'):
+    """Build an empty TH2 from the set of points in a TGraph2D
+
+    @ingroup ContourPlotting
+
+    There is no unique way to define a TH2 binning given an arbitrary
+    TGraph2D, therefore this function supports multiple named methods:
+
+     - `BinEdgeAligned` simply takes the sets of x- and y- values in the
+       TGraph2D and uses these as the bin edge arrays in the TH2. The
+       implication of this is that when filling the bin contents interpolation
+       will be required when evaluating the TGraph2D at the bin centres.
+
+    Args:
+        graph (TGraph2D): Should have at least two unique x and y values,
+        otherwise we can't define any bins
+        method (str): The binning algorithm to use
+
+    Raises:
+        RuntimeError: If the method name is not recognised
+
+    Returns:
+        TH2F: The exact binning of the TH2F depends on the chosen method
+    """
+    if method == 'BinEdgeAligned':
+        x_vals = set()
+        y_vals = set()
+
+        for i in xrange(graph.GetN()):
+            x_vals.add(graph.GetX()[i])
+            y_vals.add(graph.GetY()[i])
+
+        x_vals = sorted(x_vals)
+        y_vals = sorted(y_vals)
+        h_proto = R.TH2F('prototype', '',
+                         len(x_vals) - 1, array('d', x_vals),
+                         len(y_vals) - 1, array('d', y_vals))
+        h_proto.SetDirectory(0)
+        return h_proto
+    else:
+        raise RuntimeError(
+            '[TH2FromTGraph2D] Method %s not supported' % method)
+
+
+def contourFromTH2(h2in, threshold, minPoints=10, frameValue = 1000.):
   # // http://root.cern.ch/root/html/tutorials/hist/ContourList.C.html
   contoursList = [threshold]
   contours = array('d', contoursList)
-  if (h2in.GetNbinsX() * h2in.GetNbinsY()) > 10000: minPoints = 50
-  if (h2in.GetNbinsX() * h2in.GetNbinsY()) <= 100: minPoints = 10
+  # if (h2in.GetNbinsX() * h2in.GetNbinsY()) > 10000: minPoints = 50
+  # if (h2in.GetNbinsX() * h2in.GetNbinsY()) <= 100: minPoints = 10
 
-  # h2 = h2in.Clone()
-  h2 = frameTH2D(h2in, threshold, mult)
+  h2 = frameTH2D(h2in, threshold, frameValue)
 
   h2.SetContour(1, contours)
 
   # Draw contours as filled regions, and Save points
-  backup = R.gPad
+  # backup = R.gPad # doesn't work in pyroot, backup behaves like a ref to gPad
   canv = R.TCanvas('tmp', 'tmp')
   canv.cd()
   h2.Draw('CONT Z LIST')
@@ -809,69 +855,64 @@ def contourFromTH2(h2in, threshold, minPoints=10, mult = 1.0):
   ret = R.TList()
   for i in xrange(conts.GetSize()):
     contLevel = conts.At(i)
-    print 'Contour %d has %d Graphs\n' % (i, contLevel.GetSize())
+    print '>> Contour %d has %d Graphs' % (i, contLevel.GetSize())
     for j in xrange(contLevel.GetSize()):
       gr1 = contLevel.At(j)
       print'\t Graph %d has %d points' % (j, gr1.GetN())
       if gr1.GetN() > minPoints: ret.Add(gr1.Clone())
       # // break;
-  backup.cd()
+  # backup.cd()
+  canv.Close()
   return ret
 
 
-def frameTH2D(hist, threshold, mult = 1.0):
-  # NEW LOGIC:
-  #   - pretend that the center of the last bin is on the border if the frame
-  #   - add one tiny frame with huge values
-  frameValue = 1000
-  # if (TString(in->GetName()).Contains("bayes")) frameValue = -1000;
+def frameTH2D(hist, threshold, frameValue=1000):
+  # Now supports variable-binned histograms
+  # Extends each bin on the border outwards by 110% of its width/height
+  # Adds a frame of additional bins around these filled with some chosen value
+  # that will make the contours close
 
-  xw = hist.GetXaxis().GetBinWidth(1)
-  yw = hist.GetYaxis().GetBinWidth(1)
+  # Get lists of the bin edges
+  x_bins = [hist.GetXaxis().GetBinLowEdge(x) for x in xrange(1, hist.GetNbinsX()+2)]
+  y_bins = [hist.GetYaxis().GetBinLowEdge(y) for y in xrange(1, hist.GetNbinsY()+2)]
 
-  nx = hist.GetNbinsX()
-  ny = hist.GetNbinsY()
+  # New bin edge arrays will need an extra two values
+  x_new = [0.]*(len(x_bins)+2)
+  y_new = [0.]*(len(y_bins)+2)
 
-  x0 = hist.GetXaxis().GetXmin()
-  x1 = hist.GetXaxis().GetXmax()
+  # Calculate bin widths at the edges
+  xw1 = x_bins[1]  - x_bins[0]
+  xw2 = x_bins[-1] - x_bins[-2]
+  yw1 = y_bins[1]  - y_bins[0]
+  yw2 = y_bins[-1] - y_bins[-2]
 
-  y0 = hist.GetYaxis().GetXmin()
-  y1 = hist.GetYaxis().GetXmax()
-  xbins = array('d', [0]*999)
-  ybins = array('d', [0]*999)
-  eps = 0.1
-  # mult = 1.0
+  # Set the edges of the outer framing bins and the adjusted
+  # edge of the real edge bins
+  x_new[0]  = x_bins[0]  - xw1*1.2
+  x_new[1]  = x_bins[0]  - xw1*1.1
+  x_new[-1] = x_bins[-1] + xw2*1.2
+  x_new[-2] = x_bins[-1] + xw2*1.1
+  y_new[0]  = y_bins[0]  - yw1*1.2
+  y_new[1]  = y_bins[0]  - yw1*1.1
+  y_new[-1] = y_bins[-1] + yw2*1.2
+  y_new[-2] = y_bins[-1] + yw2*1.1
 
-  xbins[0] = x0 - eps * xw - xw * mult
-  xbins[1] = x0 + eps * xw - xw * mult
-  for ix in xrange(2, nx+1): xbins[ix] = x0 + (ix - 1) * xw
-  xbins[nx + 1] = x1 - eps * xw + 0.5 * xw * mult
-  xbins[nx + 2] = x1 + eps * xw + xw * mult
+  # Copy the remaining bin edges from the hist
+  for i in xrange(1, len(x_bins) - 1):
+    x_new[i+1] = x_bins[i]
+  for i in xrange(1, len(y_bins) - 1):
+    y_new[i+1] = y_bins[i]
 
-  ybins[0] = y0 - eps * yw - yw * mult
-  ybins[1] = y0 + eps * yw - yw * mult
-  for iy in xrange(2, ny+1): ybins[iy] = y0 + (iy - 1) * yw
-  ybins[ny + 1] = y1 - eps * yw + yw * mult
-  ybins[ny + 2] = y1 + eps * yw + yw * mult
+  framed = R.TH2D('%s framed' % hist.GetName(), '%s framed' % hist.GetTitle(), len(x_new)-1, array('d', x_new), len(y_new)-1, array('d', y_new))
+  framed.SetDirectory(0)
 
-  framed = R.TH2D('%s framed' % hist.GetName(), '%s framed' % hist.GetTitle(), nx + 2, xbins, ny + 2, ybins)
-
-  # Copy over the contents
-  for ix in xrange(1, nx+1):
-    for iy in xrange(1, ny+1):
-      framed.SetBinContent(1 + ix, 1 + iy, hist.GetBinContent(ix, iy))
-  
-  # Frame with huge values
-  nx = framed.GetNbinsX()
-  ny = framed.GetNbinsY()
-  for ix in xrange(1, nx+1):
-    framed.SetBinContent(ix, 1, frameValue)
-    framed.SetBinContent(ix, ny, frameValue)
-
-  for iy in xrange(2, ny):
-    framed.SetBinContent(1, iy, frameValue)
-    framed.SetBinContent(nx, iy, frameValue)
-
+  for x in xrange(1, framed.GetNbinsX()+1):
+    for y in xrange(1, framed.GetNbinsY()+1):
+      if x == 1 or x == framed.GetNbinsX() or y == 1 or y == framed.GetNbinsY():
+        # This is a a frame bin
+        framed.SetBinContent(x, y, frameValue)
+      else:
+        framed.SetBinContent(x, y, hist.GetBinContent(x-1, y-1))
   return framed
 
 def FixOverlay():
