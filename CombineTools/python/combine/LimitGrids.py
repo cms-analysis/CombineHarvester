@@ -251,16 +251,19 @@ class HybridNewGrid(CombineToolBase):
             # for CLs+b at some point
             CLs = hyp_res.CLs()
             CLsErr = hyp_res.CLsError()
-            results[contour] = (CLs, CLsErr)
+            if ntoys == 0: CLsErr = 0 # If there were no toys then ClsError() will return inf
+            dist = 0.
             if CLsErr == 0.:
                 if verbose:
                     print '>>>> CLs = %g +/- %g (infinite significance), will treat as passing' % (CLs, CLsErr)
+                dist = 999.
             else:
                 dist = abs(CLs - crossing) / CLsErr
                 if verbose:
                     print '>>>> CLs = %g +/- %g, reached %.1f sigma signifance' % (CLs, CLsErr, dist)
                 if dist < signif:
                     signif_results[contour] = False
+            results[contour] = (CLs, CLsErr, dist)
             # Set the observed test statistic back to the real data value
             hyp_res.SetTestStatisticData(q_obs)
 
@@ -375,9 +378,15 @@ class HybridNewGrid(CombineToolBase):
         output_x = []
         output_y = []
         output_data = {}
+        output_ntoys = []
+        output_clserr = {}
+        output_signif = {}
         # One list of Z-values per contour 
         for contour in contours:
             output_data[contour] = []
+            output_clserr[contour] = []
+            output_signif[contour] = []
+
 
         # Also keep track of the number of model points which have met the
         # CLs criteria
@@ -418,8 +427,11 @@ class HybridNewGrid(CombineToolBase):
             if res is not None and (ok or incomplete) and self.args.output:
                 output_x.append(float(key[0]))
                 output_y.append(float(key[1]))
+                output_ntoys.append(point_res['ntoys'])
                 for contour in contours:
                     output_data[contour].append(point_res[contour][0])
+                    output_clserr[contour].append(point_res[contour][1])
+                    output_signif[contour].append(point_res[contour][2])
             
             # Do the job cycle generation if requested
             if not ok and self.args.cycles > 0:
@@ -450,12 +462,23 @@ class HybridNewGrid(CombineToolBase):
         # Create and write output CLs TGraph2Ds here
         # TODO: add graphs with the CLs errors, the numbers of toys and whether or not the point passes
         if self.args.output:
-           fout = ROOT.TFile(outfile, 'RECREATE')
-           for c in contours:
+            fout = ROOT.TFile(outfile, 'RECREATE')
+            for c in contours:
                 graph = ROOT.TGraph2D(len(output_data[c]), array('d', output_x), array('d', output_y), array('d', output_data[c]))
                 graph.SetName(c)
                 fout.WriteTObject(graph, c)
-           fout.Close()
+                # Also write a Graph with the CLsErr
+                graph = ROOT.TGraph2D(len(output_clserr[c]), array('d', output_x), array('d', output_y), array('d', output_clserr[c]))
+                graph.SetName('clsErr_'+c)
+                fout.WriteTObject(graph, 'clsErr_'+c)
+                # And a Graph with the significance
+                graph = ROOT.TGraph2D(len(output_signif[c]), array('d', output_x), array('d', output_y), array('d', output_signif[c]))
+                graph.SetName('signif_'+c)
+                fout.WriteTObject(graph, 'signif_'+c)
+            graph = ROOT.TGraph2D(len(output_ntoys), array('d', output_x), array('d', output_y), array('d', output_ntoys))
+            graph.SetName('ntoys'+c)
+            fout.WriteTObject(graph, 'ntoys')
+            fout.Close()
 
     def PlotTestStat(self, result, name, opts, poi_vals):
       null_vals = [x * -2. for x in result.GetNullDistribution().GetSamplingDistribution()]
