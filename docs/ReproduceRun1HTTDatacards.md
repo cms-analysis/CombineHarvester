@@ -54,9 +54,9 @@ The validation of the produced SM cards as compared to the official cards can be
 Run 1 H->hh->bbtautau and A->Zh->lltautau results {#run1HTTHhhAZh}
 =========================
 
-**Files** CombineTools/bin/AZhExample.cpp, CombineTools/bin/HhhExample.cpp, CombineTools/scripts/HhhExample.py
+**Files** Run1BSMComb/bin/AZh.cpp, Run1BSMComb/bin/Hhh.cpp, CombineTools/scripts/HhhExample.py
 
-**Files** CombinePdfs/bin/AZhMorphing-NoModel.cpp, CombinePdfs/bin/HhhMorphing-NoModel.cpp
+**Files** Run1BSMComb/bin/MorphingAZh.cpp, Run1BSMComb/bin/MorphingHhh.cpp
 
 The above scripts illustrate the datacard production for the H->hh and A->Zh analyses of HIG-14-034. The cards are very similar to those shown previously. The H->hh analysis makes use of the bin by bin merging functions exactly as described for the SM analysis. The A->Zh analysis makes use of one feature described for the SM cards- the ability to multiply signal by a constant factor. In this case the factor is 1000 to put the signal into femptobarns instead of picobarns.  
 
@@ -66,7 +66,7 @@ The validation of the produced cards as compared to the official cards can be fo
 MSSM update H->tautau results {#run1HTTMSSM}
 =========================
 
-**File** CombinePdfs/bin/MorphingMSSMUpdate-NoModel.cpp
+**File** Run1BSMComb/bin/MorphingMSSMUpdate.cpp
 
 The fit model for the MSSM update analysis is similarly complicated to the SM legacy analysis. There are a couple of unique features which are illustrated below:
 
@@ -74,15 +74,15 @@ The fit model for the MSSM update analysis is similarly complicated to the SM le
 
 In the MSSM there are three neutral Higgs bosons, and to set a limit on a particular MSSM model the signal model contains all three for the correct mass and ratios of cross section times branching ratios. For the model dependent limits therefore we need to have 6 separate signal processes in the datacards, one for each of the three neutral Higgs bosons, multiplied by two for the two different signal production mechanisms. This is done by mapping what exists in the shape files (two signal production processes generically named ggH and bbH, which can stand for any one of the three Higgs bosons) to the signal processes we want, using the following:
 
-\snippet CombinePdfs/bin/MorphingMSSMUpdate-NoModel.cpp part1
+\snippet Run1BSMComb/bin/MorphingMSSMUpdate.cpp part1
 
 When declaring the processes to be added to the CH instance, the full set of signal processes is included:
 
-\snippet CombinePdfs/bin/MorphingMSSMUpdate-NoModel.cpp part2
+\snippet Run1BSMComb/bin/MorphingMSSMUpdate.cpp part2
 
 Whereas when reading in the information from the shape file the usual names are used the individual ggH and bbH templates are used to fill the processes for all 3 Higgs bosons:
 
-\snippet CombinePdfs/bin/MorphingMSSMUpdate-NoModel.cpp part3
+\snippet Run1BSMComb/bin/MorphingMSSMUpdate.cpp part3
 
 When running model dependent limits, the 6 signal processes are used and manipulated in the required way to build a signal template for a given mA-tanb point. When running model independent limits, the datacards are simply setup with only one neutral Higgs boson, as appropriate for a single resonance search.
 

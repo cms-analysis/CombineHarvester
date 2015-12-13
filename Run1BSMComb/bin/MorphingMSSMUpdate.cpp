@@ -186,6 +186,7 @@ int main(int argc, char** argv) {
 
   TFile demo("htt_mssm_demo.root", "RECREATE");
 
+  //! [part4]
   bool do_morphing = true;
   map<string, RooAbsReal *> mass_var = {
     {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA},
@@ -211,6 +212,7 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   cout << "done\n";
+  //! [part4]
 
   string folder = "output/mssm_nomodel";
   boost::filesystem::create_directories(folder);

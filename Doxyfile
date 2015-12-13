@@ -765,25 +765,28 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = CombineTools/interface \
-                         CombineTools/src \
-                         CombinePdfs/interface \
-                         CombinePdfs/src \
-                         CombineTools/python/plotting.py \
-                         CombineTools/bin/SMLegacyExample.cpp \
-                         CombineTools/bin/MSSMYieldTable.cpp \
-                         CombineTools/bin/PostFitShapes.cpp \
-                         docs/Main.md \
-                         docs/Example1.md \
-                         docs/Example2.md \
-                         docs/PythonInterface.md \
-                         docs/PostFitShapes.md \
-                         docs/RooMorphingPdf.md \
-                         docs/ReproduceRun1HTTDatacards.md \
-                         docs/ChargedHiggs.md \
-                         #docs/BSM-ModelIndependent-Limits.md \
-                         #docs/mA-tanb-Limits.md \
-                         #docs/HybridNewGrid.md \
+INPUT  = CombineTools/interface \
+         CombineTools/src \
+         CombinePdfs/interface \
+         CombinePdfs/src \
+         CombineTools/python/plotting.py \
+         CombineTools/bin/SMLegacyExample.cpp \
+         CombineTools/bin/MSSMYieldTable.cpp \
+         CombineTools/bin/PostFitShapes.cpp \
+         docs/Main.md \
+         docs/Example1.md \
+         docs/Example2.md \
+         docs/PythonInterface.md \
+         docs/PostFitShapes.md \
+         docs/RooMorphingPdf.md \
+         docs/ReproduceRun1HTTDatacards.md \
+         docs/ChargedHiggs.md \
+         docs/BSM-ModelIndependent-Limits-MSSMHTT.md \
+         docs/BSM-ModelIndependent-Limits-HhhAZh.md \
+         docs/mA-tanb-Limits.md \
+         docs/HybridNewGrid.md \
+        # docs/BuildSystem.md \
+        # docs/MSSMWithMorphing.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -866,6 +869,8 @@ EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           = CombineTools/bin \
                          CombinePdfs/bin \
                          CombinePdfs/src \
+                         CombinePdfs/python \
+                         Run1BSMComb/bin \
                          CombineTools/src \
                          CombineTools/input/examples
 

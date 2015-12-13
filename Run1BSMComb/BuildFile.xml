@@ -1,7 +1,3 @@
-<bin file="ContourPlot.cpp" name="ContourPlot"></bin>
-<bin file="ParametricMSSM.cpp" name="ParametricMSSM"></bin>
-<bin file="PlotParametric.cpp" name="PlotParametric"></bin>
-<bin file="SMLegacyMorphing.cpp" name="SMLegacyMorphing"></bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
@@ -16,4 +12,7 @@
 <use name="boost_regex"/>
 <use name="rootpy"/>
 <use name="CombineHarvester/CombineTools"/>
-<use name="CombineHarvester/CombinePdfs"/>
+<use name="HiggsAnalysis/CombinedLimit"/>
+<export>
+  <lib name="1"/>
+</export>

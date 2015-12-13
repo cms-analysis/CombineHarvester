@@ -3,7 +3,7 @@ Charged Higgs datacards with RooMorphingPdf
 
 # Getting the cards
 
-The cards from the CMS HCG svn need to be copied into the auxilliaries directory:
+The cards from the CMS HCG svn need to be copied into the auxiliaries directory:
 
     cp -r /afs/cern.ch/work/a/agilbert/public/CombineTools/data/HIG-14-020.r6636 $CMSSW_BASE/src/auxiliaries/datacards/
 
