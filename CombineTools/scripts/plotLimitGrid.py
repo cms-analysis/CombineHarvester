@@ -19,6 +19,9 @@ parser.add_argument(
     contours to plot. These must correspond to the names of the TGraph2D
     objects in the input file""")
 parser.add_argument(
+    '--bin-method', default='BinEdgeAligned', help="""One of BinEdgeAligned or
+    BinCenterAligned. See plotting.py documentation for details.""")
+parser.add_argument(
     '--debug-output', '-d', help="""If specified, write the contour TH2s and
     TGraphs into this output ROOT file""")
 parser.add_argument(
@@ -40,6 +43,12 @@ parser.add_argument(
     '--logy', action='store_true', help="""Draw y-axis in log scale""")
 parser.add_argument(
     '--logx', action='store_true', help="""Draw x-axis in log scale""")
+parser.add_argument(
+    '--force-x-width', type=float, default=None, help="""Use this x bin width in
+    BinCenterAligned mode""")
+parser.add_argument(
+    '--force-y-width', type=float, default=None, help="""Use this y bin width in
+    BinCenterAligned mode""")
 args = parser.parse_args()
 
 
@@ -55,8 +64,11 @@ graphs = {c: file.Get(c) for c in types}
 hists = {}
 contours = {}
 
-h_proto = plot.TH2FromTGraph2D(graphs[types[0]])
-
+h_proto = plot.TH2FromTGraph2D(graphs[types[0]], method=args.bin_method,
+                               force_x_width=args.force_x_width,
+                               force_y_width=args.force_y_width)
+h_axis = h_proto
+h_axis = plot.TH2FromTGraph2D(graphs[types[0]])
 # Create the debug output file if requested
 if args.debug_output is not None:
     debug = ROOT.TFile(args.debug_output, 'RECREATE')
@@ -69,19 +81,24 @@ for c in types:
     hists[c] = h_proto.Clone(c)
     plot.fillTH2(hists[c], graphs[c])
     contours[c] = plot.contourFromTH2(hists[c], CL, 5, frameValue=1)
+    if debug is not None:
+        debug.WriteTObject(hists[c], 'hist_%s' % c)
+        for i, cont in enumerate(contours[c]):
+            debug.WriteTObject(cont, 'cont_%s_%i' % (c, i))
 
 # Setup the canvas: we'll use a two pad split, with a small top pad to contain
 # the CMS logo and the legend
 canv = ROOT.TCanvas(args.output, args.output)
 pads = plot.TwoPadSplit(0.8, 0, 0)
 pads[1].cd()
-h_proto.GetXaxis().SetTitle(args.x_title)
-h_proto.GetYaxis().SetTitle(args.y_title)
-h_proto.Draw()
+h_axis.GetXaxis().SetTitle(args.x_title)
+h_axis.GetYaxis().SetTitle(args.y_title)
+h_axis.Draw()
 
 pads[1].SetLogy(args.logy)
 pads[1].SetLogx(args.logx)
-
+pads[1].SetTickx()
+pads[1].SetTicky()
 # h_proto.GetXaxis().SetRangeUser(130,400)
 # h_proto.GetYaxis().SetRangeUser(1,20)
 
@@ -127,7 +144,7 @@ if 'obs' in contours:
 # We just want the top pad to look like a box, so set all the text and tick
 # sizes to zero
 pads[0].cd()
-h_top = h_proto.Clone()
+h_top = h_axis.Clone()
 plot.Set(h_top.GetXaxis(), LabelSize=0, TitleSize=0, TickLength=0)
 plot.Set(h_top.GetYaxis(), LabelSize=0, TitleSize=0, TickLength=0)
 h_top.Draw()

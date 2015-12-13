@@ -784,10 +784,10 @@ def RemoveNearMin(graph, val, spacing = None):
             break
 
 
-def TH2FromTGraph2D(graph, method='BinEdgeAligned'):
+def TH2FromTGraph2D(graph, method='BinEdgeAligned',
+                    force_x_width=None,
+                    force_y_width=None):
     """Build an empty TH2 from the set of points in a TGraph2D
-
-    @ingroup ContourPlotting
 
     There is no unique way to define a TH2 binning given an arbitrary
     TGraph2D, therefore this function supports multiple named methods:
@@ -796,11 +796,22 @@ def TH2FromTGraph2D(graph, method='BinEdgeAligned'):
        TGraph2D and uses these as the bin edge arrays in the TH2. The
        implication of this is that when filling the bin contents interpolation
        will be required when evaluating the TGraph2D at the bin centres.
+     - `BinCenterAligned` will try to have the TGraph2D points at the bin
+       centers, but this will only work completely correctly when the input
+       point spacing is regular. The algorithm first identifies the bin width
+       as the smallest interval between points on each axis. The start
+       position of the TH2 axis is then defined as the lowest value in the
+       TGraph2D minus half this width, and the axis continues with regular
+       bins until the graph maximum is passed.
 
     Args:
         graph (TGraph2D): Should have at least two unique x and y values,
-        otherwise we can't define any bins
+            otherwise we can't define any bins
         method (str): The binning algorithm to use
+        force_x_width (bool): Override the derived x-axis bin width in the
+            CenterAligned method
+        force_y_width (bool): Override the derived y-axis bin width in the
+            CenterAligned method
 
     Raises:
         RuntimeError: If the method name is not recognised
@@ -808,24 +819,42 @@ def TH2FromTGraph2D(graph, method='BinEdgeAligned'):
     Returns:
         TH2F: The exact binning of the TH2F depends on the chosen method
     """
+    x_vals = set()
+    y_vals = set()
+
+    for i in xrange(graph.GetN()):
+        x_vals.add(graph.GetX()[i])
+        y_vals.add(graph.GetY()[i])
+
+    x_vals = sorted(x_vals)
+    y_vals = sorted(y_vals)
     if method == 'BinEdgeAligned':
-        x_vals = set()
-        y_vals = set()
-
-        for i in xrange(graph.GetN()):
-            x_vals.add(graph.GetX()[i])
-            y_vals.add(graph.GetY()[i])
-
-        x_vals = sorted(x_vals)
-        y_vals = sorted(y_vals)
         h_proto = R.TH2F('prototype', '',
                          len(x_vals) - 1, array('d', x_vals),
                          len(y_vals) - 1, array('d', y_vals))
-        h_proto.SetDirectory(0)
-        return h_proto
+    elif method == 'BinCenterAligned':
+        x_widths = []
+        y_widths = []
+        for i in xrange(1, len(x_vals)):
+            x_widths.append(x_vals[i] - x_vals[i-1])
+        for i in xrange(1, len(y_vals)):
+            y_widths.append(y_vals[i] - y_vals[i-1])
+        x_min = min(x_widths) if force_x_width is None else force_x_width
+        y_min = min(y_widths) if force_y_width is None else force_y_width
+        x_bins = int(((x_vals[-1] - (x_vals[0] - 0.5*x_min))/x_min) + 0.5)
+        y_bins = int(((y_vals[-1] - (y_vals[0] - 0.5*y_min))/y_min) + 0.5)
+        print '[TH2FromTGraph2D] x-axis binning: (%i, %g, %g)' % (x_bins, x_vals[0] - 0.5*x_min, x_vals[0] - 0.5*x_min + x_bins*x_min)
+        print '[TH2FromTGraph2D] y-axis binning: (%i, %g, %g)' % (y_bins, y_vals[0] - 0.5*y_min, y_vals[0] - 0.5*y_min + y_bins*y_min)
+        # Use a number slightly smaller than 0.49999 because the TGraph2D interpolation
+        # is fussy about evaluating on the boundary
+        h_proto = R.TH2F('prototype', '',
+                         x_bins, x_vals[0] - 0.49999*x_min, x_vals[0] - 0.50001*x_min + x_bins*x_min,
+                         y_bins, y_vals[0] - 0.49999*y_min, y_vals[0] - 0.50001*y_min + y_bins*y_min)
     else:
         raise RuntimeError(
             '[TH2FromTGraph2D] Method %s not supported' % method)
+    h_proto.SetDirectory(0)
+    return h_proto
 
 
 def contourFromTH2(h2in, threshold, minPoints=10, frameValue = 1000.):
@@ -867,18 +896,18 @@ def contourFromTH2(h2in, threshold, minPoints=10, frameValue = 1000.):
 
 
 def frameTH2D(hist, threshold, frameValue=1000):
-  # Now supports variable-binned histograms
-  # Extends each bin on the border outwards by 110% of its width/height
-  # Adds a frame of additional bins around these filled with some chosen value
-  # that will make the contours close
+  # Now supports variable-binned histograms First adds a narrow frame (1% of
+  # of bin widths) around the outside with same values as the real edge. Then
+  # adds another frame another frame around this one filled with some chosen
+  # value that will make the contours close
 
   # Get lists of the bin edges
   x_bins = [hist.GetXaxis().GetBinLowEdge(x) for x in xrange(1, hist.GetNbinsX()+2)]
   y_bins = [hist.GetYaxis().GetBinLowEdge(y) for y in xrange(1, hist.GetNbinsY()+2)]
 
-  # New bin edge arrays will need an extra two values
-  x_new = [0.]*(len(x_bins)+2)
-  y_new = [0.]*(len(y_bins)+2)
+  # New bin edge arrays will need an extra four values
+  x_new = [0.]*(len(x_bins)+4)
+  y_new = [0.]*(len(y_bins)+4)
 
   # Calculate bin widths at the edges
   xw1 = x_bins[1]  - x_bins[0]
@@ -888,20 +917,23 @@ def frameTH2D(hist, threshold, frameValue=1000):
 
   # Set the edges of the outer framing bins and the adjusted
   # edge of the real edge bins
-  x_new[0]  = x_bins[0]  - xw1*1.2
-  x_new[1]  = x_bins[0]  - xw1*1.1
-  x_new[-1] = x_bins[-1] + xw2*1.2
-  x_new[-2] = x_bins[-1] + xw2*1.1
-  y_new[0]  = y_bins[0]  - yw1*1.2
-  y_new[1]  = y_bins[0]  - yw1*1.1
-  y_new[-1] = y_bins[-1] + yw2*1.2
-  y_new[-2] = y_bins[-1] + yw2*1.1
+  x_new[0]  = x_bins[0]  - 2 * xw1*0.01
+  x_new[1]  = x_bins[0]  - 1 * xw1*0.01
+  x_new[-1] = x_bins[-1] + 2 * xw2*0.01
+  x_new[-2] = x_bins[-1] + 1 * xw2*0.01
+  y_new[0]  = y_bins[0]  - 2 * yw1*0.01
+  y_new[1]  = y_bins[0]  - 1 * yw1*0.01
+  y_new[-1] = y_bins[-1] + 2 * yw2*0.01
+  y_new[-2] = y_bins[-1] + 1 * yw2*0.01
 
   # Copy the remaining bin edges from the hist
-  for i in xrange(1, len(x_bins) - 1):
-    x_new[i+1] = x_bins[i]
-  for i in xrange(1, len(y_bins) - 1):
-    y_new[i+1] = y_bins[i]
+  for i in xrange(0, len(x_bins)):
+    x_new[i+2] = x_bins[i]
+  for i in xrange(0, len(y_bins)):
+    y_new[i+2] = y_bins[i]
+
+  # print x_new
+  # print y_new
 
   framed = R.TH2D('%s framed' % hist.GetName(), '%s framed' % hist.GetTitle(), len(x_new)-1, array('d', x_new), len(y_new)-1, array('d', y_new))
   framed.SetDirectory(0)
@@ -912,7 +944,19 @@ def frameTH2D(hist, threshold, frameValue=1000):
         # This is a a frame bin
         framed.SetBinContent(x, y, frameValue)
       else:
-        framed.SetBinContent(x, y, hist.GetBinContent(x-1, y-1))
+        # adjust x and y if we're in the first frame so as to copy the output
+        # values from the real TH2
+        ux = x
+        uy = y
+        if x == 2:
+          ux += 1
+        elif x == (len(x_new)-2):
+          ux -= 1
+        if y == 2:
+          uy += 1
+        elif y == (len(y_new)-2):
+          uy -= 1
+        framed.SetBinContent(x, y, hist.GetBinContent(ux-2, uy-2))
   return framed
 
 def FixOverlay():
