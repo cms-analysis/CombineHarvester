@@ -3,7 +3,7 @@ BSM Model independent Limits using MorphingHhh or MorphingAZh {#ModelIndepHhhAZh
 
 The model independent limits for the H->hh and A->Zh analyses (HIG-14-034) are slightly simpler than for the MSSM H->tautau analysis, since only one signal process is considered and hence no profiling is required. This removes the need for any kind of physics model at the text2workspace step.
 
-Creating datacards {#p1}
+Creating datacards {#Hhh-Azh-p1}
 ========================
 
 The first step is to create the datacards, which will be used to produce the limit later on. To do this, go into the Folder CombineHarvester/Run1BSMComb/ and then execute MorphingHhh or MorphingAZh. All of the programs in the following steps also need to be executed from this folder. Also make sure that all the files have been compiled beforehand:
@@ -15,7 +15,7 @@ The first step is to create the datacards, which will be used to produce the lim
 MorphingHhh.cpp and MorphingAZh.cpp are setup similarly to Example2 and MorphingMSSMUpdate as documented previously. No additional option -m MH is needed as in the case of the MSSMUpdate cards because there is only one Higgs boson considered anyway for these analyses. 
 
 
-Creating the workspace {#p2}
+Creating the workspace {#Hhh-Azh-p2}
 =======================================
 
 Now that the datacards have been created, we can create a workspace as follows:
@@ -26,7 +26,7 @@ text2workspace.py -b output/hhh_cards_nomodel/htt_cmb_Hhh.txt -o output/hhh_card
 This creates a workspace based on the combined datacard.
 
 
-Calculating values {#p3}
+Calculating values {#Hhh-Azh-p3}
 ========================
 
 Now that we have created the workspace, we can now run combineTool.py to run the limit for a given masspoint:
