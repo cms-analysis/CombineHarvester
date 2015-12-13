@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
       auto procs = cb.cp().bin({b}).signals().process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var.at(p)),
-                             "norm", false, true, true, &debug);
+                             "norm", false, true, false, &debug);
       }
     }
   }
