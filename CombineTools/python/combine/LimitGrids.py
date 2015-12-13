@@ -148,12 +148,12 @@ class AsymptoticGrid(CombineToolBase):
     #  for j in xrange(1, hist.GetNbinsY()+1):
     #    hist.SetBinContent(i, j, graph.Interpolate(hist.GetXaxis().GetBinCenter(i), hist.GetYaxis().GetBinCenter(j)))
     fout = ROOT.TFile('asymptotic_grid.root', 'RECREATE')
-    fout.WriteTObject(graph_m2s, 'minus2sigma')
-    fout.WriteTObject(graph_m1s, 'minus1sigma')
-    fout.WriteTObject(graph_exp, 'expected')
-    fout.WriteTObject(graph_p1s, 'plus1sigma')
-    fout.WriteTObject(graph_p2s, 'plus2sigma')
-    fout.WriteTObject(graph_obs, 'observed')
+    fout.WriteTObject(graph_m2s, 'exp-2')
+    fout.WriteTObject(graph_m1s, 'exp-1')
+    fout.WriteTObject(graph_exp, 'exp0')
+    fout.WriteTObject(graph_p1s, 'exp+1')
+    fout.WriteTObject(graph_p2s, 'exp+2')
+    fout.WriteTObject(graph_obs, 'obs')
     #fout.WriteTObject(hist)
     fout.Close()
     # Next step: open output files
