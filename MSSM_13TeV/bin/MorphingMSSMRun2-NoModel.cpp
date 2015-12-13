@@ -42,8 +42,8 @@ int main(int argc, char** argv) {
       string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
 
   VString chns =
-      {"tt"};
-      //{"mt","et","tt","em"};
+      //{"tt"};
+      {"mt","et","tt","em"};
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 160., 1000.);
   RooRealVar mH("mH", "mH", 160., 1000.);
