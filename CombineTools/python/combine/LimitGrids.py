@@ -11,7 +11,6 @@ from array import array
 
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
-from CombineHarvester.CombineTools.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
 import CombineHarvester.CombineTools.plotting as plot
 
 class AsymptoticGrid(CombineToolBase):
@@ -149,12 +148,12 @@ class AsymptoticGrid(CombineToolBase):
     #  for j in xrange(1, hist.GetNbinsY()+1):
     #    hist.SetBinContent(i, j, graph.Interpolate(hist.GetXaxis().GetBinCenter(i), hist.GetYaxis().GetBinCenter(j)))
     fout = ROOT.TFile('asymptotic_grid.root', 'RECREATE')
-    fout.WriteTObject(graph_m2s, 'minus2sigma')
-    fout.WriteTObject(graph_m1s, 'minus1sigma')
-    fout.WriteTObject(graph_exp, 'expected')
-    fout.WriteTObject(graph_p1s, 'plus1sigma')
-    fout.WriteTObject(graph_p2s, 'plus2sigma')
-    fout.WriteTObject(graph_obs, 'observed')
+    fout.WriteTObject(graph_m2s, 'exp-2')
+    fout.WriteTObject(graph_m1s, 'exp-1')
+    fout.WriteTObject(graph_exp, 'exp0')
+    fout.WriteTObject(graph_p1s, 'exp+1')
+    fout.WriteTObject(graph_p2s, 'exp+2')
+    fout.WriteTObject(graph_obs, 'obs')
     #fout.WriteTObject(hist)
     fout.Close()
     # Next step: open output files
@@ -252,16 +251,19 @@ class HybridNewGrid(CombineToolBase):
             # for CLs+b at some point
             CLs = hyp_res.CLs()
             CLsErr = hyp_res.CLsError()
-            results[contour] = (CLs, CLsErr)
+            if ntoys == 0: CLsErr = 0 # If there were no toys then ClsError() will return inf
+            dist = 0.
             if CLsErr == 0.:
                 if verbose:
                     print '>>>> CLs = %g +/- %g (infinite significance), will treat as passing' % (CLs, CLsErr)
+                dist = 999.
             else:
                 dist = abs(CLs - crossing) / CLsErr
                 if verbose:
                     print '>>>> CLs = %g +/- %g, reached %.1f sigma signifance' % (CLs, CLsErr, dist)
                 if dist < signif:
                     signif_results[contour] = False
+            results[contour] = (CLs, CLsErr, dist)
             # Set the observed test statistic back to the real data value
             hyp_res.SetTestStatisticData(q_obs)
 
@@ -376,9 +378,15 @@ class HybridNewGrid(CombineToolBase):
         output_x = []
         output_y = []
         output_data = {}
+        output_ntoys = []
+        output_clserr = {}
+        output_signif = {}
         # One list of Z-values per contour 
         for contour in contours:
             output_data[contour] = []
+            output_clserr[contour] = []
+            output_signif[contour] = []
+
 
         # Also keep track of the number of model points which have met the
         # CLs criteria
@@ -419,8 +427,11 @@ class HybridNewGrid(CombineToolBase):
             if res is not None and (ok or incomplete) and self.args.output:
                 output_x.append(float(key[0]))
                 output_y.append(float(key[1]))
+                output_ntoys.append(point_res['ntoys'])
                 for contour in contours:
                     output_data[contour].append(point_res[contour][0])
+                    output_clserr[contour].append(point_res[contour][1])
+                    output_signif[contour].append(point_res[contour][2])
             
             # Do the job cycle generation if requested
             if not ok and self.args.cycles > 0:
@@ -451,12 +462,23 @@ class HybridNewGrid(CombineToolBase):
         # Create and write output CLs TGraph2Ds here
         # TODO: add graphs with the CLs errors, the numbers of toys and whether or not the point passes
         if self.args.output:
-           fout = ROOT.TFile(outfile, 'RECREATE')
-           for c in contours:
+            fout = ROOT.TFile(outfile, 'RECREATE')
+            for c in contours:
                 graph = ROOT.TGraph2D(len(output_data[c]), array('d', output_x), array('d', output_y), array('d', output_data[c]))
                 graph.SetName(c)
                 fout.WriteTObject(graph, c)
-           fout.Close()
+                # Also write a Graph with the CLsErr
+                graph = ROOT.TGraph2D(len(output_clserr[c]), array('d', output_x), array('d', output_y), array('d', output_clserr[c]))
+                graph.SetName('clsErr_'+c)
+                fout.WriteTObject(graph, 'clsErr_'+c)
+                # And a Graph with the significance
+                graph = ROOT.TGraph2D(len(output_signif[c]), array('d', output_x), array('d', output_y), array('d', output_signif[c]))
+                graph.SetName('signif_'+c)
+                fout.WriteTObject(graph, 'signif_'+c)
+            graph = ROOT.TGraph2D(len(output_ntoys), array('d', output_x), array('d', output_y), array('d', output_ntoys))
+            graph.SetName('ntoys'+c)
+            fout.WriteTObject(graph, 'ntoys')
+            fout.Close()
 
     def PlotTestStat(self, result, name, opts, poi_vals):
       null_vals = [x * -2. for x in result.GetNullDistribution().GetSamplingDistribution()]
@@ -479,12 +501,12 @@ class HybridNewGrid(CombineToolBase):
       for val in null_vals: hist_null.Fill(val)
       for val in alt_vals: hist_alt.Fill(val)
       hist_alt.SetLineColor(ROOT.TColor.GetColor(4, 4, 255))
-      hist_alt.SetFillColorAlpha(ROOT.TColor.GetColor(4, 4, 255), 0.4)
+      #hist_alt.SetFillColorAlpha(ROOT.TColor.GetColor(4, 4, 255), 0.4)
       hist_alt.GetXaxis().SetTitle('-2 #times ln(L_{%s} / L_{%s})' % (opts['alt_label'], opts['null_label']))
       hist_alt.GetYaxis().SetTitle('Pseudo-experiments')
       hist_alt.Draw()
       hist_null.SetLineColor(ROOT.TColor.GetColor(252, 86, 11))
-      hist_null.SetFillColorAlpha(ROOT.TColor.GetColor(254, 195, 40), 0.4)
+      #hist_null.SetFillColorAlpha(ROOT.TColor.GetColor(254, 195, 40), 0.4)
       hist_null.Draw('SAME')
       val_obs = result.GetTestStatisticData() * -2.
       obs = ROOT.TArrow(val_obs, 0, val_obs, hist_alt.GetMaximum() * 0.3, 0.05 , '<-|')
@@ -518,111 +540,3 @@ class HybridNewGrid(CombineToolBase):
       pt_r.Draw()
       for fmt in opts['formats']:
           canv.SaveAs(fmt)
-
-
-class Limit1D(CombineToolBase):
-  description = 'Calculate asymptotic limits on parameter grids' 
-  requires_root = True
-
-  def __init__(self):
-    CombineToolBase.__init__(self)
-
-  def attach_intercept_args(self, group):
-    CombineToolBase.attach_intercept_args(self, group)
-
-  def attach_args(self, group):
-    CombineToolBase.attach_args(self, group)
-    group.add_argument('config', help='json config file')
-
-  def run_method(self):
-    # Step 1 - open the json config file
-    with open(self.args.config) as json_file:    
-        cfg = json.load(json_file)
-    # to do - have to handle the case where it doesn't exist
-    points = []; blacklisted_points = []
-    for igrid in cfg['grids']:
-      assert(len(igrid) == 1)
-      points.extend(itertools.product(utils.split_vals(igrid[0])))
-    POIs = cfg['POIs']
-
-    file_dict = { }
-    for p in points:
-      file_dict[p] = []
-
-    for f in glob.glob('higgsCombine.%s.*.Asymptotic.mH*.root' % (POIs[0])):
-      rgx = re.compile('higgsCombine\.%s\.(?P<p1>.*)\.Asymptotic\.mH.*\.root' % (POIs[0]))
-      matches = rgx.search(f)
-      p = (matches.group('p1'),)
-      if p in file_dict:
-        file_dict[p].append(f)
-
-    for key,val in file_dict.iteritems():
-      name = '%s.%s' % (POIs[0], key[0])
-      print '>> Point %s' % name
-      if len(val) == 0:
-        print 'Going to run limit for point %s' % (key)
-        r_process = cfg['r']
-        point_args = ''
-        if r_process[0] == 'r_ggA' :
-          point_args = '-n .%s --setPhysicsModelParameters %s=%s --setPhysicsModelParameterRanges %s=0,%s --freezeNuisances %s' % (name, POIs[0], key[0], r_process[0], str(bounds['ggH-bbH',key[0]][0]), POIs[0])
-        elif r_process[0] == 'r_bbA' :
-          point_args = '-n .%s --setPhysicsModelParameters %s=%s --setPhysicsModelParameterRanges %s=0,%s --freezeNuisances %s' % (name, POIs[0], key[0], r_process[0], str(bounds['ggH-bbH',key[0]][1]), POIs[0])
-        cmd = ' '.join(['combine -M Asymptotic', cfg['opts'], point_args] + self.passthru)
-        self.job_queue.append(cmd)
-
-    bail_out = len(self.job_queue) > 0
-    self.flush_queue()
-
-    if bail_out: 
-        print '>> New jobs were created / run in this cycle, run the script again to collect the output'
-        sys.exit(0)
-
-    xvals = []
-    zvals_m2s = []; zvals_m1s = []; zvals_exp = []; zvals_p1s = []; zvals_p2s = []; zvals_obs = []
-    for key,val in file_dict.iteritems():
-      for filename in val:
-        fin = ROOT.TFile(filename)
-        if fin.IsZombie(): continue
-        tree = fin.Get('limit')
-        for evt in tree:
-          if abs(evt.quantileExpected+1)<0.01:
-            xvals.append(float(key[0]))
-            #print 'At point %s have observed CLs = %f' % (key, evt.limit)
-            zvals_obs.append(float(evt.limit))
-          if abs(evt.quantileExpected-0.025)<0.01:
-            #print 'At point %s have -2sigma CLs = %f' % (key, evt.limit)
-            zvals_m2s.append(float(evt.limit))
-          if abs(evt.quantileExpected-0.16)<0.01:
-            #print 'At point %s have -1sigma CLs = %f' % (key, evt.limit)
-            zvals_m1s.append(float(evt.limit))
-          if abs(evt.quantileExpected-0.5)<0.01:
-            #print 'At point %s have expected CLs = %f' % (key, evt.limit)
-            zvals_exp.append(float(evt.limit))
-          if abs(evt.quantileExpected-0.84)<0.01:
-            #print 'At point %s have +1sigma CLs = %f' % (key, evt.limit)
-            zvals_p1s.append(float(evt.limit))
-          if abs(evt.quantileExpected-0.975)<0.01:
-            #print 'At point %s have +2sigma CLs = %f' % (key, evt.limit)
-            zvals_p2s.append(float(evt.limit))
-    graph_m2s = ROOT.TGraph(len(zvals_m2s), array('d', xvals), array('d', zvals_m2s))
-    graph_m1s = ROOT.TGraph(len(zvals_m1s), array('d', xvals), array('d', zvals_m1s))
-    graph_exp = ROOT.TGraph(len(zvals_exp), array('d', xvals), array('d', zvals_exp))
-    graph_p1s = ROOT.TGraph(len(zvals_p1s), array('d', xvals), array('d', zvals_p1s))
-    graph_p2s = ROOT.TGraph(len(zvals_p2s), array('d', xvals), array('d', zvals_p2s))
-    graph_obs = ROOT.TGraph(len(zvals_obs), array('d', xvals), array('d', zvals_obs))
-    #h_bins = cfg['hist_binning']
-    #hist = ROOT.TH2F('h_observed', '', h_bins[0], h_bins[1], h_bins[2], h_bins[3], h_bins[4], h_bins[5])
-    #for i in xrange(1, hist.GetNbinsX()+1):
-    #  for j in xrange(1, hist.GetNbinsY()+1):
-    #    hist.SetBinContent(i, j, graph.Interpolate(hist.GetXaxis().GetBinCenter(i), hist.GetYaxis().GetBinCenter(j)))
-    fout = ROOT.TFile('asymptotic_1Dlimit.root', 'RECREATE')
-    fout.WriteTObject(graph_m2s, 'minus2sigma')
-    fout.WriteTObject(graph_m1s, 'minus1sigma')
-    fout.WriteTObject(graph_exp, 'expected')
-    fout.WriteTObject(graph_p1s, 'plus1sigma')
-    fout.WriteTObject(graph_p2s, 'plus2sigma')
-    fout.WriteTObject(graph_obs, 'observed')
-    #fout.WriteTObject(hist)
-    fout.Close()
-    # Next step: open output files
-    # Fill TGraph2D with CLs, CLs+b

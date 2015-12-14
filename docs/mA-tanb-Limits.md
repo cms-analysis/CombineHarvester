@@ -1,4 +1,4 @@
-odel dependent Limits using MorphingMSSMUpdate-NoModel {#MSSMUpdateNoModel}
+Model dependent Limits using MorphingMSSMUpdate {#MSSMUpdateModelDep}
 =================================================================
 
 These instruction shall elaborate how to produce MSSM model dependent limits using the 8TeV part of the MSSM (CMS-PAS-HIG-14-029) analysis.
@@ -9,8 +9,8 @@ Creating datacards {#p1}
 
 First we create the datacards.
 
-    cd CombineHarvester/CombinePdfs/
-    MorphingMSSMUpdate-NoModel
+    cd CombineHarvester/Run1BSMComb/
+    MorphingMSSMUpdate
 
 The created datacards contain six signals: Three for each considered production process, ggH and bbH and each of them separated in the three neutral MSSM Higgs bosons h, H and A. The particular interesting feature of the "-NoModel" creation of the datacards is that all considered signal masses are stored in the workspace instead of having a single datacard for each mass. This has the advantage that high-level morphing tools of combine could be directly used instead of having to perform manual morphing using fixed mass datacards.
 

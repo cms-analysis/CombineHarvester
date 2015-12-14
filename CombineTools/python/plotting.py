@@ -4,6 +4,8 @@ from functools import partial
 from array import array
 import re
 
+COL_STORE = []
+
 def SetTDRStyle():
   # For the canvas:
   R.gStyle.SetCanvasBorderMode(0)
@@ -446,14 +448,15 @@ class Graph:
 
 def CreateTransparentColor(color, alpha):
     adapt   = R.gROOT.GetColor(color)
-    new_idx = R.gROOT.GetListOfColors().GetSize() + 1
+    new_idx = R.gROOT.GetListOfColors().GetLast() + 1
     trans = R.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
+    COL_STORE.append(trans)
     trans.SetName('userColor%i' % new_idx)
     return new_idx
 
 def TFileIsGood(filename):
     # if not os.path.exists(filename): return False
-    fin = R.TFile.Open(filename)
+    fin = R.TFile(filename)
     if not fin: return False
     if fin and not fin.IsOpen():
       return False
@@ -461,6 +464,7 @@ def TFileIsGood(filename):
       fin.Close()
       return False
     elif fin and fin.IsOpen() and fin.TestBit(R.TFile.kRecovered):
+      fin.Close()
       # don't consider a recovered file to be ok
       return False
     else:
@@ -779,22 +783,93 @@ def RemoveNearMin(graph, val, spacing = None):
             RemoveNearMin(graph, val, spacing)
             break
 
-def contourFromTH2(h2in, threshold, minPoints=10, mult = 1.0):
-  # std::cout << "Getting contour at threshold " << threshold << " from "
-  #           << h2in->GetName() << std::endl;
+
+def TH2FromTGraph2D(graph, method='BinEdgeAligned',
+                    force_x_width=None,
+                    force_y_width=None):
+    """Build an empty TH2 from the set of points in a TGraph2D
+
+    There is no unique way to define a TH2 binning given an arbitrary
+    TGraph2D, therefore this function supports multiple named methods:
+
+     - `BinEdgeAligned` simply takes the sets of x- and y- values in the
+       TGraph2D and uses these as the bin edge arrays in the TH2. The
+       implication of this is that when filling the bin contents interpolation
+       will be required when evaluating the TGraph2D at the bin centres.
+     - `BinCenterAligned` will try to have the TGraph2D points at the bin
+       centers, but this will only work completely correctly when the input
+       point spacing is regular. The algorithm first identifies the bin width
+       as the smallest interval between points on each axis. The start
+       position of the TH2 axis is then defined as the lowest value in the
+       TGraph2D minus half this width, and the axis continues with regular
+       bins until the graph maximum is passed.
+
+    Args:
+        graph (TGraph2D): Should have at least two unique x and y values,
+            otherwise we can't define any bins
+        method (str): The binning algorithm to use
+        force_x_width (bool): Override the derived x-axis bin width in the
+            CenterAligned method
+        force_y_width (bool): Override the derived y-axis bin width in the
+            CenterAligned method
+
+    Raises:
+        RuntimeError: If the method name is not recognised
+
+    Returns:
+        TH2F: The exact binning of the TH2F depends on the chosen method
+    """
+    x_vals = set()
+    y_vals = set()
+
+    for i in xrange(graph.GetN()):
+        x_vals.add(graph.GetX()[i])
+        y_vals.add(graph.GetY()[i])
+
+    x_vals = sorted(x_vals)
+    y_vals = sorted(y_vals)
+    if method == 'BinEdgeAligned':
+        h_proto = R.TH2F('prototype', '',
+                         len(x_vals) - 1, array('d', x_vals),
+                         len(y_vals) - 1, array('d', y_vals))
+    elif method == 'BinCenterAligned':
+        x_widths = []
+        y_widths = []
+        for i in xrange(1, len(x_vals)):
+            x_widths.append(x_vals[i] - x_vals[i-1])
+        for i in xrange(1, len(y_vals)):
+            y_widths.append(y_vals[i] - y_vals[i-1])
+        x_min = min(x_widths) if force_x_width is None else force_x_width
+        y_min = min(y_widths) if force_y_width is None else force_y_width
+        x_bins = int(((x_vals[-1] - (x_vals[0] - 0.5*x_min))/x_min) + 0.5)
+        y_bins = int(((y_vals[-1] - (y_vals[0] - 0.5*y_min))/y_min) + 0.5)
+        print '[TH2FromTGraph2D] x-axis binning: (%i, %g, %g)' % (x_bins, x_vals[0] - 0.5*x_min, x_vals[0] - 0.5*x_min + x_bins*x_min)
+        print '[TH2FromTGraph2D] y-axis binning: (%i, %g, %g)' % (y_bins, y_vals[0] - 0.5*y_min, y_vals[0] - 0.5*y_min + y_bins*y_min)
+        # Use a number slightly smaller than 0.49999 because the TGraph2D interpolation
+        # is fussy about evaluating on the boundary
+        h_proto = R.TH2F('prototype', '',
+                         x_bins, x_vals[0] - 0.49999*x_min, x_vals[0] - 0.50001*x_min + x_bins*x_min,
+                         y_bins, y_vals[0] - 0.49999*y_min, y_vals[0] - 0.50001*y_min + y_bins*y_min)
+    else:
+        raise RuntimeError(
+            '[TH2FromTGraph2D] Method %s not supported' % method)
+    h_proto.SetDirectory(0)
+    return h_proto
+
+
+def contourFromTH2(h2in, threshold, minPoints=10, frameValue = 1000.):
   # // http://root.cern.ch/root/html/tutorials/hist/ContourList.C.html
   contoursList = [threshold]
   contours = array('d', contoursList)
-  if (h2in.GetNbinsX() * h2in.GetNbinsY()) > 10000: minPoints = 50
-  if (h2in.GetNbinsX() * h2in.GetNbinsY()) <= 100: minPoints = 10
+  # if (h2in.GetNbinsX() * h2in.GetNbinsY()) > 10000: minPoints = 50
+  # if (h2in.GetNbinsX() * h2in.GetNbinsY()) <= 100: minPoints = 10
 
-  # h2 = h2in.Clone()
-  h2 = frameTH2D(h2in, threshold, mult)
+  h2 = frameTH2D(h2in, threshold, frameValue)
 
   h2.SetContour(1, contours)
 
   # Draw contours as filled regions, and Save points
-  backup = R.gPad
+  # backup = R.gPad # doesn't work in pyroot, backup behaves like a ref to gPad
   canv = R.TCanvas('tmp', 'tmp')
   canv.cd()
   h2.Draw('CONT Z LIST')
@@ -809,69 +884,79 @@ def contourFromTH2(h2in, threshold, minPoints=10, mult = 1.0):
   ret = R.TList()
   for i in xrange(conts.GetSize()):
     contLevel = conts.At(i)
-    print 'Contour %d has %d Graphs\n' % (i, contLevel.GetSize())
+    print '>> Contour %d has %d Graphs' % (i, contLevel.GetSize())
     for j in xrange(contLevel.GetSize()):
       gr1 = contLevel.At(j)
       print'\t Graph %d has %d points' % (j, gr1.GetN())
       if gr1.GetN() > minPoints: ret.Add(gr1.Clone())
       # // break;
-  backup.cd()
+  # backup.cd()
+  canv.Close()
   return ret
 
 
-def frameTH2D(hist, threshold, mult = 1.0):
-  # NEW LOGIC:
-  #   - pretend that the center of the last bin is on the border if the frame
-  #   - add one tiny frame with huge values
-  frameValue = 1000
-  # if (TString(in->GetName()).Contains("bayes")) frameValue = -1000;
+def frameTH2D(hist, threshold, frameValue=1000):
+  # Now supports variable-binned histograms First adds a narrow frame (1% of
+  # of bin widths) around the outside with same values as the real edge. Then
+  # adds another frame another frame around this one filled with some chosen
+  # value that will make the contours close
 
-  xw = hist.GetXaxis().GetBinWidth(1)
-  yw = hist.GetYaxis().GetBinWidth(1)
+  # Get lists of the bin edges
+  x_bins = [hist.GetXaxis().GetBinLowEdge(x) for x in xrange(1, hist.GetNbinsX()+2)]
+  y_bins = [hist.GetYaxis().GetBinLowEdge(y) for y in xrange(1, hist.GetNbinsY()+2)]
 
-  nx = hist.GetNbinsX()
-  ny = hist.GetNbinsY()
+  # New bin edge arrays will need an extra four values
+  x_new = [0.]*(len(x_bins)+4)
+  y_new = [0.]*(len(y_bins)+4)
 
-  x0 = hist.GetXaxis().GetXmin()
-  x1 = hist.GetXaxis().GetXmax()
+  # Calculate bin widths at the edges
+  xw1 = x_bins[1]  - x_bins[0]
+  xw2 = x_bins[-1] - x_bins[-2]
+  yw1 = y_bins[1]  - y_bins[0]
+  yw2 = y_bins[-1] - y_bins[-2]
 
-  y0 = hist.GetYaxis().GetXmin()
-  y1 = hist.GetYaxis().GetXmax()
-  xbins = array('d', [0]*999)
-  ybins = array('d', [0]*999)
-  eps = 0.1
-  # mult = 1.0
+  # Set the edges of the outer framing bins and the adjusted
+  # edge of the real edge bins
+  x_new[0]  = x_bins[0]  - 2 * xw1*0.01
+  x_new[1]  = x_bins[0]  - 1 * xw1*0.01
+  x_new[-1] = x_bins[-1] + 2 * xw2*0.01
+  x_new[-2] = x_bins[-1] + 1 * xw2*0.01
+  y_new[0]  = y_bins[0]  - 2 * yw1*0.01
+  y_new[1]  = y_bins[0]  - 1 * yw1*0.01
+  y_new[-1] = y_bins[-1] + 2 * yw2*0.01
+  y_new[-2] = y_bins[-1] + 1 * yw2*0.01
 
-  xbins[0] = x0 - eps * xw - xw * mult
-  xbins[1] = x0 + eps * xw - xw * mult
-  for ix in xrange(2, nx+1): xbins[ix] = x0 + (ix - 1) * xw
-  xbins[nx + 1] = x1 - eps * xw + 0.5 * xw * mult
-  xbins[nx + 2] = x1 + eps * xw + xw * mult
+  # Copy the remaining bin edges from the hist
+  for i in xrange(0, len(x_bins)):
+    x_new[i+2] = x_bins[i]
+  for i in xrange(0, len(y_bins)):
+    y_new[i+2] = y_bins[i]
 
-  ybins[0] = y0 - eps * yw - yw * mult
-  ybins[1] = y0 + eps * yw - yw * mult
-  for iy in xrange(2, ny+1): ybins[iy] = y0 + (iy - 1) * yw
-  ybins[ny + 1] = y1 - eps * yw + yw * mult
-  ybins[ny + 2] = y1 + eps * yw + yw * mult
+  # print x_new
+  # print y_new
 
-  framed = R.TH2D('%s framed' % hist.GetName(), '%s framed' % hist.GetTitle(), nx + 2, xbins, ny + 2, ybins)
+  framed = R.TH2D('%s framed' % hist.GetName(), '%s framed' % hist.GetTitle(), len(x_new)-1, array('d', x_new), len(y_new)-1, array('d', y_new))
+  framed.SetDirectory(0)
 
-  # Copy over the contents
-  for ix in xrange(1, nx+1):
-    for iy in xrange(1, ny+1):
-      framed.SetBinContent(1 + ix, 1 + iy, hist.GetBinContent(ix, iy))
-  
-  # Frame with huge values
-  nx = framed.GetNbinsX()
-  ny = framed.GetNbinsY()
-  for ix in xrange(1, nx+1):
-    framed.SetBinContent(ix, 1, frameValue)
-    framed.SetBinContent(ix, ny, frameValue)
-
-  for iy in xrange(2, ny):
-    framed.SetBinContent(1, iy, frameValue)
-    framed.SetBinContent(nx, iy, frameValue)
-
+  for x in xrange(1, framed.GetNbinsX()+1):
+    for y in xrange(1, framed.GetNbinsY()+1):
+      if x == 1 or x == framed.GetNbinsX() or y == 1 or y == framed.GetNbinsY():
+        # This is a a frame bin
+        framed.SetBinContent(x, y, frameValue)
+      else:
+        # adjust x and y if we're in the first frame so as to copy the output
+        # values from the real TH2
+        ux = x
+        uy = y
+        if x == 2:
+          ux += 1
+        elif x == (len(x_new)-2):
+          ux -= 1
+        if y == 2:
+          uy += 1
+        elif y == (len(y_new)-2):
+          uy -= 1
+        framed.SetBinContent(x, y, hist.GetBinContent(ux-2, uy-2))
   return framed
 
 def FixOverlay():
@@ -1023,20 +1108,171 @@ def bestFit(tree, x, y, cut):
   gr0.SetMarkerSize(2.0)
   return gr0
 
-def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
+def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins, firstInterpolationDirection):
     t.Draw("2*deltaNLL:%s:%s>>%s_prof(%d,%10g,%10g,%d,%10g,%10g)" % (y, x, name, xbins, xmin, xmax, ybins, ymin, ymax), cut + "deltaNLL != 0", "PROF")
     prof = R.gROOT.FindObject(name+"_prof")
     h2d = R.TH2D(name, name, xbins, xmin, xmax, ybins, ymin, ymax)
     for ix in xrange(1,xbins+1):
         for iy in xrange(1,ybins+1):
             z = prof.GetBinContent(ix,iy)
-            if (z == 0.0): # protect agains NANs
-                if ("bayes" in name):
-                    z = 0
-                else:
-                    z = 999
+            if (z != z): # protect agains NANs
+                z=0
             h2d.SetBinContent(ix, iy, z)
     h2d.GetXaxis().SetTitle(x)
     h2d.GetYaxis().SetTitle(y)
     h2d.SetDirectory(0)
+    h2d = NewInterpolate(h2d, firstInterpolationDirection)
     return h2d
+
+# Functions 'NewInterpolate', 'alongDiagonal' and 'rebin' are taken and translated into python from:
+# https://indico.cern.ch/event/256523/contribution/2/attachments/450198/624259/07JUN2013_cawest.pdf
+# http://hep.ucsb.edu/people/cawest/interpolation/interpolate.h
+def NewInterpolate(hist, firstInterpolationDirection):
+  histCopy = hist.Clone()
+
+  if(firstInterpolationDirection=="SW") or (firstInterpolationDirection=="NE") or (firstInterpolationDirection=="Santa Fe"):
+    xStepPlus = 1
+    xStepMinus = -1
+    yStepPlus = 1
+    yStepMinus = -1
+  elif(firstInterpolationDirection=="NW") or (firstInterpolationDirection=="SE"):
+    xStepPlus = -1
+    xStepMinus = 1
+    yStepPlus = 1
+    yStepMinus = -1
+  elif(firstInterpolationDirection=="N") or (firstInterpolationDirection=="S") or (firstInterpolationDirection=="NS") or (firstInterpolationDirection=="SN"):
+    xStepPlus = 0
+    xStepMinus = 0
+    yStepPlus = 1
+    yStepMinus = -1
+  elif(firstInterpolationDirection=="E") or (firstInterpolationDirection=="W") or (firstInterpolationDirection=="EW") or (firstInterpolationDirection=="WE"):
+    xStepPlus = 1
+    xStepMinus = -1
+    yStepPlus = 0
+    yStepMinus = 0
+  else:
+    # to avoid uninitialized variable warnings
+    xStepPlus=0
+    xStepMinus=0
+    yStepPlus=0
+    yStepMinus=0
+    print firstInterpolationDirection + " is not an allowed smearing first interpolation direction."
+    print "Allowed first interpolation directions are SW (equivalently NE), SE (equivalently NW), NS, EW"
+    return hist
+
+  # make temporary histograms to store the results of both steps
+  hist_step1 = histCopy.Clone()
+  hist_step1.Reset()
+  hist_step2 = histCopy.Clone()
+  hist_step2.Reset()
+
+  nBinsX = histCopy.GetNbinsX()
+  nBinsY = histCopy.GetNbinsY()
+
+  xMin=histCopy.GetNbinsX() # maximum possible minimum -- large dummy value
+  yMin=histCopy.GetNbinsY() # large dummy value
+  xMax=0
+  yMax=0
+
+  for iX in xrange(1,histCopy.GetNbinsX()+1):
+    for iY in xrange(1,histCopy.GetNbinsY()+1):
+      if (histCopy.GetBinContent(iX, iY)>1e-10):
+        if(iX<xMin): xMin=iX
+	if(iY<yMin): yMin=iY
+        if(iX>xMax): xMax=iX
+	if(iY>yMax): yMax=iY
+   
+  for i in xrange(1,nBinsX+1):
+    for j in xrange(1,nBinsY+1):
+      # do not extrapolate outside the scan
+      if (i<xMin) or (i>xMax) or (j<yMin) or (j>yMax): continue 
+      if (not alongDiagonal(histCopy, i,j)): # point is not along the diagonal
+        binContent = histCopy.GetBinContent(i, j)
+        binContentPlusStep = histCopy.GetBinContent(i+xStepPlus, j+yStepPlus)
+        binContentMinusStep = histCopy.GetBinContent(i+xStepMinus, j+yStepMinus)
+        nFilled = 0
+        if(binContentPlusStep>0): nFilled+=1
+        if(binContentMinusStep>0): nFilled+=1
+        # if we are at an empty bin and there are neighbors
+        # in specified direction with non-zero entries
+        if (binContent==0) and (nFilled>0):
+          # average over non-zero entries
+	  binContent = (binContentPlusStep+binContentMinusStep)/nFilled
+	  hist_step1.SetBinContent(i,j,binContent)
+
+      else: #point is along the diagonal; average SW-NE direction
+	binContent = histCopy.GetBinContent(i, j)
+	binContentPlusStep = histCopy.GetBinContent(i+1, j+1)
+	binContentMinusStep = histCopy.GetBinContent(i-1, j-1)
+	nFilled = 0
+	if(binContentPlusStep>0): nFilled+=1
+	if(binContentMinusStep>0): nFilled+=1
+	# if we are at an empty bin and there are neighbors
+	# in specified direction with non-zero entries
+	if(binContent==0) and (nFilled==2):
+	  # average over non-zero entries
+	  binContent = (binContentPlusStep+binContentMinusStep)/nFilled
+	  hist_step1.SetBinContent(i,j,binContent)
+
+   # add result of interpolation
+  histCopy.Add(hist_step1)
+
+  for i in xrange(1,nBinsX):
+    for j in xrange(1,nBinsY):
+      if(i<xMin) or (i>xMax) or (j<yMin) or (j>yMax) or (alongDiagonal(histCopy, i,j)): continue
+      binContent = histCopy.GetBinContent(i, j)
+      # get entries for "Swiss Cross" average
+      binContentUp = histCopy.GetBinContent(i, j+1)
+      binContentDown = histCopy.GetBinContent(i, j-1)
+      binContentLeft = histCopy.GetBinContent(i-1, j)
+      binContentRight = histCopy.GetBinContent(i+1, j)
+      nFilled=0
+      if(binContentUp>0): nFilled+=1
+      if(binContentDown>0): nFilled+=1
+      if(binContentRight>0): nFilled+=1
+      if(binContentLeft>0): nFilled+=1
+      if(binContent==0) and (nFilled>0):
+        # only average over non-zero entries
+	binContent = (binContentUp+binContentDown+binContentRight+binContentLeft)/nFilled
+	hist_step2.SetBinContent(i,j,binContent)
+  # add "Swiss Cross" average
+  histCopy.Add(hist_step2)
+
+  return histCopy
+
+def alongDiagonal(h, iX, iY):
+  # calculate three most "northwestern" neigbors
+  sumNW = h.GetBinContent(iX, iY+1)+h.GetBinContent(iX-1, iY+1)+h.GetBinContent(iX-1, iY)
+  # calculate three most "southeastern" neigbors
+  sumSE = h.GetBinContent(iX, iY-1)+h.GetBinContent(iX+1, iY-1)+h.GetBinContent(iX+1, iY)
+  # etc.
+  sumSW = h.GetBinContent(iX, iY-1)+h.GetBinContent(iX-1, iY-1)+h.GetBinContent(iX-1, iY)
+  sumNE = h.GetBinContent(iX, iY+1)+h.GetBinContent(iX+1, iY+1)+h.GetBinContent(iX+1, iY)
+
+  if( ((sumNW==0) and (sumSE!=0)) or ((sumNW!=0) and (sumSE==0)) or ((sumSW==0) and (sumNE!=0)) or ((sumSW!=0) and (sumNE==0)) ): return 1
+  else: return 0
+
+def rebin(hist, firstInterpolationDirection):
+  histName = hist.GetName()
+  histName+="_rebin"
+
+#  # bin widths are needed so as to not shift histogram by half a bin with each rebinning
+#  # assume constant binning
+#  binWidthX = hist.GetXaxis().GetBinWidth(1)
+#  binWidthY = hist.GetYaxis().GetBinWidth(1)
+
+#  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX(), hist.GetXaxis().GetXmin()+binWidthX/4, hist.GetXaxis().GetXmax()+binWidthX/4, 2*hist.GetNbinsY(), hist.GetYaxis().GetXmin()+binWidthY/4, hist.GetYaxis().GetXmax()+binWidthY/4)
+  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX()-1, hist.GetXaxis().GetXmin(), hist.GetXaxis().GetXmax(), 2*hist.GetNbinsY()-1, hist.GetYaxis().GetXmin(), hist.GetYaxis().GetXmax())
+
+  # copy results from previous histogram
+  for iX in xrange(1,hist.GetNbinsX()+1):
+    for iY in xrange(1,hist.GetNbinsY()+1):
+      binContent = hist.GetBinContent(iX, iY)
+      histRebinned.SetBinContent(2*iX-1, 2*iY-1, binContent)
+  histRebinned.SetMaximum(hist.GetMaximum())
+  histRebinned.SetMinimum(hist.GetMinimum())
+  
+  # use interpolation to re-fill histogram
+  histRebinnedInterpolated = NewInterpolate(histRebinned, firstInterpolationDirection)
+  
+  return histRebinnedInterpolated

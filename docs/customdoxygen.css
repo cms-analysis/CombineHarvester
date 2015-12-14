@@ -1,6 +1,30 @@
 body, table, div, p, dl {
- font: 400 14px/21px "Open Sans",sans-serif;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  color: #333;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 16px;
+  line-height: 1.6;
+  word-wrap: break-word;
 }
+
+/*Copied from markdown css*/
+a {
+  background-color: transparent;
+}
+
+/*Copied from markdown css*/
+a:active,
+a:hover {
+  outline: 0;
+}
+
+/*Copied from markdown css*/
+
+strong {
+  font-weight: bold;
+}
+
 
 div#top {
   width: 270px;
@@ -17,7 +41,7 @@ div#titlearea td {
 }
 
 #MSearchField {
-  font: 9pt 'Open Sans', sans-serif;
+  font: 9pt "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 #MSearchClose {
@@ -25,7 +49,7 @@ div#titlearea td {
 }
 
 .SelectItem {
-  font: 8pt 'Open Sans', sans-serif;
+  font: 8pt "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 div#MSearchResultsWindow {
@@ -36,18 +60,23 @@ div#MSearchResultsWindow {
   border-bottom-right-radius: 7px;
   border-top-left-radius: 7px;
   border-bottom-left-radius: 7px;
+  border: none;
+}
+
+.SRPage .SREntry {
+  font-size: 10pt;
 }
 
 .SRSymbol {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 a.SRScope {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family:"Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
 }
 
 span.SRScope {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
 }
 
 #nav-tree {
@@ -58,7 +87,7 @@ span.SRScope {
 }
 
 #nav-tree .label a {
-  font: 12px 'Open Sans',Geneva,Helvetica,Arial,sans-serif;
+  font: 12px "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   color: rgb(164,164,164);
 }
 
@@ -80,12 +109,32 @@ span.SRScope {
 }
 
 code {
-  font-family: Menlo;
-  font-size: 12px;
-  padding: 2px 4px;
-  white-space: nowrap;
-  background-color: rgba(102, 128, 153, 0.0745098);
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
 }
+
+code:before,
+code:after {
+  letter-spacing: -0.2em;
+  content: "\00a0";
+}
+
+pre>code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+
 
 body {
  font: 400 16px/24px sans-serif;
@@ -96,15 +145,62 @@ body {
  }
 
 .title {
- font: 400 14px/28px "Open Sans",sans-serif;
- font-size: 150%;
+ font: 400 14px/28px "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+ font-size: 1.9em;
  font-weight: bold;
  margin: 10px 2px;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+h1 {
+  padding-bottom: 0.3em;
+  font-size: 1.75em;
+  line-height: 1.2;
+  border-bottom: 1px solid #eee;
+}
+
+h2 {
+  padding-bottom: 0.3em;
+  font-size: 1.5em;
+  line-height: 1.225;
+  border-bottom: 1px solid #eee;
+}
+
+h3 {
+  font-size: 1.25em;
+  line-height: 1.43;
+}
+
+h4 {
+  font-size: 1em;
+}
+
+h5 {
+  font-size: 1em;
+}
+
+h6 {
+  font-size: 1em;
+  color: #777;
+}
+
+
 
 h1.glow, h2.glow, h3.glow, h4.glow, h5.glow, h6.glow {
  text-shadow: 0 0 15px rgb(61, 87, 140);
@@ -123,7 +219,7 @@ a.el {
 }
 
 
-pre.fragment {
+/*pre.fragment {
  border: 0px solid #C4CFE5;
  background-color: rgba(0,0,0,0.03);
  border-left: 0px;
@@ -137,6 +233,36 @@ pre.fragment {
  font-family: Menlo, monospace, fixed;
  font-size: 12px;
 }
+*/
+
+pre.fragment {
+  overflow: auto;
+  font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  padding: 16px;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+  word-wrap: normal;
+  border: none;
+}
+
+dd pre.fragment {
+  overflow: auto;
+  font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  margin: 4px 0px 4px 0px;
+  padding: 6px;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 3px;
+  word-wrap: normal;
+  border: none;
+}
 
 div.fragment {
  padding: 4px 13px;
@@ -148,10 +274,10 @@ div.fragment {
 }
 
 div.line {
- font-family: "Menlo", monospace, fixed;
- font-size: 12px;
+ font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+ font-size: 85%;
  min-height: 12px;
- line-height: 100%;
+ line-height: 1;
  text-wrap: unrestricted;
  white-space: -moz-pre-wrap; /* Moz */
  white-space: -pre-wrap;     /* Opera 4-6 */
@@ -237,7 +363,7 @@ blockquote {
         box-shadow: none;
         border-top-right-radius: 0;
         border-top-left-radius: 0;
-        -moz-box-shadow: none
+        -moz-box-shadow: none;
         -moz-border-radius-topright: 0;
         -moz-border-radius-topleft: 0;
         -webkit-box-shadow: none;
@@ -260,26 +386,34 @@ blockquote {
 
 
 table.doxtable {
-  margin: 20px;
-  width: 85%;
-  font-size: 14px;
-}
-
-table.doxtable td {
- border: 0px solid #FFFFFF;
-  border-bottom: 1px solid #FFFFFF;
-  border-top: 1px solid transparent;
- padding: 4px;
-  color: #000000;
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: normal;
+  word-break: keep-all;
 }
 
 table.doxtable th {
- background-color: #FFFFFF;
-  border: 0px solid #000000;
-  border-bottom: 2px solid #606860;
- font-size: 100%;
-  padding: 4px;
-  color: #000000;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0);
+  color: rgb(51, 51, 51);
+}
+
+
+table.doxtable th,
+table.doxtable td {
+  font-size: 16px;
+  padding: 6px 13px;
+  border: 1px solid #ddd;
+}
+
+table.doxtable tr {
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+}
+
+table.doxtable tr:nth-child(2n) {
+  background-color: #f8f8f8;
 }
 
 table.fieldtable {
@@ -404,12 +538,13 @@ dl.section dd {
 
 #projectname
 {
- font: 140% "Open Sans", Arial,sans-serif;
+ font: 140% "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+ color: rgb(255, 255, 255);
 }
 
 #projectbrief
 {
- font: 70% "Open Sans", Arial,sans-serif;
+ font: 70% "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 
@@ -434,11 +569,11 @@ div.toc {
 }
 
 div.toc li {
-        font: 11px/1.2 "Open Sans",sans-serif;
+        font: 11px/1.2 "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 div.toc h3 {
-        font: bold 11px/1.2 'Open Sans',FreeSans,sans-serif;
+        font: bold 11px/1.2 "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 
@@ -455,5 +590,5 @@ div.toc li.level4 {
 }
 
 #powerTip div {
-        font: 12px/16px "Open Sans",sans-serif;
+        font: 12px/16px "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }

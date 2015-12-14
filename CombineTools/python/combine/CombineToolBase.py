@@ -167,8 +167,10 @@ class CombineToolBase:
         fname = script_filename
         logname = script_filename.replace('.sh', '.log')
         with open(fname, "w") as text_file:
-            if self.job_mode=='lxbatch': text_file.write(JOB_PREFIX)
-            elif self.job_mode=='NAF': text_file.write(JOB_NAF_PREFIX)
+            if self.job_mode == 'NAF':
+              text_file.write(JOB_NAF_PREFIX)
+            else:
+              text_file.write(JOB_PREFIX)
             for i, command in enumerate(commands):
                 tee = 'tee' if i == 0 else 'tee -a'
                 log_part = '\n'

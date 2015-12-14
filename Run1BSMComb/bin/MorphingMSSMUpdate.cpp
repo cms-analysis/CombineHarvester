@@ -95,22 +95,26 @@ int main(int argc, char** argv) {
   cout << " done\n";
   
   cout << "Adding signal processes...";
+  //! [part1]
   // Unlike in previous MSSM H->tautau analyses we will create a separate
   // process for each Higgs in the datacards
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
     {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
   };
+  //! [part1]
   if(mass=="MH"){
     signal_types = {
       {"ggH", {"ggH"}},
       {"bbH", {"bbH"}}
     };
   }
+  //! [part2]
   for (auto chn : chns) {
     cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["ggH"], cats[chn+"_8TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"8TeV"}, {chn}, signal_types["bbH"], cats[chn+"_8TeV"], true);
   }
+  //! [part2]
   cout << " done\n";
 
   cout << "Adding systematic uncertainties...";
@@ -130,10 +134,12 @@ int main(int argc, char** argv) {
     // We have to map each Higgs signal process to the same histogram, i.e:
     // {ggh, ggH, ggA} --> ggH
     // {bbh, bbH, bbA} --> bbH
+  //! [part3]
     cb.cp().channel({chn}).era({"8TeV"}).process(signal_types["ggH"]).ExtractShapes
       (file, "$CHANNEL/ggH$MASS", "$CHANNEL/ggH$MASS_$SYSTEMATIC");
     cb.cp().channel({chn}).era({"8TeV"}).process(signal_types["bbH"]).ExtractShapes
       (file, "$CHANNEL/bbH$MASS", "$CHANNEL/bbH$MASS_$SYSTEMATIC");
+  //! [part3]
   }
   cout << " done\n";
 
@@ -180,6 +186,7 @@ int main(int argc, char** argv) {
 
   TFile demo("htt_mssm_demo.root", "RECREATE");
 
+  //! [part4]
   bool do_morphing = true;
   map<string, RooAbsReal *> mass_var = {
     {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA},
@@ -205,6 +212,7 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   cout << "done\n";
+  //! [part4]
 
   string folder = "output/mssm_nomodel";
   boost::filesystem::create_directories(folder);
