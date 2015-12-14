@@ -23,6 +23,8 @@ class EnhancedCombine(CombineToolBase):
             '--singlePoint', help='Supports range strings for multiple points to test, uses the same format as the --mass argument')
         group.add_argument(
             '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
+        group.add_argument(
+            '--manual_sig_strength', default='False', action='store_true', help='Do not fix signal parameters (to be used for running prefit limits)')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
 
@@ -73,7 +75,8 @@ class EnhancedCombine(CombineToolBase):
             i+=1
           subbed_vars[('MASS', 'MODELBOUNDONE', 'MODELBOUNDTWO')] = [(mass_vals[i], command1[i], command2[i]) for i in range(len(mass_vals))]
           self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUNDONE)s'])
-          self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
+          if not self.args.manual_sig_strength:
+            self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])

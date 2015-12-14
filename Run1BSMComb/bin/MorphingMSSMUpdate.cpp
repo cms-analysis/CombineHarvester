@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
     for (string p : {"ggH", "bbH"}) {
       cout << "Scaling for process " << p << " and era " << e << "\n";
       auto gr = ch::TGraphFromTable(
-          "input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
+          string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/Run1BSMComb/input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
           "accept");
       cb.cp().process(signal_types[p]).era({e}).ForEachProc([&](ch::Process *proc) {
         double m = boost::lexical_cast<double>(proc->mass());
