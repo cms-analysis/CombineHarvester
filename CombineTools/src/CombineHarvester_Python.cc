@@ -201,6 +201,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       // Constructors, destructors and copying
       .def("cp", &CombineHarvester::cp)
       .def("deep", &CombineHarvester::deep)
+      .def("SetFlag", &CombineHarvester::SetFlag)
+      .def("GetFlag", &CombineHarvester::GetFlag)
       // Logging and printing
       .def("PrintAll", &CombineHarvester::PrintAll,
            py::return_internal_reference<>())
