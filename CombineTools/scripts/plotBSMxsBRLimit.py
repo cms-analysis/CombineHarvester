@@ -19,6 +19,7 @@ parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
 parser.add_argument('--log', help='Set log range for x and y axis', action='store_true', default=False)
 parser.add_argument('--expected_only', help='Plot expected only', action='store_true', default=False)
 parser.add_argument('--outname','-o', help='Output plot name', default='mssm_limit')
+parser.add_argument('--title', help='Plot title',default='19.8 fb^{-1} (8 TeV)')
 #parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
@@ -144,7 +145,7 @@ legend.AddEntry(outerBand, "#pm 2#sigma Expected", "F")
 legend.Draw("same")
 
 plot.DrawCMSLogo(pads[1], '', '', 11, 0.045, 0.035, 1.2)
-plot.DrawTitle(pads[1], '2.2 fb^{-1} (13 TeV)', 3);
+plot.DrawTitle(pads[1], '%s'%args.title, 3);
 plot.FixOverlay()
 c1.SaveAs("%s.pdf"%args.outname)
 c1.SaveAs("%s.png"%args.outname)
