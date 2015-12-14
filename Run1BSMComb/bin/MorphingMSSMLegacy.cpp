@@ -20,6 +20,7 @@ int main() {
   // We will need to source some inputs from the "auxiliaries" repo
   string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
   string aux_shapes   = auxiliaries +"shapes/";
+  string input_dir    = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/input";
 
   // RooFit will be quite noisy if we don't set this
   // RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
@@ -91,7 +92,7 @@ int main() {
     for (string p : {"ggH", "bbH"}) {
       cout << "Scaling for process " << p << " and era " << e << "\n";
       auto gr = ch::TGraphFromTable(
-          "input/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
+          input_dir+"/xsecs_brs/mssm_" + p + "_" + e + "_accept.txt", "mPhi",
           "accept");
       cb.cp().process(signal_types[p]).era({e}).ForEachProc([&](ch::Process *proc) {
         double m = boost::lexical_cast<double>(proc->mass());
