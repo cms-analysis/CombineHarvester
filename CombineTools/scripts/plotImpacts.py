@@ -134,7 +134,7 @@ for page in xrange(n):
 
     plot.DrawCMSLogo(pads[0], 'CMS', args.cms_label, 0, 0.25, 0.00, 0.00)
     plot.DrawTitle(pads[1], '#hat{%s} = %.3g #pm %.3g' % (
-        Translate(POIs[0], translate), POI_fit[1], (POI_fit[2] - POI_fit[1]) / 2.), 3)
+        Translate(POIs[0], translate), POI_fit[1], (POI_fit[2] - POI_fit[0]) / 2.), 3)
     extra = ''
     if page == 0:
         extra = '('
