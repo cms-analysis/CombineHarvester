@@ -34,12 +34,12 @@ args = parser.parse_args()
 #Store the mA and tanb list being used for the interpolation
 file = ROOT.TFile(args.file, 'r')
 print args.file
-graph_obs         = file.Get("observed")
-graph_minus2sigma = file.Get("minus2sigma")
-graph_minus1sigma = file.Get("minus1sigma")
-graph_exp         = file.Get("expected")
-graph_plus1sigma  = file.Get("plus1sigma")
-graph_plus2sigma  = file.Get("plus2sigma")
+graph_obs         = file.Get("obs")
+graph_minus2sigma = file.Get("exp-2")
+graph_minus1sigma = file.Get("exp-1")
+graph_exp         = file.Get("exp0")
+graph_plus1sigma  = file.Get("exp+1")
+graph_plus2sigma  = file.Get("exp+2")
 
 mA_list=[]
 tanb_list=[]
