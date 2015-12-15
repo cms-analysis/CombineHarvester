@@ -238,6 +238,7 @@ int main() {
   RooRealVar mh("MH", "", 125, 90, 145);
 
   // TFile demo("htt_sm_morphing_debug.root", "RECREATE");
+  //! [part1]
   bool do_morphing = true;
   if (do_morphing) {
     // RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
@@ -253,6 +254,7 @@ int main() {
     // demo.Close();
     cb.AddWorkspace(ws);
     cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
+  //! [part1]
 
     string folder = "output/sm_cards_morphed";
     boost::filesystem::create_directories(folder);

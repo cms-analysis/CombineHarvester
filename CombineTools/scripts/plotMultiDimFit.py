@@ -81,6 +81,9 @@ h2d = plot.treeToHist2D(tree, "r_ggH", "r_bbH", "h2d", "", ggH_list[0], ggH_list
 #h2d = plot.makeVarBinHist2D("h2d", ggH_list, bbH_list)
 #plot.fillTH2(h2d, graph)
 #h2d.SaveAs("heatmap.root")
+for i in xrange(1):
+    h2d = plot.rebin(h2d) # Additional smoothing of the curves
+#h2d.SaveAs("heatmap2.root")
 axis.Draw()
 
 cont_1sigma = plot.contourFromTH2(h2d, 2.30, 20) #0.68

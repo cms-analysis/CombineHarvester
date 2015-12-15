@@ -1,6 +1,7 @@
 import itertools
 import CombineHarvester.CombineTools.combine.utils as utils
 import json
+import os
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
@@ -61,15 +62,19 @@ class EnhancedCombine(CombineToolBase):
           subbed_vars = {}
           with open(self.args.boundlist) as json_file:
             bnd = json.load(json_file)
-          command=['' for i in mass_vals]
+          command1=['' for i in mass_vals]
+          command2=['' for i in mass_vals]
           i=0
           for mval in mass_vals:
             for model in bnd:
-              if not (command[i]==''): command[i]=command[i]+':'
-              command[i]=command[i]+'r_'+model+'=0,'+str(bnd[model][mval])
+              if not (command1[i]==''): command1[i]=command1[i]+':'
+              if not (command2[i]==''): command2[i]=command2[i]+','
+              command1[i]=command1[i]+model+'=0,'+str(bnd[model][mval])
+              command2[i]=command2[i]+model+'=0' #'='+str(float(bnd[model][mval])/2.0)
             i+=1
-          subbed_vars[('MASS', 'MODELBOUND')] = [(mass_vals[i], command[i]) for i in range(len(mass_vals))]
-          self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUND)s'])
+          subbed_vars[('MASS', 'MODELBOUNDONE', 'MODELBOUNDTWO')] = [(mass_vals[i], command1[i], command2[i]) for i in range(len(mass_vals))]
+          self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUNDONE)s'])
+          self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])
@@ -81,10 +86,19 @@ class EnhancedCombine(CombineToolBase):
             start = 0
             ranges = []
             while (start + (split - 1)) <= points:
-                ranges.append((start, start + (split - 1)))
+                filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(start+(split-1))+".MultiDimFit.mH"+str(self.args.mass)+".root"
+                if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
+                    # Send job, if the file it's supposed to create doesn't exist yet
+                    # or if the file is empty because the previous job didn't finish
+                    ranges.append((start, start + (split - 1)))
                 start += split
             if start < points:
-                ranges.append((start, points - 1))
+                filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(points - 1)+".MultiDimFit.mH"+str(self.args.mass)+".root"
+                if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
+                    ranges.append((start, points - 1))
+            if (ranges == []):
+                print "No jobs were created; All files already exist"
+                exit()
             subbed_vars[('P_START', 'P_END')] = [(r[0], r[1]) for r in ranges]
             self.passthru.extend(
                 ['--firstPoint %(P_START)s --lastPoint %(P_END)s'])
