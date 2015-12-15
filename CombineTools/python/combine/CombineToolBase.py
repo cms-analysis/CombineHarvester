@@ -237,14 +237,15 @@ class CombineToolBase:
             outscript.write(CRAB_PREFIX)
             jobs = 0
             wsp_files = set()
-            for line in self.job_queue:
+            for i, j in enumerate(range(0, len(self.job_queue), self.merge)):
                 jobs += 1
-                newline = line
-                if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
-                wsp = self.extract_workspace_arg(newline.split())
-                wsp_files.add(wsp)
                 outscript.write('\nif [ $1 -eq %i ]; then\n' % jobs)
-                outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
+                for line in self.job_queue[j:j + self.merge]:
+                    newline = line
+                    if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
+                    wsp = str(self.extract_workspace_arg(newline.split()))
+                    wsp_files.add(wsp)
+                    outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
                 outscript.write('fi')
             outscript.write(CRAB_POSTFIX)
             outscript.close()
