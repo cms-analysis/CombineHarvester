@@ -9,15 +9,17 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', '-f', help='named input file')
 parser.add_argument('--process', help='The process on which a limit has been calculated. [gg#phi, bb#phi]', default="gg#phi")
-parser.add_argument('--custom_y_range', help='Fix y axis range', default=False)
+parser.add_argument('--custom_y_range', help='Fix y axis range', action='store_true', default=False)
 parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=0.001)
 parser.add_argument('--y_axis_max',  help='Fix y axis maximum', default=100.0)
-parser.add_argument('--custom_x_range', help='Fix x axis range', default=False)
+parser.add_argument('--custom_x_range', help='Fix x axis range', action='store_true', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--verbosity', '-v', help='verbosity', default=0)
-parser.add_argument('--log', help='Set log range for x and y axis', default=False)
+parser.add_argument('--log', help='Set log range for x and y axis', action='store_true', default=False)
 parser.add_argument('--expected_only', help='Plot expected only', action='store_true', default=False)
+parser.add_argument('--outname','-o', help='Output plot name', default='mssm_limit')
+parser.add_argument('--title', help='Plot title',default='19.8 fb^{-1} (8 TeV)')
 #parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
@@ -32,7 +34,8 @@ graph_plus2sigma  = ROOT.TGraph()
 
 if ".root" in args.file :
     file = ROOT.TFile(args.file, 'r')
-    graph_obs         = plot.SortGraph(file.Get("observed"))
+    if not args.expected_only:
+       graph_obs         = plot.SortGraph(file.Get("observed"))
     graph_minus2sigma = plot.SortGraph(file.Get("minus2sigma"))
     graph_minus1sigma = plot.SortGraph(file.Get("minus1sigma"))
     graph_exp         = plot.SortGraph(file.Get("expected"))
@@ -43,7 +46,8 @@ else :
     data = {}
     with open(args.file) as jsonfile:
         data = json.load(jsonfile)
-    graph_obs         = plot.LimitTGraphFromJSON(data, 'observed')
+    if not args.expected_only:
+        graph_obs         = plot.LimitTGraphFromJSON(data, 'observed')
     graph_minus2sigma = plot.LimitTGraphFromJSON(data, '-2')
     graph_minus1sigma = plot.LimitTGraphFromJSON(data, '-1')
     graph_exp         = plot.LimitTGraphFromJSON(data, 'expected')
@@ -141,8 +145,8 @@ legend.AddEntry(outerBand, "#pm 2#sigma Expected", "F")
 legend.Draw("same")
 
 plot.DrawCMSLogo(pads[1], '', '', 11, 0.045, 0.035, 1.2)
-plot.DrawTitle(pads[1], '19.7 fb^{-1} (8 TeV)', 3);
+plot.DrawTitle(pads[1], '%s'%args.title, 3);
 plot.FixOverlay()
-c1.SaveAs("mssm_limit.pdf")
-c1.SaveAs("mssm_limit.png")
+c1.SaveAs("%s.pdf"%args.outname)
+c1.SaveAs("%s.png"%args.outname)
     

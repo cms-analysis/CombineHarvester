@@ -42,16 +42,18 @@ int main(int argc, char** argv) {
       string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
 
   VString chns =
-      {"mt","et"};
+      //{"tt"};
+      {"mt","et","tt","em"};
 
-  RooRealVar mA(mass.c_str(), mass.c_str(), 160., 1000.);
-  RooRealVar mH("mH", "mH", 160., 1000.);
-  RooRealVar mh("mh", "mh", 160., 1000.);
+  RooRealVar mA(mass.c_str(), mass.c_str(), 90., 1000.);
+  RooRealVar mH("mH", "mH", 90., 1000.);
+  RooRealVar mh("mh", "mh", 90., 1000.);
 
   map<string, VString> bkg_procs;
   bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
   bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
-//  bkg_procs["em"] = {"QCD", "ZLL", "TT", "VV", "W","ZTT"};
+  bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
+  bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
 
 
   // Create an empty CombineHarvester instance that will hold all of the
@@ -67,6 +69,17 @@ int main(int argc, char** argv) {
   cats["et_13TeV"] = {
     {8, "et_nobtagnotwoprong"},
     {9, "et_btagnotwoprong"}
+    };
+
+  cats["em_13TeV"] = {
+    {8, "em_nobtag"},
+    {9, "em_btag"}
+    };
+
+  cats["tt_13TeV"] = {
+    {8, "tt_nobtagnotwoprong"},
+    {9, "tt_btagnotwoprong"}
+
     };
   
   cats["mt_13TeV"] = {

@@ -22,6 +22,7 @@ parser.add_argument('--log', help='Set log range for x and y axis', action='stor
 parser.add_argument('--expected_only', help='Plot expected limit difference only',action='store_true', default=False)
 parser.add_argument('--outname','-o', help='Name of output plot', default='limit_comparison')
 parser.add_argument('--relative',help='Relative difference in limit',action='store_true', default=False)
+parser.add_argument('--title',help='Plot label', default='2.2 fb^{-1} (13 TeV)')
 #parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
@@ -159,7 +160,7 @@ else:
 legend.Draw("same")
 
 plot.DrawCMSLogo(pads[1], '', '', 11, 0.045, 0.035, 1.2)
-plot.DrawTitle(pads[1], '2.1 fb^{-1} (13 TeV)', 3);
+plot.DrawTitle(pads[1], '%s'%args.title, 3);
 plot.FixOverlay()
 c1.SaveAs("%s.pdf"%outname)
 c1.SaveAs("%s.png"%outname)
