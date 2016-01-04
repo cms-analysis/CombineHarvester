@@ -54,6 +54,9 @@ class ImpactsFromScans(CombineToolBase):
         help=('json file and dictionary containing the fit values, of form file:key1:key2..'))
     group.add_argument('--do-fits', action='store_true',
         help=('Actually do the fits'))
+    group.add_argument('--cov-method', choices=['full', 'asymm'], default='full')
+    group.add_argument('--cor-method', choices=['full', 'asymm', 'average'], default='full')
+    group.add_argument('--asymm-vals', default='')
   def run_method(self):
     mass = self.args.mass
     self.put_back_arg('mass', '-m')
@@ -62,7 +65,7 @@ class ImpactsFromScans(CombineToolBase):
       js = json.load(jsonfile)
     for key in in_json[1:]:
       js = js[key]
-    POIs = [str(x) for x in js.keys()]
+    POIs = sorted([str(x) for x in js.keys()])
     print POIs
     for POI in POIs:
       if not self.args.do_fits: break
@@ -84,25 +87,139 @@ class ImpactsFromScans(CombineToolBase):
       res_lo = self.get_fixed_results(name_lo, POIs)
       for fPOI in POIs:
         res[POI][fPOI] = [res_lo[fPOI], js[fPOI]["Val"], res_hi[fPOI]]
-    print res
+    #print res
     cor = ROOT.TMatrixDSym(len(POIs))
     cov = ROOT.TMatrixDSym(len(POIs))
+    bf_vals = {x.split('=')[0]: float(x.split('=')[1]) for x in self.args.asymm_vals.split(',') if x != ''}
+    print '-----------------------------------------------------------'
+    print 'Diagonal Covariance'
+    print '-----------------------------------------------------------'
+    print '%-30s %-7s %-7s %-7s %-7s %-7s' % ('POI', 'Val', 'Sym', 'Hi', 'Lo', '(Hi-Lo)/(Hi+Lo)')
     for i,p in enumerate(POIs):
       cor[i][i] = ROOT.Double(1.) # diagonal correlation is 1
-      cov[i][i] = ROOT.Double(pow((res[p][p][2] - res[p][p][0])/2.,2.)) # symmetrized error
+      d1 = res[p][p][1]
+      d21 = res[p][p][2] - res[p][p][1]
+      d10 = res[p][p][1] - res[p][p][0]
+      d20 = (res[p][p][2] - res[p][p][0])/2.
+      vlo = js[p]["ValidErrorLo"]
+      vhi = js[p]["ValidErrorHi"]
+      print '%-30s %+.3f  %+.3f  %+.3f  %+.3f %+.3f' % (p, d1, d20, d21, d10, (d21-d10)/(d21+d10)) 
+      covv = 0.
+      if self.args.cov_method == 'full':
+        covv = d20
+      elif self.args.cov_method == 'asymm':
+        bf_val = 1.
+        for x in bf_vals:
+          if x in p:
+            bf_val = bf_vals[x]
+            print 'Using %s=%g' % (x, bf_vals[x])
+        covv = d21 if bf_val >= d1 else d10
+      #if p == 'mu_XS_ZH_BR_WW': covv = covv * 0.90
+      #if p == 'mu_XS_ttHtH_BR_tautau': covv = 6.3
+      if not vlo:
+        print 'No ValidErrorLo, using d21'
+        covv = d21
+      print 'Chosen: %+.3f' % covv
+      cov[i][i] = ROOT.Double(pow(covv,2.))
+    print '-----------------------------------------------------------'
+    print 'Correlation'
+    print '-----------------------------------------------------------'
+    print '%-30s %-30s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s' % ('i', 'j', 'Val_i', 'Val_j', 'ij_Sym', 'ij_Hi', 'ij_Lo', 'ji_Sym', 'ji_Hi', 'ji_Lo', 'Sym_Asym')
+    cors = []
     for i,ip in enumerate(POIs):
       for j,jp in enumerate(POIs):
         if i == j: continue
-        val_i = ((res[ip][jp][2] - res[ip][jp][0])/2.)/math.sqrt(cov[j][j])
-        val_j = ((res[jp][ip][2] - res[jp][ip][0])/2.)/math.sqrt(cov[i][i])
+        # Check the scans
+        di_1 = res[ip][ip][1]
+        di_21 = res[ip][ip][2] - res[ip][ip][1]
+        di_10 = res[ip][ip][1] - res[ip][ip][0]
+        di_20 = (res[ip][ip][2] - res[ip][ip][0])/2.
+        cj_21 = res[ip][jp][2] - res[ip][jp][1]
+        cj_10 = res[ip][jp][1] - res[ip][jp][0]
+        cj_20 = (res[ip][jp][2] - res[ip][jp][0])/2.
+        vi_lo = js[ip]["ValidErrorLo"]
+        vi_hi = js[ip]["ValidErrorHi"]
+        dj_1 = res[jp][jp][1]
+        dj_21 = res[jp][jp][2] - res[jp][jp][1]
+        dj_10 = res[jp][jp][1] - res[jp][jp][0]
+        dj_20 = (res[jp][jp][2] - res[jp][jp][0])/2.
+        ci_21 = res[jp][ip][2] - res[jp][ip][1]
+        ci_10 = res[jp][ip][1] - res[jp][ip][0]
+        ci_20 = (res[jp][ip][2] - res[jp][ip][0])/2.
+        vj_lo = js[jp]["ValidErrorLo"]
+        vj_hi = js[jp]["ValidErrorHi"]
+
+        cij_20 = ci_20/di_20
+        cij_21 = ci_21/(di_21 if (ci_21 >= 0 or not vi_lo) else di_10)
+        cij_10 = ci_10/(di_21 if (ci_21 <  0 or not vi_lo) else di_10)
+        #cij_21 = ci_21/di_21
+        #cij_10 = ci_10/di_21
+
+        cji_20 = cj_20/dj_20
+        cji_21 = cj_21/(dj_21 if (cj_21 >= 0 or not vj_lo) else dj_10)
+        cji_10 = cj_10/(dj_21 if (cj_21 <  0 or not vj_lo) else dj_10)
+        #cji_21 = cj_21/dj_21
+        #cji_10 = cj_10/dj_21
+
+        a_20 = (cij_20-cji_20)/(cij_20+cji_20)
+        a_21 = (cij_21-cji_21)/(cij_21+cji_21)
+        a_10 = (cij_10-cji_10)/(cij_10+cji_10)
+
+        a_i = (cij_21-cij_10)/(cij_21+cij_10)
+        a_j = (cji_21-cji_10)/(cji_21+cji_10)
+
+        max_c = max([abs(x) for x in [cij_20, cij_21, cij_10, cji_20, cji_21, cji_10]])
+
+
+        line =  '%-30s %-30s %+.3f  %+.3f | %+.3f  %+.3f  %+.3f  %+.3f |  %+.3f  %+.3f  %+.3f %+.3f |  %+.3f' % (ip,jp,di_1,dj_1,cij_20,cij_21,cij_10,a_i,cji_20,cji_21,cji_10,a_j,a_20)
+        print line
+
+        cors.append((line, max_c))
+      
+        val_i = 0.
+        val_j = 0.
+        if self.args.cor_method == 'full':
+          val_i = cij_20
+          val_j = cji_20
+        elif self.args.cor_method == 'average':
+          val_i = (cij_21+cij_10)/2.
+          val_j = (cji_21+cji_10)/2.
+        elif self.args.cor_method == 'asymm':
+          bf_val_i = 1.
+          bf_val_j = 1.
+          for x in bf_vals:
+            if x in ip:
+              bf_val_i = bf_vals[x]
+              print 'Using %s=%g for POI i' % (x, bf_vals[x])
+            if x in jp:
+              bf_val_j = bf_vals[x]
+              print 'Using %s=%g for POI j' % (x, bf_vals[x])
+
+          val_i = cji_21 if bf_val_i >= di_1 else cji_10
+          val_j = cij_21 if bf_val_j >= dj_1 else cij_10
+        if not vi_lo:
+          print 'No ValidErrorLo for POI i, using d21'
+          val_i = cji_21
+        if not vj_lo:
+          print 'No ValidErrorLo for POI j, using d21'
+          val_j = cij_21
+        print 'Chosen: %+.3f for val_i' % val_i
+        print 'Chosen: %+.3f for val_j' % val_j
+        
         correlation = (val_i+val_j)/2. # take average correlation?
+        #if ip == 'mu_XS_ttHtH_BR_WW' and jp == 'mu_XS_ttHtH_BR_tautau': correlation = correlation * 1.15
+        #if jp == 'mu_XS_ttHtH_BR_WW' and ip == 'mu_XS_ttHtH_BR_tautau': correlation = correlation * 1.15
+        #correlation = min(sorted([val_i, val_j],key=lambda x: abs(x), reverse=True))
         #correlation = min(val_i,val_j, key=abs) # take the max?
         cor[i][j] = correlation
         cor[j][i] = correlation
         covariance = correlation * math.sqrt(cov[i][i]) * math.sqrt(cov[j][j])
         cov[i][j] = covariance
         cov[j][i] = covariance
-    cor.Print()
+    cors.sort(key=lambda tup: tup[1], reverse=True)
+    for tup in cors:
+      print tup[0]
+    #cor.Print()
     fout = ROOT.TFile('covariance_%s.root' % self.args.name, 'RECREATE')
     fout.WriteTObject(cor, 'cor')
     h_cor = self.fix_TH2(ROOT.TH2D(cor), POIs)
@@ -115,8 +232,8 @@ class ImpactsFromScans(CombineToolBase):
     xvec = ROOT.RooArgList()
     mu = ROOT.RooArgList()
     for POI in POIs:
-      xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], -10, 10))
-      muvars.append(ROOT.RooRealVar(POI+'_In', '', js[POI]["Val"], -10, 10))
+      xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], -100, 100))
+      muvars.append(ROOT.RooRealVar(POI+'_In', '', js[POI]["Val"], -100, 100))
       muvars[-1].setConstant(True)
       xvec.add(xvars[-1])
       mu.add(muvars[-1])
