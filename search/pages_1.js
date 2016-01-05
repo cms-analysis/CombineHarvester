@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['examples_20part_20i',['Examples Part I',['../intro1.html',1,'']]],
-  ['examples_20part_20ii',['Examples Part II',['../intro2.html',1,'']]]
+  ['charged_20higgs_20datacards_20with_20roomorphingpdf',['Charged Higgs datacards with RooMorphingPdf',['../md_docs__charged_higgs.html',1,'']]],
+  ['calculating_20grids_20of_20cls_20values_20using_20toys',['Calculating grids of CLs values using toys',['../md_docs__hybrid_new_grid.html',1,'']]]
 ];

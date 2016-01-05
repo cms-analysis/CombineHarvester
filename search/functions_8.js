@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['improveminimum',['ImproveMinimum',['../namespaceplotting.html#a9d4935e4496545e605aa3e61b501e34c',1,'plotting']]],
   ['inc',['Inc',['../classch_1_1_fn_timer.html#a68814f0e60141ebf55f8138f7dbb597d',1,'ch::FnTimer']]],
   ['init',['init',['../classch_1_1syst_1_1_syst_map.html#a74987ebdc8e361f327c9522705e6bd4d',1,'ch::syst::SystMap::init()'],['../classch_1_1syst_1_1_syst_map_asymm.html#a792632b65ec696ad9443241f161c7015',1,'ch::syst::SystMapAsymm::init()']]],
   ['insertobservation',['InsertObservation',['../classch_1_1_combine_harvester.html#acd2aec5d4b862d3edc79399ae0801f4c',1,'ch::CombineHarvester']]],

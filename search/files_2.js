@@ -2,6 +2,7 @@ var searchData=
 [
   ['cardwriter_2ecc',['CardWriter.cc',['../_card_writer_8cc.html',1,'']]],
   ['cardwriter_2eh',['CardWriter.h',['../_card_writer_8h.html',1,'']]],
+  ['chargedhiggs_2emd',['ChargedHiggs.md',['../_charged_higgs_8md.html',1,'']]],
   ['combineharvester_2ecc',['CombineHarvester.cc',['../_combine_harvester_8cc.html',1,'']]],
   ['combineharvester_2eh',['CombineHarvester.h',['../_combine_harvester_8h.html',1,'']]],
   ['combineharvester_5fcreation_2ecc',['CombineHarvester_Creation.cc',['../_combine_harvester___creation_8cc.html',1,'']]],

@@ -14,6 +14,7 @@ var _htt_systematics_8h =
     [ "AddMSSMUpdateSystematics_mm", "_htt_systematics_8h.html#af29ced9cc4bb7590f89223df727d1706", null ],
     [ "AddMSSMUpdateSystematics_tt", "_htt_systematics_8h.html#acc4147799e297d63fa1a9ca08559a111", null ],
     [ "AddMSSMUpdateSystematics_tt", "_htt_systematics_8h.html#aca0068af8fbaa611e502aa5647ed2121", null ],
+    [ "AddMSSMRun2Systematics", "_htt_systematics_8h.html#a5c78bebc7fa07aaa824ec1d9abccf8bf", null ],
     [ "AddSystematics_hhh_et_mt", "_htt_systematics_8h.html#a5e05f5018289301287533bc288e576bb", null ],
     [ "AddSystematics_hhh_et_mt", "_htt_systematics_8h.html#adab895bcbcec0006d4def02d2e909206", null ],
     [ "AddSystematics_hhh_tt", "_htt_systematics_8h.html#ad7c22b70d392f9617ee6f1c27a622661", null ],

@@ -1,4 +1,4 @@
-var annotated =
+var annotated_dup =
 [
     [ "ch", "namespacech.html", "namespacech" ],
     [ "BkgInfo", "struct_bkg_info.html", "struct_bkg_info" ],

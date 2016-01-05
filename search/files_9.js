@@ -5,6 +5,7 @@ var searchData=
   ['parsecombineworkspace_2ecc',['ParseCombineWorkspace.cc',['../_parse_combine_workspace_8cc.html',1,'']]],
   ['parsecombineworkspace_2eh',['ParseCombineWorkspace.h',['../_parse_combine_workspace_8h.html',1,'']]],
   ['plotting_2eh',['Plotting.h',['../_plotting_8h.html',1,'']]],
+  ['plotting_2epy',['plotting.py',['../plotting_8py.html',1,'']]],
   ['plotting_5fcontours_2eh',['Plotting_Contours.h',['../_plotting___contours_8h.html',1,'']]],
   ['plotting_5fstyle_2eh',['Plotting_Style.h',['../_plotting___style_8h.html',1,'']]],
   ['postfitshapes_2ecpp',['PostFitShapes.cpp',['../_post_fit_shapes_8cpp.html',1,'']]],

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['post_2dfit_20distributions',['Post-fit Distributions',['../post-fit-shapes.html',1,'']]],
-  ['python_20interface',['Python Interface',['../python-interface.html',1,'']]]
+  ['examples_20part_20i',['Examples Part I',['../intro1.html',1,'']]],
+  ['examples_20part_20ii',['Examples Part II',['../intro2.html',1,'']]]
 ];

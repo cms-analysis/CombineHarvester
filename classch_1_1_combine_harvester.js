@@ -5,6 +5,8 @@ var classch_1_1_combine_harvester =
     [ "CombineHarvester", "classch_1_1_combine_harvester.html#aa80be2f3c50f226ec74bd2f0249af8f1", null ],
     [ "CombineHarvester", "classch_1_1_combine_harvester.html#aa7f131550d71b656d7643c32bc6e5673", null ],
     [ "operator=", "classch_1_1_combine_harvester.html#a537e7bf110bf4e466d5c39843e76fd03", null ],
+    [ "SetFlag", "classch_1_1_combine_harvester.html#a4b18f900247617db79a26ea0a08df15c", null ],
+    [ "GetFlag", "classch_1_1_combine_harvester.html#ac64212156595f320b76bf32ec2c7a9e7", null ],
     [ "cp", "classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2", null ],
     [ "deep", "classch_1_1_combine_harvester.html#acbc55586d0cc9e8dc83f0396157d4b75", null ],
     [ "PrintAll", "classch_1_1_combine_harvester.html#a63ffe9b598a7a6dc9f3cab118b3703df", null ],
