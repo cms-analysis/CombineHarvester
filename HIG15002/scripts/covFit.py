@@ -14,6 +14,8 @@ parser.add_argument('-p', type=int, help='scan points')
 parser.add_argument('-t', help='type', default=None)
 args = parser.parse_args()
 
+ROOT.gSystem.Load('libHiggsAnalysisCombinedLimit')
+
 fin = ROOT.TFile(args.i)
 POI = args.POI
 type = args.t
@@ -319,9 +321,11 @@ params = pdf.getParameters(data)
 param_it = params.createIterator()
 var = param_it.Next()
 float_params = set()
+snapshot = {}
 while var:
     if not var.isConstant():
         float_params.add(var.GetName())
+        snapshot[var.GetName()] = var.getVal()
     var = param_it.Next()
 
 fit_range = args.range
@@ -355,6 +359,8 @@ for i, var in enumerate(float_params):
 tout.Fill()
 
 for p in xrange(points):
+    for key,val in snapshot.iteritems():
+      wfinal.var(key).setVal(val)
     param.setVal(r)
     a_r[0] = r
     minim.minimize('Minuit2', 'migrad')

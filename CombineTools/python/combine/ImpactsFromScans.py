@@ -12,6 +12,8 @@ import glob
 import ROOT
 from array import array
 from multiprocessing import Pool
+from numpy import matrix
+from numpy.linalg import solve
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
@@ -57,6 +59,7 @@ class ImpactsFromScans(CombineToolBase):
     group.add_argument('--cov-method', choices=['full', 'asymm'], default='full')
     group.add_argument('--cor-method', choices=['full', 'asymm', 'average'], default='full')
     group.add_argument('--asymm-vals', default='')
+    group.add_argument('--do-generic', action='store_true')
   def run_method(self):
     mass = self.args.mass
     self.put_back_arg('mass', '-m')
@@ -91,6 +94,19 @@ class ImpactsFromScans(CombineToolBase):
     cor = ROOT.TMatrixDSym(len(POIs))
     cov = ROOT.TMatrixDSym(len(POIs))
     bf_vals = {x.split('=')[0]: float(x.split('=')[1]) for x in self.args.asymm_vals.split(',') if x != ''}
+
+    xvars = []
+    muvars = []
+    covvars = []
+    xvec = ROOT.RooArgList()
+    mu = ROOT.RooArgList()
+    for POI in POIs:
+      xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], -100, 100))
+      muvars.append(ROOT.RooRealVar(POI+'_In', '', js[POI]["Val"], -100, 100))
+      muvars[-1].setConstant(True)
+      xvec.add(xvars[-1])
+      mu.add(muvars[-1])
+
     print '-----------------------------------------------------------'
     print 'Diagonal Covariance'
     print '-----------------------------------------------------------'
@@ -121,14 +137,45 @@ class ImpactsFromScans(CombineToolBase):
         covv = d21
       print 'Chosen: %+.3f' % covv
       cov[i][i] = ROOT.Double(pow(covv,2.))
+
+      x1 = -1. * d10
+      x2 = 0.
+      x3 = d21
+      x4 = js[p]['2sig_ErrorHi']
+      y1 = d10 * d10
+      y2 = d20 * d20
+      y3 = d21 * d21
+      y4 = (x4 / 2.) * (x4 / 2.)
+      if not vlo and abs(d10) < 1E-4:
+        x1 = -1. * d21
+        y1 = d21*d21
+      # print (x1, y1)
+      # print (x2, y2)
+      # print (x3, y3)
+      # print (x4, y4)
+
+      mtx = matrix([[x1*x1, x1, 1], [x3*x3, x3, 1], [x4*x4, x4, 1]])
+      yvec = matrix([[y1], [y3], [y4]])
+      # print mtx
+      # print yvec
+      xres = solve(mtx, yvec)
+      # print xres
+      covvars.append(ROOT.RooFormulaVar('cov%i'%i,'', '%g*(@0-%g)*(@0-%g)+%g*(@0-%g)+%g' % (xres[0],d1,d1,xres[1],d1,xres[2]), ROOT.RooArgList(xvars[i])))
+      covvars[-1].Print()
+
     print '-----------------------------------------------------------'
     print 'Correlation'
     print '-----------------------------------------------------------'
     print '%-30s %-30s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s' % ('i', 'j', 'Val_i', 'Val_j', 'ij_Sym', 'ij_Hi', 'ij_Lo', 'ji_Sym', 'ji_Hi', 'ji_Lo', 'Sym_Asym')
     cors = []
+    mvals = ROOT.RooArgList()
+    mvals_store = []
     for i,ip in enumerate(POIs):
       for j,jp in enumerate(POIs):
-        if i == j: continue
+        if i == j:
+          mvals_store.append(ROOT.RooFormulaVar('ele_%i_%i'%(i,j),'@0',ROOT.RooArgList(covvars[i])))
+          mvals.add(mvals_store[-1])
+          continue
         # Check the scans
         di_1 = res[ip][ip][1]
         di_21 = res[ip][ip][2] - res[ip][ip][1]
@@ -216,6 +263,8 @@ class ImpactsFromScans(CombineToolBase):
         covariance = correlation * math.sqrt(cov[i][i]) * math.sqrt(cov[j][j])
         cov[i][j] = covariance
         cov[j][i] = covariance
+        mvals_store.append(ROOT.RooFormulaVar('ele_%i_%i'%(i,j),'%g*sqrt(@0)*sqrt(@1)'%(correlation),ROOT.RooArgList(covvars[i], covvars[j])))
+        mvals.add(mvals_store[-1])
     cors.sort(key=lambda tup: tup[1], reverse=True)
     for tup in cors:
       print tup[0]
@@ -227,19 +276,13 @@ class ImpactsFromScans(CombineToolBase):
     fout.WriteTObject(cov, 'cov')
     h_cov = self.fix_TH2(ROOT.TH2D(cov), POIs)
     fout.WriteTObject(h_cov, 'h_cov')
-    xvars = []
-    muvars = []
-    xvec = ROOT.RooArgList()
-    mu = ROOT.RooArgList()
-    for POI in POIs:
-      xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], -100, 100))
-      muvars.append(ROOT.RooRealVar(POI+'_In', '', js[POI]["Val"], -100, 100))
-      muvars[-1].setConstant(True)
-      xvec.add(xvars[-1])
-      mu.add(muvars[-1])
+
     xvec.Print('v')
     mu.Print('v')
-    pdf = ROOT.RooMultiVarGaussian('pdf', '', xvec, mu, cov)
+    if self.args.do_generic:
+      pdf = ROOT.RooGenericMultiVarGaussian('pdf', '', xvec, mu, mvals)
+    else:
+      pdf = ROOT.RooMultiVarGaussian('pdf', '', xvec, mu, cov)
     dat = ROOT.RooDataSet('global_obs', '', ROOT.RooArgSet(mu))
     dat.add(ROOT.RooArgSet(mu))
     pdf.Print()

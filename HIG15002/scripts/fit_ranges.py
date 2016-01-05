@@ -76,7 +76,7 @@ RANGES = {
       'mu_XS_VBF_BR_gamgam':    1.0,
       'mu_XS_WH_BR_gamgam':     2.5,
       'mu_XS_ZH_BR_gamgam':     5.0,
-      'mu_XS_ttHtH_BR_gamgam':  10.0,
+      'mu_XS_ttHtH_BR_gamgam':  1.5,
       'mu_XS_ggFbbH_BR_tautau': 1.0,
       'mu_XS_VBF_BR_tautau':    1.0,
       'mu_XS_WH_BR_tautau':     2.5,
