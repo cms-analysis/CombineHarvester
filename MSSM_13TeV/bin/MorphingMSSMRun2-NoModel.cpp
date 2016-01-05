@@ -45,9 +45,9 @@ int main(int argc, char** argv) {
       //{"tt"};
       {"mt","et","tt","em"};
 
-  RooRealVar mA(mass.c_str(), mass.c_str(), 160., 1000.);
-  RooRealVar mH("mH", "mH", 160., 1000.);
-  RooRealVar mh("mh", "mh", 160., 1000.);
+  RooRealVar mA(mass.c_str(), mass.c_str(), 90., 1000.);
+  RooRealVar mH("mH", "mH", 90., 1000.);
+  RooRealVar mh("mh", "mh", 90., 1000.);
 
   map<string, VString> bkg_procs;
   bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
@@ -77,8 +77,8 @@ int main(int argc, char** argv) {
     };
 
   cats["tt_13TeV"] = {
-    {8, "tt_nobtag"},
-    {9, "tt_btag"}
+    {8, "tt_nobtagnotwoprong"},
+    {9, "tt_btagnotwoprong"}
     };
   
   cats["mt_13TeV"] = {

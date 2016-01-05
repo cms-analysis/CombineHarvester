@@ -1,7 +1,7 @@
 import itertools
 import CombineHarvester.CombineTools.combine.utils as utils
 import json
-import os
+#import os
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
@@ -25,7 +25,7 @@ class EnhancedCombine(CombineToolBase):
         group.add_argument(
             '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
         group.add_argument(
-            '--manual_model_params', default=False, action='store_true', help='Do not fix signal parameters (to be used for running prefit limits)')
+            '--manual_model_params', default=False, action='store_true', help='Provide model parameters from command line (e.g. when running prefit limits)')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
 
@@ -89,19 +89,19 @@ class EnhancedCombine(CombineToolBase):
             start = 0
             ranges = []
             while (start + (split - 1)) <= points:
-                filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(start+(split-1))+".MultiDimFit.mH"+str(self.args.mass)+".root"
-                if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
-                    # Send job, if the file it's supposed to create doesn't exist yet
-                    # or if the file is empty because the previous job didn't finish
-                    ranges.append((start, start + (split - 1)))
+            #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(start+(split-1))+".MultiDimFit.mH"+str(self.args.mass)+".root"
+            #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
+            #        # Send job, if the file it's supposed to create doesn't exist yet
+            #        # or if the file is empty because the previous job didn't finish
+                ranges.append((start, start + (split - 1)))
                 start += split
             if start < points:
-                filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(points - 1)+".MultiDimFit.mH"+str(self.args.mass)+".root"
-                if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
-                    ranges.append((start, points - 1))
-            if (ranges == []):
-                print "No jobs were created; All files already exist"
-                exit()
+            #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(points - 1)+".MultiDimFit.mH"+str(self.args.mass)+".root"
+            #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
+                ranges.append((start, points - 1))
+            #if (ranges == []):
+            #    print "No jobs were created; All files already exist"
+            #    exit()
             subbed_vars[('P_START', 'P_END')] = [(r[0], r[1]) for r in ranges]
             self.passthru.extend(
                 ['--firstPoint %(P_START)s --lastPoint %(P_END)s'])
