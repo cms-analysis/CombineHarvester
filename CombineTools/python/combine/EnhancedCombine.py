@@ -1,9 +1,10 @@
 import itertools
 import CombineHarvester.CombineTools.combine.utils as utils
+import json
+#import os
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
-from CombineHarvester.CombineTools.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
 
 
 class EnhancedCombine(CombineToolBase):
@@ -22,7 +23,7 @@ class EnhancedCombine(CombineToolBase):
         group.add_argument(
             '--singlePoint', help='Supports range strings for multiple points to test, uses the same format as the --mass argument')
         group.add_argument(
-            '--Pmodel', help='Set range of physical parameters depending on the given mass and given physics model')
+            '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
 
@@ -56,15 +57,24 @@ class EnhancedCombine(CombineToolBase):
             subbed_vars[('SINGLEPOINT',)] = [(pval,) for pval in single_points]
             self.passthru.extend(['--singlePoint', '%(SINGLEPOINT)s'])
             self.args.name += '.POINT.%(SINGLEPOINT)s'
-            
-        if self.args.Pmodel is not None:        
-            subbed_vars = {}
-            mass_vals = utils.split_vals(self.args.mass)
-            if self.args.Pmodel == 'bbH' : t=1
-            elif self.args.Pmodel == 'ggH' : t=0
-            else : exit("Physic model '%s' not recognized" % self.args.Pmodel)
-            subbed_vars[('MASS', 'MODEL', 'BOUND')] = [(mval, self.args.Pmodel, bounds["ggH-bbH", mval][t]) for mval in mass_vals]
-            self.passthru.extend(['--setPhysicsModelParameters', 'r_%(MODEL)s=r_%(MODEL)s', '--setPhysicsModelParameterRanges',  'r_%(MODEL)s=0,%(BOUND)s', '--freezeNuisances MH'])
+
+        if self.args.boundlist is not None:
+          subbed_vars = {}
+          with open(self.args.boundlist) as json_file:
+            bnd = json.load(json_file)
+          command1=['' for i in mass_vals]
+          command2=['' for i in mass_vals]
+          i=0
+          for mval in mass_vals:
+            for model in bnd:
+              if not (command1[i]==''): command1[i]=command1[i]+':'
+              if not (command2[i]==''): command2[i]=command2[i]+','
+              command1[i]=command1[i]+model+'=0,'+str(bnd[model][mval])
+              command2[i]=command2[i]+model+'=0' #'='+str(float(bnd[model][mval])/2.0)
+            i+=1
+          subbed_vars[('MASS', 'MODELBOUNDONE', 'MODELBOUNDTWO')] = [(mass_vals[i], command1[i], command2[i]) for i in range(len(mass_vals))]
+          self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUNDONE)s'])
+          self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])
@@ -76,10 +86,19 @@ class EnhancedCombine(CombineToolBase):
             start = 0
             ranges = []
             while (start + (split - 1)) <= points:
+            #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(start+(split-1))+".MultiDimFit.mH"+str(self.args.mass)+".root"
+            #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
+            #        # Send job, if the file it's supposed to create doesn't exist yet
+            #        # or if the file is empty because the previous job didn't finish
                 ranges.append((start, start + (split - 1)))
                 start += split
             if start < points:
+            #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(points - 1)+".MultiDimFit.mH"+str(self.args.mass)+".root"
+            #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
                 ranges.append((start, points - 1))
+            #if (ranges == []):
+            #    print "No jobs were created; All files already exist"
+            #    exit()
             subbed_vars[('P_START', 'P_END')] = [(r[0], r[1]) for r in ranges]
             self.passthru.extend(
                 ['--firstPoint %(P_START)s --lastPoint %(P_END)s'])

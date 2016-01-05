@@ -10,15 +10,6 @@
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/HttSystematics.h"
 #include "CombineHarvester/CombineTools/interface/BinByBin.h"
-#include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
-
-#include "RooWorkspace.h"
-#include "RooRealVar.h"
-#include "TH2.h"
-#include "RooDataHist.h"
-#include "RooHistFunc.h"
-#include "RooFormulaVar.h"
-#include "RooProduct.h"
 
 using namespace std;
 
@@ -29,14 +20,8 @@ int main() {
 
 	typedef vector<pair<int, string>> Categories;
 	typedef vector<string> VString;
-    
-    // RooFit will be quite noisy if we don't set this
-    RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
 
-    //RooRealVar mA("mA", "mA", 260., 350.);
-    RooRealVar mA("mA", "mA", 300.);
-	
-    string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
+	string auxiliaries  = string(getenv("CMSSW_BASE")) + "/src/auxiliaries/";
 	string aux_shapes   = auxiliaries +"shapes/";
 	string aux_pruning  = auxiliaries +"pruning/";
 
@@ -56,10 +41,7 @@ int main() {
 	 
 
 	VString sig_procs={"AZh"};
-    map<string, VString> signal_types = {
-      {"AZh", {"ggA_AZhLLtautau"}}
-    };
-    
+
 	map<string, Categories> cats;
 	cats["et_8TeV"] = {
 		{0, "eeet_zh"}, {1, "mmet_zh"}};
@@ -82,7 +64,7 @@ int main() {
 			//    cb.AddProcesses(
 			//    {"*"},{"htt"}, {era}, {chn}, sm_procs[chn], cats[chn+"_"+era],false);
 			cb.AddProcesses(
-					masses, {"htt"}, {era}, {chn}, signal_types["AZh"], cats[chn+"_"+era], true);
+					masses, {"htt"}, {era}, {chn}, sig_procs, cats[chn+"_"+era], true);
 		}
 	}
 
@@ -97,11 +79,20 @@ int main() {
                 ".inputs-AZh-" + era + ".root";
 			cb.cp().channel({chn}).era({era}).backgrounds().ExtractShapes(
 					file, "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
-			cb.cp().channel({chn}).era({era}).process(signal_types["AZh"]).ExtractShapes(
-					file, "$BIN/AZh$MASS", "$BIN/AZh$MASS_$SYSTEMATIC");
+			cb.cp().channel({chn}).era({era}).signals().ExtractShapes(
+					file, "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
 		}
 	}
 
+    //This part is rather hacky, but needed to reproduce the legacy results. 
+    //The legacy results are set in fb, so the signal processes are all divided
+    //by 1000. Here the precision is also explicitly set to match that
+    //in the legacy datacards.
+    
+    cb.cp().process({"AZh"}).ForEachProc([&](ch::Process *proc) {
+        proc->set_rate(std::roundf(((proc->rate() / 1000)*10000.0))/10000.0 );
+        
+    });
 
     cout << ">> Generating bbb uncertainties...\n";
     auto bbb = ch::BinByBinFactory()
@@ -114,43 +105,40 @@ int main() {
     cout << ">> Setting standardised bin names...\n";
 	ch::SetStandardBinNames(cb);
 
-
-    RooWorkspace ws("htt", "htt");
- 
-    TFile demo("AZh_demo.root", "RECREATE");
-
-    bool do_morphing = true;
-    map<string, RooAbsReal *> mass_var = {
-      {"ggA_AZhLLtautau", &mA}
-    };
-    if (do_morphing) {
-      auto bins = cb.bin_set();
-      for (auto b : bins) {
-        auto procs = cb.cp().bin({b}).signals().process_set();
-        for (auto p : procs) {
-          ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                               "norm", true, true, false, &demo);
-        }
-      }
-    }
-    demo.Close();
-    cb.AddWorkspace(ws);
-    cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
-    cb.PrintAll();
-    
-    
-	string folder = "output/AZh_cards_nomodel";
+	string folder = "output/AZh_cards_fb";
 	boost::filesystem::create_directories(folder);
-  
-    TFile output((folder + "/htt_input.AZh.root").c_str(), "RECREATE");
-    cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_cmb_AZh.txt", output);
-    auto bins = cb.bin_set();
-    for (auto b : bins) {
-      cb.cp().bin({b}).mass({"*"}).WriteDatacard(
-      folder + "/" + b + ".txt", output);
-    }
-    output.Close();
+	for (string chn :chns){
+		boost::filesystem::create_directories(folder+"/"+chn);
+		for (auto m:masses){
+			boost::filesystem::create_directories(folder+"/"+chn+"/"+m);
+			boost::filesystem::create_directories(folder+"/cmb/"+m);
+		}
+	}
 
+
+	for (string chn : chns) {
+		TFile output((folder+ "/htt_" + chn + ".input.root").c_str(),
+				"RECREATE"); 
+		auto bins = cb.cp().channel({chn}).bin_set();
+
+		for (auto b : bins) {
+			for (auto m : masses) {
+				cout << ">> Writing datacard for bin: " << b << " and mass: " << m
+					<< "\r" << flush;
+				cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
+						folder+"/"+chn+"/"+m+"/"+b + ".txt", output);
+				cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
+						folder+"/cmb/"+m+"/"+b + ".txt", output);
+			}
+		}
+		  output.Close();
+	}
+
+	for (string chn:chns) {
+		for (auto m:masses) {
+			boost::filesystem::copy_file((folder+"/htt_"+chn+".input.root").c_str(),(folder+"/"+chn+"/"+m+"/htt_"+chn+".input.root").c_str(),boost::filesystem::copy_option::overwrite_if_exists);
+		}
+	} 
 
 	cout << "\n>> Done!\n";
 }

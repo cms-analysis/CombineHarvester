@@ -151,12 +151,26 @@ class CombineToolBase:
             self.passthru.extend([target_name, getattr(self.args, arg_name)])
             delattr(self.args, arg_name)
 
+    def extract_arg(self, arg, args_str):
+        args_str = args_str.replace(arg+'=', arg+' ')
+        args = args_str.split()
+        if arg in args:
+            idx = args.index(arg)
+            assert idx != -1 and idx < len(args)
+            val = args[idx+1]
+            del args[idx:idx+2]
+            return val, (' '.join(args))
+        else:
+            return None, args_str
+
     def create_job_script(self, commands, script_filename, do_log = False):
         fname = script_filename
         logname = script_filename.replace('.sh', '.log')
         with open(fname, "w") as text_file:
-            if self.job_mode=='lxbatch': text_file.write(JOB_PREFIX)
-            elif self.job_mode=='NAF': text_file.write(JOB_NAF_PREFIX)
+            if self.job_mode == 'NAF':
+              text_file.write(JOB_NAF_PREFIX)
+            else:
+              text_file.write(JOB_PREFIX)
             for i, command in enumerate(commands):
                 tee = 'tee' if i == 0 else 'tee -a'
                 log_part = '\n'
@@ -223,14 +237,15 @@ class CombineToolBase:
             outscript.write(CRAB_PREFIX)
             jobs = 0
             wsp_files = set()
-            for line in self.job_queue:
+            for i, j in enumerate(range(0, len(self.job_queue), self.merge)):
                 jobs += 1
-                newline = line
-                if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
-                wsp = self.extract_workspace_arg(newline.split())
-                wsp_files.add(wsp)
                 outscript.write('\nif [ $1 -eq %i ]; then\n' % jobs)
-                outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
+                for line in self.job_queue[j:j + self.merge]:
+                    newline = line
+                    if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
+                    wsp = str(self.extract_workspace_arg(newline.split()))
+                    wsp_files.add(wsp)
+                    outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
                 outscript.write('fi')
             outscript.write(CRAB_POSTFIX)
             outscript.close()

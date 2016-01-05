@@ -63,3 +63,15 @@ def get_singles_results(file, scanned, columns):
             res[param][col] = [
                 allvals[i * 2 + 2], allvals[0], allvals[i * 2 + 1]]
     return res
+
+def get_none_results(file, params):
+    """Extracts the output from the MultiDimFit none (just fit)  mode"""
+    res = {}
+    f = ROOT.TFile(file)
+    if f is None or f.IsZombie():
+        return None
+    t = f.Get("limit")
+    t.GetEntry(0)
+    for param in params:
+      res[param] = getattr(t, param)
+    return res

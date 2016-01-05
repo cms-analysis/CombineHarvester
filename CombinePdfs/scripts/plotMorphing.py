@@ -3,7 +3,7 @@ import sys
 import ROOT
 import math
 from functools import partial
-import Tools.Plotting.plotting as plot
+import CombineHarvester.CombineTools.plotting as plot
 import os.path
 import bisect
 
@@ -27,7 +27,7 @@ print morph_points
 # folder = 'htt_mt_1_8TeV_ggH_morph'
 
 file = 'htt_mt_mssm_demo.root'
-folder = 'htt_mt_8_8TeV_bbA_morph'
+folder = 'htt_mt_8_8TeV_bbH_Htautau_morph'
 
 fin = ROOT.TFile(file)
 ROOT.gDirectory.cd(folder)
