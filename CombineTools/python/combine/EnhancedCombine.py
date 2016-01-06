@@ -24,8 +24,6 @@ class EnhancedCombine(CombineToolBase):
             '--singlePoint', help='Supports range strings for multiple points to test, uses the same format as the --mass argument')
         group.add_argument(
             '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
-        group.add_argument(
-            '--manual_model_params', default=False, action='store_true', help='Provide model parameters from command line (e.g. when running prefit limits)')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
 
@@ -65,19 +63,19 @@ class EnhancedCombine(CombineToolBase):
           with open(self.args.boundlist) as json_file:
             bnd = json.load(json_file)
           command1=['' for i in mass_vals]
-          command2=['' for i in mass_vals]
+          #command2=['' for i in mass_vals]
           i=0
           for mval in mass_vals:
             for model in bnd:
               if not (command1[i]==''): command1[i]=command1[i]+':'
-              if not (command2[i]==''): command2[i]=command2[i]+','
+              #if not (command2[i]==''): command2[i]=command2[i]+','
               command1[i]=command1[i]+model+'=0,'+str(bnd[model][mval])
-              command2[i]=command2[i]+model+'=0' #'='+str(float(bnd[model][mval])/2.0)
+            #  command2[i]=command2[i]+model+'=0' #'='+str(float(bnd[model][mval])/2.0)
             i+=1
-          subbed_vars[('MASS', 'MODELBOUNDONE', 'MODELBOUNDTWO')] = [(mass_vals[i], command1[i], command2[i]) for i in range(len(mass_vals))]
+          #subbed_vars[('MASS', 'MODELBOUNDONE', 'MODELBOUNDTWO')] = [(mass_vals[i], command1[i], command2[i]) for i in range(len(mass_vals))]
+          subbed_vars[('MASS', 'MODELBOUNDONE')] = [(mass_vals[i], command1[i]) for i in range(len(mass_vals))]
           self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUNDONE)s'])
-          if not self.args.manual_model_params:
-            self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
+          #self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])
