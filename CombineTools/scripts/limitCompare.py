@@ -22,7 +22,10 @@ parser.add_argument('--log', help='Set log range for x and y axis', action='stor
 parser.add_argument('--expected_only', help='Plot expected limit difference only',action='store_true', default=False)
 parser.add_argument('--outname','-o', help='Name of output plot', default='limit_comparison')
 parser.add_argument('--relative',help='Relative difference in limit',action='store_true', default=False)
+parser.add_argument('--absolute',help='Absolute difference in limit',action='store_true', default=False)
 parser.add_argument('--title',help='Plot label', default='2.1 fb^{-1} (13 TeV)')
+parser.add_argument(
+    '--cms-sub', default='Internal', help="""Text below the CMS logo""")
 #parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
@@ -35,41 +38,44 @@ else:
   labels =[]
 outname = args.outname
 
-if args.relative and len(files)!=2:
+if (args.relative or args.absolute) and len(files)!=2:
   print 'Provide exactly 2 input files to plot the relative difference in limit'
+
+if args.relative and args.absolute:
+  print 'Only specify either relative or absolute difference plots'
 
 if len(colourlist) < len(files):
   print 'Too many input files! Maximum supported is %d'%len(colourlist)
   sys.exit(1)
 
-if len(labels) < len(files) and not args.relative:
+if len(labels) < len(files) and not (args.relative or args.absolute) :
   print 'Provide at least as many legend labels as files'
   sys.exit(1)
 
 
 exp_graph_list = [ROOT.TGraph() for i in range(len(files))]
-if args.relative:
+if args.relative or args.absolute:
   obs_graph_list = [ROOT.TGraph() for i in range(len(files))]
 for i in range(len(files)):
   if ".root" in files[i]:
     exp_graph_list[i] = plot.SortGraph((ROOT.TFile(files[i],'r')).Get('expected'))
-    if args.relative:
+    if args.relative or args.absolute:
      obs_graph_list[i] = plot.SortGraph((ROOT.TFile(files[i],'r')).Get('observed'))
   else:
     data = {}
     with open(files[i]) as jsonfile:
       data = json.load(jsonfile)
     exp_graph_list[i] = plot.LimitTGraphFromJSON(data, 'expected')
-    if args.relative:
+    if args.relative or args.absolute:
      obs_graph_list[i] = plot.LimitTGraphFromJSON(data, 'observed')
 
 max_vals = []
 for i in range(len(exp_graph_list)):
   max_vals.append(ROOT.TMath.MaxElement(exp_graph_list[i].GetN(),exp_graph_list[i].GetY()))
 
-if args.relative:
-  relative_exp_graph = plot.GraphDifference(exp_graph_list[0],exp_graph_list[1]) 
-  relative_obs_graph = plot.GraphDifference(obs_graph_list[0],obs_graph_list[1])
+if args.relative or args.absolute:
+  relative_exp_graph = plot.GraphDifference(exp_graph_list[0],exp_graph_list[1],True if args.relative else False) 
+  relative_obs_graph = plot.GraphDifference(obs_graph_list[0],obs_graph_list[1],True if args.relative else False)
   del max_vals[:]
   max_vals.append(ROOT.TMath.MaxElement(relative_exp_graph.GetN(),relative_exp_graph.GetY()))
   if not args.expected_only:
@@ -85,42 +91,50 @@ mass_bins=len(mass_list)
 if int(args.verbosity) > 0 :
     print "mass_list: ", mass_list, "Total number: ", mass_bins 
 
-#Create canvas and TH1D
-plot.ModTDRStyle(width=600, l=0.12)
+# Setup the canvas: we'll use a two pad split, with a small top pad to contain
+# the CMS logo and the legend
+plot.ModTDRStyle(r=0.06, l=0.12)
+axis = plot.makeHist1D('hist1d', mass_bins, exp_graph_list[0])
 ROOT.gStyle.SetFrameLineWidth(2)
 c1=ROOT.TCanvas()
-axis = plot.makeHist1D('hist1d', mass_bins, exp_graph_list[0])
+pads = plot.TwoPadSplit(0.8, 0, 0)
+pads[1].cd()
 axis.GetYaxis().SetRangeUser(0,1.2*float(max(max_vals)))  
 if args.log:
   axis.GetYaxis().SetRangeUser(0.001,1.2*float(max(max_vals)))
 if process_label == "gg#phi" :
-    axis.GetYaxis().SetTitle("95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
+    if args.relative :
+        axis.GetYaxis().SetTitle("Relative diff in limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
+    elif args.absolute :
+        axis.GetYaxis().SetTitle("Absolute diff in limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
+    else :    
+        axis.GetYaxis().SetTitle("95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
 elif process_label == "bb#phi" :
-    axis.GetYaxis().SetTitle("95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
+    if args.relative :
+        axis.GetYaxis().SetTitle("Relative diff in limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
+    elif args.absolute :
+        axis.GetYaxis().SetTitle("Absolute diff in limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
+    else :    
+        axis.GetYaxis().SetTitle("95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]")
 else:
     exit("Currently process is not supported")
 if args.custom_y_range : axis.GetYaxis().SetRangeUser(float(args.y_axis_min), float(args.y_axis_max))
 axis.GetXaxis().SetTitle("m_{#phi} [GeV]")
 if args.custom_x_range : axis.GetXaxis().SetRangeUser(float(args.x_axis_min), float(args.x_axis_max))
-#Create two pads, one is just for the Legend
-pad_leg = ROOT.TPad("pad_leg","pad_leg",0,0.82,1,1)
-pad_leg.SetFillStyle(4000)
-pad_leg.Draw()
-pad_plot = ROOT.TPad("pad_plot","pad_plot",0,0,1,0.82)
-pad_plot.SetFillStyle(4000)
-pad_plot.Draw()
-pads=[pad_leg,pad_plot]
-pads[1].cd()
+axis.GetYaxis().SetTitleSize(0.040)    
+axis.GetYaxis().SetTitleOffset(1.2)    
+pads[1].SetTickx()
+pads[1].SetTicky()
 if args.log :
-    pad_plot.SetLogx(1);
-    pad_plot.SetLogy(1);
+    pads[1].SetLogx(1);
+    pads[1].SetLogy(1);
     axis.SetNdivisions(50005, "X");
     axis.GetXaxis().SetMoreLogLabels();
     axis.GetXaxis().SetNoExponent();
     axis.GetXaxis().SetLabelSize(0.040);
 axis.Draw()
 
-if not args.relative:
+if not (args.relative or args.absolute):
   for i in range(len(files)):
     exp_graph_list[i].SetLineColor(colourlist[i])
     exp_graph_list[i].SetLineWidth(3)
@@ -144,24 +158,39 @@ else:
     relative_obs_graph.Draw("PL")
 
 pads[0].cd()
-legend = plot.PositionedLegend(0.5,0.9,2,0.03)
-legend.SetNColumns(2)
-legend.SetFillStyle(1001)
-legend.SetTextSize(0.15)
-legend.SetTextFont(62)
-legend.SetHeader("95% CL Excluded:")
-if not args.relative:
+h_top = axis.Clone()
+#necessary in case chosen range surrounds 0 which will cause axis to contain a horizontal line at 0
+h_top.GetYaxis().SetRangeUser(0.001,100)
+plot.Set(h_top.GetXaxis(), LabelSize=0, TitleSize=0, TickLength=0)
+plot.Set(h_top.GetYaxis(), LabelSize=0, TitleSize=0, TickLength=0)
+h_top.Draw()
+
+legend = plot.PositionedLegend(0.5 if args.relative or args.absolute else 0.4, 0.11, 3, 0.015)
+plot.Set(legend, NColumns=1, Header='#bf{%.0f%% CL Excluded:}' % 95)
+if not (args.relative or args.absolute):
   for i in range(len(files)):
     legend.AddEntry(exp_graph_list[i],labels[i],"PL")
-else:
-  legend.AddEntry(relative_exp_graph,"Expected","PL")
+elif args.relative:
+  legend.SetTextSize(0.025)
+  legend.AddEntry(relative_exp_graph,"Exp 2*|"+labels[0]+"-"+labels[1]+"|/("+labels[0]+"+"+labels[1]+")","PL")
   if not args.expected_only:
-    legend.AddEntry(relative_obs_graph,"Observed","PL")
-legend.Draw("same")
+    legend.AddEntry(relative_obs_graph,"Obs 2*|"+labels[0]+"-"+labels[1]+"|/("+labels[0]+"+"+labels[1]+")","PL")
+elif args.absolute:
+  legend.SetTextSize(0.025)
+  legend.AddEntry(relative_exp_graph,"Exp 2*("+labels[0]+"-"+labels[1]+")/("+labels[0]+"+"+labels[1]+")","PL")
+  if not args.expected_only:
+    legend.AddEntry(relative_obs_graph,"Obs 2*("+labels[0]+"-"+labels[1]+")/("+labels[0]+"+"+labels[1]+")","PL")
+legend.Draw()
 
-plot.DrawCMSLogo(pads[1], '', '', 11, 0.045, 0.035, 1.2)
-plot.DrawTitle(pads[1], '%s'%args.title, 3);
+plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.15, 1.0, '', 1.0)
+plot.DrawTitle(pads[0], '%s'%args.title, 3);
 plot.FixOverlay()
+
+# Redraw the frame because it usually gets covered by the filled areas
+pads[1].cd()
+pads[1].GetFrame().Draw()
+pads[1].RedrawAxis()
+
 c1.SaveAs("%s.pdf"%outname)
 c1.SaveAs("%s.png"%outname)
     

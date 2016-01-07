@@ -1071,14 +1071,18 @@ def LimitBandTGraphFromJSON(js, central, lo, hi):
     graph.Sort()
     return graph
 
-def GraphDifference(graph1,graph2):
+def GraphDifference(graph1,graph2,relative):
     xvals =[]
     yvals =[]
     if graph1.GetN() != graph2.GetN():
         return graph1
     for i in range(graph1.GetN()):
         xvals.append(graph1.GetX()[i])
-        yvals.append(2*abs(graph1.GetY()[i]-graph2.GetY()[i])/(graph1.GetY()[i]+graph2.GetY()[i]))
+        if relative :
+            yvals.append(2*abs(graph1.GetY()[i]-graph2.GetY()[i])/(graph1.GetY()[i]+graph2.GetY()[i]))
+        else: 
+            yvals.append(2*(graph1.GetY()[i]-graph2.GetY()[i])/(graph1.GetY()[i]+graph2.GetY()[i]))
+
     diff_graph = R.TGraph(len(xvals),array('d',xvals),array('d',yvals))
     diff_graph.Sort()
     return diff_graph 
