@@ -13,6 +13,7 @@
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/Systematics.h"
 #include "CombineHarvester/CombineTools/interface/BinByBin.h"
+#include "CombineHarvester/CombineTools/interface/AutoRebin.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
 #include "CombineHarvester/CombineTools/interface/HttSystematics.h"
 #include "RooWorkspace.h"
@@ -28,10 +29,14 @@ int main(int argc, char** argv) {
   // source the input files containing the datacard shapes
   string SM125= "";
   string mass = "mA";
+  string output_folder = "mssm_run2";
+  bool auto_rebin = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
+    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
+    ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
@@ -44,6 +49,7 @@ int main(int argc, char** argv) {
   VString chns =
       //{"tt"};
       {"mt","et","tt","em"};
+      //{"mt","tt"};
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 1000.);
   RooRealVar mH("mH", "mH", 90., 1000.);
@@ -135,12 +141,18 @@ int main(int argc, char** argv) {
         });
     } 
 
-
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
   // which is commonly used in the htt analyses
   ch::SetStandardBinNames(cb);
   //! [part8]
+    
+  auto rebin = ch::AutoRebin()
+       .SetEmptyBinThreshold(0.)
+       .SetVerbosity(1);
+  ch::CombineHarvester cb_tt = cb.cp().channel({"tt"});
+  if(auto_rebin) rebin.Rebin(cb, cb);
+
 
   //! [part9]
   // First we generate a set of bin names:
@@ -175,7 +187,7 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   
-  string folder = "output/mssm_run2/cmb";
+  string folder = "output/"+output_folder+"/cmb";
   boost::filesystem::create_directories(folder);
   
   cout << "Writing datacards ...";
@@ -190,7 +202,7 @@ int main(int argc, char** argv) {
   output.Close();
 
   for (string chn : chns) {
-     string folderchn = "output/mssm_run2/"+chn;
+     string folderchn = "output/"+output_folder+"/"+chn;
      boost::filesystem::create_directories(folderchn);
      TFile outputchn((folderchn + "/htt_"+chn+"_mssm_input.root").c_str(), "RECREATE");
      cb.cp().channel({chn}).mass({"*"}).WriteDatacard(folderchn + "/htt_"+chn+"_mssm.txt", outputchn);
