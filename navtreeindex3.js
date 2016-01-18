@@ -1,6 +1,5 @@
 var NAVTREEINDEX3 =
 {
-"plotting_8py.html#a9d4935e4496545e605aa3e61b501e34c":[15,0,1,2,0,20],
 "plotting_8py.html#aa6101bd81695471d594e8394a9322b15":[15,0,1,2,0,10],
 "plotting_8py.html#aaf27eaea89f48b9daeabb0120a56f10b":[15,0,1,2,0,42],
 "plotting_8py.html#ab6321021dd06e0c934dfd689e1bd2ac2":[15,0,1,2,0,18],
@@ -14,6 +13,7 @@ var NAVTREEINDEX3 =
 "plotting_8py.html#aebd660d3fcec8c7d4b5f6baea2621903":[15,0,1,2,0,25],
 "plotting_8py.html#aed1c39d2a59ed2ffe536dbda4a6628b3":[15,0,1,2,0,9],
 "plotting_8py.html#aedc15635a683264dc7f0444709e0549e":[15,0,1,2,0,31],
+"plotting_8py.html#af20847d908f9ed735a0abcdc77d3bed5":[15,0,1,2,0,43],
 "plotting_8py.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33":[15,0,1,2,0,3],
 "plotting_8py.html#affe8f293686abdb2bf4cec1f17d7bbb6":[15,0,1,2,0,34],
 "plotting_8py_source.html":[15,0,1,2,0],

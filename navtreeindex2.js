@@ -231,7 +231,6 @@ var NAVTREEINDEX2 =
 "plotting_8py.html#a3e69cc55cda57a61149bf2b329fe1203":[15,0,1,2,0,15],
 "plotting_8py.html#a3f11bc70e3e0278d0b4cf33ab8c383d3":[15,0,1,2,0,22],
 "plotting_8py.html#a3fc876b1a3a28fc5450fd18686f7eb53":[15,0,1,2,0,38],
-"plotting_8py.html#a402ad06cecb49b7888fa8e7c9184f2ba":[15,0,1,2,0,43],
 "plotting_8py.html#a42e39542c15b6f4a8c6065aaa642aca3":[15,0,1,2,0,11],
 "plotting_8py.html#a449fed69f4a89594efca25dd9782fb04":[15,0,1,2,0,14],
 "plotting_8py.html#a4629e34106e844ae6de90272eb64157f":[15,0,1,2,0,30],
@@ -249,5 +248,6 @@ var NAVTREEINDEX2 =
 "plotting_8py.html#a930ca7cb0408b290b0db1c79f5911105":[15,0,1,2,0,21],
 "plotting_8py.html#a9b433bea8c3590697478e3f7a846d360":[15,0,1,2,0,49],
 "plotting_8py.html#a9c8fab72ec1e9fe10f28ade3aba138ea":[15,0,1,2,0,29],
-"plotting_8py.html#a9d163491d97931e00a423e5eb740f033":[15,0,1,2,0,16]
+"plotting_8py.html#a9d163491d97931e00a423e5eb740f033":[15,0,1,2,0,16],
+"plotting_8py.html#a9d4935e4496545e605aa3e61b501e34c":[15,0,1,2,0,20]
 };

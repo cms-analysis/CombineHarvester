@@ -43,7 +43,7 @@ var plotting_8py =
     [ "SortGraph", "plotting_8py.html#a37df2c4a9c0eb15f7e8f096bca365043", null ],
     [ "LimitTGraphFromJSON", "plotting_8py.html#aebc53978ed049ee45a140e7ccfccd39c", null ],
     [ "LimitBandTGraphFromJSON", "plotting_8py.html#aaf27eaea89f48b9daeabb0120a56f10b", null ],
-    [ "GraphDifference", "plotting_8py.html#a402ad06cecb49b7888fa8e7c9184f2ba", null ],
+    [ "GraphDifference", "plotting_8py.html#af20847d908f9ed735a0abcdc77d3bed5", null ],
     [ "Set", "plotting_8py.html#a30511a379335c5e5c295f88dc146e448", null ],
     [ "SetBirdPalette", "plotting_8py.html#a352c801d8b36f5e37b3a7e61bd3cee47", null ],
     [ "bestFit", "plotting_8py.html#ae2fbb5d58e5c6bf0d9b82d1522888221", null ],

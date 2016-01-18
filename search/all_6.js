@@ -18,6 +18,6 @@ var searchData=
   ['gettuple',['GetTuple',['../classch_1_1syst_1_1_syst_map.html#a74f29749f6a14f71a02fe711386604b9',1,'ch::syst::SystMap::GetTuple()'],['../classch_1_1syst_1_1_syst_map_asymm.html#aec91d3b1a862d4ecb3027dde88da2382',1,'ch::syst::SystMapAsymm::GetTuple()']]],
   ['gettupleset',['GetTupleSet',['../classch_1_1syst_1_1_syst_map.html#ad2fed05a0c421419ea4ebead6d205bb0',1,'ch::syst::SystMap::GetTupleSet()'],['../classch_1_1syst_1_1_syst_map_asymm.html#a43e04ec9efeff0239a428e517340c570',1,'ch::syst::SystMapAsymm::GetTupleSet()']]],
   ['getuncertainty',['GetUncertainty',['../classch_1_1_combine_harvester.html#a9c0e44635dc637746222f67e9be518e5',1,'ch::CombineHarvester::GetUncertainty()'],['../classch_1_1_combine_harvester.html#af71f64a1d858700bd16d98cee1c10c26',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const *fit, unsigned n_samples)'],['../classch_1_1_combine_harvester.html#aa7c0646bfab0a974c72fe815e33c5a32',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const &amp;fit, unsigned n_samples)']]],
-  ['graphdifference',['GraphDifference',['../namespaceplotting.html#a402ad06cecb49b7888fa8e7c9184f2ba',1,'plotting']]],
+  ['graphdifference',['GraphDifference',['../namespaceplotting.html#af20847d908f9ed735a0abcdc77d3bed5',1,'plotting']]],
   ['graphfromspline',['GraphFromSpline',['../namespacech.html#aefdcaba918224f404af9fcd9b53fa7bb',1,'ch']]]
 ];

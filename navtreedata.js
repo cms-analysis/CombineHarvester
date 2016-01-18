@@ -107,7 +107,7 @@ var NAVTREEINDEX =
 "_a_zh_systematics_8cc.html",
 "_plotting_8h.html#ad137f606f878b7d25aeb2dde1b970ce9",
 "classch_1_1_observation.html#a08892e94877d2006921a9e3b3007eb3b",
-"plotting_8py.html#a9d4935e4496545e605aa3e61b501e34c"
+"plotting_8py.html#aa6101bd81695471d594e8394a9322b15"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
