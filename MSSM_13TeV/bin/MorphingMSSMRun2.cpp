@@ -45,15 +45,16 @@ int main(int argc, char** argv) {
   typedef vector<pair<int, string>> Categories;
   string input_dir =
       string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
+   //   "./datacards-1501/";
 
   VString chns =
       //{"tt"};
       {"mt","et","tt","em"};
       //{"mt","tt"};
 
-  RooRealVar mA(mass.c_str(), mass.c_str(), 90., 1000.);
-  RooRealVar mH("mH", "mH", 90., 1000.);
-  RooRealVar mh("mh", "mh", 90., 1000.);
+  RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
+  RooRealVar mH("mH", "mH", 90., 3200.);
+  RooRealVar mh("mh", "mh", 90., 3200.);
 
   map<string, VString> bkg_procs;
   bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
@@ -93,7 +94,7 @@ int main(int argc, char** argv) {
     };
  
 
-  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000"};
+  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -140,6 +141,14 @@ int main(int argc, char** argv) {
         obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
         });
     } 
+  
+  cout << "Generating bbb uncertainties...";
+  auto bbb = ch::BinByBinFactory()
+    .SetAddThreshold(0.)
+    .SetMergeThreshold(0.2)
+    .SetFixNorm(true);
+  bbb.MergeAndAdd(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}), cb); 
+  cout << " done\n";
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
@@ -149,8 +158,8 @@ int main(int argc, char** argv) {
     
   auto rebin = ch::AutoRebin()
        .SetEmptyBinThreshold(0.)
+       .SetRebinMode(1)
        .SetVerbosity(1);
-  ch::CombineHarvester cb_tt = cb.cp().channel({"tt"});
   if(auto_rebin) rebin.Rebin(cb, cb);
 
 
@@ -207,6 +216,14 @@ int main(int argc, char** argv) {
      TFile outputchn((folderchn + "/htt_"+chn+"_mssm_input.root").c_str(), "RECREATE");
      cb.cp().channel({chn}).mass({"*"}).WriteDatacard(folderchn + "/htt_"+chn+"_mssm.txt", outputchn);
      outputchn.Close();
+     auto bins = cb.cp().channel({chn}).bin_set();
+      for (auto b : bins) {
+        string folderchn = "output/"+output_folder+"/"+b;
+        boost::filesystem::create_directories(folderchn);
+        TFile outputbin((folderchn + "/"+b+"_mssm_input.root").c_str(), "RECREATE");
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + "_mssm.txt", outputbin);
+        outputbin.Close();
+      }
   }
      
   cout << " done\n";
