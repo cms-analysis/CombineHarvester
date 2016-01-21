@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
   typedef vector<pair<int, string>> Categories;
   string input_dir =
       string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
-   //   "./datacards-1501/";
+     // "./datacards-1501/";
 
   VString chns =
       //{"tt"};
@@ -157,7 +157,8 @@ int main(int argc, char** argv) {
   //! [part8]
     
   auto rebin = ch::AutoRebin()
-       .SetEmptyBinThreshold(0.)
+       .SetBinThreshold(0.)
+     //  .SetBinUncertFraction(0.5)
        .SetRebinMode(1)
        .SetVerbosity(1);
   if(auto_rebin) rebin.Rebin(cb, cb);
