@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"_plotting_8h.html#ac9a2d10dbb78251b4757aba40f73fa68":[15,0,1,1,15,19],
 "_plotting_8h.html#ad137f606f878b7d25aeb2dde1b970ce9":[15,0,1,1,15,2],
 "_plotting_8h.html#addb5de4f8e6a8a5fa83d7d824d3d9934":[15,0,1,1,15,11],
 "_plotting_8h.html#aec780e8b3dd08b4a37dd94abc30f42c0":[15,0,1,1,15,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "classch_1_1_object.html#aeb86ec002c906c6845c7ae304435c1c7":[14,0,0,7,13],
 "classch_1_1_object.html#aef78a48151888bb0731a2e00cd0fa62c":[14,0,0,7,9],
 "classch_1_1_object.html#af7f8e3b47e518df640826bd2c6aac600":[14,0,0,7,15],
-"classch_1_1_object.html#af89246351b95fa11b2baa05b6d7ed191":[14,0,0,7,17],
-"classch_1_1_observation.html":[14,0,0,8]
+"classch_1_1_object.html#af89246351b95fa11b2baa05b6d7ed191":[14,0,0,7,17]
 };

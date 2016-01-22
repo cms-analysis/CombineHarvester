@@ -19,6 +19,7 @@ var searchData=
   ['overload1_5fupdateparameters',['Overload1_UpdateParameters',['../_combine_harvester___python_8cc.html#a60ee5f7aebc1607ef31cbe9a483f9964',1,'CombineHarvester_Python.cc']]],
   ['overload1_5fwritedatacard',['Overload1_WriteDatacard',['../_combine_harvester___python_8cc.html#abcb4d1210000b8ba3d63d0e5cad9adf8',1,'CombineHarvester_Python.cc']]],
   ['overload2_5fgetshapewithuncertainty',['Overload2_GetShapeWithUncertainty',['../_combine_harvester___python_8cc.html#ab6c4f6ec0c916ba232ed49a719fd2030',1,'CombineHarvester_Python.cc']]],
+  ['overload2_5fgetuncertainty',['Overload2_GetUncertainty',['../_combine_harvester___python_8cc.html#aba5e942e1d132862ba45b9af1c6e25df',1,'CombineHarvester_Python.cc']]],
   ['overload2_5fparsedatacard',['Overload2_ParseDatacard',['../_combine_harvester___python_8cc.html#af145cd6cbf535eadad123b9d40e3310d',1,'CombineHarvester_Python.cc']]],
   ['overload_5faddbinbybin',['Overload_AddBinByBin',['../_combine_harvester___python_8cc.html#aa2f8905924850bfc4854a97020c11bda',1,'CombineHarvester_Python.cc']]],
   ['overload_5fobs_5fset_5fshape',['Overload_Obs_set_shape',['../_combine_harvester___python_8cc.html#a50a42ab1acdb345846900e61aa878b94',1,'CombineHarvester_Python.cc']]],

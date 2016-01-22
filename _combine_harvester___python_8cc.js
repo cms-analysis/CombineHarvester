@@ -17,6 +17,7 @@ var _combine_harvester___python_8cc =
     [ "Overload2_ParseDatacard", "_combine_harvester___python_8cc.html#af145cd6cbf535eadad123b9d40e3310d", null ],
     [ "Overload1_WriteDatacard", "_combine_harvester___python_8cc.html#abcb4d1210000b8ba3d63d0e5cad9adf8", null ],
     [ "Overload1_GetUncertainty", "_combine_harvester___python_8cc.html#a15d0e91baf5be22b98763d60368478b7", null ],
+    [ "Overload2_GetUncertainty", "_combine_harvester___python_8cc.html#aba5e942e1d132862ba45b9af1c6e25df", null ],
     [ "Overload1_GetShapeWithUncertainty", "_combine_harvester___python_8cc.html#a7d1d219e693aee751381b6b0c69183b3", null ],
     [ "Overload2_GetShapeWithUncertainty", "_combine_harvester___python_8cc.html#ab6c4f6ec0c916ba232ed49a719fd2030", null ],
     [ "Overload1_UpdateParameters", "_combine_harvester___python_8cc.html#a60ee5f7aebc1607ef31cbe9a483f9964", null ],

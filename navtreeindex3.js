@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"plotting_8py.html#a9d4935e4496545e605aa3e61b501e34c":[15,0,1,2,0,20],
 "plotting_8py.html#aa6101bd81695471d594e8394a9322b15":[15,0,1,2,0,10],
 "plotting_8py.html#aaf27eaea89f48b9daeabb0120a56f10b":[15,0,1,2,0,42],
 "plotting_8py.html#ab6321021dd06e0c934dfd689e1bd2ac2":[15,0,1,2,0,18],
