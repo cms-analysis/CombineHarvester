@@ -12,7 +12,7 @@ ROOT.gSystem.Load('libHiggsAnalysisCombinedLimit')
 
 cb = ch.CombineHarvester()
 
-# this a technical work-around needed when using ParseCombineWorkspace
+# this is a technical workaround needed when using ParseCombineWorkspace
 cb.SetFlag('workspaces-use-clone', True)
 
 f_wsp = ROOT.TFile(args[0])
