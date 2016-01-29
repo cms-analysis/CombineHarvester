@@ -10,6 +10,7 @@ from CombineHarvester.CombineTools.combine.Workspace import PrintWorkspace, Modi
 from CombineHarvester.CombineTools.combine.CovMatrix import CovMatrix
 from CombineHarvester.CombineTools.combine.LimitGrids import AsymptoticGrid, HybridNewGrid
 from CombineHarvester.CombineTools.combine.Output import PrintFit, CollectLimits
+from CombineHarvester.CombineTools.combine.T2W import T2W
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
@@ -28,6 +29,7 @@ parser = argparse.ArgumentParser(
 parser.description = 'Available methods:\n\n'
 methods = {}
 register_method(parser, methods, EnhancedCombine)
+register_method(parser, methods, T2W)
 register_method(parser, methods, PrintWorkspace)
 register_method(parser, methods, ModifyDataSet)
 register_method(parser, methods, Impacts)
