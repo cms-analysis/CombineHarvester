@@ -31,11 +31,13 @@ int main(int argc, char** argv) {
   string mass = "mA";
   string output_folder = "mssm_run2";
   bool auto_rebin = false;
+  bool manual_rebin = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
+    ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
@@ -44,13 +46,13 @@ int main(int argc, char** argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   string input_dir =
-      string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
-     // "./datacards-1501/";
+      //string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
+      "./datacards-2501/";
 
   VString chns =
       //{"tt"};
-      {"mt","et","tt","em"};
-      //{"mt","tt"};
+   //   {"mt"};
+      {"mt","et","tt"};
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
   RooRealVar mH("mH", "mH", 90., 3200.);
@@ -62,6 +64,17 @@ int main(int argc, char** argv) {
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
 
+  //Example - could fill this map with hardcoded binning for different
+  //categories if manual_rebin is turned on
+  map<string, vector<double> > binning;
+  binning["et_nobtagnotwoprong"] = {500, 700, 900, 3900};
+  binning["et_btagnotwoprong"] = {500,3900};
+  binning["mt_nobtagnotwoprong"] = {500,700,900,1300,1700,1900,3900};
+  binning["mt_btagnotwoprong"] = {500,1300,3900};
+  binning["tt_nobtagnotwoprong"] = {500,3900};
+  binning["tt_btagnotwoprong"] = {500,3900};
+  binning["em_nobtag"] = {500,3900};
+  binning["em_btag"] = {500,3900};
 
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
@@ -142,10 +155,26 @@ int main(int argc, char** argv) {
         });
     } 
   
+
+  auto rebin = ch::AutoRebin()
+       .SetBinThreshold(0.)
+   //    .SetBinUncertFraction(0.05)
+       .SetRebinMode(1)
+       .SetPerformRebin(true)
+       .SetVerbosity(1);
+  if(auto_rebin) rebin.Rebin(cb, cb);
+
+  if(manual_rebin) {
+      for(auto b : bins) {
+        std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
+        cb.cp().bin({b}).VariableRebin(binning[b]);    
+      }
+  }
+  
   cout << "Generating bbb uncertainties...";
   auto bbb = ch::BinByBinFactory()
     .SetAddThreshold(0.)
-    .SetMergeThreshold(0.2)
+    .SetMergeThreshold(0.4)
     .SetFixNorm(true);
   bbb.MergeAndAdd(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}), cb); 
   cout << " done\n";
@@ -156,13 +185,6 @@ int main(int argc, char** argv) {
   ch::SetStandardBinNames(cb);
   //! [part8]
     
-  auto rebin = ch::AutoRebin()
-       .SetBinThreshold(0.)
-     //  .SetBinUncertFraction(0.5)
-       .SetRebinMode(1)
-       .SetVerbosity(1);
-  if(auto_rebin) rebin.Rebin(cb, cb);
-
 
   //! [part9]
   // First we generate a set of bin names:
