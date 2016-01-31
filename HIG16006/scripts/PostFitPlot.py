@@ -9,15 +9,15 @@ import fnmatch
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
-def getHistogram(fname,histname,fitmode='prefit'):
+def getHistogram(fname,histname,postfitmode='prefit'):
   outname = fname.GetName()
   for key in fname.GetListOfKeys():
     histo = fname.Get(key.GetName())
-    if isinstance(histo,ROOT.TH1F) and key.GetName()==histname and fitmode in outname:
+    if isinstance(histo,ROOT.TH1F) and key.GetName()==histname:
       return [histo,outname]
-    elif isinstance(histo,ROOT.TDirectory):
+    elif isinstance(histo,ROOT.TDirectory) and postfitmode in key.GetName():
       return getHistogram(histo,histname)
-  print 'Failed to find histogram with name %(histname)s for %(fitmode)s in file %(fname)s '%vars()
+  print 'Failed to find %(postfitmode)s histogram with name %(histname)s in file %(fname)s '%vars()
   return None
 
 def signalComp(leg,plots,colour,stacked):
@@ -58,16 +58,16 @@ workspace = args.workspace
 mode = args.mode
 
 if args.dir and args.file and not args.postfitshapes:
-  print 'Supply either directory or filename, not both'
+  print 'Provide either directory or filename, not both'
   sys.exit(1)
 
 
 if not args.dir and not args.file and not args.postfitshapes:
-  print 'Supply one of directory or filename'
+  print 'Provide one of directory or filename'
   sys.exit(1)
 
 if args.postfitshapes and not args.dir:
-  print 'Supply directory'
+  print 'Provide directory when running with --postfitshapes option'
   sys.exit(1)
 
 
@@ -134,15 +134,8 @@ pad=plot.OnePad()
 pad[0].cd()
 pad[0].SetLogy(1)
 axish = createAxisHists(1,bkghist,0,999)
-#plot.UnitAxes(axish[1].GetXaxis(),axish[0].GetXaxis(),"m_{#tau#tau}","GeV")
-#axish[1].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
-#axish[1].GetYaxis().SetNdivisions(4)
-#axish[1].GetYaxis().SetTitleOffset(2.0)
-#axish[1].GetYaxis().SetTitle("S/#sqrt{B}")
 axish[0].GetYaxis().SetTitle("dN/dM_{#tau#tau} (1/GeV)")
 axish[0].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
-#axish[0].GetXaxis().SetRangeUser(0,499)
-#axish[0].SetMinimum(0.09)
 axish[0].SetMaximum(1.2*bkghist.GetMaximum())
 axish[0].SetMinimum(0.0009)
 axish[0].Draw()
@@ -171,28 +164,6 @@ latex.SetTextSize(0.023)
 latex.DrawLatex(0.63,0.63,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
 
 
-#c2.SaveAs("test.pdf")
-
-#for i in range(1,sighist_forratio.GetNbinsX()+1):
-#  sighist_forratio.SetBinContent(i,sighist_forratio.GetBinContent(i)/math.sqrt(bkghist.GetBinContent(i)))
-#  sighist_forratio.SetBinError(i,0)
-
-
-#pads[1].cd()
-#pads[1].SetGrid(0,1)
-#axish[1].Draw("axis")
-#axish[1].SetMinimum(0)
-#axish[1].SetMaximum(0.5)
-#c1 = ROOT.TCanvas()
-#sighist_forratio.SetLineColor(2)
-#sighist_forratio.Scale(1.0,"width")
-#sighist.SetTitle("")
-#sighist.SetStats(0)
-#sighist.GetXaxis().SetRangeUser(0,max_xrange)
-#sighist.GetXaxis().SetTitle('SVFit mass [GeV]')
-#sighist.GetYaxis().SetTitle('S/#sqrt{B}')
-#sighist.Draw()
-#sighist_forratio.Draw("same")
 outname = shape_file.replace(".root","_%(mode)s.pdf"%vars())
 c2.SaveAs("%(outname)s"%vars())
 
