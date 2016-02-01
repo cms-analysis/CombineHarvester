@@ -49,6 +49,7 @@ parser.add_argument('--postfitshapes',default=False,action='store_true',help='Ru
 parser.add_argument('--workspace',default='mhmodp',help='Workspace name')
 parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
 parser.add_argument('--blind', default=False,action='store_true',help='Blind data')
+parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio')
 parser.add_argument('--x_blind_min',default=100,help='Minimum x for blinding')
 parser.add_argument('--x_blind_max',default=1000,help='Maximum x for blinding')
 
@@ -150,10 +151,19 @@ for hists in bkg_histos:
  
 c2 = ROOT.TCanvas("c2","c2",0,0,800,800)
 c2.cd()
-pad=plot.OnePad()
-pad[0].cd()
-pad[0].SetLogy(1)
-axish = createAxisHists(1,bkghist,0,999)
+if args.ratio:
+  pads=plot.TwoPadSplit(0.29,0.005,0.005)
+else:
+  pads=plot.OnePad()
+pads[0].cd()
+pads[0].SetLogy(1)
+if args.ratio:
+  axish = createAxisHists(2,bkghist,0,999)
+  axish[1].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
+  axish[1].GetYaxis().SetNdivisions(4)
+  axish[1].GetYaxis().SetTitle("Obs/Exp")
+else:
+  axish = createAxisHists(1,bkghist,0,999)
 axish[0].GetYaxis().SetTitle("dN/dM_{#tau#tau} (1/GeV)")
 axish[0].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
 axish[0].SetMaximum(1.2*bkghist.GetMaximum())
@@ -166,7 +176,7 @@ stack.Draw("histsame")
 bkghist.Draw("e2same")
 sighist.SetLineColor(ROOT.kRed)
 sighist.Draw("histsame")
-blind_datahist.Draw("psame")
+blind_datahist.DrawCopy("psame")
 axish[0].Draw("axissame")
 
 legend = plot.PositionedLegend(0.20,0.20,3,0.03)
@@ -184,6 +194,16 @@ latex.SetTextAngle(0)
 latex.SetTextColor(ROOT.kBlack)
 latex.SetTextSize(0.023)
 latex.DrawLatex(0.63,0.63,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
+
+if args.ratio:
+  blind_datahist.Divide(bkghist)
+  blind_datahist.SetFillColor(plot.CreateTransparentColor(12,0.4))
+  pads[1].cd()
+  pads[1].SetGrid(0,1)
+  axish[1].Draw("axis")
+  axish[1].SetMinimum(0.7)
+  axish[1].SetMaximum(1.3)
+  blind_datahist.Draw("e2psame")
 
 
 outname = shape_file.replace(".root","_%(mode)s.pdf"%vars())
