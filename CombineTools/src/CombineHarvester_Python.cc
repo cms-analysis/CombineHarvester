@@ -3,6 +3,7 @@
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/CardWriter.h"
 #include "CombineHarvester/CombineTools/interface/BinByBin.h"
+#include "CombineHarvester/CombineTools/interface/AutoRebin.h"
 #include "CombineHarvester/CombineTools/interface/CopyTools.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/ParseCombineWorkspace.h"
@@ -19,6 +20,7 @@ using ch::Process;
 using ch::Systematic;
 using ch::CardWriter;
 using ch::BinByBinFactory;
+using ch::AutoRebin;
 
 void FilterAllPy(ch::CombineHarvester & cb, boost::python::object func) {
       auto lambda = [func](ch::Object *obj) -> bool {
@@ -394,6 +396,20 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("SetPattern", &BinByBinFactory::SetPattern,
            py::return_internal_reference<>())
       .def("SetFixNorm", &BinByBinFactory::SetFixNorm,
+           py::return_internal_reference<>())
+    ;
+    
+    py::class_<AutoRebin>("AutoRebin")
+      .def("Rebin", &AutoRebin::Rebin)
+      .def("SetVerbosity", &AutoRebin::SetVerbosity,
+           py::return_internal_reference<>())
+      .def("SetBinThreshold", &AutoRebin::SetBinThreshold,
+           py::return_internal_reference<>())
+      .def("SetBinUncertFraction", &AutoRebin::SetBinUncertFraction,
+           py::return_internal_reference<>())
+      .def("SetPerformRebin", &AutoRebin::SetPerformRebin,
+           py::return_internal_reference<>())
+      .def("SetRebinMode", &AutoRebin::SetRebinMode,
            py::return_internal_reference<>())
     ;
 
