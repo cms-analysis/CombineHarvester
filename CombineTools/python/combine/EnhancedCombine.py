@@ -1,10 +1,18 @@
 import itertools
 import CombineHarvester.CombineTools.combine.utils as utils
 import json
-#import os
+import os
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+
+
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 
 class EnhancedCombine(CombineToolBase):
@@ -23,6 +31,10 @@ class EnhancedCombine(CombineToolBase):
         group.add_argument(
             '--singlePoint', help='Supports range strings for multiple points to test, uses the same format as the --mass argument')
         group.add_argument(
+            '-s', '--seed', help='Supports range strings for multiple RNG seeds, uses the same format as the --mass argument')
+        group.add_argument(
+            '-d', '--datacard', nargs='*', default=[], help='Operate on multiple datacards')
+        group.add_argument(
             '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
@@ -31,6 +43,8 @@ class EnhancedCombine(CombineToolBase):
         CombineToolBase.attach_args(self, group)
         group.add_argument(
             '--opts', nargs='+', default=[], help='Add preset combine option groups')
+        group.add_argument(
+            '--there', action='store_true', help='Run combine in the same directory as the workspace')
         group.add_argument('--split-points', type=int, default=0,
                            help='When used in conjunction with --points will create multiple combine calls that each run at most the number of points specified here.')
 
@@ -44,8 +58,10 @@ class EnhancedCombine(CombineToolBase):
         # Put the method back in because we always take it out
         self.put_back_arg('method', '-M')
 
-        cmd_queue = []
+        # cmd_queue = []
         subbed_vars = {}
+
+        # pre_cmd = ''
 
         if self.args.mass is not None:
             mass_vals = utils.split_vals(self.args.mass)
@@ -57,6 +73,42 @@ class EnhancedCombine(CombineToolBase):
             subbed_vars[('SINGLEPOINT',)] = [(pval,) for pval in single_points]
             self.passthru.extend(['--singlePoint', '%(SINGLEPOINT)s'])
             self.args.name += '.POINT.%(SINGLEPOINT)s'
+
+        if self.args.seed is not None:
+            seed_vals = utils.split_vals(self.args.seed)
+            subbed_vars[('SEED',)] = [(sval,) for sval in seed_vals]
+            self.passthru.extend(['-s', '%(SEED)s'])
+
+        if len(self.args.datacard) >= 1:
+            # Two lists of tuples, one which does specify the mass, and one
+            # which doesn't
+            dc_mass = []
+            dc_no_mass = []
+            for dc in self.args.datacard:
+                # Split workspace into path and filename
+                path, file = os.path.split(dc)
+                # If the wsp is in the current directory should call it '.'
+                if path == '':
+                    path = '.'
+                # If we're not using the --there option then leave the
+                # workspace argument as the full path
+                if not self.args.there:
+                    file = dc
+                # Figure out if the enclosing directory is a mass value
+                dirs = path.split('/')
+                if self.args.mass is None and len(dirs) >= 1 and isfloat(dirs[-1]):
+                    print 'Assuming card %s uses mass value %s' % (dc, dirs[-1])
+                    dc_mass.append((path, file, dirs[-1]))
+                    dc_no_mass.append((path, file))
+            # If at least one mass value was inferred assume all of them are like this
+            if len(dc_mass) > 0:
+                subbed_vars[('DIR', 'DATACARD', 'MASS')] = dc_mass
+                self.passthru.extend(['-d', '%(DATACARD)s', '-m', '%(MASS)s'])
+            else:
+                subbed_vars[('DIR', 'DATACARD',)] = dc_no_mass
+                self.passthru.extend(['-d', '%(DATACARD)s'])
+        # elif len(self.args.datacard) == 1:
+        #     self.passthru.extend(['-d', self.args.datacard[0]])
 
         if self.args.boundlist is not None:
           subbed_vars = {}
@@ -109,6 +161,9 @@ class EnhancedCombine(CombineToolBase):
         # it from what the user specified
         self.put_back_arg('name', '-n')
         proto = 'combine ' + (' '.join(self.passthru))
+        if self.args.there:
+            proto = 'pushd %(DIR)s; combine ' + (' '.join(self.passthru))+'; popd'
+
         for it in itertools.product(*subbed_vars.values()):
             keys = subbed_vars.keys()
             dict = {}
