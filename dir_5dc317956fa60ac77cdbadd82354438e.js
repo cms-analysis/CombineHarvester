@@ -1,6 +1,9 @@
 var dir_5dc317956fa60ac77cdbadd82354438e =
 [
     [ "Algorithm.h", "_algorithm_8h.html", "_algorithm_8h" ],
+    [ "AutoRebin.h", "_auto_rebin_8h.html", [
+      [ "AutoRebin", "classch_1_1_auto_rebin.html", "classch_1_1_auto_rebin" ]
+    ] ],
     [ "BinByBin.h", "_bin_by_bin_8h.html", [
       [ "BinByBinFactory", "classch_1_1_bin_by_bin_factory.html", "classch_1_1_bin_by_bin_factory" ]
     ] ],

@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "ch::syst::analysis", "structch_1_1syst_1_1analysis.html", null ],
+    [ "ch::AutoRebin", "classch_1_1_auto_rebin.html", null ],
     [ "ch::syst::bin", "structch_1_1syst_1_1bin.html", null ],
     [ "ch::syst::bin_id", "classch_1_1syst_1_1bin__id.html", null ],
     [ "ch::BinByBinFactory", "classch_1_1_bin_by_bin_factory.html", null ],

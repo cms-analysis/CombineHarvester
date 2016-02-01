@@ -5,7 +5,7 @@ var searchData=
   ['range_5fd',['range_d',['../classch_1_1_parameter.html#a84965c0df39666449279066216b3f184',1,'ch::Parameter']]],
   ['range_5fu',['range_u',['../classch_1_1_parameter.html#ad0958b8f9f2bbe6671bedce5005058f4',1,'ch::Parameter']]],
   ['rate',['rate',['../classch_1_1_observation.html#a74f4222e7dd540dc028563ba4923d3e8',1,'ch::Observation::rate()'],['../classch_1_1_process.html#a6dabe794611839385254eba00f46de2d',1,'ch::Process::rate()']]],
-  ['rebin',['rebin',['../namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360',1,'plotting']]],
+  ['rebin',['Rebin',['../classch_1_1_auto_rebin.html#af9525ed197d8b5742695c729645ea4a2',1,'ch::AutoRebin::Rebin()'],['../namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360',1,'plotting.rebin()']]],
   ['rebinhist',['RebinHist',['../namespacech.html#a2cbcfd049543bfe9f63958bc671deeae',1,'ch']]],
   ['removegraphxduplicates',['RemoveGraphXDuplicates',['../namespaceplotting.html#a13952cefd0e2d1c402b079b1d1ab3c50',1,'plotting']]],
   ['removegraphyabove',['RemoveGraphYAbove',['../namespaceplotting.html#a9d163491d97931e00a423e5eb740f033',1,'plotting']]],

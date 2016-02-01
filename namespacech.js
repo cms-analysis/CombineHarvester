@@ -2,6 +2,7 @@ var namespacech =
 [
     [ "syst", "namespacech_1_1syst.html", "namespacech_1_1syst" ],
     [ "tupleprint", "namespacech_1_1tupleprint.html", "namespacech_1_1tupleprint" ],
+    [ "AutoRebin", "classch_1_1_auto_rebin.html", "classch_1_1_auto_rebin" ],
     [ "BinByBinFactory", "classch_1_1_bin_by_bin_factory.html", "classch_1_1_bin_by_bin_factory" ],
     [ "CardWriter", "classch_1_1_card_writer.html", "classch_1_1_card_writer" ],
     [ "CombineHarvester", "classch_1_1_combine_harvester.html", "classch_1_1_combine_harvester" ],

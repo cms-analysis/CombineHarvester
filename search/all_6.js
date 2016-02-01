@@ -5,6 +5,7 @@ var searchData=
   ['getaxishist',['GetAxisHist',['../_plotting_8h.html#aafd63f976dd4c5ae271062e0f91c2681',1,'GetAxisHist():&#160;Plotting.h'],['../namespaceplotting.html#a3f11bc70e3e0278d0b4cf33ab8c383d3',1,'plotting.GetAxisHist()']]],
   ['getclonedth1',['GetClonedTH1',['../namespacech.html#a9db822b84dd7cf9f1d3bc76a6a741498',1,'ch']]],
   ['getflag',['GetFlag',['../classch_1_1_combine_harvester.html#ac64212156595f320b76bf32ec2c7a9e7',1,'ch::CombineHarvester']]],
+  ['getmaximumfracuncertbin',['GetMaximumFracUncertBin',['../classch_1_1_auto_rebin.html#a72dbe98c7aacd48dd99d03d2b957a934',1,'ch::AutoRebin']]],
   ['getobservedrate',['GetObservedRate',['../classch_1_1_combine_harvester.html#a0b5444f9dcfa6fdace5fa2d8dc2ca11f',1,'ch::CombineHarvester']]],
   ['getobservedshape',['GetObservedShape',['../classch_1_1_combine_harvester.html#a0d3eca727963c0c14a3c04bbdce2ca5e',1,'ch::CombineHarvester']]],
   ['getpadymax',['GetPadYMax',['../_plotting_8h.html#a94fa210a8324e72a82327860972746eb',1,'GetPadYMax(TPad *pad, double x_min, double x_max):&#160;Plotting.h'],['../_plotting_8h.html#afa343295bd66905121be203cb7c7cc03',1,'GetPadYMax(TPad *pad):&#160;Plotting.h'],['../namespaceplotting.html#aebd660d3fcec8c7d4b5f6baea2621903',1,'plotting.GetPadYMax()']]],
