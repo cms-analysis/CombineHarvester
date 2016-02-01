@@ -48,6 +48,9 @@ parser.add_argument('--tanb',help='Signal tanb')
 parser.add_argument('--postfitshapes',default=False,action='store_true',help='Run PostFitShapesFromWorkspace')
 parser.add_argument('--workspace',default='mhmodp',help='Workspace name')
 parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
+parser.add_argument('--blind', default=False,action='store_true',help='Blind data')
+parser.add_argument('--x_blind_min',default=100,help='Minimum x for blinding')
+parser.add_argument('--x_blind_max',default=1000,help='Maximum x for blinding')
 
 
 args = parser.parse_args()
@@ -56,6 +59,8 @@ mA = args.mA
 tb = args.tanb
 workspace = args.workspace
 mode = args.mode
+x_blind_min = args.x_blind_min
+x_blind_max = args.x_blind_max
 
 if args.dir and args.file and not args.postfitshapes:
   print 'Provide either directory or filename, not both'
@@ -103,6 +108,21 @@ bkghist = getHistogram(histo_file,'TotalBkg')[0]
 sighist.Scale(1.0,"width")
 bkghist.Scale(1.0,"width")
 
+total_datahist = getHistogram(histo_file,"data_obs")[0]
+blind_datahist = total_datahist.Clone()
+blind_datahist.SetMarkerStyle(20)
+
+if(args.blind):
+  for i in range(0,total_datahist.GetNbinsX()):
+    low_edge = total_datahist.GetBinLowEdge(i+1)
+    high_edge = low_edge+total_datahist.GetBinWidth(i+1)
+    if ((low_edge > x_blind_min and low_edge < x_blind_max) or (high_edge > x_blind_min and high_edge<x_blind_max)):
+      blind_datahist.SetBinContent(i+1,0)
+      blind_datahist.SetBinError(i+1,0)
+
+blind_datahist.Scale(1.0,"width")
+
+
 channel=binname[4:6]
 
 bkg_histos = []
@@ -145,7 +165,8 @@ bkghist.SetMarkerSize(0)
 stack.Draw("histsame")
 bkghist.Draw("e2same")
 sighist.SetLineColor(ROOT.kRed)
-sighist.DrawCopy("histsame")
+sighist.Draw("histsame")
+blind_datahist.Draw("psame")
 axish[0].Draw("axissame")
 
 legend = plot.PositionedLegend(0.20,0.20,3,0.03)
@@ -155,6 +176,7 @@ legend.SetFillColor(0)
 for legi,hists in enumerate(bkg_histos):
   legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
 legend.AddEntry(bkghist,"Background uncertainty","f")
+legend.AddEntry(blind_datahist,"Observation","P")
 legend.Draw("same")
 latex = ROOT.TLatex()
 latex.SetNDC()
