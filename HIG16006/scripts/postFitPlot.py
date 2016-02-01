@@ -46,7 +46,7 @@ parser.add_argument('--file', '-f',help='Input file')
 parser.add_argument('--mA',help='Signal m_A')
 parser.add_argument('--tanb',help='Signal tanb')
 parser.add_argument('--postfitshapes',default=False,action='store_true',help='Run PostFitShapesFromWorkspace')
-parser.add_argument('--workspace',default='mhmodp',help='Workspace name')
+parser.add_argument('--workspace',default='mhmodp',help='Part of workspace filename right before .root')
 parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
 parser.add_argument('--blind', default=False,action='store_true',help='Blind data')
 parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio')
@@ -81,7 +81,7 @@ if args.postfitshapes:
   for root,dirnames,filenames in os.walk(args.dir):
     for filename in fnmatch.filter(filenames, '*_mssm.txt'):
       datacard_file = os.path.join(root,filename) 
-    for filename in fnmatch.filter(filenames, '*_%(workspace)s.root'%vars()):
+    for filename in fnmatch.filter(filenames, '*%(workspace)s.root'%vars()):
       workspace_file = os.path.join(root,filename)
       shape_file=workspace_file.replace('.root','_shapes_%(mA)s_%(tb)s.root'%vars())
 
