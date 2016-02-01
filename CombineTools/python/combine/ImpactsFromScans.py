@@ -130,7 +130,8 @@ class ImpactsFromScans(CombineToolBase):
             bf_val = bf_vals[x]
             print 'Using %s=%g' % (x, bf_vals[x])
         covv = d21 if bf_val >= d1 else d10
-      #if p == 'mu_XS_ZH_BR_WW': covv = covv * 0.90
+      if p == 'mu_XS_ZH_BR_WW': covv = covv * 0.89
+      if p == 'mu_XS_ttHtH_BR_tautau': covv = covv * 1.2
       #if p == 'mu_XS_ttHtH_BR_tautau': covv = 6.3
       if not vlo:
         print 'No ValidErrorLo, using d21'
@@ -149,10 +150,10 @@ class ImpactsFromScans(CombineToolBase):
       if not vlo and abs(d10) < 1E-4:
         x1 = -1. * d21
         y1 = d21*d21
-      # print (x1, y1)
-      # print (x2, y2)
-      # print (x3, y3)
-      # print (x4, y4)
+      print (x1, y1)
+      print (x2, y2)
+      print (x3, y3)
+      print (x4, y4)
 
       mtx = matrix([[x1*x1, x1, 1], [x3*x3, x3, 1], [x4*x4, x4, 1]])
       yvec = matrix([[y1], [y3], [y4]])
@@ -161,6 +162,7 @@ class ImpactsFromScans(CombineToolBase):
       xres = solve(mtx, yvec)
       # print xres
       covvars.append(ROOT.RooFormulaVar('cov%i'%i,'', '%g*(@0-%g)*(@0-%g)+%g*(@0-%g)+%g' % (xres[0],d1,d1,xres[1],d1,xres[2]), ROOT.RooArgList(xvars[i])))
+      # covvars.append(ROOT.RooFormulaVar('cov%i'%i,'', '%g' % (y2), ROOT.RooArgList()))
       covvars[-1].Print()
 
     print '-----------------------------------------------------------'
@@ -208,12 +210,12 @@ class ImpactsFromScans(CombineToolBase):
         #cji_21 = cj_21/dj_21
         #cji_10 = cj_10/dj_21
 
-        a_20 = (cij_20-cji_20)/(cij_20+cji_20)
-        a_21 = (cij_21-cji_21)/(cij_21+cji_21)
-        a_10 = (cij_10-cji_10)/(cij_10+cji_10)
+        a_20 = (cij_20-cji_20)/((cij_20+cji_20) if (cij_20+cji_20) != 0. else 1.) 
+        a_21 = (cij_21-cji_21)/((cij_21+cji_21) if (cij_21+cji_21) != 0. else 1.)
+        a_10 = (cij_10-cji_10)/((cij_10+cji_10) if (cij_10+cji_10) != 0. else 1.)
 
-        a_i = (cij_21-cij_10)/(cij_21+cij_10)
-        a_j = (cji_21-cji_10)/(cji_21+cji_10)
+        a_i = (cij_21-cij_10)/((cij_21+cij_10) if (cij_21+cij_10) != 0. else 1.)
+        a_j = (cji_21-cji_10)/((cji_21+cji_10) if (cji_21+cji_10) != 0. else 1.)
 
         max_c = max([abs(x) for x in [cij_20, cij_21, cij_10, cji_20, cji_21, cji_10]])
 
@@ -264,6 +266,7 @@ class ImpactsFromScans(CombineToolBase):
         cov[i][j] = covariance
         cov[j][i] = covariance
         mvals_store.append(ROOT.RooFormulaVar('ele_%i_%i'%(i,j),'%g*sqrt(@0)*sqrt(@1)'%(correlation),ROOT.RooArgList(covvars[i], covvars[j])))
+        # mvals_store.append(ROOT.RooFormulaVar('ele_%i_%i'%(i,j),'%g'%(covariance),ROOT.RooArgList()))
         mvals.add(mvals_store[-1])
     cors.sort(key=lambda tup: tup[1], reverse=True)
     for tup in cors:
