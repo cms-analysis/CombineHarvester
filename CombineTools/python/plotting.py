@@ -2,6 +2,7 @@ import ROOT as R
 import math
 from array import array
 import re
+import json
 
 COL_STORE = []
 
@@ -410,7 +411,7 @@ def CreateAxisHist(src, at_limits):
     tmp = R.TCanvas()
     tmp.cd()
     src.Draw('AP')
-    result = src.GetHistogram().Clone()
+    result = src.GetHistogram().Clone('tmp')
     if (at_limits):
         min = 0.
         max = 0.
@@ -428,6 +429,14 @@ def CreateAxisHist(src, at_limits):
         result.GetXaxis().SetLimits(min, max)
     R.gPad = backup
     return result
+
+
+def CreateAxisHists(n, src, at_limits):
+    res = []
+    h = CreateAxisHist(src, at_limits)
+    for i in xrange(n):
+        res.append(h.Clone('tmp%i'%i))
+    return res
 
 
 def CreateTransparentColor(color, alpha):
@@ -499,6 +508,9 @@ def RemoveGraphXDuplicates(graph):
             RemoveGraphXDuplicates(graph)
             break
 
+def ApplyGraphYOffset(graph, y_off):
+    for i in xrange(graph.GetN() - 1):
+        graph.GetY()[i] = graph.GetY()[i] + y_off
 
 def RemoveGraphYAll(graph, val):
     for i in xrange(graph.GetN()):
@@ -563,6 +575,24 @@ def TwoPadSplitColumns(split_point, gap_left, gap_right):
     left.cd()
     result = [left, right]
     return result
+
+
+def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered,
+                               y_min, y_max):
+    if lower.GetXaxis().GetTitle() == '':
+        lower.GetXaxis().SetTitle(upper.GetXaxis().GetTitle())
+    upper.GetXaxis().SetTitle("")
+    upper.GetXaxis().SetLabelSize(0)
+    upper_h = 1. - pads[0].GetTopMargin() - pads[0].GetBottomMargin()
+    lower_h = 1. - pads[1].GetTopMargin() - pads[1].GetBottomMargin()
+    lower.GetYaxis().SetTickLength(R.gStyle.GetTickLength() * upper_h / lower_h)
+    pads[1].SetTickx(1)
+    pads[1].SetTicky(1)
+    lower.GetYaxis().SetTitle(y_title)
+    lower.GetYaxis().CenterTitle(y_centered)
+    if y_max > y_min:
+        lower.SetMinimum(y_min)
+        lower.SetMaximum(y_max)
 
 
 def ImproveMinimum(graph, func, doIt=False):
@@ -680,11 +710,64 @@ def FixTopRange(pad, fix_y, fraction):
         hobj.SetMaximum(maxval)
 
 
-def GetPadYMaxInRange(pad, x_min, x_max):
+def FixBothRanges(pad, fix_y_lo, frac_lo, fix_y_hi, frac_hi):
+    """Adjusts y-axis range such that a lower and a higher value are located a
+    fixed fraction of the frame height away from a new minimum and maximum
+    respectively.
+
+    This function is useful in conjunction with GetPadYMax which returns the
+    maximum or minimum y value of all histograms and graphs drawn on the pad.
+
+    In the example below, the minimum and maximum values found via this function
+    are used as the `fix_y_lo` and `fix_y_hi` arguments, and the spacing fractions
+    as 0.15 and 0.30 respectively.
+
+    @code
+    FixBothRanges(pad, GetPadYMin(pad), 0.15, GetPadYMax(pad), 0.30)
+    @endcode
+
+    ![](figures/FixBothRanges.png)
+    
+    Args:
+        pad (TPad): A TPad on which histograms and graphs have already been drawn
+        fix_y_lo (float): The y value which will end up a fraction `frac_lo` above
+                          the new axis minimum.
+        frac_lo (float): A fraction of the y-axis height
+        fix_y_hi (float): The y value which will end up a fraction `frac_hi` below
+                         from the new axis maximum.
+        frac_hi (float): A fraction of the y-axis height
+    """
+    hobj = GetAxisHist(pad)
+    ymin = fix_y_lo
+    ymax = fix_y_hi
+    if R.gPad.GetLogy():
+        if ymin == 0.:
+            print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
+            return
+        ymin = math.log10(ymin)
+        ymax = math.log10(ymax)
+    fl = frac_lo
+    fh = frac_hi
+
+    ymaxn = (
+        (1. / (1. - (fh*fl/((1.-fl)*(1.-fh))))) *
+        (1. / (1. - fh)) *
+        (ymax - fh*ymin)
+        )
+    yminn = (ymin - fl*ymaxn) / (1. - fl)
+    if R.gPad.GetLogy():
+        yminn = math.pow(10, yminn)
+        ymaxn = math.pow(10, ymaxn)
+    hobj.SetMinimum(yminn)
+    hobj.SetMaximum(ymaxn)
+
+
+def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
     pad_obs = pad.GetListOfPrimitives()
     if pad_obs is None:
         return 0.
     h_max = -99999.
+    h_min = +99999.
     for obj in pad_obs:
         if obj.InheritsFrom(R.TH1.Class()):
             hobj = obj
@@ -694,27 +777,60 @@ def GetPadYMaxInRange(pad, x_min, x_max):
                         continue
                 if (hobj.GetBinContent(j) + hobj.GetBinError(j) > h_max):
                     h_max = hobj.GetBinContent(j) + hobj.GetBinError(j)
-
-        if obj.InheritsFrom(R.TGraph.Class()):
+                if (hobj.GetBinContent(j) - hobj.GetBinError(j) < h_min) and not do_min:
+                    # If we're looking for the minimum don't count TH1s
+                    # because we probably only care about graphs
+                    h_min = hobj.GetBinContent(j) - hobj.GetBinError(j)
+        elif obj.InheritsFrom(R.TGraphAsymmErrors.Class()):
             gobj = obj
             n = gobj.GetN()
             for k in xrange(0, n):
-                x = gobs.GetX()[k]
-                y = gobs.GetY()[k]
+                x = gobj.GetX()[k]
+                y = gobj.GetY()[k]
+                if x < x_min or x > x_max:
+                    continue
+                if (y + gobj.GetEYhigh()[k]) > h_max:
+                    h_max = y + gobj.GetEYhigh()[k]
+                if (y - gobj.GetEYlow()[k]) < h_min:
+                    h_min = y - gobj.GetEYlow()[k]
+        elif obj.InheritsFrom(R.TGraphErrors.Class()):
+            gobj = obj
+            n = gobj.GetN()
+            for k in xrange(0, n):
+                x = gobj.GetX()[k]
+                y = gobj.GetY()[k]
+                if x < x_min or x > x_max:
+                    continue
+                if (y + gobj.GetEY()[k]) > h_max:
+                    h_max = y + gobj.GetEY()[k]
+                if (y - gobj.GetEY()[k]) < h_min:
+                    h_min = y - gobj.GetEY()[k]
+        elif obj.InheritsFrom(R.TGraph.Class()):
+            gobj = obj
+            n = gobj.GetN()
+            for k in xrange(0, n):
+                x = gobj.GetX()[k]
+                y = gobj.GetY()[k]
                 if x < x_min or x > x_max:
                     continue
                 if y > h_max:
                     h_max = y
-    return h_max
+                if y < h_min:
+                    h_min = y
+    return h_max if do_min is False else h_min
 
 
-def GetPadYMax(pad):
+def GetPadYMax(pad, do_min=False):
     pad_obs = pad.GetListOfPrimitives()
     if pad_obs is None:
         return 0.
     xmin = GetAxisHist(pad).GetXaxis().GetXmin()
     xmax = GetAxisHist(pad).GetXaxis().GetXmax()
-    return GetPadYMaxInRange(pad, xmin, xmax)
+    return GetPadYMaxInRange(pad, xmin, xmax, do_min)
+
+
+def GetPadYMin(pad):
+    return GetPadYMax(pad, True)
 
 
 def DrawHorizontalLine(pad, line, yval):
@@ -723,6 +839,12 @@ def DrawHorizontalLine(pad, line, yval):
     xmax = axis.GetXaxis().GetXmax()
     line.DrawLine(xmin, yval, xmax, yval)
 
+
+def DrawVerticalLine(pad, line, xval):
+    axis = GetAxisHist(pad)
+    ymin = axis.GetMinimum()
+    ymax = axis.GetMaximum()
+    line.DrawLine(xval, ymin, xval, ymax)
 
 def DrawTitle(pad, text, align):
     pad_backup = R.gPad
@@ -949,14 +1071,14 @@ def frameTH2D(hist, threshold, frameValue=1000):
 
     # Set the edges of the outer framing bins and the adjusted
     # edge of the real edge bins
-    x_new[0] = x_bins[0] - 2 * xw1 * 0.01
-    x_new[1] = x_bins[0] - 1 * xw1 * 0.01
-    x_new[-1] = x_bins[-1] + 2 * xw2 * 0.01
-    x_new[-2] = x_bins[-1] + 1 * xw2 * 0.01
-    y_new[0] = y_bins[0] - 2 * yw1 * 0.01
-    y_new[1] = y_bins[0] - 1 * yw1 * 0.01
-    y_new[-1] = y_bins[-1] + 2 * yw2 * 0.01
-    y_new[-2] = y_bins[-1] + 1 * yw2 * 0.01
+    x_new[0] = x_bins[0] - 2 * xw1 * 0.02
+    x_new[1] = x_bins[0] - 1 * xw1 * 0.02
+    x_new[-1] = x_bins[-1] + 2 * xw2 * 0.02
+    x_new[-2] = x_bins[-1] + 1 * xw2 * 0.02
+    y_new[0] = y_bins[0] - 2 * yw1 * 0.02
+    y_new[1] = y_bins[0] - 1 * yw1 * 0.02
+    y_new[-1] = y_bins[-1] + 2 * yw2 * 0.02
+    y_new[-2] = y_bins[-1] + 1 * yw2 * 0.02
 
     # Copy the remaining bin edges from the hist
     for i in xrange(0, len(x_bins)):
@@ -1116,6 +1238,12 @@ def LimitTGraphFromJSON(js, label):
     return graph
 
 
+def LimitTGraphFromJSONFile(jsfile, label):
+    with open(jsfile) as jsonfile:
+        js = json.load(jsonfile)
+    return LimitTGraphFromJSON(js, label)
+
+
 def LimitBandTGraphFromJSON(js, central, lo, hi):
     xvals = []
     yvals = []
@@ -1130,6 +1258,65 @@ def LimitBandTGraphFromJSON(js, central, lo, hi):
         'd', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
     graph.Sort()
     return graph
+
+
+def StandardLimitsFromJSONFile(json_file, draw=['obs', 'exp0', 'exp1', 'exp2']):
+    graphs = {}
+    data = {}
+    with open(json_file) as jsonfile:
+        data = json.load(jsonfile)
+    if 'obs' in draw:
+        graphs['obs'] = LimitTGraphFromJSON(data, 'obs')
+    if 'exp0' in draw or 'exp' in draw:
+        graphs['exp0'] = LimitTGraphFromJSON(data, 'exp0')
+    if 'exp1' in draw or 'exp' in draw:
+        graphs['exp1'] = LimitBandTGraphFromJSON(data, 'exp0', 'exp-1', 'exp+1')
+    if 'exp2' in draw or 'exp' in draw:
+        graphs['exp2'] = LimitBandTGraphFromJSON(data, 'exp0', 'exp-2', 'exp+2')
+    return graphs
+
+
+def StyleLimitBand(graph_dict):
+    if 'obs' in graph_dict:
+        graph_dict['obs'].SetLineWidth(2)
+    if 'exp0' in graph_dict:
+        graph_dict['exp0'].SetLineWidth(2)
+        graph_dict['exp0'].SetLineColor(R.kRed)
+    if 'exp1' in graph_dict:
+        graph_dict['exp1'].SetFillColor(R.kGreen)
+    if 'exp2' in graph_dict:
+        graph_dict['exp2'].SetFillColor(R.kYellow)
+
+
+def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
+                  legend=None):
+    pad.cd()
+    do_obs = False
+    do_exp0 = False
+    do_exp1 = False
+    do_exp2 = False
+    if 'exp2' in graph_dict and ('exp2' in draw or 'exp' in draw):
+        do_exp2 = True
+        graph_dict['exp2'].Draw('3SAME')
+    if 'exp1' in graph_dict and ('exp1' in draw or 'exp' in draw):
+        do_exp1 = True
+        graph_dict['exp1'].Draw('3SAME')
+    if 'exp0' in graph_dict and ('exp0' in draw or 'exp' in draw):
+        do_exp0 = True
+        graph_dict['exp0'].Draw('LSAME')
+    if 'obs' in graph_dict and 'obs' in draw:
+        do_obs = True
+        graph_dict['obs'].Draw('PLSAME')
+    if legend is not None:
+        if do_obs:
+            legend.AddEntry(graph_dict['obs'], 'Observed', 'LP')
+        if do_exp0:
+            legend.AddEntry(graph_dict['exp0'], 'Expected', 'L')
+        if do_exp1:
+            legend.AddEntry(graph_dict['exp1'], '#pm1#sigma Expected', 'F')
+        if do_exp2:
+            legend.AddEntry(graph_dict['exp2'], '#pm2#sigma Expected', 'F')
+
 
 def GraphDifference(graph1,graph2,relative):
     xvals =[]
@@ -1147,9 +1334,26 @@ def GraphDifference(graph1,graph2,relative):
     return diff_graph
 
 
+def GraphDivide(num, den):
+    res = num.Clone()
+    for i in xrange(num.GetN()):
+        res.GetY()[i] = res.GetY()[i]/den.Eval(res.GetX()[i])
+    if type(res) is R.TGraphAsymmErrors:
+        for i in xrange(num.GetN()):
+            res.GetEYhigh()[i] = res.GetEYhigh()[i]/den.Eval(res.GetX()[i])
+            res.GetEYlow()[i] = res.GetEYlow()[i]/den.Eval(res.GetX()[i])
+
+    return res
+
+
 def Set(obj, **kwargs):
     for key, value in kwargs.iteritems():
-        getattr(obj, 'Set' + key)(value)
+        if value is None:
+            getattr(obj, 'Set' + key)()
+        elif isinstance(value, (list, tuple)):
+            getattr(obj, 'Set' + key)(*value)
+        else:
+            getattr(obj, 'Set' + key)(value)
 
 
 def SetBirdPalette():
