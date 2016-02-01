@@ -123,6 +123,9 @@ void (CombineHarvester::*Overload1_WriteDatacard)(
 double (CombineHarvester::*Overload1_GetUncertainty)(
     void) = &CombineHarvester::GetUncertainty;
 
+double (CombineHarvester::*Overload2_GetUncertainty)(
+    RooFitResult const&, unsigned) = &CombineHarvester::GetUncertainty;
+
 TH1F (CombineHarvester::*Overload1_GetShapeWithUncertainty)(
     void) = &CombineHarvester::GetShapeWithUncertainty;
 
@@ -282,6 +285,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("GetRate", &CombineHarvester::GetRate)
       .def("GetObservedRate", &CombineHarvester::GetObservedRate)
       .def("GetUncertainty", Overload1_GetUncertainty)
+      .def("GetUncertainty", Overload2_GetUncertainty)
       .def("GetShape", &CombineHarvester::GetShape)
       .def("GetShapeWithUncertainty", Overload1_GetShapeWithUncertainty)
       .def("GetShapeWithUncertainty", Overload2_GetShapeWithUncertainty)
