@@ -778,6 +778,7 @@ INPUT  = CombineTools/interface \
          docs/Example2.md \
          docs/PythonInterface.md \
          docs/PostFitShapes.md \
+         docs/Limits.md \
          docs/RooMorphingPdf.md \
          docs/ReproduceRun1HTTDatacards.md \
          docs/ChargedHiggs.md \
