@@ -116,7 +116,7 @@ $(document).ready(function(){initNavTree('_t_file_i_o_8h_source.html','');});
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;std::unique_ptr&lt;TH1&gt; <a class="code" href="namespacech.html#a9db822b84dd7cf9f1d3bc76a6a741498">GetClonedTH1</a>(TFile* file, std::string <span class="keyword">const</span>&amp; path);</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#aa686b94bff95b40d5ffcd21869eab87a">WriteToTFile</a>(T <span class="keyword">const</span>* ptr, TFile* file, std::string <span class="keyword">const</span>&amp; path);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a06e7ae02d1abed286e7184a7e7626529">WriteToTFile</a>(T * ptr, TFile* file, std::string <span class="keyword">const</span>&amp; path);</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// Extracts objects from the form:</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// &quot;path/to/a/file.root:path/to/object&quot;</span></div>
@@ -130,7 +130,7 @@ $(document).ready(function(){initNavTree('_t_file_i_o_8h_source.html','');});
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">// Template function implementation</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">// ------------------------------------------------------------------</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespacech.html#aa686b94bff95b40d5ffcd21869eab87a">   31</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#aa686b94bff95b40d5ffcd21869eab87a">ch::WriteToTFile</a>(T <span class="keyword">const</span>* ptr, TFile* file, std::string <span class="keyword">const</span>&amp; path) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespacech.html#a06e7ae02d1abed286e7184a7e7626529">   31</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a06e7ae02d1abed286e7184a7e7626529">ch::WriteToTFile</a>(T * ptr, TFile* file, std::string <span class="keyword">const</span>&amp; path) {</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">  #ifdef TIME_FUNCTIONS</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="_logging_8h.html#a7dbba20d0f1848f31de83551b351de72">LAUNCH_FUNCTION_TIMER</a>(__timer__, __token__)</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="preprocessor">#endif</span></div>
@@ -145,59 +145,60 @@ $(document).ready(function(){initNavTree('_t_file_i_o_8h_source.html','');});
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      gDirectory-&gt;cd(as_vec[i].c_str());</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">if</span> (!gDirectory-&gt;FindKey(as_vec.back().c_str())) {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      gDirectory-&gt;WriteTObject(ptr, as_vec.back().c_str());</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    gDirectory-&gt;cd(<span class="stringliteral">&quot;/&quot;</span>);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">   53</a></span>&#160;T <a class="code" href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">ch::OpenFromTFile</a>(std::string <span class="keyword">const</span>&amp; fullpath) {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  std::size_t pos = fullpath.find(<span class="charliteral">&#39;:&#39;</span>);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  std::string filepath = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  std::string objectpath = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (pos == std::string::npos || pos == 0 || pos == (fullpath.size() - 1)) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Input path must of the format file.root:object&quot;</span>));</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    filepath = fullpath.substr(0, pos);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    objectpath = fullpath.substr(pos + 1);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  TFile file(filepath.c_str());</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span> (!file.IsOpen()) {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;File is invalid&quot;</span>));</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  file.cd();</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  T* obj_ptr = <span class="keyword">dynamic_cast&lt;</span>T*<span class="keyword">&gt;</span>(gDirectory-&gt;Get(objectpath.c_str()));</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span> (!obj_ptr) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Object &quot;</span> + objectpath + <span class="stringliteral">&quot; is missing or of wrong type&quot;</span>));</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  }</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordflow">return</span> *obj_ptr;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="namespacech.html#af7fe148f865bc9674341c9aa36d875ef">   78</a></span>&#160;T <a class="code" href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">ch::OpenFromTFile</a>(TFile* file, std::string <span class="keyword">const</span>&amp; path) {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">if</span> (!file || !file-&gt;IsOpen()) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;File is null or invalid&quot;</span>));</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  file-&gt;cd();</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  T* obj_ptr = <span class="keyword">dynamic_cast&lt;</span>T*<span class="keyword">&gt;</span>(gDirectory-&gt;Get(path.c_str()));</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">if</span> (!obj_ptr) {</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Object &quot;</span> + path + <span class="stringliteral">&quot; is missing or of wrong type&quot;</span>));</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">return</span> *obj_ptr;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="namespacech_html_aa686b94bff95b40d5ffcd21869eab87a"><div class="ttname"><a href="namespacech.html#aa686b94bff95b40d5ffcd21869eab87a">ch::WriteToTFile</a></div><div class="ttdeci">void WriteToTFile(T const *ptr, TFile *file, std::string const &amp;path)</div><div class="ttdef"><b>Definition:</b> <a href="_t_file_i_o_8h_source.html#l00031">TFileIO.h:31</a></div></div>
-<div class="ttc" id="namespacech_html_aa859d4d87eb7f27b2499e55c73789d98"><div class="ttname"><a href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">ch::OpenFromTFile</a></div><div class="ttdeci">T OpenFromTFile(std::string const &amp;fullpath)</div><div class="ttdef"><b>Definition:</b> <a href="_t_file_i_o_8h_source.html#l00053">TFileIO.h:53</a></div></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      ptr-&gt;SetName(as_vec.back().c_str());</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      gDirectory-&gt;WriteTObject(ptr, as_vec.back().c_str());</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    gDirectory-&gt;cd(<span class="stringliteral">&quot;/&quot;</span>);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">   54</a></span>&#160;T <a class="code" href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">ch::OpenFromTFile</a>(std::string <span class="keyword">const</span>&amp; fullpath) {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  std::size_t pos = fullpath.find(<span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  std::string filepath = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  std::string objectpath = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">if</span> (pos == std::string::npos || pos == 0 || pos == (fullpath.size() - 1)) {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Input path must of the format file.root:object&quot;</span>));</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    filepath = fullpath.substr(0, pos);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    objectpath = fullpath.substr(pos + 1);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  TFile file(filepath.c_str());</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">if</span> (!file.IsOpen()) {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;File is invalid&quot;</span>));</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  file.cd();</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  T* obj_ptr = <span class="keyword">dynamic_cast&lt;</span>T*<span class="keyword">&gt;</span>(gDirectory-&gt;Get(objectpath.c_str()));</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">if</span> (!obj_ptr) {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Object &quot;</span> + objectpath + <span class="stringliteral">&quot; is missing or of wrong type&quot;</span>));</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">return</span> *obj_ptr;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="namespacech.html#af7fe148f865bc9674341c9aa36d875ef">   79</a></span>&#160;T <a class="code" href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">ch::OpenFromTFile</a>(TFile* file, std::string <span class="keyword">const</span>&amp; path) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">if</span> (!file || !file-&gt;IsOpen()) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;File is null or invalid&quot;</span>));</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  file-&gt;cd();</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  T* obj_ptr = <span class="keyword">dynamic_cast&lt;</span>T*<span class="keyword">&gt;</span>(gDirectory-&gt;Get(path.c_str()));</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">if</span> (!obj_ptr) {</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Object &quot;</span> + path + <span class="stringliteral">&quot; is missing or of wrong type&quot;</span>));</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> *obj_ptr;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="namespacech_html_aa859d4d87eb7f27b2499e55c73789d98"><div class="ttname"><a href="namespacech.html#aa859d4d87eb7f27b2499e55c73789d98">ch::OpenFromTFile</a></div><div class="ttdeci">T OpenFromTFile(std::string const &amp;fullpath)</div><div class="ttdef"><b>Definition:</b> <a href="_t_file_i_o_8h_source.html#l00054">TFileIO.h:54</a></div></div>
 <div class="ttc" id="_logging_8h_html_ab140ae8826e1f99c5aa0e920a9c13112"><div class="ttname"><a href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a></div><div class="ttdeci">#define FNERROR(x)</div><div class="ttdef"><b>Definition:</b> <a href="_logging_8h_source.html#l00009">Logging.h:9</a></div></div>
 <div class="ttc" id="namespacech_html_a9db822b84dd7cf9f1d3bc76a6a741498"><div class="ttname"><a href="namespacech.html#a9db822b84dd7cf9f1d3bc76a6a741498">ch::GetClonedTH1</a></div><div class="ttdeci">std::unique_ptr&lt; TH1 &gt; GetClonedTH1(TFile *file, std::string const &amp;path)</div><div class="ttdef"><b>Definition:</b> <a href="_t_file_i_o_8cc_source.html#l00012">TFileIO.cc:12</a></div></div>
 <div class="ttc" id="namespacech_html"><div class="ttname"><a href="namespacech.html">ch</a></div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00010">Algorithm.h:10</a></div></div>
 <div class="ttc" id="_logging_8h_html_a7dbba20d0f1848f31de83551b351de72"><div class="ttname"><a href="_logging_8h.html#a7dbba20d0f1848f31de83551b351de72">LAUNCH_FUNCTION_TIMER</a></div><div class="ttdeci">#define LAUNCH_FUNCTION_TIMER(x, y)                                                      </div><div class="ttdoc">Conveniently initialise a ch::FnTimer instance. </div><div class="ttdef"><b>Definition:</b> <a href="_logging_8h_source.html#l00067">Logging.h:67</a></div></div>
 <div class="ttc" id="_logging_8h_html"><div class="ttname"><a href="_logging_8h.html">Logging.h</a></div></div>
+<div class="ttc" id="namespacech_html_a06e7ae02d1abed286e7184a7e7626529"><div class="ttname"><a href="namespacech.html#a06e7ae02d1abed286e7184a7e7626529">ch::WriteToTFile</a></div><div class="ttdeci">void WriteToTFile(T *ptr, TFile *file, std::string const &amp;path)</div><div class="ttdef"><b>Definition:</b> <a href="_t_file_i_o_8h_source.html#l00031">TFileIO.h:31</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.6-->
