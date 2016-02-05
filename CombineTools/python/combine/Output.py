@@ -78,7 +78,7 @@ class CollectLimits(CombineToolBase):
         group.add_argument(
             'input', nargs='+', default=[], help='The input files')
         group.add_argument(
-            '-o', '--output', nargs='?', const='limits.json', default=None, help='The name of the output json file')
+            '-o', '--output', nargs='?', const='limits.json', default='limits.json', help='The name of the output json file')
         group.add_argument(
             '--use-dirs', action='store_true',
             help='use directory structure to create multiple limit outputs and to '
@@ -101,7 +101,7 @@ class CollectLimits(CombineToolBase):
                     elif len(dirs) > 2:
                         label = dirs[-3]
                 limit_sets[label].append(filename)
-        print limit_sets
+        # print limit_sets
 
         for label, filenames in limit_sets.iteritems():
             js_out = {}
@@ -129,7 +129,7 @@ class CollectLimits(CombineToolBase):
                 js_out, sort_keys=True, indent=2, separators=(',', ': '))
             # print jsondata
             if self.args.output is not None:
-                outname = 'limits_%s.json' % label if self.args.use_dirs else self.args.output
+                outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
                 with open(outname, 'w') as out_file:
                     print '>> Writing output %s from files:' % outname
                     pprint.pprint(filenames, indent=2)
