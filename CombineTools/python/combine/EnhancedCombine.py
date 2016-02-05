@@ -99,7 +99,7 @@ class EnhancedCombine(CombineToolBase):
                 if self.args.mass is None and len(dirs) >= 1 and isfloat(dirs[-1]):
                     print 'Assuming card %s uses mass value %s' % (dc, dirs[-1])
                     dc_mass.append((path, file, dirs[-1]))
-                    dc_no_mass.append((path, file))
+                dc_no_mass.append((path, file))
             # If at least one mass value was inferred assume all of them are like this
             if len(dc_mass) > 0:
                 subbed_vars[('DIR', 'DATACARD', 'MASS')] = dc_mass
@@ -111,7 +111,7 @@ class EnhancedCombine(CombineToolBase):
         #     self.passthru.extend(['-d', self.args.datacard[0]])
 
         if self.args.boundlist is not None:
-          subbed_vars = {}
+          # subbed_vars = {}
           with open(self.args.boundlist) as json_file:
             bnd = json.load(json_file)
           command1=['' for i in mass_vals]
