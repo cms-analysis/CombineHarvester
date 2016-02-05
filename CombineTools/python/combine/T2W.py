@@ -45,7 +45,7 @@ class T2W(CombineToolBase):
 
     def attach_intercept_args(self, group):
         CombineToolBase.attach_intercept_args(self, group)
-        group.add_argument('input', nargs='+')
+        group.add_argument('-i', '--input', nargs='+')
         group.add_argument(
             '-m', '--mass')
 
@@ -64,6 +64,8 @@ class T2W(CombineToolBase):
         proto = 'pushd %(DIR)s; %(CC)stext2workspace.py %(PASSTHRU)s %(CARD)s; popd'
         proto_cc = 'combineCards.py %(CARDS)s &> %(COMBINED)s'
         cc_cards_post = []
+        print self.args.input
+        print self.passthru
         for arg in self.args.input:
             passthru = [x for x in self.passthru]
             # Deal with the directory case first (3)
