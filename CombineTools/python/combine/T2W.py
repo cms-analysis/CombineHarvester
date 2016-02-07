@@ -45,16 +45,25 @@ class T2W(CombineToolBase):
 
     def attach_intercept_args(self, group):
         CombineToolBase.attach_intercept_args(self, group)
-        group.add_argument('-i', '--input', nargs='+')
         group.add_argument(
-            '-m', '--mass')
+            '-m', '--mass', help="""
+            The mass value to set in the text2workspace.py call""")
 
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
-        # This basically means =None if not specified at all, =combined.txt if
-        # just --cc, otherwise the argument given to -cc blah.txt
-        group.add_argument('--cc', nargs='?', const=self.default_card, default=None,
-            help='Create a combined datacard from the individual cards')
+        group.add_argument('-i', '--input', nargs='+', help=""" A list of
+            input datacards and directories. For the latter, all .txt files
+            within the directory will be combined. If the -m option has not
+            been specified and the enclosing directory is a number, this will
+            be taken as the mass value to set. """)
+        group.add_argument('--cc', nargs='?', const=self.default_card,
+                           default=None, help=""" Create a combined datacard
+            with a specified name from the individual cards given by the -i
+            option. Note that if this option is used without an argument a
+            default card name will be used. For directory arguments in -i, the
+            cards will be combined regardless of whether --cc is specified,
+            but can still be used to set the name of the combined card that is
+            created. """)
 
     def set_args(self, known, unknown):
         CombineToolBase.set_args(self, known, unknown)
@@ -64,8 +73,6 @@ class T2W(CombineToolBase):
         proto = 'pushd %(DIR)s; %(CC)stext2workspace.py %(PASSTHRU)s %(CARD)s; popd'
         proto_cc = 'combineCards.py %(CARDS)s &> %(COMBINED)s'
         cc_cards_post = []
-        print self.args.input
-        print self.passthru
         for arg in self.args.input:
             passthru = [x for x in self.passthru]
             # Deal with the directory case first (3)

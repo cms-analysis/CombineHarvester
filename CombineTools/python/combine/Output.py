@@ -78,11 +78,14 @@ class CollectLimits(CombineToolBase):
         group.add_argument(
             'input', nargs='+', default=[], help='The input files')
         group.add_argument(
-            '-o', '--output', nargs='?', const='limits.json', default='limits.json', help='The name of the output json file')
+            '-o', '--output', nargs='?', const='limits.json',
+            default='limits.json', help="""The name of the output json file.
+            When the --use-dirs option is set the enclosing directory name
+            will be appended to the filename given here.""")
         group.add_argument(
             '--use-dirs', action='store_true',
-            help='use directory structure to create multiple limit outputs and to '
-                 'set the output file names')
+            help="""Use the directory structure to create multiple limit
+                 outputs and to set the output file names""")
 
     def run_method(self):
         limit_sets = defaultdict(list)

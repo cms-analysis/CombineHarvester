@@ -3,7 +3,6 @@ import CombineHarvester.CombineTools.combine.utils as utils
 import json
 import os
 from CombineHarvester.CombineTools.combine.opts import OPTS
-
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 
 
@@ -111,23 +110,29 @@ class EnhancedCombine(CombineToolBase):
         #     self.passthru.extend(['-d', self.args.datacard[0]])
 
         if self.args.boundlist is not None:
-          # subbed_vars = {}
-          with open(self.args.boundlist) as json_file:
-            bnd = json.load(json_file)
-          command1=['' for i in mass_vals]
-          #command2=['' for i in mass_vals]
-          i=0
-          for mval in mass_vals:
-            for model in bnd:
-              if not (command1[i]==''): command1[i]=command1[i]+':'
-              #if not (command2[i]==''): command2[i]=command2[i]+','
-              command1[i]=command1[i]+model+'=0,'+str(bnd[model][mval])
-            #  command2[i]=command2[i]+model+'=0' #'='+str(float(bnd[model][mval])/2.0)
-            i+=1
-          #subbed_vars[('MASS', 'MODELBOUNDONE', 'MODELBOUNDTWO')] = [(mass_vals[i], command1[i], command2[i]) for i in range(len(mass_vals))]
-          subbed_vars[('MASS', 'MODELBOUNDONE')] = [(mass_vals[i], command1[i]) for i in range(len(mass_vals))]
-          self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUNDONE)s'])
-          #self.passthru.extend(['--setPhysicsModelParameters',  '%(MODELBOUNDTWO)s'])
+            with open(self.args.boundlist) as json_file:
+                bnd = json.load(json_file)
+            # find the subbed_vars entry containing the mass
+            # We will extend it to also specify the ranges
+            dict_key = None
+            mass_idx = None
+            for key in subbed_vars.keys():
+                if 'MASS' in key:
+                    dict_key = key
+                    mass_idx = dict_key.index('MASS')
+            new_key = dict_key + ('MODELBOUND',)
+            new_list = []
+            for entry in subbed_vars[dict_key]:
+                command = []
+                mval = entry[mass_idx]
+                for model in bnd:
+                    command.append(model+'=0,'+str(bnd[model][mval]))
+                new_list.append(entry + (':'.join(command),))
+            # now remove the current mass information from subbed_vars
+            # and replace it with the updated one
+            del subbed_vars[dict_key]
+            subbed_vars[new_key] = new_list
+            self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUND)s'])
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])
