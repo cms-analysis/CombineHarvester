@@ -41,30 +41,37 @@ def createAxisHists(n,src,xmin=0,xmax=499):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dir', '-d', help='Directory')
-parser.add_argument('--file', '-f',help='Input file')
-parser.add_argument('--mA',help='Signal m_A')
-parser.add_argument('--tanb',help='Signal tanb')
+parser.add_argument('--dir', '-d', help='Directory for plot (channel-category containing the datacard and workspace)')
+parser.add_argument('--file', '-f',help='Input file if shape file has already been created')
+parser.add_argument('--mA',default='700',help='Signal m_A to plot for model dep')
+parser.add_argument('--tanb',default='30',help='Signal tanb to plot for model dep')
+parser.add_argument('--mPhi',default='700',help='Signal m_Phi to plot for model indep')
+parser.add_argument('--r_ggH',default='0.1',help='Signal ggH XS*BR for model indep')
+parser.add_argument('--r_bbH',default='0.1',help='Signal bbH XS*BR for model indep')
 parser.add_argument('--postfitshapes',default=False,action='store_true',help='Run PostFitShapesFromWorkspace')
 parser.add_argument('--workspace',default='mhmodp',help='Part of workspace filename right before .root')
+parser.add_argument('--model_dep',action='store_true',default=False,help='Make plots for full model dependent signal h,H,A')
 parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
-parser.add_argument('--blind', default=True,action='store_true',help='Blind data')
-parser.add_argument('--ratio', default=True,action='store_true',help='Draw ratio')
+parser.add_argument('--blind', default=True,action='store_true',help='Blind data with hand chosen range')
 parser.add_argument('--x_blind_min',default=100,help='Minimum x for blinding')
-parser.add_argument('--x_blind_max',default=1000,help='Maximum x for blinding')
+parser.add_argument('--x_blind_max',default=4000,help='Maximum x for blinding')
+parser.add_argument('--ratio', default=True,action='store_true',help='Draw ratio plot')
 parser.add_argument('--custom_x_range', help='Fix x axis range', action='store_true', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=90.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
 parser.add_argument('--custom_y_range', help='Fix y axis range', action='store_true', default=False)
 parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=0.001)
 parser.add_argument('--y_axis_max',  help='Fix y axis maximum', default=100.0)
-parser.add_argument('--extra_pad', help='Extra whitespace at top of plot',default=0.0)
+parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 
 
 args = parser.parse_args()
 
 mA = args.mA
+mPhi = args.mPhi
 tb = args.tanb
+r_ggH = args.r_ggH
+r_bbH = args.r_bbH
 workspace = args.workspace
 mode = args.mode
 x_blind_min = args.x_blind_min
@@ -76,6 +83,7 @@ x_axis_min = float(args.x_axis_min)
 x_axis_max = float(args.x_axis_max)
 y_axis_min = float(args.y_axis_min)
 y_axis_max = float(args.y_axis_max)
+model_dep = args.model_dep
 
 if args.dir and args.file and not args.postfitshapes:
   print 'Provide either directory or filename, not both'
@@ -93,14 +101,20 @@ if args.postfitshapes and not args.dir:
 
 if args.postfitshapes:
   for root,dirnames,filenames in os.walk(args.dir):
-    for filename in fnmatch.filter(filenames, '*_mssm.txt'):
+    for filename in fnmatch.filter(filenames, '*.txt.cmb'):
       datacard_file = os.path.join(root,filename) 
     for filename in fnmatch.filter(filenames, '*%(workspace)s.root'%vars()):
       workspace_file = os.path.join(root,filename)
       print workspace_file
       shape_file=workspace_file.replace('.root','_shapes_%(mA)s_%(tb)s.root'%vars())
-
-  os.system('PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --print  --freeze mA=%(mA)s,tanb=%(tb)s'%vars())
+  
+  if model_dep is True :
+    print "using mA and tanb"
+    freeze = 'mA='+mA+',tanb='+tb 
+  else: 
+    freeze = 'MH='+mPhi+',r_ggH='+r_ggH+',r_bbH='+r_bbH 
+  print 'PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --print --freeze %(freeze)s'%vars()
+  os.system('PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --print --freeze %(freeze)s'%vars())
 
 
 if not args.postfitshapes:
@@ -119,8 +133,12 @@ background_schemes = {'mt':[backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(
 'em':[backgroundComp("Misidentified e/#mu", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowll",["ZL","ZJ"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))]}
 
 [sighist,binname] = getHistogram(histo_file,'TotalSig')
+if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH')[0]
+if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH')[0]
 bkghist = getHistogram(histo_file,'TotalBkg')[0]
 sighist.Scale(1.0,"width")
+if not model_dep: sighist_ggH.Scale(1.0,"width")
+if not model_dep: sighist_bbH.Scale(1.0,"width")
 bkghist.Scale(1.0,"width")
 
 total_datahist = getHistogram(histo_file,"data_obs")[0]
@@ -206,15 +224,25 @@ bkghist.SetMarkerSize(0)
 
 stack.Draw("histsame")
 bkghist.Draw("e2same")
-sighist.SetLineColor(ROOT.kRed)
-sighist.Draw("histsame")
+if model_dep is True: 
+    sighist.SetLineColor(ROOT.kRed)
+    sighist.Draw("histsame")
+else: 
+    sighist_ggH.SetLineColor(ROOT.kBlue)
+    sighist_bbH.SetLineColor(ROOT.kBlue + 3)
+    sighist_ggH.Draw("histsame")
+    sighist_bbH.Draw("histsame")
 blind_datahist.DrawCopy("psame")
 axish[0].Draw("axissame")
 
 legend = plot.PositionedLegend(0.30,0.30,3,0.03)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
-legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
+if model_dep is True: 
+    legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
+else: 
+    legend.AddEntry(sighist_ggH,"gg#phi#rightarrow#tau#tau"%vars(),"l")
+    legend.AddEntry(sighist_bbH,"bb#phi#rightarrow#tau#tau"%vars(),"l")
 legend.SetFillColor(0)
 for legi,hists in enumerate(bkg_histos):
   legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
@@ -226,7 +254,10 @@ latex.SetNDC()
 latex.SetTextAngle(0)
 latex.SetTextColor(ROOT.kBlack)
 latex.SetTextSize(0.026)
-latex.DrawLatex(0.61,0.53,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
+if model_dep is True: 
+    latex.DrawLatex(0.61,0.53,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
+else: 
+    latex.DrawLatex(0.61,0.53,"#sigma(gg#phi)=%(r_ggH)s pb,#sigma(bb#phi)=%(r_bbH)s pb"%vars())
 
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.15)
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
