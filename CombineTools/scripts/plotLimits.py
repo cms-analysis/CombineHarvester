@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import ROOT
 import CombineHarvester.CombineTools.plotting as plot
-import json
 import argparse
 # import CombineHarvester.CombineTools.maketable as maketable
 
@@ -133,10 +132,10 @@ for src in args.input:
             settings['MarkerColor'] = defcols[i]
             settings['LineStyle'] = j
             icol[nm] = (i+1) if (i+1) < len(defcols) else 0
+        graphs.append(plot.LimitTGraphFromJSONFile(file, splitsrc[1]))
         if len(splitsrc) >= 3:
             settings.update({x.split('=')[0]: eval(x.split('=')[1]) for x in splitsrc[2].split(',')})
-            graphs.append(plot.LimitTGraphFromJSONFile(file, splitsrc[1]))
-            plot.Set(graphs[-1], **settings)
+        plot.Set(graphs[-1], **settings)
         if axis is None:
             axis = plot.CreateAxisHists(len(pads), graphs[-1], True)
             DrawAxisHists(pads, axis, pads[0])

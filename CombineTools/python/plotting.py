@@ -348,7 +348,7 @@ def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered,
 #      the axis properties.
 ##@{
 
-def CreateAxisHist(src, at_limits):
+def CreateAxisHist(src, at_limits=True):
     backup = R.gPad
     tmp = R.TCanvas()
     tmp.cd()
