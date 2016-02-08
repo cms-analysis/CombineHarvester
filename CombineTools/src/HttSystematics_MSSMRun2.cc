@@ -41,6 +41,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb) {
   src.cp().process(ch::JoinStr({signal, {"TT","VV","ZL","ZJ","ZTT","W"}})).channel({"et"})
       .AddSyst(cb, "CMS_eff_e", "lnN", SystMap<>::init(1.02));
 
+/*  src.cp().process(ch::JoinStr({signal, {"ZTT"}})).channel({"em"})
+      .AddSyst(cb, "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));*/
+
+  src.cp().process(ch::JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"})
+      .AddSyst(cb, "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
 //  src.cp().channel({"em"}).process(ch::JoinStr({signal, {"TT","VV","ZLL","ZTT","W"}})).AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
