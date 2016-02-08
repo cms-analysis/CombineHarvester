@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['post_2dfit_20distributions',['Post-fit Distributions',['../post-fit-shapes.html',1,'']]],
-  ['python_20interface',['Python Interface',['../python-interface.html',1,'']]]
+  ['model_20dependent_20limits_20using_20morphingmssmupdate',['Model dependent Limits using MorphingMSSMUpdate',['../_m_s_s_m_update_model_dep.html',1,'']]]
 ];

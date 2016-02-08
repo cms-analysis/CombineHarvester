@@ -136,15 +136,14 @@ scram project CMSSW CMSSW_7_1_5
 cd CMSSW_7_1_5/src
 cmsenv
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+# Check the recommended tag on link above, a tag &gt;= v5.0.2 is sufficient
 git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
 scram b
-</pre><dl class="section note"><dt>Note</dt><dd>The CombineHarvester package currently requires the head of the default HiggsAnalysis-CombinedLimit branch (<code>slc6-root5.34.17</code>) and will not compile successfully with the tag listed on the combine twiki page. A new tag will be provided soon.</dd></dl>
-<p>If you are using this framework for the first time we recommend taking a look through some of the examples below which demonstrate the main features:</p>
+</pre><p>If you are using this framework for the first time we recommend taking a look through some of the examples below which demonstrate the main features:</p>
 <ul>
 <li><a class="el" href="intro1.html">Examples Part 1</a>: How CombineHarvester builds a datacard representation, parsing existing datacards, evaluating contents</li>
 <li><a class="el" href="intro2.html">Examples Part 2</a>: Creating a new datacard, defining processes and systematics, writing text datacards</li>
-<li>Examples Part 3: Creating post-fit yield-tables - <em>coming soon</em></li>
-<li>Examples Part 4: Creating post-fit plots - <em>coming soon</em></li>
+<li><a class="el" href="limits.html">Limit setting</a>: Using the <code>combineTool.py</code> script to build workspaces, compute asymptotic limits and plot the ouput.</li>
 </ul>
 <dl class="section warning"><dt>Warning</dt><dd>To run many of these examples you must first ensure the <a href="https://github.com/roger-wolf/HiggsAnalysis-HiggsToTauTau-auxiliaries">auxiliaries</a> repository is located at <code>$CMSSW_BASE/src/auxiliaries</code> and up-to-date: <pre class="fragment">git clone https://github.com/roger-wolf/HiggsAnalysis-HiggsToTauTau-auxiliaries.git auxiliaries </pre> The input root files will be sourced from here.</dd></dl>
 <p>More realistic, though less well documented, examples can be found in the following files:</p><ul>

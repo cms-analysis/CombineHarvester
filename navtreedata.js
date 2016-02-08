@@ -36,6 +36,19 @@ var NAVTREE =
       [ "Class: BinByBinFactory ", "python-interface.html#py-bbbfactory", null ]
     ] ],
     [ "Post-fit Distributions", "post-fit-shapes.html", null ],
+    [ "Limits", "limits.html", [
+      [ "Limits in models with one POI", "limits.html#limits-one-POI", [
+        [ "Creating the datacards", "limits.html#limits-creating-the-datacards", null ],
+        [ "Building the workspaces", "limits.html#limits-building-the-workspaces", null ],
+        [ "Calculating limits", "limits.html#limits-calculating-limits", null ],
+        [ "Collect the output", "limits.html#limits-collecting", null ],
+        [ "Plotting", "limits.html#limits-plotting", null ],
+        [ "Workflow with RooMorphingPdf datacards", "limits.html#limits-morphing-cards", null ]
+      ] ],
+      [ "Limits in models with more than one POI", "limits.html#limits-more-POIs", [
+        [ "Expected limits: pre-fit vs post-fit", "limits.html#limits-pre-vs-post", null ]
+      ] ]
+    ] ],
     [ "RooMorphingPdf", "intro_morph.html", [
       [ "BuildRooMorphing function ", "intro_morph.html#BuildRooMorph", null ],
       [ "Example usage for SM analysis ", "intro_morph.html#SMMorph", null ],
@@ -107,7 +120,7 @@ var NAVTREEINDEX =
 "_a_zh_systematics_8cc.html",
 "_plotting_8h.html#aaeb0dadc50435965db936e967dde2799",
 "classch_1_1_object.html#a7997c967b45c8048e5d37284634192c8",
-"plotting_8py.html#a4769656475c403839b6fea5083d4d4f9"
+"plotting_8py.html#a31cc5a85a43006e524eb86b263ed810b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

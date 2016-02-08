@@ -7,5 +7,7 @@ var searchData=
   ['drawcmslogo',['DrawCMSLogo',['../_plotting_8h.html#ac9a2d10dbb78251b4757aba40f73fa68',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX, float relPosX, float relPosY, float relExtraDY):&#160;Plotting.h'],['../_plotting_8h.html#a99344cc5028c90aaafacea9ec5eab9d2',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX):&#160;Plotting.h'],['../namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511',1,'plotting.DrawCMSLogo()']]],
   ['drawcontours',['drawContours',['../_plotting___contours_8h.html#afcb8faa65f5a499825189a7cdd745b9e',1,'Plotting_Contours.h']]],
   ['drawhorizontalline',['DrawHorizontalLine',['../_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98',1,'DrawHorizontalLine():&#160;Plotting.h'],['../namespaceplotting.html#a1102590a510e7c4921fba16694201a5b',1,'plotting.DrawHorizontalLine()']]],
-  ['drawtitle',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'DrawTitle():&#160;Plotting.h'],['../namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff',1,'plotting.DrawTitle()']]]
+  ['drawlimitband',['DrawLimitBand',['../namespaceplotting.html#a46caef3f43ba70de6364c881776167d0',1,'plotting']]],
+  ['drawtitle',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'DrawTitle():&#160;Plotting.h'],['../namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff',1,'plotting.DrawTitle()']]],
+  ['drawverticalline',['DrawVerticalLine',['../namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70',1,'plotting']]]
 ];

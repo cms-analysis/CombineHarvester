@@ -14,6 +14,7 @@ var searchData=
   ['findaddpdf',['FindAddPdf',['../namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a',1,'ch']]],
   ['findcrossingswithspline',['FindCrossingsWithSpline',['../namespaceplotting.html#a930ca7cb0408b290b0db1c79f5911105',1,'plotting']]],
   ['findnewbinning',['FindNewBinning',['../classch_1_1_auto_rebin.html#a2dc97baa47e812e6aa1817f604e2541a',1,'ch::AutoRebin']]],
+  ['fixbothranges',['FixBothRanges',['../namespaceplotting.html#a436e05154225b06e1a13a22dbffd2096',1,'plotting']]],
   ['fixboxpadding',['FixBoxPadding',['../_plotting_8h.html#a0d9c9cc36ba7c24dcdca74b6173a0335',1,'Plotting.h']]],
   ['fixoverlay',['FixOverlay',['../_plotting_8h.html#a3ab873b129878269a347a387a5f6ff4b',1,'FixOverlay():&#160;Plotting.h'],['../namespaceplotting.html#a923135db9a7c26ccf9ebb3098f779377',1,'plotting.FixOverlay()']]],
   ['fixtoprange',['FixTopRange',['../_plotting_8h.html#a5f529c55b51440415c95a200a9e0708f',1,'FixTopRange():&#160;Plotting.h'],['../namespaceplotting.html#ace775a1f04211b54e089d44d3d28b1c4',1,'plotting.FixTopRange()']]],

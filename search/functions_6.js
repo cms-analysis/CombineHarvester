@@ -8,8 +8,9 @@ var searchData=
   ['getmaximumfracuncertbin',['GetMaximumFracUncertBin',['../classch_1_1_auto_rebin.html#a72dbe98c7aacd48dd99d03d2b957a934',1,'ch::AutoRebin']]],
   ['getobservedrate',['GetObservedRate',['../classch_1_1_combine_harvester.html#a0b5444f9dcfa6fdace5fa2d8dc2ca11f',1,'ch::CombineHarvester']]],
   ['getobservedshape',['GetObservedShape',['../classch_1_1_combine_harvester.html#a0d3eca727963c0c14a3c04bbdce2ca5e',1,'ch::CombineHarvester']]],
-  ['getpadymax',['GetPadYMax',['../_plotting_8h.html#a94fa210a8324e72a82327860972746eb',1,'GetPadYMax(TPad *pad, double x_min, double x_max):&#160;Plotting.h'],['../_plotting_8h.html#afa343295bd66905121be203cb7c7cc03',1,'GetPadYMax(TPad *pad):&#160;Plotting.h'],['../namespaceplotting.html#aebd660d3fcec8c7d4b5f6baea2621903',1,'plotting.GetPadYMax()']]],
-  ['getpadymaxinrange',['GetPadYMaxInRange',['../namespaceplotting.html#a22e1b885f15112780265aa89ce997ed8',1,'plotting']]],
+  ['getpadymax',['GetPadYMax',['../_plotting_8h.html#a94fa210a8324e72a82327860972746eb',1,'GetPadYMax(TPad *pad, double x_min, double x_max):&#160;Plotting.h'],['../_plotting_8h.html#afa343295bd66905121be203cb7c7cc03',1,'GetPadYMax(TPad *pad):&#160;Plotting.h'],['../namespaceplotting.html#a5c3cf34b6b50614b3eaca2c8af760731',1,'plotting.GetPadYMax()']]],
+  ['getpadymaxinrange',['GetPadYMaxInRange',['../namespaceplotting.html#a2311004466e2af2924940d19b76f6174',1,'plotting']]],
+  ['getpadymin',['GetPadYMin',['../namespaceplotting.html#a2859ac07831f692838afd628bf9abb21',1,'plotting']]],
   ['getparameter',['GetParameter',['../classch_1_1_combine_harvester.html#ac293d0d0ac5fff3bab85f86d1a9dcb01',1,'ch::CombineHarvester::GetParameter(std::string const &amp;name) const '],['../classch_1_1_combine_harvester.html#ab994bb3d7ccc19475a28f5864831841e',1,'ch::CombineHarvester::GetParameter(std::string const &amp;name)']]],
   ['getparameters',['GetParameters',['../classch_1_1_combine_harvester.html#abc51018136713ef4bec670b85eda7584',1,'ch::CombineHarvester']]],
   ['getqualififedname',['GetQualififedName',['../namespacech.html#a082a87dbfd5b9d61198f7fd4b68e70f9',1,'ch']]],
@@ -20,5 +21,6 @@ var searchData=
   ['gettupleset',['GetTupleSet',['../classch_1_1syst_1_1_syst_map.html#ad2fed05a0c421419ea4ebead6d205bb0',1,'ch::syst::SystMap::GetTupleSet()'],['../classch_1_1syst_1_1_syst_map_asymm.html#a43e04ec9efeff0239a428e517340c570',1,'ch::syst::SystMapAsymm::GetTupleSet()']]],
   ['getuncertainty',['GetUncertainty',['../classch_1_1_combine_harvester.html#a9c0e44635dc637746222f67e9be518e5',1,'ch::CombineHarvester::GetUncertainty()'],['../classch_1_1_combine_harvester.html#af71f64a1d858700bd16d98cee1c10c26',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const *fit, unsigned n_samples)'],['../classch_1_1_combine_harvester.html#aa7c0646bfab0a974c72fe815e33c5a32',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const &amp;fit, unsigned n_samples)']]],
   ['graphdifference',['GraphDifference',['../namespaceplotting.html#af20847d908f9ed735a0abcdc77d3bed5',1,'plotting']]],
+  ['graphdivide',['GraphDivide',['../namespaceplotting.html#a474b8687854cc031562f967ff2ccaf02',1,'plotting']]],
   ['graphfromspline',['GraphFromSpline',['../namespacech.html#aefdcaba918224f404af9fcd9b53fa7bb',1,'ch']]]
 ];
