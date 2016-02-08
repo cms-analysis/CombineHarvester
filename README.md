@@ -11,8 +11,7 @@ This pacakge requires HiggsAnalysis/CombinedLimit to be in your local CMSSW area
     cd CMSSW_7_1_5/src
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+    # Check the recommended tag on link above, a tag >= v5.0.2 is sufficient
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
     scram b
-
-**Important:** The CombineHarvester package currently requires the head of the default HiggsAnalysis/CombinedLimit branch (`slc6-root5.34.17`) and will not compile successfully with the tag listed on the combine twiki page. A new tag will be provided soon.
 
