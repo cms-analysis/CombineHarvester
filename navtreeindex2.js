@@ -1,5 +1,7 @@
 var NAVTREEINDEX2 =
 {
+"classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7":[15,0,0,8,14],
+"classch_1_1_object.html#a60ff05363e905e268f4a85bc9d2a63c1":[15,0,0,8,16],
 "classch_1_1_object.html#a7997c967b45c8048e5d37284634192c8":[15,0,0,8,5],
 "classch_1_1_object.html#a852658426c7ab24d17a8cf5b33ec6805":[15,0,0,8,4],
 "classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce":[15,0,0,8,20],
@@ -225,10 +227,10 @@ var NAVTREEINDEX2 =
 "limits.html#limits-pre-vs-post":[5,1,0],
 "md_docs__charged_higgs.html":[8],
 "md_docs__hybrid_new_grid.html":[12],
-"namespacech.html":[15,0,0],
 "namespacech.html":[14,0,0],
-"namespacech_1_1syst.html":[15,0,0,0],
+"namespacech.html":[15,0,0],
 "namespacech_1_1syst.html":[14,0,0,0],
+"namespacech_1_1syst.html":[15,0,0,0],
 "namespacech_1_1syst_1_1detail.html":[14,0,0,0,0],
 "namespacech_1_1tupleprint.html":[14,0,0,1],
 "namespacech_1_1tupleprint.html":[15,0,0,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX2 =
 "plotting_8py.html#a13952cefd0e2d1c402b079b1d1ab3c50":[16,0,1,2,0,32],
 "plotting_8py.html#a152c9876f212cb864bcfb2080c8e2660":[16,0,1,2,0,28],
 "plotting_8py.html#a2311004466e2af2924940d19b76f6174":[16,0,1,2,0,44],
-"plotting_8py.html#a273bab5cfe205a69a469a86828ab3f3b":[16,0,1,2,0,39],
-"plotting_8py.html#a2859ac07831f692838afd628bf9abb21":[16,0,1,2,0,46],
-"plotting_8py.html#a30511a379335c5e5c295f88dc146e448":[16,0,1,2,0,4]
+"plotting_8py.html#a273bab5cfe205a69a469a86828ab3f3b":[16,0,1,2,0,39]
 };

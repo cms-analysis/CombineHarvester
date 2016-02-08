@@ -1,6 +1,6 @@
 var structch_1_1_hist_mapping =
 [
-    [ "HistMapping", "structch_1_1_hist_mapping.html#a2a6b03630f7237621a9c3f121dae21cf", null ],
+    [ "HistMapping", "structch_1_1_hist_mapping.html#a13159d261f11d033b6281333d9e81377", null ],
     [ "HistMapping", "structch_1_1_hist_mapping.html#a963916cdc08c796c0146d2ec63746d9f", null ],
     [ "IsHist", "structch_1_1_hist_mapping.html#a530f04d5c47606a344b2f2cacbc98c12", null ],
     [ "IsPdf", "structch_1_1_hist_mapping.html#addb7c4aaf346ee4e09fcd732e126d887", null ],
@@ -16,5 +16,6 @@ var structch_1_1_hist_mapping =
     [ "syst_pattern", "structch_1_1_hist_mapping.html#ab8e25efafca82f1152d94819130157d2", null ],
     [ "file", "structch_1_1_hist_mapping.html#a3a7318d36a94d5902b6da6382051efd8", null ],
     [ "ws", "structch_1_1_hist_mapping.html#ad83659fc57397fca2243f3ad26eb44a7", null ],
-    [ "sys_ws", "structch_1_1_hist_mapping.html#addf039e15f8e0331e04e90f7d05b7122", null ]
+    [ "sys_ws", "structch_1_1_hist_mapping.html#addf039e15f8e0331e04e90f7d05b7122", null ],
+    [ "is_fake", "structch_1_1_hist_mapping.html#ae18110c613c02c72501d599f71e26dfb", null ]
 ];

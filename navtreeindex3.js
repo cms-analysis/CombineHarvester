@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"plotting_8py.html#a2859ac07831f692838afd628bf9abb21":[16,0,1,2,0,46],
+"plotting_8py.html#a30511a379335c5e5c295f88dc146e448":[16,0,1,2,0,4],
 "plotting_8py.html#a31cc5a85a43006e524eb86b263ed810b":[16,0,1,2,0,26],
 "plotting_8py.html#a352c801d8b36f5e37b3a7e61bd3cee47":[16,0,1,2,0,2],
 "plotting_8py.html#a37df2c4a9c0eb15f7e8f096bca365043":[16,0,1,2,0,41],
@@ -80,8 +82,8 @@ var NAVTREEINDEX3 =
 "struct_col_info.html#ae8b8720618660a433e3965c626a00580":[15,0,2,0],
 "structch_1_1_hist_mapping.html":[15,0,0,7],
 "structch_1_1_hist_mapping.html#a082b489ab66940ac856997bfcd1ced7a":[15,0,0,7,9],
+"structch_1_1_hist_mapping.html#a13159d261f11d033b6281333d9e81377":[15,0,0,7,0],
 "structch_1_1_hist_mapping.html#a299addf7ee94f1d2c540dd3c34cf9cbd":[15,0,0,7,5],
-"structch_1_1_hist_mapping.html#a2a6b03630f7237621a9c3f121dae21cf":[15,0,0,7,0],
 "structch_1_1_hist_mapping.html#a3a7318d36a94d5902b6da6382051efd8":[15,0,0,7,14],
 "structch_1_1_hist_mapping.html#a3f5bb3146facf941b757e6af4c0ac857":[15,0,0,7,11],
 "structch_1_1_hist_mapping.html#a530f04d5c47606a344b2f2cacbc98c12":[15,0,0,7,2],
@@ -96,6 +98,7 @@ var NAVTREEINDEX3 =
 "structch_1_1_hist_mapping.html#ad83659fc57397fca2243f3ad26eb44a7":[15,0,0,7,15],
 "structch_1_1_hist_mapping.html#addb7c4aaf346ee4e09fcd732e126d887":[15,0,0,7,3],
 "structch_1_1_hist_mapping.html#addf039e15f8e0331e04e90f7d05b7122":[15,0,0,7,16],
+"structch_1_1_hist_mapping.html#ae18110c613c02c72501d599f71e26dfb":[15,0,0,7,17],
 "structch_1_1_s_over_b_info.html":[15,0,0,12],
 "structch_1_1_s_over_b_info.html#a0756a714ee23117ba20c261e9c03c924":[15,0,0,12,5],
 "structch_1_1_s_over_b_info.html#a4b9f6bf1c14831274dd072306f69c5ef":[15,0,0,12,3],

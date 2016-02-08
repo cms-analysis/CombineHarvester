@@ -20,6 +20,7 @@ var classch_1_1_combine_harvester =
     [ "ParseDatacard", "classch_1_1_combine_harvester.html#a4b7fe2fb7c1b3ba4da84fbd123388f77", null ],
     [ "WriteDatacard", "classch_1_1_combine_harvester.html#a63255dd5ec491fa12857bc63b4174e92", null ],
     [ "WriteDatacard", "classch_1_1_combine_harvester.html#a224d461aa1eec4a6cf2a3b915469d228", null ],
+    [ "WriteDatacard", "classch_1_1_combine_harvester.html#a32e3454b8734a04374efef473b1db110", null ],
     [ "bin", "classch_1_1_combine_harvester.html#a83dd50569a1f1a4b5a46f2ad2b5c1cdb", null ],
     [ "bin_id", "classch_1_1_combine_harvester.html#a19106a6a89c84b90308b34672de6c187", null ],
     [ "process", "classch_1_1_combine_harvester.html#a3afe330e302ad37b9fd69a821b8b4099", null ],
