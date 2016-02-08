@@ -181,6 +181,9 @@ print '>> Systematics dropped: ' + str(len(pre_drop) - len(post_drop))
 writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
                        '$TAG/common/$ANALYSIS_$CHANNEL.input.root')
 # writer.SetVerbosity(1)
-writer.WriteCards('output/sm_cards/LIMITS', cb)
+writer.WriteCards('output/sm_cards/cmb', cb)
+# Also create directory structure for per-channel cards
+for chn in cb.channel_set():
+  writer.WriteCards('output/sm_cards/'+chn, cb.cp().channel([chn]))
 
 print '>> Done!'
