@@ -50,13 +50,15 @@ This will place a json in the current directory, and append the string "mssm_250
 
 3b) Running model dependent limits
 
-<to be added>
+combineTool.py -M AsymptoticGrid ../CombinePdfs/scripts/mssm_asymptotic_grid.json -d output/mssm_250116_svfit_mhmodp/mt/htt_mhmodp_mssm.root  --job-mode 'interactive' --task-name 'mssm_mhmodp'
+
+The asymptotic grid mode reads in an input json to define a set of mA-tanb points to scan and perform the limit calculation for. This time the calculation is done once per workspace, since the script has a nice feature which is that if you call it multiple times with the same workspace and asymptotic grid it will check which points have already completed successfully and only run those remaining. This makes it really easy to top up the grid for a finer scan for example. Once all points are complete, on the final call the script will create asymptotic_grid.root file containing the results.
 
 4a) Plotting model independent limits
 
 The usual Brazil band plots can be made using this script, for e.g. the mutau channel:
 
-python ../CombineTools/scripts/plotBSMxsBRLimit.py --file=mssm_250116_svfit_ggH_mt.json --log=1 --process="gg#phi" --custom_y_range=True --y_axis_max=1000 --y_axis_min=0.001
+python ../CombineTools/scripts/plotBSMxsBRLimit.py --file=mssm_250116_svfit_ggH_mt.json --log=1 --process="gg#phi" --custom_y_range=True --y_axis_max=1000 --y_axis_min=0.001 --expected_only
 
 Or comparison plots can be made using the following script:
 
@@ -66,7 +68,9 @@ The options --absolute and --relative can be used to make ratio plots as well
 
 4a) Plotting model dependent limits
 
-<to be added>
+python ../CombineTools/scripts/plotLimitGrid.py asymptotic_grid.root --scenario-label="m_{h}^{mod+} scenario"  --output="mssm_250116_mhmodp_mt" --title-right="2.2 fb^{-1} (13 TeV)" --expected_only
+
+The plotting takes thr asymptotic_grid file as input, and performs interpolation to produce smooth contours of exclusion for a 2D mA-tanb plot. Note that this script contains many different optional settings for this interpolation. 
 
 5) Pre or post fit plots
 
