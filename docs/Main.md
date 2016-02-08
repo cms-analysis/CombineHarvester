@@ -48,7 +48,6 @@ If you are using this framework for the first time we recommend taking a look th
   * [Examples Part 2](\ref intro2): Creating a new datacard, defining processes and systematics, writing text datacards
   * [Examples Part 3](\ref intro3): Creating a counting-experiment datacard and using rateParam directives to float process yields via free parameters while express other yields as functions of these parameters.
   * [Limit setting](\ref limits): Using the `combineTool.py` script to build workspaces, compute asymptotic limits and plot the ouput.
->>>>>>> origin/master
 
 \warning To run many of these examples you must first ensure the [auxiliaries](https://github.com/roger-wolf/HiggsAnalysis-HiggsToTauTau-auxiliaries) repository is located at `$CMSSW_BASE/src/auxiliaries` and up-to-date:
 \verbatim
