@@ -3,7 +3,11 @@ Post-fit Distributions {#post-fit-shapes}
 
 **File**: CombineTools/test/PostFitShapes.cpp
 
-The program `PostFitShapes` is used to dump a set of pre- and post-fit distributions from a datacard. There is no need to specify which categories or processes to extract, this will be done automatically and so should work for any shape-based analysis. The effect of all normalisation and shape uncertainties is evaluated. In addition, there is an option to calculate post-fit/pre-fit scale factors for each background and the total background uncertainty in each category. This numbers can then be used as input for producing post-fit control distributions. The following options are available:
+The program `PostFitShapes` is used to dump a set of pre- and post-fit distributions from a datacard. There is no need to specify which categories or processes to extract, this will be done automatically and so should work for any shape-based analysis. The effect of all normalisation and shape uncertainties is evaluated. In addition, there is an option to calculate post-fit/pre-fit scale factors for each background and the total background uncertainty in each category. This numbers can then be used as input for producing post-fit control distributions.
+
+\warning Take care if the datacard contains `rateParam` terms. These are currently not considered when evaluating process rates and shapes. See the alternative program `PostFitShapesFromWorkspace`, which implicitly evaluates all normalisation terms in the workspace, including those originally created by `rateParam` directives.
+
+The following options are available:
 
     Configuration:
     -d [ --datacard ] arg      The datacard .txt file [REQUIRED]

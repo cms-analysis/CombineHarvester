@@ -776,6 +776,7 @@ INPUT  = CombineTools/interface \
          docs/Main.md \
          docs/Example1.md \
          docs/Example2.md \
+         docs/Example3.md \
          docs/PythonInterface.md \
          docs/PostFitShapes.md \
          docs/Limits.md \
