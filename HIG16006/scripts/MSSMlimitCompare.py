@@ -65,9 +65,9 @@ for i in range(len(files)):
     data = {}
     with open(files[i]) as jsonfile:
       data = json.load(jsonfile)
-    exp_graph_list[i] = plot.LimitTGraphFromJSON(data, 'expected')
+    exp_graph_list[i] = plot.LimitTGraphFromJSON(data, 'exp0')
     if args.relative or args.absolute:
-     obs_graph_list[i] = plot.LimitTGraphFromJSON(data, 'observed')
+     obs_graph_list[i] = plot.LimitTGraphFromJSON(data, 'obs')
 
 max_vals = []
 for i in range(len(exp_graph_list)):
