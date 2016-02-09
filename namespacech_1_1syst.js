@@ -8,5 +8,6 @@ var namespacech_1_1syst =
     [ "mass", "structch_1_1syst_1_1mass.html", "structch_1_1syst_1_1mass" ],
     [ "process", "structch_1_1syst_1_1process.html", "structch_1_1syst_1_1process" ],
     [ "SystMap", "classch_1_1syst_1_1_syst_map.html", "classch_1_1syst_1_1_syst_map" ],
-    [ "SystMapAsymm", "classch_1_1syst_1_1_syst_map_asymm.html", "classch_1_1syst_1_1_syst_map_asymm" ]
+    [ "SystMapAsymm", "classch_1_1syst_1_1_syst_map_asymm.html", "classch_1_1syst_1_1_syst_map_asymm" ],
+    [ "SystMapFunc", "classch_1_1syst_1_1_syst_map_func.html", "classch_1_1syst_1_1_syst_map_func" ]
 ];

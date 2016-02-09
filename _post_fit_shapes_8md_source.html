@@ -105,56 +105,60 @@ $(document).ready(function(){initNavTree('_post_fit_shapes_8md.html','');});
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;**File**: CombineTools/test/PostFitShapes.cpp</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;The program `PostFitShapes` is used to dump a set of pre- and post-fit distributions from a datacard. There is no need to specify which categories or processes to extract, this will be done automatically and so should work for any shape-based analysis. The effect of all normalisation and shape uncertainties is evaluated. In addition, there is an option to calculate post-fit/pre-fit scale factors for each background and the total background uncertainty in each category. This numbers can then be used as input for producing post-fit control distributions. The following options are available:</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;The program `PostFitShapes` is used to dump a set of pre- and post-fit distributions from a datacard. There is no need to specify which categories or processes to extract, this will be done automatically and so should work for any shape-based analysis. The effect of all normalisation and shape uncertainties is evaluated. In addition, there is an option to calculate post-fit/pre-fit scale factors for each background and the total background uncertainty in each category. This numbers can then be used as input for producing post-fit control distributions.</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    Configuration:</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    -d [ --datacard ] arg      The datacard .txt file [REQUIRED]</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    -o [ --output ] arg        Name of the output root file to create [REQUIRED]</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    -f [ --fitresult ] arg     Path to a RooFitResult, only needed for postfit</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    -m [ --mass ] arg          Signal mass point of the input datacard</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    --postfit [=arg(=1)] (=0)  Create post-fit histograms in addition to pre-fit</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    --sampling [=arg(=1)] (=0) Use the cov. matrix sampling method for the</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                               post-fit uncertainty</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    --samples arg (=0)         Number of samples to make in each evaluate call</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    --print [=arg(=1)] (=0)    Print tables of background shifts and relative</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                               uncertainties</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    Example usage:</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    PostFitShapes -d htt_mt_125.txt -o htt_mt_125_shapes.root -m 125 \</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        -f mlfit.root:fit_s --postfit --sampling --print</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;\warning The option `--sampling` is not used by default, but you should probably use it if you are producing post-fit distributions. Without this the uncertainty will be calculated assuming no correlations between nuisance parameters - this would be extremely rare in an typical fit.</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;The output root file will have the following directory structure:</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;\warning Take care if the datacard contains `rateParam` terms. These are currently not considered when evaluating process rates and shapes. See the alternative program `PostFitShapesFromWorkspace`, which implicitly evaluates all normalisation terms in the workspace, including those originally created by `rateParam` directives.</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;The following options are available:</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    Configuration:</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    -d [ --datacard ] arg      The datacard .txt file [REQUIRED]</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    -o [ --output ] arg        Name of the output root file to create [REQUIRED]</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    -f [ --fitresult ] arg     Path to a RooFitResult, only needed for postfit</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    -m [ --mass ] arg          Signal mass point of the input datacard</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    --postfit [=arg(=1)] (=0)  Create post-fit histograms in addition to pre-fit</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    --sampling [=arg(=1)] (=0) Use the cov. matrix sampling method for the</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                               post-fit uncertainty</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    --samples arg (=0)         Number of samples to make in each evaluate call</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    --print [=arg(=1)] (=0)    Print tables of background shifts and relative</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                               uncertainties</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    Example usage:</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    PostFitShapes -d htt_mt_125.txt -o htt_mt_125_shapes.root -m 125 \</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        -f mlfit.root:fit_s --postfit --sampling --print</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    output.root:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        bin_1_prefit/</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            TH1F data_obs</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            TH1F process_1</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;            TH1F process_2</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            ...</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            TH1F process_i</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            TH1F TotalBkg</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            TH1F TotalSig</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        bin_1_postfit/</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            TH1F data_obs</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            TH1F process_1</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            TH1F process_2</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            ...</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            TH1F process_i</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            TH1F TotalBkg</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            TH1F TotalSig</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        ...</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        bin_i_prefit/</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            ...</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        bin_i_postfit/</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            ...</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;\warning In the post-fit output the signal histograms are not scaled to the fitted signal strength, rather a signal strength r=1 is assumed. It follows that the uncertainty on the signal processes does not include the uncertainty on this signal strength parameter.</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;\note This program only produces the histograms - you will need to provide your own plotting script!</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;\warning The option `--sampling` is not used by default, but you should probably use it if you are producing post-fit distributions. Without this the uncertainty will be calculated assuming no correlations between nuisance parameters - this would be extremely rare in an typical fit.</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;The output root file will have the following directory structure:</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    output.root:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        bin_1_prefit/</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            TH1F data_obs</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            TH1F process_1</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            TH1F process_2</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            ...</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            TH1F process_i</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            TH1F TotalBkg</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            TH1F TotalSig</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        bin_1_postfit/</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            TH1F data_obs</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            TH1F process_1</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            TH1F process_2</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            ...</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            TH1F process_i</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            TH1F TotalBkg</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            TH1F TotalSig</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        ...</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        bin_i_prefit/</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            ...</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        bin_i_postfit/</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            ...</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;\warning In the post-fit output the signal histograms are not scaled to the fitted signal strength, rather a signal strength r=1 is assumed. It follows that the uncertainty on the signal processes does not include the uncertainty on this signal strength parameter.</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;\note This program only produces the histograms - you will need to provide your own plotting script!</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.6-->

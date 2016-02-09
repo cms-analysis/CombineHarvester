@@ -19,6 +19,7 @@ var NAVTREE =
       [ "Adding bin-by-bin uncertainties ", "intro2.html#ex2-p4", null ],
       [ "Writing datacards ", "intro2.html#ex2-p5", null ]
     ] ],
+    [ "Examples Part III", "intro3.html", null ],
     [ "Python Interface", "python-interface.html", [
       [ "Constructors and copying ", "python-interface.html#py-constr-copy", null ],
       [ "Logging and Printing ", "python-interface.html#py-log-print", null ],
@@ -120,7 +121,7 @@ var NAVTREEINDEX =
 "_a_zh_systematics_8cc.html",
 "_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98",
 "classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7",
-"plotting_8py.html#a2859ac07831f692838afd628bf9abb21"
+"namespacemembers_func.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -78,7 +78,7 @@ var classch_1_1_combine_harvester =
     [ "GetObservedShape", "classch_1_1_combine_harvester.html#a0d3eca727963c0c14a3c04bbdce2ca5e", null ],
     [ "AddObservations", "classch_1_1_combine_harvester.html#a8d7ccde30bda35ec084f4e38b923ef23", null ],
     [ "AddProcesses", "classch_1_1_combine_harvester.html#a1ecb940a59ea7a2039956a07882e9ccc", null ],
-    [ "AddSystFromProc", "classch_1_1_combine_harvester.html#afe248bc4e9d79fcf75253d24c6d94261", null ],
+    [ "AddSystFromProc", "classch_1_1_combine_harvester.html#a00bd4490f33ab0ae404fb46a8cbd9dfe", null ],
     [ "AddSyst", "classch_1_1_combine_harvester.html#aab26f47e06ee53fcf1aab5c0940e916f", null ],
     [ "ExtractShapes", "classch_1_1_combine_harvester.html#ad4bd2bb5458d8435efd8fff49624b7b0", null ],
     [ "ExtractPdfs", "classch_1_1_combine_harvester.html#aff8e163ca0abe844603e676d142986a0", null ],

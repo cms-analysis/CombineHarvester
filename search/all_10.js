@@ -80,13 +80,14 @@ var searchData=
   ['syst_5fpattern',['syst_pattern',['../structch_1_1_hist_mapping.html#ab8e25efafca82f1152d94819130157d2',1,'ch::HistMapping']]],
   ['syst_5ftype',['syst_type',['../classch_1_1_combine_harvester.html#af13ff7dd8c281cd9e9cfd6b11fc05b95',1,'ch::CombineHarvester']]],
   ['syst_5ftype_5fset',['syst_type_set',['../classch_1_1_combine_harvester.html#a6db7fd938efd2ce05454a72c4b6cbc78',1,'ch::CombineHarvester']]],
-  ['systematic',['Systematic',['../classch_1_1_systematic.html',1,'ch']]],
   ['systematic',['Systematic',['../classch_1_1_systematic.html#a4e1cc3aec9d8ad8e8a482a07dbbc4eff',1,'ch::Systematic::Systematic()'],['../classch_1_1_systematic.html#a3a32c848411fbc9ff19899670a3c9bfb',1,'ch::Systematic::Systematic(Systematic const &amp;other)'],['../classch_1_1_systematic.html#abfaf59dd68bf8a9346fc5a9ce3bb745d',1,'ch::Systematic::Systematic(Systematic &amp;&amp;other)']]],
+  ['systematic',['Systematic',['../classch_1_1_systematic.html',1,'ch']]],
   ['systematic_2ecc',['Systematic.cc',['../_systematic_8cc.html',1,'']]],
   ['systematic_2eh',['Systematic.h',['../_systematic_8h.html',1,'']]],
   ['systematics_2eh',['Systematics.h',['../_systematics_8h.html',1,'']]],
   ['systmap',['SystMap',['../classch_1_1syst_1_1_syst_map.html',1,'ch::syst']]],
   ['systmapasymm',['SystMapAsymm',['../classch_1_1syst_1_1_syst_map_asymm.html',1,'ch::syst']]],
+  ['systmapfunc',['SystMapFunc',['../classch_1_1syst_1_1_syst_map_func.html',1,'ch::syst']]],
   ['systworkspacename',['SystWorkspaceName',['../structch_1_1_hist_mapping.html#a656a0872da1b34c12d70a31cdf628a01',1,'ch::HistMapping']]],
   ['systworkspaceobj',['SystWorkspaceObj',['../structch_1_1_hist_mapping.html#a87115b750963b4e91c4b86271be8beb6',1,'ch::HistMapping']]]
 ];

@@ -8,6 +8,7 @@ var searchData=
   ['err_5fu',['err_u',['../classch_1_1_parameter.html#a72f08021fdbbc3f9760427363ea8e3a5',1,'ch::Parameter']]],
   ['example1_2emd',['Example1.md',['../_example1_8md.html',1,'']]],
   ['example2_2emd',['Example2.md',['../_example2_8md.html',1,'']]],
+  ['example3_2emd',['Example3.md',['../_example3_8md.html',1,'']]],
   ['extractdata',['ExtractData',['../classch_1_1_combine_harvester.html#ac40e961ea428fa6411ec8e3b6ddeadef',1,'ch::CombineHarvester']]],
   ['extractfitparameters',['ExtractFitParameters',['../namespacech.html#a49fb1eb0d277893e0f6a9cc099d4cf28',1,'ch']]],
   ['extractjsonfromfile',['ExtractJsonFromFile',['../namespacech.html#af6162c2c3534475d55453bbdb86b13a4',1,'ch']]],
@@ -16,5 +17,6 @@ var searchData=
   ['extractsampledfitparameters',['ExtractSampledFitParameters',['../namespacech.html#a9ba092c0c88fd0a122b927b83d91a4de',1,'ch']]],
   ['extractshapes',['ExtractShapes',['../classch_1_1_combine_harvester.html#ad4bd2bb5458d8435efd8fff49624b7b0',1,'ch::CombineHarvester']]],
   ['examples_20part_20i',['Examples Part I',['../intro1.html',1,'']]],
-  ['examples_20part_20ii',['Examples Part II',['../intro2.html',1,'']]]
+  ['examples_20part_20ii',['Examples Part II',['../intro2.html',1,'']]],
+  ['examples_20part_20iii',['Examples Part III',['../intro3.html',1,'']]]
 ];

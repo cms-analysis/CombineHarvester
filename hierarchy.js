@@ -31,6 +31,7 @@ var hierarchy =
     [ "ch::SOverBInfo", "structch_1_1_s_over_b_info.html", null ],
     [ "ch::syst::SystMap< T >", "classch_1_1syst_1_1_syst_map.html", null ],
     [ "ch::syst::SystMapAsymm< T >", "classch_1_1syst_1_1_syst_map_asymm.html", null ],
+    [ "ch::syst::SystMapFunc< T >", "classch_1_1syst_1_1_syst_map_func.html", null ],
     [ "ch::FnTimer::Token", "classch_1_1_fn_timer_1_1_token.html", null ],
     [ "ch::tupleprint::TuplePrinter< Tuple, N >", "structch_1_1tupleprint_1_1_tuple_printer.html", null ],
     [ "ch::tupleprint::TuplePrinter< Tuple, 0 >", "structch_1_1tupleprint_1_1_tuple_printer_3_01_tuple_00_010_01_4.html", null ],
