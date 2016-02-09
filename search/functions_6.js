@@ -22,5 +22,6 @@ var searchData=
   ['getuncertainty',['GetUncertainty',['../classch_1_1_combine_harvester.html#a9c0e44635dc637746222f67e9be518e5',1,'ch::CombineHarvester::GetUncertainty()'],['../classch_1_1_combine_harvester.html#af71f64a1d858700bd16d98cee1c10c26',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const *fit, unsigned n_samples)'],['../classch_1_1_combine_harvester.html#aa7c0646bfab0a974c72fe815e33c5a32',1,'ch::CombineHarvester::GetUncertainty(RooFitResult const &amp;fit, unsigned n_samples)']]],
   ['graphdifference',['GraphDifference',['../namespaceplotting.html#af20847d908f9ed735a0abcdc77d3bed5',1,'plotting']]],
   ['graphdivide',['GraphDivide',['../namespaceplotting.html#a474b8687854cc031562f967ff2ccaf02',1,'plotting']]],
-  ['graphfromspline',['GraphFromSpline',['../namespacech.html#aefdcaba918224f404af9fcd9b53fa7bb',1,'ch']]]
+  ['graphfromspline',['GraphFromSpline',['../namespacech.html#aefdcaba918224f404af9fcd9b53fa7bb',1,'ch']]],
+  ['groups',['groups',['../classch_1_1_parameter.html#a241d3b9acedcf0c2de4d44646e288019',1,'ch::Parameter']]]
 ];

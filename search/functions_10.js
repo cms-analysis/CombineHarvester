@@ -40,6 +40,7 @@ var searchData=
   ['setfromobs',['SetFromObs',['../classch_1_1_combine_harvester.html#a455e0b19f8ff00c2b82d78baf59055a6',1,'ch::CombineHarvester']]],
   ['setfromprocs',['SetFromProcs',['../classch_1_1_combine_harvester.html#a7a0c6913b055e11798269034ae324298',1,'ch::CombineHarvester']]],
   ['setfromsysts',['SetFromSysts',['../classch_1_1_combine_harvester.html#a6c60a401231bfded23a56abe3f6dbf77',1,'ch::CombineHarvester']]],
+  ['setgroup',['SetGroup',['../classch_1_1_combine_harvester.html#a5d75e03de3d628f7281a2e6914722bc5',1,'ch::CombineHarvester']]],
   ['setmergethreshold',['SetMergeThreshold',['../classch_1_1_bin_by_bin_factory.html#aa983d4e391adbf5a7af40458a3ffc062',1,'ch::BinByBinFactory']]],
   ['setpattern',['SetPattern',['../classch_1_1_bin_by_bin_factory.html#a4f8c2b763538030dcab6cd3566b27568',1,'ch::BinByBinFactory']]],
   ['setpdfbins',['SetPdfBins',['../classch_1_1_combine_harvester.html#ad61cdbfaea0ed88c09651c2a92c934e2',1,'ch::CombineHarvester']]],

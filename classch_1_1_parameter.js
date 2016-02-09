@@ -20,6 +20,7 @@ var classch_1_1_parameter =
     [ "set_frozen", "classch_1_1_parameter.html#a1539eec34291394e236f4dc6d7a43279", null ],
     [ "frozen", "classch_1_1_parameter.html#a49f2b0d9cc4170effcbb0005dd8760a2", null ],
     [ "vars", "classch_1_1_parameter.html#a51f57bf4e727f2024da96a2ae2e5cf76", null ],
+    [ "groups", "classch_1_1_parameter.html#a241d3b9acedcf0c2de4d44646e288019", null ],
     [ "operator<<", "classch_1_1_parameter.html#a4b23aafe9b144c9d6affc3a86d1efeb5", null ],
     [ "swap", "classch_1_1_parameter.html#ab9f57f473beb19a385c769a104aee7cc", null ]
 ];

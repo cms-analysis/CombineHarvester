@@ -287,6 +287,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9ec4406a5a327d11af6257be20865b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad61cdbfaea0ed88c09651c2a92c934e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_combine_harvester.html#ad61cdbfaea0ed88c09651c2a92c934e2">SetPdfBins</a> (unsigned nbins)</td></tr>
 <tr class="separator:ad61cdbfaea0ed88c09651c2a92c934e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d75e03de3d628f7281a2e6914722bc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_combine_harvester.html#a5d75e03de3d628f7281a2e6914722bc5">SetGroup</a> (std::string const &amp;name, std::vector&lt; std::string &gt; const &amp;patterns)</td></tr>
+<tr class="memdesc:a5d75e03de3d628f7281a2e6914722bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add parameters to a given group.  <a href="#a5d75e03de3d628f7281a2e6914722bc5">More...</a><br /></td></tr>
+<tr class="separator:a5d75e03de3d628f7281a2e6914722bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3e906d415a6d68713f08a0c3f885810"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_combine_harvester.html#ac3e906d415a6d68713f08a0c3f885810">RemoveGroup</a> (std::string const &amp;name, std::vector&lt; std::string &gt; const &amp;patterns)</td></tr>
+<tr class="memdesc:ac3e906d415a6d68713f08a0c3f885810"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove parameters to a given group.  <a href="#ac3e906d415a6d68713f08a0c3f885810">More...</a><br /></td></tr>
+<tr class="separator:ac3e906d415a6d68713f08a0c3f885810"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a750a78b28b4ae6ca2d27a34b4ac32cc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_combine_harvester.html#a750a78b28b4ae6ca2d27a34b4ac32cc9">RenameGroup</a> (std::string const &amp;oldname, std::string const &amp;newname)</td></tr>
+<tr class="memdesc:a750a78b28b4ae6ca2d27a34b4ac32cc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rename a nuisance parameter group.  <a href="#a750a78b28b4ae6ca2d27a34b4ac32cc9">More...</a><br /></td></tr>
+<tr class="separator:a750a78b28b4ae6ca2d27a34b4ac32cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Rate, shape and uncertainty evaluation</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>Methods to calculate total yields and shapes</p>
 <p>All of these methods are greedy, meaning they will sum over all available objects and evaluate the effect of all uncertainties. They should be used at the end of a chain of filter methods to give the desired yield, shape or uncertainty. </p>
@@ -787,7 +796,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00424">424</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00444">444</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
 
 </div>
 </div>
@@ -815,7 +824,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00592">592</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00612">612</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
 
 </div>
 </div>
@@ -833,7 +842,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00431">431</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00451">451</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
 
 </div>
 </div>
@@ -1218,7 +1227,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00564">564</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00595">595</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1238,7 +1247,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00572">572</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00603">603</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1258,7 +1267,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00580">580</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00611">611</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1278,7 +1287,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00587">587</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00618">618</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1461,7 +1470,7 @@ template&lt;typename T , typename R &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00512">512</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00543">543</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1484,7 +1493,7 @@ template&lt;typename T , typename R &gt; </div>
 <p>Fill an std::set using only the <a class="el" href="classch_1_1_observation.html">Observation</a> entries. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classch_1_1_combine_harvester.html#ac514e331fc81a67fc9d8de884b5666c3" title="Fill an std::set with the return values from an arbitrary function. ">SetFromAll</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00521">521</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00552">552</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1507,7 +1516,7 @@ template&lt;typename T , typename R &gt; </div>
 <p>Fill an std::set using only the <a class="el" href="classch_1_1_process.html">Process</a> entries. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classch_1_1_combine_harvester.html#ac514e331fc81a67fc9d8de884b5666c3" title="Fill an std::set with the return values from an arbitrary function. ">SetFromAll</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00528">528</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00559">559</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1530,7 +1539,7 @@ template&lt;typename T , typename R &gt; </div>
 <p>Fill an std::set using only the <a class="el" href="classch_1_1_systematic.html">Systematic</a> entries. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classch_1_1_combine_harvester.html#ac514e331fc81a67fc9d8de884b5666c3" title="Fill an std::set with the return values from an arbitrary function. ">SetFromAll</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00535">535</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00566">566</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1688,7 +1697,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00542">542</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00573">573</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1708,7 +1717,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00549">549</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00580">580</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1728,7 +1737,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00554">554</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00585">585</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1748,7 +1757,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00559">559</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00590">590</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1785,6 +1794,119 @@ template&lt;typename Function &gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00542">542</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5d75e03de3d628f7281a2e6914722bc5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ch::CombineHarvester::SetGroup </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>patterns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add parameters to a given group. </p>
+<p>A parameter will be added to the given group if its name passes a regex match with any of the input patterns. A parameter can belong to any number of groups.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The group name to set </td></tr>
+    <tr><td class="paramname">patterns</td><td>A vector of regex pattern strings </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00590">590</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac3e906d415a6d68713f08a0c3f885810"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ch::CombineHarvester::RemoveGroup </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>patterns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove parameters to a given group. </p>
+<p>A parameter will be removed from the given group if its name passes a regex match with any of the input patterns.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The group name to remove </td></tr>
+    <tr><td class="paramname">patterns</td><td>A vector of regex pattern strings </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00604">604</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a750a78b28b4ae6ca2d27a34b4ac32cc9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ch::CombineHarvester::RenameGroup </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>oldname</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>newname</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rename a nuisance parameter group. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">oldname</td><td>The current name </td></tr>
+    <tr><td class="paramname">newname</td><td>The new name </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00618">618</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -2214,7 +2336,7 @@ template&lt;class Map &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00595">595</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00626">626</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
