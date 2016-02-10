@@ -381,16 +381,16 @@ plot.DrawTitle(pads[0], "2.2 fb^{-1} (13 TeV)", 3);
 
 #Add ratio plot if required
 if args.ratio and not soverb_plot:
-  total_datahist.Divide(bkghist)
+  ratio_bkghist = bkghist.Clone()
+  ratio_bkghist.Divide(bkghist)
   blind_datahist.Divide(bkghist)
-  total_datahist.SetFillColor(plot.CreateTransparentColor(12,0.4))
   pads[1].cd()
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
   axish[1].SetMinimum(0.7)
   axish[1].SetMaximum(1.3)
-  total_datahist.SetMarkerSize(0)
-  total_datahist.Draw("e2same")
+  ratio_bkghist.SetMarkerSize(0)
+  ratio_bkghist.Draw("e2same")
   blind_datahist.DrawCopy("psame")
 
 if soverb_plot:
