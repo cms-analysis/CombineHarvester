@@ -157,6 +157,7 @@ if not args.postfitshapes:
         shape_file = os.path.join(root,filename)
   elif args.file:
     shape_file=args.file
+    shape_file_name=args.file
 
 histo_file = ROOT.TFile(shape_file)
 
