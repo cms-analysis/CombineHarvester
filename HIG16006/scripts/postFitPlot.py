@@ -119,7 +119,7 @@ if not manual_blind and not auto_blind: manual_blind=True
 #If call to PostFitWithShapes is requested, this is performed here
 if args.postfitshapes or soverb_plot:
   for root,dirnames,filenames in os.walk(args.dir):
-    for filename in fnmatch.filter(filenames, '*.txt'):
+    for filename in fnmatch.filter(filenames, '*.txt.cmb'):
       datacard_file = os.path.join(root,filename) 
     for filename in fnmatch.filter(filenames, '*%(workspace)s.root'%vars()):
       workspace_file = os.path.join(root,filename)
