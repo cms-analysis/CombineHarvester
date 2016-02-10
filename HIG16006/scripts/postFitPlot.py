@@ -168,14 +168,17 @@ total_datahist = getHistogram(histo_file,"data_obs")[0]
 blind_datahist = total_datahist.Clone()
 total_datahist.SetMarkerStyle(20)
 blind_datahist.SetMarkerStyle(20)
+blind_datahist.SetFillColor(1)
 
 #If using in test automated blinding mode, build the s/root b histogram for the ratio 
-sighist_forratio = sighist.Clone()
-sighist_forratio.SetName("sighist_forratio")
-sighist_ggH_forratio = sighist_ggH.Clone()
-sighist_ggH_forratio.SetName("sighist_ggH_forratio")
-sighist_bbH_forratio = sighist_bbH.Clone()
-sighist_bbH_forratio.SetName("sighist_bbH_forratio")
+if model_dep :
+    sighist_forratio = sighist.Clone()
+    sighist_forratio.SetName("sighist_forratio")
+else:
+    sighist_ggH_forratio = sighist_ggH.Clone()
+    sighist_ggH_forratio.SetName("sighist_ggH_forratio")
+    sighist_bbH_forratio = sighist_bbH.Clone()
+    sighist_bbH_forratio.SetName("sighist_bbH_forratio")
 if soverb_plot:
     for j in range(1,bkghist.GetNbinsX()+1):
         if model_dep:
