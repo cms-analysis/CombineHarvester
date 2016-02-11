@@ -31,12 +31,16 @@ int main(int argc, char** argv) {
   string SM125= "";
   string mass = "mA";
   string output_folder = "mssm_run2";
+  string input_folder="Imperial/datacards-76X/";
+  string postfix="";
   bool auto_rebin = false;
   bool manual_rebin = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
+    ("input_folder", po::value<string>(&input_folder)->default_value("Imperial/datacards-76X"))
+    ("postfix", po::value<string>(&postfix)->default_value(""))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
@@ -49,7 +53,7 @@ int main(int argc, char** argv) {
   string input_dir =
       //string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
       //"./datacards-2501/";
-      "./shapes/Imperial/";
+      "./shapes/"+input_folder+"/";
 
   VString chns =
       //{"tt"};
@@ -137,15 +141,15 @@ int main(int argc, char** argv) {
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/ggH$MASS",
         "$BIN/ggH$MASS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
@@ -223,43 +227,45 @@ int main(int argc, char** argv) {
   string folder = "output/"+output_folder+"/cmb";
   boost::filesystem::create_directories(folder);
  
-
  //Write out datacards. Naming convention important for rest of workflow. We
  //make one directory per chn-cat, one per chn and cmb. In this code we only
- //store the complete combined datacard for each directory, but we also
- //introduce the label _mssm to allow to distinguish from individual cards if
- //people want to store those too for some reason.
-  cout << "Writing datacards ...";
-  TFile output((folder + "/htt_cmb_mssm_input.root").c_str(), "RECREATE");
-  cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_cmb_mssm.txt", output);
-  output.Close();
+ //store the individual datacards for each directory to be combined later, but
+ //note that it's also possible to write out the full combined card with CH
+ 
+ cout << "Writing datacards ...";
   
-  //Combined based on bin_id - i.e. make combined b-tag and no b-tag
-  for (string chn : chns) {
-    auto bin_ids = cb.cp().bin_id_set();
-    for (auto b : bin_ids) {
-       string folder_cat = "output/"+output_folder+"/htt_cmb_"+boost::lexical_cast<string>(b)+"_13TeV";
-       boost::filesystem::create_directories(folder_cat);
-       TFile output((folder_cat + "/htt_cmb_"+boost::lexical_cast<string>(b)+"_13TeV_mssm_input.root").c_str(), "RECREATE");
-       cb.cp().mass({"*"}).bin_id({b}).WriteDatacard(folder_cat + "/htt_cmb_"+boost::lexical_cast<string>(b)+"_13TeV_mssm.txt", output);
-       output.Close();
-    }
-  }
 
   //Individual channel-cats  
   for (string chn : chns) {
      string folderchn = "output/"+output_folder+"/"+chn;
-     boost::filesystem::create_directories(folderchn);
-     TFile outputchn((folderchn + "/htt_"+chn+"_mssm_input.root").c_str(), "RECREATE");
-     cb.cp().channel({chn}).mass({"*"}).WriteDatacard(folderchn + "/htt_"+chn+"_mssm.txt", outputchn);
-     outputchn.Close();
      auto bins = cb.cp().channel({chn}).bin_set();
       for (auto b : bins) {
-        string folderchn = "output/"+output_folder+"/"+b;
+        string folderchncat = "output/"+output_folder+"/"+b;
         boost::filesystem::create_directories(folderchn);
-        TFile outputbin((folderchn + "/"+b+"_mssm_input.root").c_str(), "RECREATE");
-        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + "_mssm.txt", outputbin);
-        outputbin.Close();
+        boost::filesystem::create_directories(folderchncat);
+        TFile output((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+        TFile outputchn((folderchn + "/"+b+"_input.root").c_str(), "RECREATE");
+        TFile outputchncat((folderchncat + "/"+b+"_input.root").c_str(), "RECREATE");
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + ".txt", outputchn);
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchncat + "/" + b + ".txt", outputchncat);
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
+        output.Close();
+        outputchn.Close();
+        outputchncat.Close();
+        if(b.find("8")!=string::npos) {
+            string foldercat = "output/"+output_folder+"/htt_cmb_8_13TeV/";
+            boost::filesystem::create_directories(foldercat);
+            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
+            outputcat.Close();
+        }
+        else if(b.find("9")!=string::npos) {
+            string foldercat = "output/"+output_folder+"/htt_cmb_9_13TeV/";
+            boost::filesystem::create_directories(foldercat);
+            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
+            outputcat.Close();
+        }
       }
   }
      

@@ -50,6 +50,7 @@ parser.add_argument('--r_ggH',default='0.1',help='Signal ggH XS*BR for model ind
 parser.add_argument('--r_bbH',default='0.1',help='Signal bbH XS*BR for model indep')
 parser.add_argument('--postfitshapes',default=False,action='store_true',help='Run PostFitShapesFromWorkspace')
 parser.add_argument('--workspace',default='mhmodp',help='Part of workspace filename right before .root')
+parser.add_argument('--fitresult',help='Full path to fit result for making post fit plots')
 parser.add_argument('--model_dep',action='store_true',default=False,help='Make plots for full model dependent signal h,H,A')
 parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
 parser.add_argument('--manual_blind', action='store_true',default=False,help='Blind data with hand chosen range')
@@ -58,7 +59,7 @@ parser.add_argument('--auto_blind_check_only',action='store_true',default=False,
 parser.add_argument('--soverb_plot', action='store_true',default=False,help='Make plot with s/root b instead of ratio plot to test what it would blind')
 parser.add_argument('--x_blind_min',default=200,help='Minimum x for manual blinding')
 parser.add_argument('--x_blind_max',default=4000,help='Maximum x for manual blinding')
-parser.add_argument('--ratio', default=True,action='store_true',help='Draw ratio plot')
+parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio plot')
 parser.add_argument('--custom_x_range', help='Fix x axis range', action='store_true', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=0.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
@@ -79,6 +80,7 @@ tb = args.tanb
 r_ggH = args.r_ggH
 r_bbH = args.r_bbH
 workspace = args.workspace
+fitresult = args.fitresult
 mode = args.mode
 manual_blind = args.manual_blind
 auto_blind = args.auto_blind
@@ -143,8 +145,10 @@ if args.postfitshapes or soverb_plot:
     freeze = 'mA='+mA+',tanb='+tb 
   else: 
     freeze = 'MH='+mPhi+',r_ggH='+r_ggH+',r_bbH='+r_bbH 
-  print 'PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --print --freeze %(freeze)s'%vars()
-  os.system('PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --print --freeze %(freeze)s'%vars())
+  if mode=="postfit": postfit_string = '--fitresult '+fitresult+':fit_s --postfit' 
+  else: postfit_string = ''
+  print 'PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s %(postfit_string)s --print --freeze %(freeze)s'%vars()
+  os.system('PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s %(postfit_string)s --print --freeze %(freeze)s'%vars())
 
 
 #Otherwise a shape file with a given naming convention is required
@@ -215,7 +219,7 @@ if manual_blind or auto_blind_check_only:
 #Automated blinding based on s/root b on bin by bin basis - use with caution!! Run with "check_only" mode first
 if auto_blind or auto_blind_check_only:
     #Points for testing added by hand and chosen cross-sections are the exclusion from HIG-14-029 scaled by parton lumi. Values above 1 TeV are
-    #crudely extrapolated using the 1 TeV limit and a higher parton lumi factor
+    #crudely extrapolated using the 1 TeV limit and a higher parton lumi factor. 
     points=[200,300,400,500,600,700,900,1100,1500,2000,2500,3200]
     ggH_sigmas=[0.69,0.27,0.25,0.12,0.081,0.067,0.044,0.06,0.08,0.1,0.2,0.3]
     bbH_sigmas=[0.54,0.23,0.21,0.12,0.097,0.088,0.059,0.08,0.08,0.1,0.2,0.3]
@@ -254,7 +258,7 @@ if auto_blind or auto_blind_check_only:
             print "For this pass, applying manual blinding. Disable option --auto_blind_check_only to apply this automatic blinding"
 
 
-#Normalise by bin width except in soverb_plot mode
+#Normalise by bin width except in soverb_plot mode, where interpretation is easier without normalising
 if not soverb_plot:
     blind_datahist.Scale(1.0,"width")
     total_datahist.Scale(1.0,"width")
@@ -262,7 +266,6 @@ if not soverb_plot:
     if not model_dep: sighist_ggH.Scale(1.0,"width")
     if not model_dep: sighist_bbH.Scale(1.0,"width")
     bkghist.Scale(1.0,"width")
-
 
 channel=binname[4:6]
 
@@ -356,8 +359,8 @@ legend.SetTextSize(0.025)
 if model_dep is True: 
     legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
 else: 
-    legend.AddEntry(sighist_ggH,"gg#phi#rightarrow#tau#tau"%vars(),"l")
-    legend.AddEntry(sighist_bbH,"bb#phi#rightarrow#tau#tau"%vars(),"l")
+    legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
+    legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
 legend.SetFillColor(0)
 for legi,hists in enumerate(bkg_histos):
   legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
