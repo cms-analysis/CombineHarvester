@@ -15,6 +15,7 @@ parser.add_argument('--output', '-o', help='name of the output file to create')
 parser.add_argument('--translate', '-t', help='JSON file for remapping of parameter names')
 parser.add_argument('--per-page', type=int, default=30, help='Number of parameters to show per page')
 parser.add_argument('--cms-label', default='Internal', help='Label next to the CMS logo')
+parser.add_argument('--transparent', action='store_true', help='Draw areas as hatched lines instead of solid')
 args = parser.parse_args()
 
 
@@ -119,9 +120,10 @@ for page in xrange(n):
 
     # And back to the second pad to draw the impacts graphs
     pads[1].cd()
-    g_impacts_hi.SetFillColor(46)
+    alpha = 0.7 if args.transparent else 1.0
+    g_impacts_hi.SetFillColor(plot.CreateTransparentColor(46, alpha))
     g_impacts_hi.Draw('2SAME')
-    g_impacts_lo.SetFillColor(38)
+    g_impacts_lo.SetFillColor(plot.CreateTransparentColor(38, alpha))
     g_impacts_lo.Draw('2SAME')
     pads[1].RedrawAxis()
 
