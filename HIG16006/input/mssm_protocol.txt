@@ -34,9 +34,9 @@ This will perform the same recursive application of text2workspace, this time ap
 
 This can be done directly with combine, but again combineTool makes life a lot easier for us by allowing successive calls (with different choices of job submission, and parallelisation of calculations):
 
-combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000" -M Asymptotic --boundlist ../CombinePdfs/scripts/mssm_ggh_boundaries.json --freezeNuisances MH  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_250116_svfit_modelindep/*/ggPhi.root --there -n "ggH"
+combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000" -M Asymptotic --boundlist ../CombinePdfs/scripts/mssm_ggh_boundaries.json --freezeNuisances MH  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_250116_svfit_modelindep/*/ggPhi.root --there -n ".ggH"
 
-combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000" -M Asymptotic --boundlist ../CombinePdfs/scripts/mssm_bbh_boundaries.json --freezeNuisances MH  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_250116_svfit_modelindep/*/bbPhi.root --there -n "bbH"
+combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000" -M Asymptotic --boundlist ../CombinePdfs/scripts/mssm_bbh_boundaries.json --freezeNuisances MH  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_250116_svfit_modelindep/*/bbPhi.root --there -n ".bbH"
 
 This goes to each subdirectory of output/mssm_250116_svfit_modelindep/ (--there) and performs the combine calculation for the masses listed on the workspace (either ggH or bbH workspace). The combine output files are stored in the directories alongside the datacards. Note the optin --parallel = X allows you to run the calculations interactively with X in parallel, and e.g.' --job-mode 'lxbatch' --task-name 'mssm_ggH' --sub-opts '-q 1nh' --merge=4 ' could be used to instead run on the lxbatch, merging 4 masspoints into 1 job and submitting to the 1 hour queue.
 
@@ -64,7 +64,7 @@ Or comparison plots can be made using the following script:
 
 python scripts/MSSMlimitCompare.py --file=mssm_250116_svfit_ggH_mt.json,mssm_250116_svfit_ggH_et.json --labels="mutau,etau" --expected_only --outname="mssm_250116_mt_vs_et_ggH" --process="gg#phi" 
 
-The options --absolute and --relative can be used to make ratio plots as well
+The options --absolute and --relative can be used to make ratio plots as well. Note that it is also possible to apply parton luminosity scale factors to any of the limits.
 
 4a) Plotting model dependent limits
 
