@@ -7,6 +7,7 @@
 #include <utility>
 #include <set>
 #include <fstream>
+#include <sstream>
 #include "boost/lexical_cast.hpp"
 #include "boost/algorithm/string.hpp"
 #include "boost/format.hpp"
@@ -85,6 +86,9 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
   std::shared_ptr<ch::Observation> single_obs = nullptr;
   std::set<std::string> bin_names;
 
+  // Store the groups that we encounter
+  std::map<std::string, std::set<std::string>> groups;
+
   // Loop through the vector of word vectors
   for (unsigned i = 0; i < words.size(); ++i) {
     // Ignore line if it only has one word
@@ -140,6 +144,17 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
         }
         mapping.sys_ws = SetupWorkspace(*(ws_store[store_key]), true);
       }
+    }
+
+    // We can also have a "FAKE" shape directive
+    // Must be four words long: shapes * * FAKE
+    if (boost::iequals(words[i][0], "shapes") && words[i].size() == 4 &&
+        boost::iequals(words[i][3], "FAKE")) {
+      hist_mapping.push_back(HistMapping());
+      HistMapping &mapping = hist_mapping.back();
+      mapping.process = words[i][1];
+      mapping.category = words[i][2];
+      mapping.is_fake = true;
     }
 
     // Want to check this line and the previous one, so need i >= 1.
@@ -257,6 +272,86 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
       }
     }
 
+    if (start_nuisance_scan && words[i].size() >= 5 &&
+        boost::iequals(words[i][1], "rateParam")) {
+      if (verbosity_ > 1) {
+        FNLOG(log()) << "Processing rateParam line:\n";
+        for (auto const& str : words[i]) {
+          log() << str << "\t";
+        }
+        log() << "\n";
+      }
+
+      bool has_range = words[i].size() == 6 && words[i][5][0] == '[';
+      std::string param_name = words[i][0];
+      // If this is a free param may need to create a Parameter object
+      // If the line has 5 words this must be a floating param, otherwise
+      // if it has 6 then it's a floating param
+      if (words[i].size() == 5 || has_range) {
+        ch::Parameter* param = SetupRateParamVar(
+            param_name, boost::lexical_cast<double>(words[i][4]));
+        param->set_err_u(0.);
+        param->set_err_d(0.);
+        if (has_range) {
+          std::vector<std::string> tokens;
+          boost::split(tokens, words[i][5], boost::is_any_of("[],"));
+          if (tokens.size() == 4) {
+            param->set_range_d(boost::lexical_cast<double>(tokens[1]));
+            param->set_range_u(boost::lexical_cast<double>(tokens[2]));
+            FNLOGC(log(), verbosity_ > 1) << "Setting parameter range to " << words[i][5];
+          }
+        }
+      } else if (words[i].size() == 6 && !has_range) {
+        SetupRateParamFunc(param_name, words[i][4], words[i][5]);
+      }
+      for (unsigned p = 1; p < words[r].size(); ++p) {
+        bool matches_bin = false;
+        bool matches_proc = false;
+        int process_id;
+        std::string process;
+        std::string bin = words[r-3][p];
+        // Not great that we repeat this below
+        try {
+          process_id = boost::lexical_cast<int>(words[r-2][p]);
+          process = words[r-1][p];
+        } catch(boost::bad_lexical_cast &) {
+          process_id = boost::lexical_cast<int>(words[r-1][p]);
+          process = words[r-2][p];
+        }
+        if (words[i][2] == "*" || words[i][2] == bin) {
+          matches_bin = true;
+        }
+        if (words[i][3] == "*" || words[i][3] == process) {
+          matches_proc = true;
+        }
+        if (!matches_bin || !matches_proc) continue;
+        auto sys = std::make_shared<Systematic>();
+        sys->set_bin(bin);
+        sys->set_signal(process_id <= 0);
+        sys->set_process(process);
+        sys->set_name(param_name);
+        sys->set_type("rateParam");
+        sys->set_analysis(analysis);
+        sys->set_era(era);
+        sys->set_channel(channel);
+        sys->set_bin_id(bin_id);
+        sys->set_mass(mass);
+        systs_.push_back(sys);
+      }
+      continue;
+    }
+
+    if (start_nuisance_scan && words[i].size() >= 4 &&
+        boost::iequals(words[i][1], "group")) {
+      if (!groups.count(words[i][0])) {
+        groups[words[i][0]] = std::set<std::string>();
+      }
+      for (unsigned ig = 3; ig < words[i].size(); ++ig) {
+        groups[words[i][0]].insert(words[i][ig]);
+      }
+      continue;
+    }
+
     if (start_nuisance_scan && words[i].size()-1 == words[r].size()) {
       for (unsigned p = 2; p < words[i].size(); ++p) {
         if (words[i][p] == "-") continue;
@@ -338,6 +433,11 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
           "multiple bins defined elsewhere"));
     }
   }
+
+  // Finally populate the groups
+  for (auto const& grp : groups) {
+    this->SetGroup(grp.first, ch::Set2Vec(grp.second));
+  }
   return 0;
 }
 
@@ -346,6 +446,12 @@ void CombineHarvester::WriteDatacard(std::string const& name,
   TFile file(root_file.c_str(), "RECREATE");
   CombineHarvester::WriteDatacard(name, file);
   file.Close();
+}
+
+void CombineHarvester::WriteDatacard(std::string const& name) {
+  TFile dummy;
+  CombineHarvester::WriteDatacard(name, dummy);
+  dummy.Close();
 }
 
 void CombineHarvester::FillHistMappings(std::vector<HistMapping> & mappings) {
@@ -381,11 +487,24 @@ void CombineHarvester::FillHistMappings(std::vector<HistMapping> & mappings) {
         [&](std::shared_ptr<ch::Observation> p) {
           return (p->bin() == bin && p->shape());
         });
+    unsigned counting = std::count_if(
+        procs_.begin(), procs_.end(), [&](std::shared_ptr<ch::Process> p) {
+          return (p->bin() == bin && p->shape() == nullptr &&
+                  p->pdf() == nullptr && p->data() == nullptr);
+        });
+    counting += std::count_if(
+        obs_.begin(), obs_.end(), [&](std::shared_ptr<ch::Observation> p) {
+          return (p->bin() == bin && p->shape() == nullptr &&
+                  p->data() == nullptr);
+        });
 
     if (shape_count > 0) {
       mappings.emplace_back("*", bin, bin + "/$PROCESS",
                             bin + "/$PROCESS_$SYSTEMATIC");
       hist_bins.insert(bin);
+    } else if (counting > 0) {
+      mappings.emplace_back("*", bin, "", "");
+      mappings.back().is_fake = true;
     }
 
     CombineHarvester ch_signals =
@@ -493,7 +612,25 @@ void CombineHarvester::FillHistMappings(std::vector<HistMapping> & mappings) {
 void CombineHarvester::WriteDatacard(std::string const& name,
                                      TFile& root_file) {
   using boost::format;
-  if (!root_file.IsOpen()) {
+
+  // First figure out if this is a counting-experiment only
+  bool is_counting = true;
+  this->ForEachObs([&](ch::Observation *obs) {
+    if (obs->shape() != nullptr || obs->data() != nullptr) {
+      is_counting = false;
+    }
+  });
+  if (is_counting) {
+    this->ForEachProc([&](ch::Process *proc) {
+      if (proc->shape() != nullptr || proc->data() != nullptr ||
+          proc->pdf() != nullptr) {
+        is_counting = false;
+      }
+    });
+  }
+
+  // Allow a non-open ROOT file if this is purely a counting experiment
+  if (!root_file.IsOpen() && !is_counting) {
     throw std::runtime_error(FNERROR(
         std::string("Output ROOT file is not open: ") + root_file.GetName()));
   }
@@ -510,7 +647,15 @@ void CombineHarvester::WriteDatacard(std::string const& name,
 
   auto bin_set = this->SetFromObs(std::mem_fn(&ch::Observation::bin));
   auto proc_set = this->SetFromProcs(std::mem_fn(&ch::Process::process));
-  auto sys_set = this->SetFromSysts(std::mem_fn(&ch::Systematic::name));
+  std::set<std::string> sys_set;
+  std::set<std::string> rateparam_set;
+  this->ForEachSyst([&](ch::Systematic const* sys) {
+    if (sys->type() == "rateParam") {
+      rateparam_set.insert(sys->name());
+    } else {
+      sys_set.insert(sys->name());
+    }
+  });
   txt_file << "imax    " << bin_set.size()
             << " number of bins\n";
   txt_file << "jmax    " << proc_set.size() - 1
@@ -582,17 +727,27 @@ void CombineHarvester::WriteDatacard(std::string const& name,
   file_name = make_relative(txt_file_path, root_file_path).string();
 
   for (auto const& mapping : mappings) {
-    txt_file << format("shapes %s %s %s %s %s\n")
-      % mapping.process
-      % mapping.category
-      % file_name
-      % mapping.pattern
-      % mapping.syst_pattern;
+    if (!mapping.is_fake) {
+      txt_file << format("shapes %s %s %s %s %s\n")
+        % mapping.process
+        % mapping.category
+        % file_name
+        % mapping.pattern
+        % mapping.syst_pattern;
+    } else {
+      txt_file << format("shapes %s %s %s\n")
+        % mapping.process
+        % mapping.category
+        % "FAKE";
+    }
   }
   txt_file << dashes << "\n";
 
-  for (auto ws_it : wspaces_) {
-    ch::WriteToTFile(ws_it.second.get(), &root_file, ws_it.second->GetName());
+  if (!is_counting) {
+    for (auto ws_it : wspaces_) {
+      if (ws_it.first == "_rateParams") continue; // don't write this one
+      ch::WriteToTFile(ws_it.second.get(), &root_file, ws_it.second->GetName());
+    }
   }
 
   // Writing observations
@@ -705,48 +860,46 @@ void CombineHarvester::WriteDatacard(std::string const& name,
     bool seen_shape = false;
     bool seen_shapeN2 = false;
     for (unsigned p = 0; p < procs_.size(); ++p) {
-      line[p+2] = "-";
+      line[p + 2] = "-";
       for (unsigned n = 0; n < proc_sys_map[p].size(); ++n) {
-        ch::Systematic const* sys_ptr = proc_sys_map[p][n];
-        if (sys_ptr->name() == sys) {
-          if (sys_ptr->type() == "lnN" || sys_ptr->type() == "lnU") {
-            if (sys_ptr->type() == "lnN") seen_lnN = true;
-            if (sys_ptr->type() == "lnU") seen_lnU = true;
-            line[p + 2] =
-                sys_ptr->asymm()
-                    ? (format("%g/%g") % sys_ptr->value_d() %
-                       sys_ptr->value_u()).str()
-                    : (format("%g") % sys_ptr->value_u()).str();
+        ch::Systematic const* ptr = proc_sys_map[p][n];
+        // Only interested into Systematics with name "sys"
+        if (ptr->name() != sys) continue;
+        std::string tp = ptr->type();
+        if (tp == "lnN" || tp == "lnU") {
+          if (tp == "lnN") seen_lnN = true;
+          if (tp == "lnU") seen_lnU = true;
+          line[p + 2] =
+              ptr->asymm()
+                  ? (format("%g/%g") % ptr->value_d() % ptr->value_u()).str()
+                  : (format("%g") % ptr->value_u()).str();
+          break;
+        }
+        if (tp == "shape" || tp == "shapeN2") {
+          if (tp == "shape") seen_shape = true;
+          if (tp == "shapeN2") seen_shapeN2 = true;
+          line[p + 2] = (format("%g") % ptr->scale()).str();
+          if (ptr->shape_u() && ptr->shape_d()) {
+            bool add_dir = TH1::AddDirectoryStatus();
+            TH1::AddDirectory(false);
+            std::unique_ptr<TH1> h_d = ptr->ClonedShapeD();
+            h_d->Scale(procs_[p]->rate() * ptr->value_d());
+            WriteHistToFile(h_d.get(), &root_file, mappings, ptr->bin(),
+                            ptr->process(), ptr->mass(), ptr->name(), 1);
+            std::unique_ptr<TH1> h_u = ptr->ClonedShapeU();
+            h_u->Scale(procs_[p]->rate() * ptr->value_u());
+            WriteHistToFile(h_u.get(), &root_file, mappings, ptr->bin(),
+                            ptr->process(), ptr->mass(), ptr->name(), 2);
+            TH1::AddDirectory(add_dir);
             break;
-          }
-          if (sys_ptr->type() == "shape" || sys_ptr->type() == "shapeN2") {
-            if (sys_ptr->type() == "shape") seen_shape = true;
-            if (sys_ptr->type() == "shapeN2") seen_shapeN2 = true;
-            line[p+2] = (format("%g") % sys_ptr->scale()).str();
-            if (sys_ptr->shape_u() && sys_ptr->shape_d()) {
-              bool add_dir = TH1::AddDirectoryStatus();
-              TH1::AddDirectory(false);
-              std::unique_ptr<TH1> h_d = sys_ptr->ClonedShapeD();
-              h_d->Scale(procs_[p]->rate()*sys_ptr->value_d());
-              WriteHistToFile(h_d.get(), &root_file, mappings, sys_ptr->bin(),
-                              sys_ptr->process(), sys_ptr->mass(),
-                              sys_ptr->name(), 1);
-              std::unique_ptr<TH1> h_u = sys_ptr->ClonedShapeU();
-              h_u->Scale(procs_[p]->rate()*sys_ptr->value_u());
-              WriteHistToFile(h_u.get(), &root_file, mappings, sys_ptr->bin(),
-                              sys_ptr->process(), sys_ptr->mass(),
-                              sys_ptr->name(), 2);
-              TH1::AddDirectory(add_dir);
-              break;
-            } else if (sys_ptr->data_u() && sys_ptr->data_d()) {
-            } else {
-              if (!flags_.at("allow-missing-shapes")) {
-                std::stringstream err;
-                err << "Trying to write shape uncertainty with missing "
-                       "shapes:\n";
-                err << Systematic::PrintHeader << *sys_ptr;
-                throw std::runtime_error(FNERROR(err.str()));
-              }
+          } else if (ptr->data_u() && ptr->data_d()) {
+          } else {
+            if (!flags_.at("allow-missing-shapes")) {
+              std::stringstream err;
+              err << "Trying to write shape uncertainty with missing "
+                     "shapes:\n";
+              err << Systematic::PrintHeader << *ptr;
+              throw std::runtime_error(FNERROR(err.str()));
             }
           }
         }
@@ -765,17 +918,84 @@ void CombineHarvester::WriteDatacard(std::string const& name,
     } else {
       throw std::runtime_error(FNERROR("Systematic type could not be deduced"));
     }
-    txt_file << format(
-      "%-"+sys_str_short+"s %-7s ")
-      % line[0] % line[1];
+    txt_file << format("%-" + sys_str_short + "s %-7s ") % line[0] % line[1];
     for (unsigned p = 0; p < procs_.size(); ++p) {
-      txt_file << format("%-15s ") % line[p+2];
+      txt_file << format("%-15s ") % line[p + 2];
     }
     txt_file << "\n";
   }
   // write param line for any parameter which has a non-zero error
   // and which doesn't appear in list of nuisances
-
+  CombineHarvester ch_rp = this->cp().syst_type({"rateParam"});
+  // These are all the processes with a rateParam. We'll look at each one and
+  // see if every bin with this process also has this rateParam.
+  std::vector<std::vector<std::string> > floating_params;
+  for (auto const& sys : rateparam_set) {
+    FNLOGC(log(), verbosity_ > 1) << "Doing rateParam: " << sys << "\n";
+    auto procs_rp = ch_rp.cp().syst_name({sys}).SetFromSysts(
+        std::mem_fn(&ch::Systematic::process));
+    FNLOGC(log(), verbosity_ > 1) << "Procs for this rateParam: \n";
+    for (auto const& proc : procs_rp) {
+      FNLOGC(log(), verbosity_ > 1) << "  - " << proc << "\n";
+      // Get the set of bins
+      auto bins_rp = ch_rp.cp().process({proc}).syst_name({sys}).SetFromSysts(
+          std::mem_fn(&ch::Systematic::bin));
+      auto bins_all = this->cp().process({proc}).bin_set();
+      if (bins_rp.size() > 0 && bins_rp.size() == bins_all.size()) {
+        floating_params.push_back({sys, "*", proc});
+      } else {
+        for (auto const& bin : bins_rp) {
+          floating_params.push_back({sys, bin, proc});
+        }
+      }
+      FNLOGC(log(), verbosity_ > 1)
+          << bins_rp.size() << "/" << bins_all.size()
+          << " bins with this process have a rateParam\n";
+    }
+  }
+  for (auto const& rp : floating_params) {
+    if (params_.count(rp[0])) {
+      ch::Parameter const* par = params_.at(rp[0]).get();
+      txt_file << format("%-" + sys_str_short + "s %-10s %-10s %-10s %g") %
+                      rp[0] % "rateParam" % rp[1] % rp[2] % par->val();
+      // Check if we have to set the range too
+      // TODO: should package this into some function in ch::Parameter
+      if (par->range_d() != std::numeric_limits<double>::lowest() &&
+          par->range_u() != std::numeric_limits<double>::max()) {
+        txt_file << format(" [%.4g,%.4g]") % par->range_d() % par->range_u();
+      }
+      txt_file << "\n";
+    } else {
+      // If we don't have a ch::Parameter with this name, then we'll assume
+      // this is a function
+      RooWorkspace *rp_ws = wspaces_.at("_rateParams").get();
+      RooFormulaVar* form =
+          dynamic_cast<RooFormulaVar*>(rp_ws->function(rp[0].c_str()));
+      // Want to extract the formula string, apparently "printMetaArgs" is the
+      // only way to do it
+      std::stringstream ss;
+      form->printMetaArgs(ss);
+      std::string form_str = ss.str();
+      // The string will be like 'formula="blah"', strip everything on either
+      // side of the double quotes (including the quotes themselves)
+      std::size_t first = form_str.find_first_of('"');
+      std::size_t last = form_str.find_last_of('"');
+      form_str = form_str.substr(first + 1, last - first - 1);
+      // unique_ptr because we own the RooArgSet that is generated
+      unsigned npars =
+          std::unique_ptr<RooArgSet>(form->getParameters(RooArgList()))->getSize();
+      std::string args = "";
+      for (unsigned i = 0; i < npars; ++i) {
+        args += std::string(form->getParameter(i)->GetName());
+        if (i < (npars-1)) {
+          args += ",";
+        }
+      }
+      txt_file << format("%-" + sys_str_short +
+                         "s %-10s %-10s %-10s %-20s %s\n") %
+                      rp[0] % "rateParam" % rp[1] % rp[2] % form_str % args;
+    }
+  }
 
   std::set<std::string> ws_vars;
   for (auto iter : wspaces_) {
@@ -809,11 +1029,37 @@ void CombineHarvester::WriteDatacard(std::string const& name,
       txt_file << "\n";
     }
   }
+
+  // Finally write the NP groups
+  // We should only consider parameters are either:
+  // - in the list of pdf dependents
+  // - in the list of systematics
+  std::map<std::string, std::set<std::string>> groups;
+  for (auto const& par : params_) {
+    Parameter * p = par.second.get();
+    if (!all_dependents_pars.count(p->name()) && !sys_set.count(p->name())) {
+      continue;
+    }
+    for (auto const& str : p->groups()) {
+      if (!groups.count(str)) {
+        groups[str] = std::set<std::string>();
+      }
+      groups[str].insert(p->name());
+    }
+  }
+  for (auto const& gr : groups) {
+    txt_file << format("%s group =") % gr.first;
+    for (auto const& np : gr.second)  {
+      txt_file << " " << np;
+    }
+    txt_file << "\n";
+  }
+
   txt_file.close();
 }
 
 void CombineHarvester::WriteHistToFile(
-    TH1 const* hist,
+    TH1 * hist,
     TFile * file,
     std::vector<HistMapping> const& mappings,
     std::string const& bin,

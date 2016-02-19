@@ -2,14 +2,21 @@ import ROOT as R
 import math
 from array import array
 import re
+import json
 
 COL_STORE = []
+
+## @name Global Style
+##
+## @details Set the properties of the global gStyle object and create colours
+## and colour palettes
+##@{
 
 
 def SetTDRStyle():
     """Sets the PubComm recommended style
 
-    Just a copy of [](ghm.web.cern.ch/ghm/plots/MacroExample/tdrstyle.C)
+    Just a copy of <http://ghm.web.cern.ch/ghm/plots/MacroExample/tdrstyle.C>
     @sa ModTDRStyle() to use this style with some additional customisation.
     """
     # For the canvas:
@@ -236,7 +243,907 @@ def ModTDRStyle(width=600, height=600, t=0.06, b=0.12, l=0.16, r=0.04):
     R.gROOT.ForceStyle()
 
 
+def SetBirdPalette():
+    nRGBs = 9
+    stops = array(
+        'd', [0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000])
+    red = array(
+        'd', [0.2082, 0.0592, 0.0780, 0.0232, 0.1802, 0.5301, 0.8186, 0.9956, 0.9764])
+    green = array(
+        'd', [0.1664, 0.3599, 0.5041, 0.6419, 0.7178, 0.7492, 0.7328, 0.7862, 0.9832])
+    blue = array(
+        'd', [0.5293, 0.8684, 0.8385, 0.7914, 0.6425, 0.4662, 0.3499, 0.1968, 0.0539])
+    R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
+
+
+def CreateTransparentColor(color, alpha):
+    adapt = R.gROOT.GetColor(color)
+    new_idx = R.gROOT.GetListOfColors().GetLast() + 1
+    trans = R.TColor(
+        new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
+    COL_STORE.append(trans)
+    trans.SetName('userColor%i' % new_idx)
+    return new_idx
+
+
+def Set(obj, **kwargs):
+    for key, value in kwargs.iteritems():
+        if value is None:
+            getattr(obj, 'Set' + key)()
+        elif isinstance(value, (list, tuple)):
+            getattr(obj, 'Set' + key)(*value)
+        else:
+            getattr(obj, 'Set' + key)(value)
+
+##@}
+
+
+## @name TPad Layout
+##
+## @details Create TPads for pre-defined layouts, for example adding a smaller
+## lower TPad to contain ratios of objects in the main pad.
+##@{
+
+def OnePad():
+    pad = R.TPad('pad', 'pad', 0., 0., 1., 1.)
+    pad.Draw()
+    pad.cd()
+    result = [pad]
+    return result
+
+
+def TwoPadSplit(split_point, gap_low, gap_high):
+    upper = R.TPad('upper', 'upper', 0., 0., 1., 1.)
+    upper.SetBottomMargin(split_point + gap_high)
+    upper.SetFillStyle(4000)
+    upper.Draw()
+    lower = R.TPad('lower', 'lower', 0., 0., 1., 1.)
+    lower.SetTopMargin(1 - split_point + gap_low)
+    lower.SetFillStyle(4000)
+    lower.Draw()
+    upper.cd()
+    result = [upper, lower]
+    return result
+
+
+def TwoPadSplitColumns(split_point, gap_left, gap_right):
+    left = R.TPad('left', 'left', 0., 0., 1., 1.)
+    left.SetRightMargin(1 - split_point + gap_right)
+    left.SetFillStyle(4000)
+    left.Draw()
+    right = R.TPad('right', 'right', 0., 0., 1., 1.)
+    right.SetLeftMargin(split_point + gap_left)
+    right.SetFillStyle(4000)
+    right.Draw()
+    left.cd()
+    result = [left, right]
+    return result
+
+
+def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered,
+                               y_min, y_max):
+    if lower.GetXaxis().GetTitle() == '':
+        lower.GetXaxis().SetTitle(upper.GetXaxis().GetTitle())
+    upper.GetXaxis().SetTitle("")
+    upper.GetXaxis().SetLabelSize(0)
+    upper_h = 1. - pads[0].GetTopMargin() - pads[0].GetBottomMargin()
+    lower_h = 1. - pads[1].GetTopMargin() - pads[1].GetBottomMargin()
+    lower.GetYaxis().SetTickLength(R.gStyle.GetTickLength() * upper_h / lower_h)
+    pads[1].SetTickx(1)
+    pads[1].SetTicky(1)
+    lower.GetYaxis().SetTitle(y_title)
+    lower.GetYaxis().CenterTitle(y_centered)
+    if y_max > y_min:
+        lower.SetMinimum(y_min)
+        lower.SetMaximum(y_max)
+
+##@}
+
+
+## @name Axis histograms
+#
+#  @details By default the first TH1 or TGraph drawn on a pad takes control of
+#      the x- and y-axis settings. A better way is to create dedicated "axis"
+#      TH1s that can be drawn first, one per pad, which will then control all
+#      the axis properties.
+##@{
+
+def CreateAxisHist(src, at_limits=True):
+    backup = R.gPad
+    tmp = R.TCanvas()
+    tmp.cd()
+    src.Draw('AP')
+    result = src.GetHistogram().Clone('tmp')
+    if (at_limits):
+        min = 0.
+        max = 0.
+        x = R.Double(0.)
+        y = R.Double(0.)
+        src.GetPoint(0, x, y)
+        min = float(x)
+        max = float(x)
+        for i in range(1, src.GetN()):
+            src.GetPoint(i, x, y)
+            if x < min:
+                min = float(x)
+            if x > max:
+                max = float(x)
+        result.GetXaxis().SetLimits(min, max)
+    R.gPad = backup
+    return result
+
+
+def CreateAxisHists(n, src, at_limits):
+    res = []
+    h = CreateAxisHist(src, at_limits)
+    for i in xrange(n):
+        res.append(h.Clone('tmp%i'%i))
+    return res
+
+
+def GetAxisHist(pad):
+    pad_obs = pad.GetListOfPrimitives()
+    if pad_obs is None:
+        return None
+    obj = None
+    for obj in pad_obs:
+        if obj.InheritsFrom(R.TH1.Class()):
+            return obj
+        if obj.InheritsFrom(R.TMultiGraph.Class()):
+            return obj.GetHistogram()
+        if obj.InheritsFrom(R.TGraph.Class()):
+            return obj.GetHistogram()
+        if obj.InheritsFrom(R.THStack.Class()):
+            return obj.GetHistogram()
+    return None
+
+##@}
+
+
+## @name TFile functions
+#
+#  @details A collection of functions for working with TFiles.
+##@{
+
+def TFileIsGood(filename):
+    """Performs a series of tests on a TFile to ensure that it can be opened
+    without errors
+    
+    Args:
+        filename: `str` The name of the TFile to check
+    
+    Returns:
+        `bool` True if the file can opened, is not a zombie, and if ROOT did
+        not need to try and recover the contents
+    """
+    fin = R.TFile(filename)
+    if not fin:
+        return False
+    if fin and not fin.IsOpen():
+        return False
+    elif fin and fin.IsOpen() and fin.IsZombie():
+        fin.Close()
+        return False
+    elif fin and fin.IsOpen() and fin.TestBit(R.TFile.kRecovered):
+        fin.Close()
+        # don't consider a recovered file to be OK
+        return False
+    else:
+        fin.Close()
+        return True
+
+
+def MakeTChain(files, tree):
+    chain = R.TChain(tree)
+    for f in files:
+        chain.Add(f)
+    return chain
+
+
+def Get(file, obj):
+    R.TH1.AddDirectory(False)
+    f_in = R.TFile(file)
+    res = R.gDirectory.Get(obj)
+    f_in.Close()
+    return res
+
+
+def ParamFromFilename(filename, param):
+    if len(re.findall(param + '\.\d+\.\d+', filename)):
+        num1 = re.findall(
+            param + '\.\d+\.\d+', filename)[0].replace(param + '.', '')
+        return float(num1)
+    elif len(re.findall(param + '\.\d+', filename)):
+        num1 = re.findall(param + '\.\d+', filename)[0].replace(param + '.', '')
+        return int(num1)
+    else:
+        print "Error: parameter " + param + " not found in filename"
+
+
+##@}
+
+
+## @name Object creation
+#
+#  @details These functions take existing objects (TH1s, TGraphs, TTrees, etc)
+#  and build new objects
+##@{
+
+def TGraphFromTree(tree, xvar, yvar, selection):
+    tree.Draw(xvar + ':' + yvar, selection, 'goff')
+    gr = R.TGraph(tree.GetSelectedRows(), tree.GetV1(), tree.GetV2())
+    return gr
+
+
+def TGraph2DFromTree(tree, xvar,  yvar, zvar, selection):
+    tree.Draw(xvar + ':' + yvar + ':' + zvar, selection, 'goff')
+    gr = R.TGraph2D(
+        tree.GetSelectedRows(), tree.GetV1(), tree.GetV2(), tree.GetV3())
+    return gr
+
+
+def RocCurveFrom1DHists(h_x, h_y, cut_is_greater_than):
+    backup = R.TH1.AddDirectoryStatus()
+    R.TH1.AddDirectory(False)
+    x_den = h_x.Clone()
+    x_num = h_x.Clone()
+    x_err = R.Double(0.)
+    x_int = h_x.IntegralAndError(0, h_x.GetNbinsX() + 1, x_err)
+    for i in range(1, h_x.GetNbinsX() + 1):
+        x_part_err = R.Double(0.)
+        x_part_int = h_x.IntegralAndError(i, h_x.GetNbinsX(
+        ) + 1, x_part_err) if cut_is_greater_than else h_x.IntegralAndError(0, i, x_part_err)
+        x_den.SetBinContent(i, x_int)
+        x_den.SetBinError(i, x_err)
+        x_num.SetBinContent(i, x_part_int)
+        x_num.SetBinError(i, x_part_err)
+    y_den = h_y.Clone()
+    y_num = h_y.Clone()
+    y_err = R.Double(0.)
+    y_int = h_y.IntegralAndError(0, h_y.GetNbinsX() + 1, y_err)
+    for i in range(1, h_y.GetNbinsX() + 1):
+        y_part_err = R.Double(0.)
+        y_part_int = h_y.IntegralAndError(i, h_y.GetNbinsX(
+        ) + 1, y_part_err) if cut_is_greater_than else h_y.IntegralAndError(0, i, y_part_err)
+        y_den.SetBinContent(i, y_int)
+        y_den.SetBinError(i, y_err)
+        y_num.SetBinContent(i, y_part_int)
+        y_num.SetBinError(i, y_part_err)
+    # x_den.Print('all')
+    # x_num.Print('all')
+    # y_den.Print('all')
+    # y_num.Print('all')
+    x_gr = R.TGraphAsymmErrors(x_num, x_den)
+    y_gr = R.TGraphAsymmErrors(y_num, y_den)
+
+    res = y_gr.Clone()
+    for i in range(0, res.GetN()):
+        res.GetX()[i] = x_gr.GetY()[i]
+        res.GetEXlow()[i] = x_gr.GetEYlow()[i]
+        res.GetEXhigh()[i] = x_gr.GetEYhigh()[i]
+    res.Sort()
+    R.TH1.AddDirectory(backup)
+    return res
+
+
+def TH2FromTGraph2D(graph, method='BinEdgeAligned',
+                    force_x_width=None,
+                    force_y_width=None):
+    """Build an empty TH2 from the set of points in a TGraph2D
+
+    There is no unique way to define a TH2 binning given an arbitrary
+    TGraph2D, therefore this function supports multiple named methods:
+
+     - `BinEdgeAligned` simply takes the sets of x- and y- values in the
+       TGraph2D and uses these as the bin edge arrays in the TH2. The
+       implication of this is that when filling the bin contents interpolation
+       will be required when evaluating the TGraph2D at the bin centres.
+     - `BinCenterAligned` will try to have the TGraph2D points at the bin
+       centers, but this will only work completely correctly when the input
+       point spacing is regular. The algorithm first identifies the bin width
+       as the smallest interval between points on each axis. The start
+       position of the TH2 axis is then defined as the lowest value in the
+       TGraph2D minus half this width, and the axis continues with regular
+       bins until the graph maximum is passed.
+
+    Args:
+        graph (TGraph2D): Should have at least two unique x and y values,
+            otherwise we can't define any bins
+        method (str): The binning algorithm to use
+        force_x_width (bool): Override the derived x-axis bin width in the
+            CenterAligned method
+        force_y_width (bool): Override the derived y-axis bin width in the
+            CenterAligned method
+
+    Raises:
+        RuntimeError: If the method name is not recognised
+
+    Returns:
+        TH2F: The exact binning of the TH2F depends on the chosen method
+    """
+    x_vals = set()
+    y_vals = set()
+
+    for i in xrange(graph.GetN()):
+        x_vals.add(graph.GetX()[i])
+        y_vals.add(graph.GetY()[i])
+
+    x_vals = sorted(x_vals)
+    y_vals = sorted(y_vals)
+    if method == 'BinEdgeAligned':
+        h_proto = R.TH2F('prototype', '',
+                         len(x_vals) - 1, array('d', x_vals),
+                         len(y_vals) - 1, array('d', y_vals))
+    elif method == 'BinCenterAligned':
+        x_widths = []
+        y_widths = []
+        for i in xrange(1, len(x_vals)):
+            x_widths.append(x_vals[i] - x_vals[i - 1])
+        for i in xrange(1, len(y_vals)):
+            y_widths.append(y_vals[i] - y_vals[i - 1])
+        x_min = min(x_widths) if force_x_width is None else force_x_width
+        y_min = min(y_widths) if force_y_width is None else force_y_width
+        x_bins = int(((x_vals[-1] - (x_vals[0] - 0.5 * x_min)) / x_min) + 0.5)
+        y_bins = int(((y_vals[-1] - (y_vals[0] - 0.5 * y_min)) / y_min) + 0.5)
+        print '[TH2FromTGraph2D] x-axis binning: (%i, %g, %g)' % (x_bins, x_vals[0] - 0.5 * x_min, x_vals[0] - 0.5 * x_min + x_bins * x_min)
+        print '[TH2FromTGraph2D] y-axis binning: (%i, %g, %g)' % (y_bins, y_vals[0] - 0.5 * y_min, y_vals[0] - 0.5 * y_min + y_bins * y_min)
+        # Use a number slightly smaller than 0.49999 because the TGraph2D interpolation
+        # is fussy about evaluating on the boundary
+        h_proto = R.TH2F('prototype', '',
+                         x_bins, x_vals[
+                             0] - 0.49999 * x_min, x_vals[0] - 0.50001 * x_min + x_bins * x_min,
+                         y_bins, y_vals[0] - 0.49999 * y_min, y_vals[0] - 0.50001 * y_min + y_bins * y_min)
+    else:
+        raise RuntimeError(
+            '[TH2FromTGraph2D] Method %s not supported' % method)
+    h_proto.SetDirectory(0)
+    return h_proto
+
+
+def MakeErrorBand(LowerGraph, UpperGraph):
+    errorBand = R.TGraphAsymmErrors()
+    lower_list = []
+    upper_list = []
+    for i in range(LowerGraph.GetN()):
+        lower_list.append(
+            (float(LowerGraph.GetX()[i]),  float(LowerGraph.GetY()[i])))
+        upper_list.append(
+            (float(UpperGraph.GetX()[i]),  float(UpperGraph.GetY()[i])))
+    lower_list = sorted(set(lower_list))
+    upper_list = sorted(set(upper_list))
+    for i in range(LowerGraph.GetN()):
+        errorBand.SetPoint(i, lower_list[i][0], lower_list[i][1])
+        errorBand.SetPointEYlow(i, lower_list[i][1] - lower_list[i][1])
+        errorBand.SetPointEYhigh(i, upper_list[i][1] - lower_list[i][1])
+    return errorBand
+
+
+def LimitTGraphFromJSON(js, label):
+    xvals = []
+    yvals = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][label])
+    graph = R.TGraph(len(xvals), array('d', xvals), array('d', yvals))
+    graph.Sort()
+    return graph
+
+
+def LimitTGraphFromJSONFile(jsfile, label):
+    with open(jsfile) as jsonfile:
+        js = json.load(jsonfile)
+    return LimitTGraphFromJSON(js, label)
+
+
+def LimitBandTGraphFromJSON(js, central, lo, hi):
+    xvals = []
+    yvals = []
+    yvals_lo = []
+    yvals_hi = []
+    for key in js:
+        xvals.append(float(key))
+        yvals.append(js[key][central])
+        yvals_lo.append(js[key][central] - js[key][lo])
+        yvals_hi.append(js[key][hi] - js[key][central])
+    graph = R.TGraphAsymmErrors(len(xvals), array('d', xvals), array('d', yvals), array(
+        'd', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
+    graph.Sort()
+    return graph
+
+
+def StandardLimitsFromJSONFile(json_file, draw=['obs', 'exp0', 'exp1', 'exp2']):
+    graphs = {}
+    data = {}
+    with open(json_file) as jsonfile:
+        data = json.load(jsonfile)
+    if 'obs' in draw:
+        graphs['obs'] = LimitTGraphFromJSON(data, 'obs')
+    if 'exp0' in draw or 'exp' in draw:
+        graphs['exp0'] = LimitTGraphFromJSON(data, 'exp0')
+    if 'exp1' in draw or 'exp' in draw:
+        graphs['exp1'] = LimitBandTGraphFromJSON(data, 'exp0', 'exp-1', 'exp+1')
+    if 'exp2' in draw or 'exp' in draw:
+        graphs['exp2'] = LimitBandTGraphFromJSON(data, 'exp0', 'exp-2', 'exp+2')
+    return graphs
+
+
+def bestFit(tree, x, y, cut):
+    nfind = tree.Draw(y + ":" + x, cut + "deltaNLL == 0")
+    gr0 = R.TGraph(1)
+    if (nfind == 0):
+        gr0.SetPoint(0, -999, -999)
+    else:
+        grc = R.gROOT.FindObject("Graph").Clone()
+        if (grc.GetN() > 1):
+            grc.Set(1)
+        gr0.SetPoint(0, grc.GetXmax(), grc.GetYmax())
+    gr0.SetMarkerStyle(34)
+    gr0.SetMarkerSize(2.0)
+    return gr0
+
+
+def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
+    t.Draw("2*deltaNLL:%s:%s>>%s_prof(%d,%10g,%10g,%d,%10g,%10g)" %
+           (y, x, name, xbins, xmin, xmax, ybins, ymin, ymax), cut + "deltaNLL != 0", "PROF")
+    prof = R.gROOT.FindObject(name + "_prof")
+    h2d = R.TH2D(name, name, xbins, xmin, xmax, ybins, ymin, ymax)
+    for ix in xrange(1, xbins + 1):
+        for iy in xrange(1, ybins + 1):
+            z = prof.GetBinContent(ix, iy)
+            if (z != z) or (z > 4294967295):  # protect against NANs
+                z = 0
+            h2d.SetBinContent(ix, iy, z)
+    h2d.GetXaxis().SetTitle(x)
+    h2d.GetYaxis().SetTitle(y)
+    h2d.SetDirectory(0)
+    h2d = NewInterpolate(h2d)
+    return h2d
+
+
+def makeHist1D(name, xbins, graph):
+    len_x = graph.GetX()[graph.GetN() - 1] - graph.GetX()[0]
+    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
+    hist = R.TH1F(
+        name, '', xbins, graph.GetX()[0], graph.GetX()[graph.GetN() - 1] + binw_x)
+    return hist
+
+
+def makeHist2D(name, xbins, ybins, graph2d):
+    len_x = graph2d.GetXmax() - graph2d.GetXmin()
+    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
+    len_y = graph2d.GetYmax() - graph2d.GetYmin()
+    binw_y = (len_y * 0.5 / (float(ybins) - 1.)) - 1E-5
+    hist = R.TH2F(name, '', xbins, graph2d.GetXmin() - binw_x, graph2d.GetXmax() +
+                  binw_x, ybins, graph2d.GetYmin() - binw_y, graph2d.GetYmax() + binw_y)
+    return hist
+
+
+def makeVarBinHist2D(name, xbins, ybins):
+    # create new arrays in which bin low edge is adjusted to make measured
+    # points at the bin centres
+    xbins_new = [None] * (len(xbins) + 1)
+    for i in xrange(len(xbins) - 1):
+        if i == 0 or i == 1:
+            xbins_new[i] = xbins[i] - ((xbins[i + 1] - xbins[i]) / 2) + 1E-5
+        else:
+            xbins_new[i] = xbins[i] - ((xbins[i + 1] - xbins[i]) / 2)
+    xbins_new[len(xbins) - 1] = xbins[len(xbins) - 2] + \
+        ((xbins[len(xbins) - 2] - xbins[len(xbins) - 3]) / 2)
+    xbins_new[len(xbins)] = xbins[len(xbins) - 1] + \
+        ((xbins[len(xbins) - 1] - xbins[len(xbins) - 2]) / 2) - 1E-5
+
+    ybins_new = [None] * (len(ybins) + 1)
+    for i in xrange(len(ybins) - 1):
+        if i == 0 or i == 1:
+            ybins_new[i] = ybins[i] - ((ybins[i + 1] - ybins[i]) / 2) + 1E-5
+        else:
+            ybins_new[i] = ybins[i] - ((ybins[i + 1] - ybins[i]) / 2)
+    ybins_new[len(ybins) - 1] = ybins[len(ybins) - 2] + \
+        ((ybins[len(ybins) - 2] - ybins[len(ybins) - 3]) / 2)
+    ybins_new[len(ybins)] = ybins[len(ybins) - 1] + \
+        ((ybins[len(ybins) - 1] - ybins[len(ybins) - 2]) / 2) - 1E-5
+    hist = R.TH2F(name, '', len(
+        xbins_new) - 1, array('d', xbins_new), len(ybins_new) - 1, array('d', ybins_new))
+    return hist
+
+
+def GraphDifference(graph1,graph2,relative):
+    xvals =[]
+    yvals =[]
+    if graph1.GetN() != graph2.GetN():
+        return graph1
+    for i in range(graph1.GetN()):
+        xvals.append(graph1.GetX()[i])
+        if relative :
+            yvals.append(2*abs(graph1.GetY()[i]-graph2.GetY()[i])/(graph1.GetY()[i]+graph2.GetY()[i]))
+        else: 
+            yvals.append(2*(graph1.GetY()[i]-graph2.GetY()[i])/(graph1.GetY()[i]+graph2.GetY()[i]))
+    diff_graph = R.TGraph(len(xvals),array('d',xvals),array('d',yvals))
+    diff_graph.Sort()
+    return diff_graph
+
+
+def GraphDivide(num, den):
+    res = num.Clone()
+    for i in xrange(num.GetN()):
+        res.GetY()[i] = res.GetY()[i]/den.Eval(res.GetX()[i])
+    if type(res) is R.TGraphAsymmErrors:
+        for i in xrange(num.GetN()):
+            res.GetEYhigh()[i] = res.GetEYhigh()[i]/den.Eval(res.GetX()[i])
+            res.GetEYlow()[i] = res.GetEYlow()[i]/den.Eval(res.GetX()[i])
+
+    return res
+##@}
+
+
+## @name Graph manipulation
+#
+#  @details These functions are mostly used to modify TGraphs
+#  corresponding to likelihood scans.
+##@{
+def RemoveGraphXDuplicates(graph):
+    for i in xrange(graph.GetN() - 1):
+        if graph.GetX()[i + 1] == graph.GetX()[i]:
+            # print 'Removing duplicate point (%f, %f)' % (graph.GetX()[i+1],
+            # graph.GetY()[i+1])
+            graph.RemovePoint(i + 1)
+            RemoveGraphXDuplicates(graph)
+            break
+
+
+def ApplyGraphYOffset(graph, y_off):
+    for i in xrange(graph.GetN() - 1):
+        graph.GetY()[i] = graph.GetY()[i] + y_off
+
+
+def RemoveGraphYAll(graph, val):
+    for i in xrange(graph.GetN()):
+        if graph.GetY()[i] == val:
+            print 'Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
+            graph.RemovePoint(i)
+            RemoveGraphYAll(graph, val)
+            break
+
+
+def RemoveSmallDelta(graph, val):
+    for i in xrange(graph.GetN()):
+        diff = abs(graph.GetY()[i])
+        if diff < val:
+            print '[RemoveSmallDelta] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
+            graph.RemovePoint(i)
+            RemoveSmallDelta(graph, val)
+            break
+
+
+def RemoveGraphYAbove(graph, val):
+    for i in xrange(graph.GetN()):
+        if graph.GetY()[i] > val:
+            # print 'Removing point (%f, %f)' % (graph.GetX()[i],
+            # graph.GetY()[i])
+            graph.RemovePoint(i)
+            RemoveGraphYAbove(graph, val)
+            break
+
+
+def ImproveMinimum(graph, func, doIt=False):
+    fit_x = 0.
+    fit_y = 999.
+    fit_i = 0
+    for i in xrange(graph.GetN()):
+        if graph.GetY()[i] < fit_y:
+            fit_i = i
+            fit_x = graph.GetX()[i]
+            fit_y = graph.GetY()[i]
+    if fit_i == 0 or fit_i == (graph.GetN() - 1):
+        if doIt:
+            min_x = graph.GetX()[fit_i]
+            min_y = graph.GetY()[fit_i]
+            for i in xrange(graph.GetN()):
+                before = graph.GetY()[i]
+                graph.GetY()[i] -= min_y
+                after = graph.GetY()[i]
+                print 'Point %i, before=%f, after=%f' % (i, before, after)
+        return (fit_x, fit_y)
+    search_min = fit_i - 2 if fit_i >= 2 else fit_i - 1
+    search_max = fit_i + 2 if fit_i + 2 < graph.GetN() else fit_i + 1
+    min_x = func.GetMinimumX(graph.GetX()[search_min], graph.GetX()[search_max])
+    min_y = func.Eval(min_x)
+    print '[ImproveMinimum] Fit minimum was (%f, %f)' % (fit_x, fit_y)
+    print '[ImproveMinimum] Better minimum was (%f, %f)' % (min_x, min_y)
+    if doIt:
+        for i in xrange(graph.GetN()):
+            before = graph.GetY()[i]
+            graph.GetY()[i] -= min_y
+            after = graph.GetY()[i]
+            print 'Point %i, before=%f, after=%f' % (i, before, after)
+        graph.Set(graph.GetN() + 1)
+        graph.SetPoint(graph.GetN() - 1, min_x, 0)
+        graph.Sort()
+    return (min_x, min_y)
+
+
+def FindCrossingsWithSpline(graph, func, yval):
+    crossings = []
+    intervals = []
+    current = None
+    for i in xrange(graph.GetN() - 1):
+        if (graph.GetY()[i] - yval) * (graph.GetY()[i + 1] - yval) < 0.:
+            cross = func.GetX(yval, graph.GetX()[i], graph.GetX()[i + 1])
+            if (graph.GetY()[i] - yval) > 0. and current is None:
+                current = {
+                    'lo': cross,
+                    'hi': graph.GetX()[graph.GetN() - 1],
+                    'valid_lo': True,
+                    'valid_hi': False
+                }
+            if (graph.GetY()[i] - yval) < 0. and current is None:
+                current = {
+                    'lo': graph.GetX()[0],
+                    'hi': cross,
+                    'valid_lo': False,
+                    'valid_hi': True
+                }
+                intervals.append(current)
+                current = None
+            if (graph.GetY()[i] - yval) < 0. and current is not None:
+                current['hi'] = cross
+                current['valid_hi'] = True
+                intervals.append(current)
+                current = None
+            # print 'Crossing between: (%f, %f) -> (%f, %f) at %f' %
+            # (graph.GetX()[i], graph.GetY()[i], graph.GetX()[i+1],
+            # graph.GetY()[i+1], cross)
+            crossings.append(cross)
+    if current is not None:
+        intervals.append(current)
+    if len(intervals) == 0:
+        current = {
+            'lo': graph.GetX()[0],
+            'hi': graph.GetX()[graph.GetN() - 1],
+            'valid_lo': False,
+            'valid_hi': False
+        }
+        intervals.append(current)
+    print intervals
+    return intervals
+    # return crossings
+
+
+def ReZeroTGraph(gr, doIt=False):
+    fit_x = 0.
+    fit_y = 0.
+    for i in xrange(gr.GetN()):
+        if gr.GetY()[i] == 0.:
+            fit_x = gr.GetX()[i]
+            fit_y = gr.GetY()[i]
+            break
+    min_x = 0.
+    min_y = 0.
+    for i in xrange(gr.GetN()):
+        if gr.GetY()[i] < min_y:
+            min_y = gr.GetY()[i]
+            min_x = gr.GetX()[i]
+    if min_y < fit_y:
+        print '[ReZeroTGraph] Fit minimum was (%f, %f)' % (fit_x, fit_y)
+        print '[ReZeroTGraph] Better minimum was (%f, %f)' % (min_x, min_y)
+        if doIt:
+            for i in xrange(gr.GetN()):
+                before = gr.GetY()[i]
+                gr.GetY()[i] -= min_y
+                after = gr.GetY()[i]
+                print 'Point %i, before=%f, after=%f' % (i, before, after)
+    return min_y
+
+
+def RemoveNearMin(graph, val, spacing=None):
+    # assume graph is sorted:
+    n = graph.GetN()
+    if n < 5:
+        return
+    if spacing is None:
+        spacing = (graph.GetX()[n - 1] - graph.GetX()[0]) / float(n - 2)
+        # print '[RemoveNearMin] Graph has spacing of %.3f' % spacing
+    for i in xrange(graph.GetN()):
+        if graph.GetY()[i] == 0.:
+            bf = graph.GetX()[i]
+            bf_i = i
+            # print '[RemoveNearMin] Found best-fit at %.3f' % bf
+            break
+    for i in xrange(graph.GetN()):
+        if i == bf_i:
+            continue
+        if abs(graph.GetX()[i] - bf) < (val * spacing):
+            print '[RemoveNearMin] Removing point (%f, %f) close to minimum at %f' % (graph.GetX()[i], graph.GetY()[i], bf)
+            graph.RemovePoint(i)
+            RemoveNearMin(graph, val, spacing)
+            break
+
+
+def SortGraph(Graph):
+    sortedGraph = R.TGraph()
+    graph_list = []
+    for i in range(Graph.GetN()):
+        graph_list.append((float(Graph.GetX()[i]),  float(Graph.GetY()[i])))
+    graph_list = sorted(set(graph_list))
+    for i in range(Graph.GetN()):
+        sortedGraph.SetPoint(i, graph_list[i][0], graph_list[i][1])
+    return sortedGraph
+
+
+##@}
+
+
+## @name TPad adjustments
+#
+#  @details These functions are mostly concerned with adjusting the axis
+#  ranges to make sure objects are not being drawn outside the range of
+#  the pad or underneath other objects, e.g. the legend.
+##@{
+def FixTopRange(pad, fix_y, fraction):
+    hobj = GetAxisHist(pad)
+    ymin = hobj.GetMinimum()
+    hobj.SetMaximum((fix_y - fraction * ymin) / (1. - fraction))
+    if R.gPad.GetLogy():
+        if ymin == 0.:
+            print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
+            return
+        maxval = (math.log10(fix_y) - fraction * math.log10(ymin)) / \
+            (1 - fraction)
+        maxval = math.pow(10, maxval)
+        hobj.SetMaximum(maxval)
+
+
+def FixBothRanges(pad, fix_y_lo, frac_lo, fix_y_hi, frac_hi):
+    """Adjusts y-axis range such that a lower and a higher value are located a
+    fixed fraction of the frame height away from a new minimum and maximum
+    respectively.
+
+    This function is useful in conjunction with GetPadYMax which returns the
+    maximum or minimum y value of all histograms and graphs drawn on the pad.
+
+    In the example below, the minimum and maximum values found via this function
+    are used as the `fix_y_lo` and `fix_y_hi` arguments, and the spacing fractions
+    as 0.15 and 0.30 respectively.
+
+    @code
+    FixBothRanges(pad, GetPadYMin(pad), 0.15, GetPadYMax(pad), 0.30)
+    @endcode
+
+    ![](figures/FixBothRanges.png)
+    
+    Args:
+        pad (TPad): A TPad on which histograms and graphs have already been drawn
+        fix_y_lo (float): The y value which will end up a fraction `frac_lo` above
+                          the new axis minimum.
+        frac_lo (float): A fraction of the y-axis height
+        fix_y_hi (float): The y value which will end up a fraction `frac_hi` below
+                         from the new axis maximum.
+        frac_hi (float): A fraction of the y-axis height
+    """
+    hobj = GetAxisHist(pad)
+    ymin = fix_y_lo
+    ymax = fix_y_hi
+    if R.gPad.GetLogy():
+        if ymin == 0.:
+            print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
+            return
+        ymin = math.log10(ymin)
+        ymax = math.log10(ymax)
+    fl = frac_lo
+    fh = frac_hi
+
+    ymaxn = (
+        (1. / (1. - (fh*fl/((1.-fl)*(1.-fh))))) *
+        (1. / (1. - fh)) *
+        (ymax - fh*ymin)
+        )
+    yminn = (ymin - fl*ymaxn) / (1. - fl)
+    if R.gPad.GetLogy():
+        yminn = math.pow(10, yminn)
+        ymaxn = math.pow(10, ymaxn)
+    hobj.SetMinimum(yminn)
+    hobj.SetMaximum(ymaxn)
+
+
+def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
+    pad_obs = pad.GetListOfPrimitives()
+    if pad_obs is None:
+        return 0.
+    h_max = -99999.
+    h_min = +99999.
+    for obj in pad_obs:
+        if obj.InheritsFrom(R.TH1.Class()):
+            hobj = obj
+            for j in xrange(1, hobj.GetNbinsX()):
+                if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
+                        hobj.GetBinLowEdge(j) > x_max):
+                        continue
+                if (hobj.GetBinContent(j) + hobj.GetBinError(j) > h_max):
+                    h_max = hobj.GetBinContent(j) + hobj.GetBinError(j)
+                if (hobj.GetBinContent(j) - hobj.GetBinError(j) < h_min) and not do_min:
+                    # If we're looking for the minimum don't count TH1s
+                    # because we probably only care about graphs
+                    h_min = hobj.GetBinContent(j) - hobj.GetBinError(j)
+        elif obj.InheritsFrom(R.TGraphAsymmErrors.Class()):
+            gobj = obj
+            n = gobj.GetN()
+            for k in xrange(0, n):
+                x = gobj.GetX()[k]
+                y = gobj.GetY()[k]
+                if x < x_min or x > x_max:
+                    continue
+                if (y + gobj.GetEYhigh()[k]) > h_max:
+                    h_max = y + gobj.GetEYhigh()[k]
+                if (y - gobj.GetEYlow()[k]) < h_min:
+                    h_min = y - gobj.GetEYlow()[k]
+        elif obj.InheritsFrom(R.TGraphErrors.Class()):
+            gobj = obj
+            n = gobj.GetN()
+            for k in xrange(0, n):
+                x = gobj.GetX()[k]
+                y = gobj.GetY()[k]
+                if x < x_min or x > x_max:
+                    continue
+                if (y + gobj.GetEY()[k]) > h_max:
+                    h_max = y + gobj.GetEY()[k]
+                if (y - gobj.GetEY()[k]) < h_min:
+                    h_min = y - gobj.GetEY()[k]
+        elif obj.InheritsFrom(R.TGraph.Class()):
+            gobj = obj
+            n = gobj.GetN()
+            for k in xrange(0, n):
+                x = gobj.GetX()[k]
+                y = gobj.GetY()[k]
+                if x < x_min or x > x_max:
+                    continue
+                if y > h_max:
+                    h_max = y
+                if y < h_min:
+                    h_min = y
+    return h_max if do_min is False else h_min
+
+
+def GetPadYMax(pad, do_min=False):
+    pad_obs = pad.GetListOfPrimitives()
+    if pad_obs is None:
+        return 0.
+    xmin = GetAxisHist(pad).GetXaxis().GetXmin()
+    xmax = GetAxisHist(pad).GetXaxis().GetXmax()
+    return GetPadYMaxInRange(pad, xmin, xmax, do_min)
+
+
+def GetPadYMin(pad):
+    return GetPadYMax(pad, True)
+
+
+def FixOverlay():
+    R.gPad.GetFrame().Draw()
+    R.gPad.RedrawAxis()
+
+##@}
+
+## @name Decoration
+#
+#  @details Functions for drawing legends, logos, title, lines and boxes
+##@{
+
 def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, extraText2='', cmsTextSize=0.8):
+    """Blah
+    
+    Args:
+        pad (TYPE): Description
+        cmsText (TYPE): Description
+        extraText (TYPE): Description
+        iPosX (TYPE): Description
+        relPosX (TYPE): Description
+        relPosY (TYPE): Description
+        relExtraDY (TYPE): Description
+        extraText2 (str): Description
+        cmsTextSize (float): Description
+    
+    Returns:
+        TYPE: Description
+    """
     pad.cd()
     cmsTextFont = 62  # default is helvetic-bold
 
@@ -353,375 +1260,18 @@ def PositionedLegend(width, height, pos, offset):
         return R.TLegend(1 - r - o - w, b + o, 1 - r - o, b + o + h, '', 'NBNDC')
 
 
-def Get(file, obj):
-    R.TH1.AddDirectory(False)
-    f_in = R.TFile(file)
-    res = R.gDirectory.Get(obj)
-    f_in.Close()
-    return res
-
-
-def RocCurveFrom1DHists(h_x, h_y, cut_is_greater_than):
-    backup = R.TH1.AddDirectoryStatus()
-    R.TH1.AddDirectory(False)
-    x_den = h_x.Clone()
-    x_num = h_x.Clone()
-    x_err = R.Double(0.)
-    x_int = h_x.IntegralAndError(0, h_x.GetNbinsX() + 1, x_err)
-    for i in range(1, h_x.GetNbinsX() + 1):
-        x_part_err = R.Double(0.)
-        x_part_int = h_x.IntegralAndError(i, h_x.GetNbinsX(
-        ) + 1, x_part_err) if cut_is_greater_than else h_x.IntegralAndError(0, i, x_part_err)
-        x_den.SetBinContent(i, x_int)
-        x_den.SetBinError(i, x_err)
-        x_num.SetBinContent(i, x_part_int)
-        x_num.SetBinError(i, x_part_err)
-    y_den = h_y.Clone()
-    y_num = h_y.Clone()
-    y_err = R.Double(0.)
-    y_int = h_y.IntegralAndError(0, h_y.GetNbinsX() + 1, y_err)
-    for i in range(1, h_y.GetNbinsX() + 1):
-        y_part_err = R.Double(0.)
-        y_part_int = h_y.IntegralAndError(i, h_y.GetNbinsX(
-        ) + 1, y_part_err) if cut_is_greater_than else h_y.IntegralAndError(0, i, y_part_err)
-        y_den.SetBinContent(i, y_int)
-        y_den.SetBinError(i, y_err)
-        y_num.SetBinContent(i, y_part_int)
-        y_num.SetBinError(i, y_part_err)
-    # x_den.Print('all')
-    # x_num.Print('all')
-    # y_den.Print('all')
-    # y_num.Print('all')
-    x_gr = R.TGraphAsymmErrors(x_num, x_den)
-    y_gr = R.TGraphAsymmErrors(y_num, y_den)
-
-    res = y_gr.Clone()
-    for i in range(0, res.GetN()):
-        res.GetX()[i] = x_gr.GetY()[i]
-        res.GetEXlow()[i] = x_gr.GetEYlow()[i]
-        res.GetEXhigh()[i] = x_gr.GetEYhigh()[i]
-    res.Sort()
-    R.TH1.AddDirectory(backup)
-    return res
-
-
-def CreateAxisHist(src, at_limits):
-    backup = R.gPad
-    tmp = R.TCanvas()
-    tmp.cd()
-    src.Draw('AP')
-    result = src.GetHistogram().Clone()
-    if (at_limits):
-        min = 0.
-        max = 0.
-        x = R.Double(0.)
-        y = R.Double(0.)
-        src.GetPoint(0, x, y)
-        min = float(x)
-        max = float(x)
-        for i in range(1, src.GetN()):
-            src.GetPoint(i, x, y)
-            if x < min:
-                min = float(x)
-            if x > max:
-                max = float(x)
-        result.GetXaxis().SetLimits(min, max)
-    R.gPad = backup
-    return result
-
-
-def CreateTransparentColor(color, alpha):
-    adapt = R.gROOT.GetColor(color)
-    new_idx = R.gROOT.GetListOfColors().GetLast() + 1
-    trans = R.TColor(
-        new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
-    COL_STORE.append(trans)
-    trans.SetName('userColor%i' % new_idx)
-    return new_idx
-
-
-def TFileIsGood(filename):
-    fin = R.TFile(filename)
-    if not fin:
-        return False
-    if fin and not fin.IsOpen():
-        return False
-    elif fin and fin.IsOpen() and fin.IsZombie():
-        fin.Close()
-        return False
-    elif fin and fin.IsOpen() and fin.TestBit(R.TFile.kRecovered):
-        fin.Close()
-        # don't consider a recovered file to be OK
-        return False
-    else:
-        fin.Close()
-        return True
-
-
-def MakeTChain(files, tree):
-    chain = R.TChain(tree)
-    for f in files:
-        chain.Add(f)
-    return chain
-
-
-def TGraphFromTree(tree, xvar, yvar, selection):
-    tree.Draw(xvar + ':' + yvar, selection, 'goff')
-    gr = R.TGraph(tree.GetSelectedRows(), tree.GetV1(), tree.GetV2())
-    return gr
-
-
-def TGraph2DFromTree(tree, xvar,  yvar, zvar, selection):
-    tree.Draw(xvar + ':' + yvar + ':' + zvar, selection, 'goff')
-    gr = R.TGraph2D(
-        tree.GetSelectedRows(), tree.GetV1(), tree.GetV2(), tree.GetV3())
-    return gr
-
-
-def ParamFromFilename(filename, param):
-    if len(re.findall(param + '\.\d+\.\d+', filename)):
-        num1 = re.findall(
-            param + '\.\d+\.\d+', filename)[0].replace(param + '.', '')
-        return float(num1)
-    elif len(re.findall(param + '\.\d+', filename)):
-        num1 = re.findall(param + '\.\d+', filename)[0].replace(param + '.', '')
-        return int(num1)
-    else:
-        print "Error: parameter " + param + " not found in filename"
-
-
-def RemoveGraphXDuplicates(graph):
-    for i in xrange(graph.GetN() - 1):
-        if graph.GetX()[i + 1] == graph.GetX()[i]:
-            # print 'Removing duplicate point (%f, %f)' % (graph.GetX()[i+1],
-            # graph.GetY()[i+1])
-            graph.RemovePoint(i + 1)
-            RemoveGraphXDuplicates(graph)
-            break
-
-
-def RemoveGraphYAll(graph, val):
-    for i in xrange(graph.GetN()):
-        if graph.GetY()[i] == val:
-            print 'Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
-            graph.RemovePoint(i)
-            RemoveGraphYAll(graph, val)
-            break
-
-
-def RemoveSmallDelta(graph, val):
-    for i in xrange(graph.GetN()):
-        diff = abs(graph.GetY()[i])
-        if diff < val:
-            print '[RemoveSmallDelta] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
-            graph.RemovePoint(i)
-            RemoveSmallDelta(graph, val)
-            break
-
-
-def RemoveGraphYAbove(graph, val):
-    for i in xrange(graph.GetN()):
-        if graph.GetY()[i] > val:
-            # print 'Removing point (%f, %f)' % (graph.GetX()[i],
-            # graph.GetY()[i])
-            graph.RemovePoint(i)
-            RemoveGraphYAbove(graph, val)
-            break
-
-
-def OnePad():
-    pad = R.TPad('pad', 'pad', 0., 0., 1., 1.)
-    pad.Draw()
-    pad.cd()
-    result = [pad]
-    return result
-
-
-def TwoPadSplit(split_point, gap_low, gap_high):
-    upper = R.TPad('upper', 'upper', 0., 0., 1., 1.)
-    upper.SetBottomMargin(split_point + gap_high)
-    upper.SetFillStyle(4000)
-    upper.Draw()
-    lower = R.TPad('lower', 'lower', 0., 0., 1., 1.)
-    lower.SetTopMargin(1 - split_point + gap_low)
-    lower.SetFillStyle(4000)
-    lower.Draw()
-    upper.cd()
-    result = [upper, lower]
-    return result
-
-
-def TwoPadSplitColumns(split_point, gap_left, gap_right):
-    left = R.TPad('left', 'left', 0., 0., 1., 1.)
-    left.SetRightMargin(1 - split_point + gap_right)
-    left.SetFillStyle(4000)
-    left.Draw()
-    right = R.TPad('right', 'right', 0., 0., 1., 1.)
-    right.SetLeftMargin(split_point + gap_left)
-    right.SetFillStyle(4000)
-    right.Draw()
-    left.cd()
-    result = [left, right]
-    return result
-
-
-def ImproveMinimum(graph, func, doIt=False):
-    fit_x = 0.
-    fit_y = 999.
-    fit_i = 0
-    for i in xrange(graph.GetN()):
-        if graph.GetY()[i] < fit_y:
-            fit_i = i
-            fit_x = graph.GetX()[i]
-            fit_y = graph.GetY()[i]
-    if fit_i == 0 or fit_i == (graph.GetN() - 1):
-        if doIt:
-            min_x = graph.GetX()[fit_i]
-            min_y = graph.GetY()[fit_i]
-            for i in xrange(graph.GetN()):
-                before = graph.GetY()[i]
-                graph.GetY()[i] -= min_y
-                after = graph.GetY()[i]
-                print 'Point %i, before=%f, after=%f' % (i, before, after)
-        return (fit_x, fit_y)
-    search_min = fit_i - 2 if fit_i >= 2 else fit_i - 1
-    search_max = fit_i + 2 if fit_i + 2 < graph.GetN() else fit_i + 1
-    min_x = func.GetMinimumX(graph.GetX()[search_min], graph.GetX()[search_max])
-    min_y = func.Eval(min_x)
-    print '[ImproveMinimum] Fit minimum was (%f, %f)' % (fit_x, fit_y)
-    print '[ImproveMinimum] Better minimum was (%f, %f)' % (min_x, min_y)
-    if doIt:
-        for i in xrange(graph.GetN()):
-            before = graph.GetY()[i]
-            graph.GetY()[i] -= min_y
-            after = graph.GetY()[i]
-            print 'Point %i, before=%f, after=%f' % (i, before, after)
-        graph.Set(graph.GetN() + 1)
-        graph.SetPoint(graph.GetN() - 1, min_x, 0)
-        graph.Sort()
-    return (min_x, min_y)
-
-
-def FindCrossingsWithSpline(graph, func, yval):
-    crossings = []
-    intervals = []
-    current = None
-    for i in xrange(graph.GetN() - 1):
-        if (graph.GetY()[i] - yval) * (graph.GetY()[i + 1] - yval) < 0.:
-            cross = func.GetX(yval, graph.GetX()[i], graph.GetX()[i + 1])
-            if (graph.GetY()[i] - yval) > 0. and current is None:
-                current = {
-                    'lo': cross,
-                    'hi': graph.GetX()[graph.GetN() - 1],
-                    'valid_lo': True,
-                    'valid_hi': False
-                }
-            if (graph.GetY()[i] - yval) < 0. and current is None:
-                current = {
-                    'lo': graph.GetX()[0],
-                    'hi': cross,
-                    'valid_lo': False,
-                    'valid_hi': True
-                }
-                intervals.append(current)
-                current = None
-            if (graph.GetY()[i] - yval) < 0. and current is not None:
-                current['hi'] = cross
-                current['valid_hi'] = True
-                intervals.append(current)
-                current = None
-            # print 'Crossing between: (%f, %f) -> (%f, %f) at %f' %
-            # (graph.GetX()[i], graph.GetY()[i], graph.GetX()[i+1],
-            # graph.GetY()[i+1], cross)
-            crossings.append(cross)
-    if current is not None:
-        intervals.append(current)
-    if len(intervals) == 0:
-        current = {
-            'lo': graph.GetX()[0],
-            'hi': graph.GetX()[graph.GetN() - 1],
-            'valid_lo': False,
-            'valid_hi': False
-        }
-        intervals.append(current)
-    print intervals
-    return intervals
-    # return crossings
-
-
-def GetAxisHist(pad):
-    pad_obs = pad.GetListOfPrimitives()
-    if pad_obs is None:
-        return None
-    obj = None
-    for obj in pad_obs:
-        if obj.InheritsFrom(R.TH1.Class()):
-            return obj
-        if obj.InheritsFrom(R.TMultiGraph.Class()):
-            return obj.GetHistogram()
-        if obj.InheritsFrom(R.TGraph.Class()):
-            return obj.GetHistogram()
-        if obj.InheritsFrom(R.THStack.Class()):
-            return obj.GetHistogram()
-    return None
-
-
-def FixTopRange(pad, fix_y, fraction):
-    hobj = GetAxisHist(pad)
-    ymin = hobj.GetMinimum()
-    hobj.SetMaximum((fix_y - fraction * ymin) / (1. - fraction))
-    if R.gPad.GetLogy():
-        if ymin == 0.:
-            print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
-            return
-        maxval = (math.log10(fix_y) - fraction * math.log10(ymin)) / \
-            (1 - fraction)
-        maxval = math.pow(10, maxval)
-        hobj.SetMaximum(maxval)
-
-
-def GetPadYMaxInRange(pad, x_min, x_max):
-    pad_obs = pad.GetListOfPrimitives()
-    if pad_obs is None:
-        return 0.
-    h_max = -99999.
-    for obj in pad_obs:
-        if obj.InheritsFrom(R.TH1.Class()):
-            hobj = obj
-            for j in xrange(1, hobj.GetNbinsX()):
-                if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
-                        hobj.GetBinLowEdge(j) > x_max):
-                        continue
-                if (hobj.GetBinContent(j) + hobj.GetBinError(j) > h_max):
-                    h_max = hobj.GetBinContent(j) + hobj.GetBinError(j)
-
-        if obj.InheritsFrom(R.TGraph.Class()):
-            gobj = obj
-            n = gobj.GetN()
-            for k in xrange(0, n):
-                x = gobs.GetX()[k]
-                y = gobs.GetY()[k]
-                if x < x_min or x > x_max:
-                    continue
-                if y > h_max:
-                    h_max = y
-    return h_max
-
-
-def GetPadYMax(pad):
-    pad_obs = pad.GetListOfPrimitives()
-    if pad_obs is None:
-        return 0.
-    xmin = GetAxisHist(pad).GetXaxis().GetXmin()
-    xmax = GetAxisHist(pad).GetXaxis().GetXmax()
-    return GetPadYMaxInRange(pad, xmin, xmax)
-
-
 def DrawHorizontalLine(pad, line, yval):
     axis = GetAxisHist(pad)
     xmin = axis.GetXaxis().GetXmin()
     xmax = axis.GetXaxis().GetXmax()
     line.DrawLine(xmin, yval, xmax, yval)
+
+
+def DrawVerticalLine(pad, line, xval):
+    axis = GetAxisHist(pad)
+    ymin = axis.GetMinimum()
+    ymax = axis.GetMaximum()
+    line.DrawLine(xval, ymin, xval, ymax)
 
 
 def DrawTitle(pad, text, align):
@@ -761,131 +1311,64 @@ def DrawTitle(pad, text, align):
         latex.DrawLatex(1 - r, y_off, text)
     pad_backup.cd()
 
-
-def ReZeroTGraph(gr, doIt=False):
-    fit_x = 0.
-    fit_y = 0.
-    for i in xrange(gr.GetN()):
-        if gr.GetY()[i] == 0.:
-            fit_x = gr.GetX()[i]
-            fit_y = gr.GetY()[i]
-            break
-    min_x = 0.
-    min_y = 0.
-    for i in xrange(gr.GetN()):
-        if gr.GetY()[i] < min_y:
-            min_y = gr.GetY()[i]
-            min_x = gr.GetX()[i]
-    if min_y < fit_y:
-        print '[ReZeroTGraph] Fit minimum was (%f, %f)' % (fit_x, fit_y)
-        print '[ReZeroTGraph] Better minimum was (%f, %f)' % (min_x, min_y)
-        if doIt:
-            for i in xrange(gr.GetN()):
-                before = gr.GetY()[i]
-                gr.GetY()[i] -= min_y
-                after = gr.GetY()[i]
-                print 'Point %i, before=%f, after=%f' % (i, before, after)
-    return min_y
+##@}
 
 
-def RemoveNearMin(graph, val, spacing=None):
-    # assume graph is sorted:
-    n = graph.GetN()
-    if n < 5:
-        return
-    if spacing is None:
-        spacing = (graph.GetX()[n - 1] - graph.GetX()[0]) / float(n - 2)
-        # print '[RemoveNearMin] Graph has spacing of %.3f' % spacing
-    for i in xrange(graph.GetN()):
-        if graph.GetY()[i] == 0.:
-            bf = graph.GetX()[i]
-            bf_i = i
-            # print '[RemoveNearMin] Found best-fit at %.3f' % bf
-            break
-    for i in xrange(graph.GetN()):
-        if i == bf_i:
-            continue
-        if abs(graph.GetX()[i] - bf) < (val * spacing):
-            print '[RemoveNearMin] Removing point (%f, %f) close to minimum at %f' % (graph.GetX()[i], graph.GetY()[i], bf)
-            graph.RemovePoint(i)
-            RemoveNearMin(graph, val, spacing)
-            break
+## @name Limit plotting
+#
+#  @details Common limit-plotting tasks, for example setting the Brazilian
+#      colour scheme for expected limit bands and drawing the associated
+#      TGraphs in the correct order
+##@{
+
+def StyleLimitBand(graph_dict):
+    if 'obs' in graph_dict:
+        graph_dict['obs'].SetLineWidth(2)
+    if 'exp0' in graph_dict:
+        graph_dict['exp0'].SetLineWidth(2)
+        graph_dict['exp0'].SetLineColor(R.kRed)
+    if 'exp1' in graph_dict:
+        graph_dict['exp1'].SetFillColor(R.kGreen)
+    if 'exp2' in graph_dict:
+        graph_dict['exp2'].SetFillColor(R.kYellow)
 
 
-def TH2FromTGraph2D(graph, method='BinEdgeAligned',
-                    force_x_width=None,
-                    force_y_width=None):
-    """Build an empty TH2 from the set of points in a TGraph2D
-
-    There is no unique way to define a TH2 binning given an arbitrary
-    TGraph2D, therefore this function supports multiple named methods:
-
-     - `BinEdgeAligned` simply takes the sets of x- and y- values in the
-       TGraph2D and uses these as the bin edge arrays in the TH2. The
-       implication of this is that when filling the bin contents interpolation
-       will be required when evaluating the TGraph2D at the bin centres.
-     - `BinCenterAligned` will try to have the TGraph2D points at the bin
-       centers, but this will only work completely correctly when the input
-       point spacing is regular. The algorithm first identifies the bin width
-       as the smallest interval between points on each axis. The start
-       position of the TH2 axis is then defined as the lowest value in the
-       TGraph2D minus half this width, and the axis continues with regular
-       bins until the graph maximum is passed.
-
-    Args:
-        graph (TGraph2D): Should have at least two unique x and y values,
-            otherwise we can't define any bins
-        method (str): The binning algorithm to use
-        force_x_width (bool): Override the derived x-axis bin width in the
-            CenterAligned method
-        force_y_width (bool): Override the derived y-axis bin width in the
-            CenterAligned method
-
-    Raises:
-        RuntimeError: If the method name is not recognised
-
-    Returns:
-        TH2F: The exact binning of the TH2F depends on the chosen method
-    """
-    x_vals = set()
-    y_vals = set()
-
-    for i in xrange(graph.GetN()):
-        x_vals.add(graph.GetX()[i])
-        y_vals.add(graph.GetY()[i])
-
-    x_vals = sorted(x_vals)
-    y_vals = sorted(y_vals)
-    if method == 'BinEdgeAligned':
-        h_proto = R.TH2F('prototype', '',
-                         len(x_vals) - 1, array('d', x_vals),
-                         len(y_vals) - 1, array('d', y_vals))
-    elif method == 'BinCenterAligned':
-        x_widths = []
-        y_widths = []
-        for i in xrange(1, len(x_vals)):
-            x_widths.append(x_vals[i] - x_vals[i - 1])
-        for i in xrange(1, len(y_vals)):
-            y_widths.append(y_vals[i] - y_vals[i - 1])
-        x_min = min(x_widths) if force_x_width is None else force_x_width
-        y_min = min(y_widths) if force_y_width is None else force_y_width
-        x_bins = int(((x_vals[-1] - (x_vals[0] - 0.5 * x_min)) / x_min) + 0.5)
-        y_bins = int(((y_vals[-1] - (y_vals[0] - 0.5 * y_min)) / y_min) + 0.5)
-        print '[TH2FromTGraph2D] x-axis binning: (%i, %g, %g)' % (x_bins, x_vals[0] - 0.5 * x_min, x_vals[0] - 0.5 * x_min + x_bins * x_min)
-        print '[TH2FromTGraph2D] y-axis binning: (%i, %g, %g)' % (y_bins, y_vals[0] - 0.5 * y_min, y_vals[0] - 0.5 * y_min + y_bins * y_min)
-        # Use a number slightly smaller than 0.49999 because the TGraph2D interpolation
-        # is fussy about evaluating on the boundary
-        h_proto = R.TH2F('prototype', '',
-                         x_bins, x_vals[
-                             0] - 0.49999 * x_min, x_vals[0] - 0.50001 * x_min + x_bins * x_min,
-                         y_bins, y_vals[0] - 0.49999 * y_min, y_vals[0] - 0.50001 * y_min + y_bins * y_min)
-    else:
-        raise RuntimeError(
-            '[TH2FromTGraph2D] Method %s not supported' % method)
-    h_proto.SetDirectory(0)
-    return h_proto
+def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
+                  legend=None):
+    pad.cd()
+    do_obs = False
+    do_exp0 = False
+    do_exp1 = False
+    do_exp2 = False
+    if 'exp2' in graph_dict and ('exp2' in draw or 'exp' in draw):
+        do_exp2 = True
+        graph_dict['exp2'].Draw('3SAME')
+    if 'exp1' in graph_dict and ('exp1' in draw or 'exp' in draw):
+        do_exp1 = True
+        graph_dict['exp1'].Draw('3SAME')
+    if 'exp0' in graph_dict and ('exp0' in draw or 'exp' in draw):
+        do_exp0 = True
+        graph_dict['exp0'].Draw('LSAME')
+    if 'obs' in graph_dict and 'obs' in draw:
+        do_obs = True
+        graph_dict['obs'].Draw('PLSAME')
+    if legend is not None:
+        if do_obs:
+            legend.AddEntry(graph_dict['obs'], 'Observed', 'LP')
+        if do_exp0:
+            legend.AddEntry(graph_dict['exp0'], 'Expected', 'L')
+        if do_exp1:
+            legend.AddEntry(graph_dict['exp1'], '#pm1#sigma Expected', 'F')
+        if do_exp2:
+            legend.AddEntry(graph_dict['exp2'], '#pm2#sigma Expected', 'F')
 
 
+##@}
+
+## @name Contour plotting
+#
+#  @details Creating contour TGraphs using TH2s and TGraph2Ds
+##@{
 def contourFromTH2(h2in, threshold, minPoints=10, frameValue=1000.):
     # // http://root.cern.ch/root/html/tutorials/hist/ContourList.C.html
     contoursList = [threshold]
@@ -949,14 +1432,14 @@ def frameTH2D(hist, threshold, frameValue=1000):
 
     # Set the edges of the outer framing bins and the adjusted
     # edge of the real edge bins
-    x_new[0] = x_bins[0] - 2 * xw1 * 0.01
-    x_new[1] = x_bins[0] - 1 * xw1 * 0.01
-    x_new[-1] = x_bins[-1] + 2 * xw2 * 0.01
-    x_new[-2] = x_bins[-1] + 1 * xw2 * 0.01
-    y_new[0] = y_bins[0] - 2 * yw1 * 0.01
-    y_new[1] = y_bins[0] - 1 * yw1 * 0.01
-    y_new[-1] = y_bins[-1] + 2 * yw2 * 0.01
-    y_new[-2] = y_bins[-1] + 1 * yw2 * 0.01
+    x_new[0] = x_bins[0] - 2 * xw1 * 0.02
+    x_new[1] = x_bins[0] - 1 * xw1 * 0.02
+    x_new[-1] = x_bins[-1] + 2 * xw2 * 0.02
+    x_new[-2] = x_bins[-1] + 1 * xw2 * 0.02
+    y_new[0] = y_bins[0] - 2 * yw1 * 0.02
+    y_new[1] = y_bins[0] - 1 * yw1 * 0.02
+    y_new[-1] = y_bins[-1] + 2 * yw2 * 0.02
+    y_new[-2] = y_bins[-1] + 1 * yw2 * 0.02
 
     # Copy the remaining bin edges from the hist
     for i in xrange(0, len(x_bins)):
@@ -993,58 +1476,6 @@ def frameTH2D(hist, threshold, frameValue=1000):
     return framed
 
 
-def FixOverlay():
-    R.gPad.GetFrame().Draw()
-    R.gPad.RedrawAxis()
-
-
-def makeHist1D(name, xbins, graph):
-    len_x = graph.GetX()[graph.GetN() - 1] - graph.GetX()[0]
-    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
-    hist = R.TH1F(
-        name, '', xbins, graph.GetX()[0], graph.GetX()[graph.GetN() - 1] + binw_x)
-    return hist
-
-
-def makeHist2D(name, xbins, ybins, graph2d):
-    len_x = graph2d.GetXmax() - graph2d.GetXmin()
-    binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
-    len_y = graph2d.GetYmax() - graph2d.GetYmin()
-    binw_y = (len_y * 0.5 / (float(ybins) - 1.)) - 1E-5
-    hist = R.TH2F(name, '', xbins, graph2d.GetXmin() - binw_x, graph2d.GetXmax() +
-                  binw_x, ybins, graph2d.GetYmin() - binw_y, graph2d.GetYmax() + binw_y)
-    return hist
-
-
-def makeVarBinHist2D(name, xbins, ybins):
-    # create new arrays in which bin low edge is adjusted to make measured
-    # points at the bin centres
-    xbins_new = [None] * (len(xbins) + 1)
-    for i in xrange(len(xbins) - 1):
-        if i == 0 or i == 1:
-            xbins_new[i] = xbins[i] - ((xbins[i + 1] - xbins[i]) / 2) + 1E-5
-        else:
-            xbins_new[i] = xbins[i] - ((xbins[i + 1] - xbins[i]) / 2)
-    xbins_new[len(xbins) - 1] = xbins[len(xbins) - 2] + \
-        ((xbins[len(xbins) - 2] - xbins[len(xbins) - 3]) / 2)
-    xbins_new[len(xbins)] = xbins[len(xbins) - 1] + \
-        ((xbins[len(xbins) - 1] - xbins[len(xbins) - 2]) / 2) - 1E-5
-
-    ybins_new = [None] * (len(ybins) + 1)
-    for i in xrange(len(ybins) - 1):
-        if i == 0 or i == 1:
-            ybins_new[i] = ybins[i] - ((ybins[i + 1] - ybins[i]) / 2) + 1E-5
-        else:
-            ybins_new[i] = ybins[i] - ((ybins[i + 1] - ybins[i]) / 2)
-    ybins_new[len(ybins) - 1] = ybins[len(ybins) - 2] + \
-        ((ybins[len(ybins) - 2] - ybins[len(ybins) - 3]) / 2)
-    ybins_new[len(ybins)] = ybins[len(ybins) - 1] + \
-        ((ybins[len(ybins) - 1] - ybins[len(ybins) - 2]) / 2) - 1E-5
-    hist = R.TH2F(name, '', len(
-        xbins_new) - 1, array('d', xbins_new), len(ybins_new) - 1, array('d', ybins_new))
-    return hist
-
-
 def fillTH2(hist2d, graph):
     for x in xrange(1, hist2d.GetNbinsX() + 1):
         for y in xrange(1, hist2d.GetNbinsY() + 1):
@@ -1053,155 +1484,9 @@ def fillTH2(hist2d, graph):
             val = graph.Interpolate(xc, yc)
             hist2d.SetBinContent(x, y, val)
 
-
-def higgsConstraint(model, higgstype):
-    higgsBand = R.TGraph2D()
-    masslow = 150
-    masshigh = 500
-    massstep = 10
-    n = 0
-    for mass in range(masslow, masshigh, massstep):
-        myfile = open("../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/" +
-                      model + "/higgs_" + str(mass) + ".dat", 'r')
-        for line in myfile:
-            tanb = (line.split())[0]
-            mh = float((line.split())[1])
-            mH = float((line.split())[3])
-            if higgstype == "h":
-                higgsBand.SetPoint(n, mass, float(tanb), mh)
-            elif higgstype == "H":
-                higgsBand.SetPoint(n, mass, float(tanb), mH)
-            n = n + 1
-        myfile.close()
-    return higgsBand
-
-
-def MakeErrorBand(LowerGraph, UpperGraph):
-    errorBand = R.TGraphAsymmErrors()
-    lower_list = []
-    upper_list = []
-    for i in range(LowerGraph.GetN()):
-        lower_list.append(
-            (float(LowerGraph.GetX()[i]),  float(LowerGraph.GetY()[i])))
-        upper_list.append(
-            (float(UpperGraph.GetX()[i]),  float(UpperGraph.GetY()[i])))
-    lower_list = sorted(set(lower_list))
-    upper_list = sorted(set(upper_list))
-    for i in range(LowerGraph.GetN()):
-        errorBand.SetPoint(i, lower_list[i][0], lower_list[i][1])
-        errorBand.SetPointEYlow(i, lower_list[i][1] - lower_list[i][1])
-        errorBand.SetPointEYhigh(i, upper_list[i][1] - lower_list[i][1])
-    return errorBand
-
-
-def SortGraph(Graph):
-    sortedGraph = R.TGraph()
-    graph_list = []
-    for i in range(Graph.GetN()):
-        graph_list.append((float(Graph.GetX()[i]),  float(Graph.GetY()[i])))
-    graph_list = sorted(set(graph_list))
-    for i in range(Graph.GetN()):
-        sortedGraph.SetPoint(i, graph_list[i][0], graph_list[i][1])
-    return sortedGraph
-
-
-def LimitTGraphFromJSON(js, label):
-    xvals = []
-    yvals = []
-    for key in js:
-        xvals.append(float(key))
-        yvals.append(js[key][label])
-    graph = R.TGraph(len(xvals), array('d', xvals), array('d', yvals))
-    graph.Sort()
-    return graph
-
-
-def LimitBandTGraphFromJSON(js, central, lo, hi):
-    xvals = []
-    yvals = []
-    yvals_lo = []
-    yvals_hi = []
-    for key in js:
-        xvals.append(float(key))
-        yvals.append(js[key][central])
-        yvals_lo.append(js[key][central] - js[key][lo])
-        yvals_hi.append(js[key][hi] - js[key][central])
-    graph = R.TGraphAsymmErrors(len(xvals), array('d', xvals), array('d', yvals), array(
-        'd', [0]), array('d', [0]), array('d', yvals_lo), array('d', yvals_hi))
-    graph.Sort()
-    return graph
-
-def GraphDifference(graph1,graph2,relative):
-    xvals =[]
-    yvals =[]
-    if graph1.GetN() != graph2.GetN():
-        return graph1
-    for i in range(graph1.GetN()):
-        xvals.append(graph1.GetX()[i])
-        if relative :
-            yvals.append(2*abs(graph1.GetY()[i]-graph2.GetY()[i])/(graph1.GetY()[i]+graph2.GetY()[i]))
-        else: 
-            yvals.append(2*(graph1.GetY()[i]-graph2.GetY()[i])/(graph1.GetY()[i]+graph2.GetY()[i]))
-    diff_graph = R.TGraph(len(xvals),array('d',xvals),array('d',yvals))
-    diff_graph.Sort()
-    return diff_graph
-
-
-def Set(obj, **kwargs):
-    for key, value in kwargs.iteritems():
-        getattr(obj, 'Set' + key)(value)
-
-
-def SetBirdPalette():
-    nRGBs = 9
-    stops = array(
-        'd', [0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000])
-    red = array(
-        'd', [0.2082, 0.0592, 0.0780, 0.0232, 0.1802, 0.5301, 0.8186, 0.9956, 0.9764])
-    green = array(
-        'd', [0.1664, 0.3599, 0.5041, 0.6419, 0.7178, 0.7492, 0.7328, 0.7862, 0.9832])
-    blue = array(
-        'd', [0.5293, 0.8684, 0.8385, 0.7914, 0.6425, 0.4662, 0.3499, 0.1968, 0.0539])
-    R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
-
-
-def bestFit(tree, x, y, cut):
-    nfind = tree.Draw(y + ":" + x, cut + "deltaNLL == 0")
-    gr0 = R.TGraph(1)
-    if (nfind == 0):
-        gr0.SetPoint(0, -999, -999)
-    else:
-        grc = R.gROOT.FindObject("Graph").Clone()
-        if (grc.GetN() > 1):
-            grc.Set(1)
-        gr0.SetPoint(0, grc.GetXmax(), grc.GetYmax())
-    gr0.SetMarkerStyle(34)
-    gr0.SetMarkerSize(2.0)
-    return gr0
-
-
-def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
-    t.Draw("2*deltaNLL:%s:%s>>%s_prof(%d,%10g,%10g,%d,%10g,%10g)" %
-           (y, x, name, xbins, xmin, xmax, ybins, ymin, ymax), cut + "deltaNLL != 0", "PROF")
-    prof = R.gROOT.FindObject(name + "_prof")
-    h2d = R.TH2D(name, name, xbins, xmin, xmax, ybins, ymin, ymax)
-    for ix in xrange(1, xbins + 1):
-        for iy in xrange(1, ybins + 1):
-            z = prof.GetBinContent(ix, iy)
-            if (z != z) or (z > 4294967295):  # protect against NANs
-                z = 0
-            h2d.SetBinContent(ix, iy, z)
-    h2d.GetXaxis().SetTitle(x)
-    h2d.GetYaxis().SetTitle(y)
-    h2d.SetDirectory(0)
-    h2d = NewInterpolate(h2d)
-    return h2d
-
 # Functions 'NewInterpolate' and 'rebin' are taken, translated and modified into python from:
 # https://indico.cern.ch/event/256523/contribution/2/attachments/450198/624259/07JUN2013_cawest.pdf
 # http://hep.ucsb.edu/people/cawest/interpolation/interpolate.h
-
-
 def NewInterpolate(hist):
     histCopy = hist.Clone()
 
@@ -1295,12 +1580,12 @@ def rebin(hist):
     histName = hist.GetName()
     histName += "_rebin"
 
-# bin widths are needed so as to not shift histogram by half a bin with each rebinning
-# assume constant binning
-#  binWidthX = hist.GetXaxis().GetBinWidth(1)
-#  binWidthY = hist.GetYaxis().GetBinWidth(1)
-
-#  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX(), hist.GetXaxis().GetXmin()+binWidthX/4, hist.GetXaxis().GetXmax()+binWidthX/4, 2*hist.GetNbinsY(), hist.GetYaxis().GetXmin()+binWidthY/4, hist.GetYaxis().GetXmax()+binWidthY/4)
+    # bin widths are needed so as to not shift histogram by half a bin with each rebinning
+    # assume constant binning
+    #  binWidthX = hist.GetXaxis().GetBinWidth(1)
+    #  binWidthY = hist.GetYaxis().GetBinWidth(1)
+    
+    #  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX(), hist.GetXaxis().GetXmin()+binWidthX/4, hist.GetXaxis().GetXmax()+binWidthX/4, 2*hist.GetNbinsY(), hist.GetYaxis().GetXmin()+binWidthY/4, hist.GetYaxis().GetXmax()+binWidthY/4)
     histRebinned = R.TH2F(histName, histName, 2 * hist.GetNbinsX() - 1, hist.GetXaxis().GetXmin(),
                           hist.GetXaxis().GetXmax(), 2 * hist.GetNbinsY() - 1, hist.GetYaxis().GetXmin(), hist.GetYaxis().GetXmax())
 
@@ -1316,3 +1601,26 @@ def rebin(hist):
     histRebinnedInterpolated = NewInterpolate(histRebinned)
 
     return histRebinnedInterpolated
+
+
+def higgsConstraint(model, higgstype):
+    higgsBand = R.TGraph2D()
+    masslow = 150
+    masshigh = 500
+    massstep = 10
+    n = 0
+    for mass in range(masslow, masshigh, massstep):
+        myfile = open("../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/" +
+                      model + "/higgs_" + str(mass) + ".dat", 'r')
+        for line in myfile:
+            tanb = (line.split())[0]
+            mh = float((line.split())[1])
+            mH = float((line.split())[3])
+            if higgstype == "h":
+                higgsBand.SetPoint(n, mass, float(tanb), mh)
+            elif higgstype == "H":
+                higgsBand.SetPoint(n, mass, float(tanb), mH)
+            n = n + 1
+        myfile.close()
+    return higgsBand
+##@}

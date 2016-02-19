@@ -3,11 +3,21 @@
 import ROOT
 import json
 import os
+import pprint
+from collections import defaultdict
 
 import CombineHarvester.CombineTools.combine.utils as utils
-from CombineHarvester.CombineTools.combine.opts import OPTS
+import CombineHarvester.CombineTools.plotting as plot
+# from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 
 class PrintFit(CombineToolBase):
@@ -58,6 +68,7 @@ class PrintFit(CombineToolBase):
 class CollectLimits(CombineToolBase):
     description = 'Aggregate limit output from combine'
     requires_root = True
+    default_name='limits.json'
 
     def __init__(self):
         CombineToolBase.__init__(self)
@@ -65,37 +76,64 @@ class CollectLimits(CombineToolBase):
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
         group.add_argument(
-            '-i', '--input', nargs='+', default=[], help='The input files')
+            'input', nargs='+', default=[], help='The input files')
         group.add_argument(
-            '-o', '--output', help='The name of the output json file')
+            '-o', '--output', nargs='?', const='limits.json',
+            default='limits.json', help="""The name of the output json file.
+            When the --use-dirs option is set the enclosing directory name
+            will be appended to the filename given here.""")
+        group.add_argument(
+            '--use-dirs', action='store_true',
+            help="""Use the directory structure to create multiple limit
+                 outputs and to set the output file names""")
 
     def run_method(self):
-        js_out = {}
+        limit_sets = defaultdict(list)
         for filename in self.args.input:
-            file = ROOT.TFile(filename)
-            if file.IsZombie():
-                continue
-            tree = file.Get('limit')
-            for evt in tree:
-                mh = str(evt.mh)
-                if mh not in js_out:
-                    js_out[mh] = {}
-                if evt.quantileExpected == -1:
-                    js_out[mh]['observed'] = evt.limit
-                elif abs(evt.quantileExpected - 0.5) < 1E-4:
-                    js_out[mh]["expected"] = evt.limit
-                elif abs(evt.quantileExpected - 0.025) < 1E-4:
-                    js_out[mh]["-2"] = evt.limit
-                elif abs(evt.quantileExpected - 0.160) < 1E-4:
-                    js_out[mh]["-1"] = evt.limit
-                elif abs(evt.quantileExpected - 0.840) < 1E-4:
-                    js_out[mh]["+1"] = evt.limit
-                elif abs(evt.quantileExpected - 0.975) < 1E-4:
-                    js_out[mh]["+2"] = evt.limit
-        # print js_out
-        jsondata = json.dumps(
-            js_out, sort_keys=True, indent=2, separators=(',', ': '))
-        print jsondata
-        if self.args.output is not None:
-            with open(self.args.output, 'w') as out_file:
-                out_file.write(jsondata)
+            if not plot.TFileIsGood(filename):
+                print '>> File %s is corrupt or incomplete, skipping' % filename
+            if self.args.use_dirs is False:
+                limit_sets['default'].append(filename)
+            else:
+                label = 'default'
+                dirs = filename.split('/')
+                # The last dir could be the mass, if so we ignore it and check the next
+                if len(dirs) > 1:
+                    if not isfloat(dirs[-2]):
+                        label = dirs[-2]
+                    elif len(dirs) > 2:
+                        label = dirs[-3]
+                limit_sets[label].append(filename)
+        # print limit_sets
+
+        for label, filenames in limit_sets.iteritems():
+            js_out = {}
+            for filename in filenames:
+                file = ROOT.TFile(filename)
+                tree = file.Get('limit')
+                for evt in tree:
+                    mh = str(evt.mh)
+                    if mh not in js_out:
+                        js_out[mh] = {}
+                    if evt.quantileExpected == -1:
+                        js_out[mh]['obs'] = evt.limit
+                    elif abs(evt.quantileExpected - 0.5) < 1E-4:
+                        js_out[mh]["exp0"] = evt.limit
+                    elif abs(evt.quantileExpected - 0.025) < 1E-4:
+                        js_out[mh]["exp-2"] = evt.limit
+                    elif abs(evt.quantileExpected - 0.160) < 1E-4:
+                        js_out[mh]["exp-1"] = evt.limit
+                    elif abs(evt.quantileExpected - 0.840) < 1E-4:
+                        js_out[mh]["exp+1"] = evt.limit
+                    elif abs(evt.quantileExpected - 0.975) < 1E-4:
+                        js_out[mh]["exp+2"] = evt.limit
+            # print js_out
+            jsondata = json.dumps(
+                js_out, sort_keys=True, indent=2, separators=(',', ': '))
+            # print jsondata
+            if self.args.output is not None:
+                outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
+                with open(outname, 'w') as out_file:
+                    print '>> Writing output %s from files:' % outname
+                    pprint.pprint(filenames, indent=2)
+                    out_file.write(jsondata)

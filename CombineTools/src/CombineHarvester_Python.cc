@@ -122,6 +122,9 @@ int (CombineHarvester::*Overload2_ParseDatacard)(
 void (CombineHarvester::*Overload1_WriteDatacard)(
     std::string const&, std::string const&) = &CombineHarvester::WriteDatacard;
 
+void (CombineHarvester::*Overload2_WriteDatacard)(
+    std::string const&) = &CombineHarvester::WriteDatacard;
+
 double (CombineHarvester::*Overload1_GetUncertainty)(
     void) = &CombineHarvester::GetUncertainty;
 
@@ -225,6 +228,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("__ParseDatacard__", Overload1_ParseDatacard)
       .def("QuickParseDatacard", Overload2_ParseDatacard)
       .def("WriteDatacard", Overload1_WriteDatacard)
+      .def("WriteDatacard", Overload2_WriteDatacard)
       // Filters
       .def("bin", &CombineHarvester::bin,
           defaults_bin()[py::return_internal_reference<>()])
@@ -283,6 +287,9 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("ForEachSyst", ForEachSystPy)
       .def("VariableRebin", &CombineHarvester::VariableRebin)
       .def("SetPdfBins", &CombineHarvester::SetPdfBins)
+      .def("SetGroup", &CombineHarvester::SetGroup)
+      .def("RemoveGroup", &CombineHarvester::RemoveGroup)
+      .def("RenameGroup", &CombineHarvester::RenameGroup)
       // Evaluation
       .def("GetRate", &CombineHarvester::GetRate)
       .def("GetObservedRate", &CombineHarvester::GetObservedRate)

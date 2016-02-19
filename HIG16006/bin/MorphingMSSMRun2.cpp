@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include "boost/algorithm/string/predicate.hpp"
 #include "boost/program_options.hpp"
+#include "boost/lexical_cast.hpp"
 #include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Process.h"
@@ -216,24 +217,36 @@ int main(int argc, char** argv) {
   }
   demo.Close();
   cb.AddWorkspace(ws);
-  //cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
   
   string folder = "output/"+output_folder+"/cmb";
   boost::filesystem::create_directories(folder);
-  
+ 
+
+ //Write out datacards. Naming convention important for rest of workflow. We
+ //make one directory per chn-cat, one per chn and cmb. In this code we only
+ //store the complete combined datacard for each directory, but we also
+ //introduce the label _mssm to allow to distinguish from individual cards if
+ //people want to store those too for some reason.
   cout << "Writing datacards ...";
-  TFile output((folder + "/htt_mssm_input.root").c_str(), "RECREATE");
+  TFile output((folder + "/htt_cmb_mssm_input.root").c_str(), "RECREATE");
+  cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_cmb_mssm.txt", output);
+  output.Close();
+  
+  //Combined based on bin_id - i.e. make combined b-tag and no b-tag
   for (string chn : chns) {
-    auto bins = cb.cp().channel({chn}).bin_set();
-    for (auto b : bins) {
-      cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
+    auto bin_ids = cb.cp().bin_id_set();
+    for (auto b : bin_ids) {
+       string folder_cat = "output/"+output_folder+"/htt_cmb_"+boost::lexical_cast<string>(b)+"_13TeV";
+       boost::filesystem::create_directories(folder_cat);
+       TFile output((folder_cat + "/htt_cmb_"+boost::lexical_cast<string>(b)+"_13TeV_mssm_input.root").c_str(), "RECREATE");
+       cb.cp().mass({"*"}).bin_id({b}).WriteDatacard(folder_cat + "/htt_cmb_"+boost::lexical_cast<string>(b)+"_13TeV_mssm.txt", output);
+       output.Close();
     }
   }
-  cb.cp().mass({"*"}).WriteDatacard(folder + "/htt_mssm.txt", output);
-  output.Close();
 
+  //Individual channel-cats  
   for (string chn : chns) {
      string folderchn = "output/"+output_folder+"/"+chn;
      boost::filesystem::create_directories(folderchn);
