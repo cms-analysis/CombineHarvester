@@ -61,7 +61,7 @@ def get_singles_results(file, scanned, columns):
         for col in columns:
             allvals = [getattr(evt, col) for evt in t]
             res[param][col] = [
-                allvals[i * 2 + 2], allvals[0], allvals[i * 2 + 1]]
+                allvals[i * 2 + 1], allvals[0], allvals[i * 2 + 2]]
     return res
 
 def get_none_results(file, params):
