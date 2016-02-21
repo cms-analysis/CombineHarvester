@@ -170,15 +170,14 @@ parser.add_argument('--main', '-m', help='Main input file for the scan')
 parser.add_argument('--json', help='update this json file')
 parser.add_argument('--model', help='use this model identifier')
 parser.add_argument('--POI', help='use this parameter of interest')
-parser.add_argument('--translate', default=None, help='json file with POI name translation')
+parser.add_argument('--translate', default='texName.json', help='json file with POI name translation')
 parser.add_argument('--main-label', default='Observed', type=str, help='legend label for the main scan')
 parser.add_argument('--main-color', default=1, type=int, help='line and marker color for main scan')
 parser.add_argument('--relax-safety', default=0, type=int, help='line and marker color for main scan')
 parser.add_argument('--others', nargs='*', help='add secondary scans processed as main: FILE:LABEL:COLOR')
 parser.add_argument('--breakdown', help='do quadratic error subtraction using --others')
 parser.add_argument('--meta', default='', help='Other metadata to save in format KEY:VAL,KEY:VAL')
-parser.add_argument('--logo', default='#it{ATLAS}#bf{ and }CMS')
-parser.add_argument('--logo-sub', default='#it{LHC Run 1 Internal}')
+
 args = parser.parse_args()
 if args.pub: args.no_input_label = True
 
@@ -302,7 +301,7 @@ val_2sig = main_scan['val_2sig']
 
 textfit = '%s = %.3f{}^{#plus %.3f}_{#minus %.3f}' % (fixed_name, val_nom[0], val_nom[1], abs(val_nom[2]))
 if args.upper_cl:
-    textfit = '%s < %.2f (%i%% CL)' % (fixed_name, val_nom[0]+val_nom[1], int(args.upper_cl * 100))
+    textfit = '%s < %.2f (%i%% CL)' % (fixed_name, val_nom[1], int(args.upper_cl * 100))
 
 pt = ROOT.TPaveText(0.59, 0.82 - len(other_scans)*0.08, 0.95, 0.91, 'NDCNB')
 if args.envelope: pt.SetY2(0.78)
@@ -459,7 +458,7 @@ collab = 'Combined'
 if 'cms_' in args.output: collab = 'CMS'
 if 'atlas_' in args.output: collab = 'ATLAS'
 
-plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.045, 0.035, 1.2)
+plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Internal}', 11, 0.045, 0.035, 1.2)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
 
 if not args.no_input_label: plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)

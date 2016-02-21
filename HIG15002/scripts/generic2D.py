@@ -12,7 +12,7 @@ def read(scan, param_x, param_y, file):
     # print files
     goodfiles = [f for f in [file] if plot.TFileIsGood(f)]
     limit = plot.MakeTChain(goodfiles, 'limit')
-    graph = plot.TGraph2DFromTree(limit, param_x, param_y, '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 50')
+    graph = plot.TGraph2DFromTree(limit, param_x, param_y, '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0')
     best = plot.TGraphFromTree(limit, param_x, param_y, 'quantileExpected > -0.5 && deltaNLL == 0')
     plot.RemoveGraphXDuplicates(best)
     assert(best.GetN() == 1)
@@ -51,7 +51,6 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
 plot.ModTDRStyle(l=0.13, b=0.10, r=0.19)
 plot.SetBirdPalette()
-# plot.SetDeepSeaPalette()
 
 # ROOT.gStyle.SetNdivisions(510, "XYZ")
 ROOT.gStyle.SetNdivisions(506, "Y")
@@ -73,8 +72,6 @@ parser.add_argument('--layout', type=int, default=1)
 parser.add_argument('--sm-point', default='1,1')
 parser.add_argument('--translate', help='json file with POI name translation')
 parser.add_argument('--title-right', default='', help='title text')
-parser.add_argument('--logo', default='#it{ATLAS}#bf{ and }CMS')
-parser.add_argument('--logo-sub', default='#it{LHC Run 1 Internal}')
 
 
 
@@ -95,7 +92,7 @@ if args.axis_hist is not None:
     hargs = args.axis_hist.split(',')
     axis = ROOT.TH2F('hist2d', '', int(hargs[0]), float(hargs[1]), float(hargs[2]), int(hargs[3]), float(hargs[4]), float(hargs[5]))
 else:
-    axis = plot.TH2FromTGraph2D(graph_test, method='BinCenterAligned')
+    axis = makeHist('hist2d', 40 * args.multi, graph_test)
 
 # axis = None
 x_axis = args.x_axis
@@ -139,16 +136,15 @@ for scan in order:
     graphs[scan], bestfits[scan] = read(scan, args.x_axis, args.y_axis, infile)
     outfile.WriteTObject(graphs[scan], scan+'_graph')
     outfile.WriteTObject(bestfits[scan])
-    hists[scan] = axis.Clone(scan+'_hist')
-    plot.fillTH2(hists[scan], graphs[scan])
+    hists[scan] = makeHist(scan+'_hist', 40 * args.multi, graph_test)
+    fillTH2(hists[scan], graphs[scan])
     outfile.WriteTObject(hists[scan], hists[scan].GetName()+'_input')
     fixZeros(hists[scan])
     hists[scan].GetZaxis().SetTitle('-2 #Delta ln #Lambda(%s,%s)' %( x_axis, y_axis))
     # hists[scan].GetZaxis().SetTitleOffset(0)
-    hists[scan].SetContour(255)
     hists[scan].Draw('COLZSAME')
     hists[scan].SetMinimum(0)
-    hists[scan].SetMaximum(20)
+    hists[scan].SetMaximum(10)
     outfile.WriteTObject(hists[scan], hists[scan].GetName()+'_processed')
     conts68[scan] = plot.contourFromTH2(hists[scan], ROOT.Math.chisquared_quantile_c(1-0.68, 2))
     conts95[scan] = plot.contourFromTH2(hists[scan], ROOT.Math.chisquared_quantile_c(1-0.95, 2))
@@ -208,14 +204,13 @@ if args.layout == 3:
 legend2.AddEntry(conts68['default'][0], '68% CL', 'L')
 legend2.AddEntry(conts95['default'][0], '95% CL', 'L')
 legend2.AddEntry(bestfits['default'], 'Best fit', 'P')
-legend2.AddEntry(sm_point, 'Expected', 'P')
+legend2.AddEntry(sm_point, 'SM expected', 'P')
 legend2.SetMargin(0.4)
 legend2.Draw()
 
 box = ROOT.TPave(0.15, 0.82, 0.41, 0.92, 0, 'NBNDC')
 # box.Draw()
-plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.025, 0.035, 1.1)
-# plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.025, 0.035, 1.1, extraText2='#it{Internal}')
+plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1}', 11, 0.025, 0.035, 1.1, extraText2='#it{Internal}')
 plot.DrawTitle(pads[0], args.title_right, 3)
 
 axis.SetMinimum(0)
