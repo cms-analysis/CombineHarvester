@@ -38,17 +38,16 @@ The CMSSW version that should be used with CombineHarvester is driven by the rec
     cd CMSSW_7_1_5/src
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+    # Check the recommended tag on link above, a tag >= v5.0.2 is sufficient
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
     scram b
-
-\note The CombineHarvester package currently requires the head of the default HiggsAnalysis-CombinedLimit branch (`slc6-root5.34.17`) and will not compile successfully with the tag listed on the combine twiki page. A new tag will be provided soon.
 
 If you are using this framework for the first time we recommend taking a look through some of the examples below which demonstrate the main features:
 
   * [Examples Part 1](\ref intro1): How CombineHarvester builds a datacard representation, parsing existing datacards, evaluating contents
   * [Examples Part 2](\ref intro2): Creating a new datacard, defining processes and systematics, writing text datacards
-  * Examples Part 3: Creating post-fit yield-tables - *coming soon*
-  * Examples Part 4: Creating post-fit plots - *coming soon*
+  * [Examples Part 3](\ref intro3): Creating a counting-experiment datacard and using rateParam directives to float process yields via free parameters while express other yields as functions of these parameters.
+  * [Limit setting](\ref limits): Using the `combineTool.py` script to build workspaces, compute asymptotic limits and plot the ouput.
 
 \warning To run many of these examples you must first ensure the [auxiliaries](https://github.com/roger-wolf/HiggsAnalysis-HiggsToTauTau-auxiliaries) repository is located at `$CMSSW_BASE/src/auxiliaries` and up-to-date:
 \verbatim

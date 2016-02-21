@@ -251,7 +251,8 @@ CombineHarvester & CombineHarvester::PrintParams() {
  *  1. Input Observation must not already store a shape (TH1 or RooAbsData)
  *  2. It must be possible to resolve this input to a single HistMapping
  *     object. See the documentation of CombineHarvester::ResolveMapping for
- *     further details.
+ *     further details. If no mappings have been provided, assume this is a
+ *     counting experiment and return.
  *  3. The resolved HistMapping object must provide a valid TFile. This file
  *     must contain the TH1 or RooAbsData object as directed by the pattern in
  *     the HistMapping after the substitution of the Observation properties.
@@ -281,6 +282,10 @@ void CombineHarvester::LoadShapes(Observation* entry,
 
   // Pre-condition #2
   // ResolveMapping will throw if this fails
+  if (mappings.size() == 0) {
+    if (verbosity_ >= 2) LOGLINE(log(), "No mappings in this card, assuming FAKE");
+    return;
+  }
   HistMapping mapping =
       ResolveMapping(entry->process(), entry->bin(), mappings);
   boost::replace_all(mapping.pattern, "$CHANNEL", entry->bin());
@@ -293,7 +298,9 @@ void CombineHarvester::LoadShapes(Observation* entry,
     log() << mapping << "\n";
   }
 
-  if (mapping.IsHist()) {
+  if (mapping.is_fake) {
+    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is FAKE");
+  } else if (mapping.IsHist()) {
     if (verbosity_ >= 2) LOGLINE(log(), "Mapping type in TH1");
     // Pre-condition #3
     // GetClonedTH1 will throw if this fails
@@ -359,6 +366,10 @@ void CombineHarvester::LoadShapes(Process* entry,
 
   // Pre-condition #2
   // ResolveMapping will throw if this fails
+  if (mappings.size() == 0) {
+    if (verbosity_ >= 2) LOGLINE(log(), "No mappings in this card, assuming FAKE");
+    return;
+  }
   HistMapping mapping =
       ResolveMapping(entry->process(), entry->bin(), mappings);
   boost::replace_all(mapping.pattern, "$CHANNEL", entry->bin());
@@ -371,8 +382,10 @@ void CombineHarvester::LoadShapes(Process* entry,
     log() << mapping << "\n";
   }
 
-  if (mapping.IsHist()) {
-    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type in TH1");
+  if (mapping.is_fake) {
+    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is FAKE");
+  } else if (mapping.IsHist()) {
+    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is TH1");
     // Pre-condition #3
     // GetClonedTH1 will throw if this fails
     std::unique_ptr<TH1> h = GetClonedTH1(mapping.file.get(), mapping.pattern);
@@ -592,6 +605,11 @@ HistMapping const& CombineHarvester::ResolveMapping(
     }
   }
   // If we get this far then we didn't find a valid mapping
+  FNLOG(log()) << "Searching for mapping for (" << bin << "," << process << ")\n";
+  FNLOG(log()) << "Avaiable mappings:\n";
+  for (auto const& m : mappings) {
+    FNLOG(log()) << m << "\n";
+  }
   throw std::runtime_error(FNERROR("Valid mapping not found"));
 }
 
@@ -730,5 +748,73 @@ RooAbsData const* CombineHarvester::FindMatchingData(Process const* proc) {
     }
   }
   return data_obj;
+}
+
+ch::Parameter* CombineHarvester::SetupRateParamVar(std::string const& name,
+                                                   double val) {
+  RooWorkspace *ws = nullptr;
+  if (!wspaces_.count("_rateParams")) {
+    ws = this->SetupWorkspace(RooWorkspace("_rateParams","_rateParams")).get();
+  } else {
+    ws = wspaces_.at("_rateParams").get();
+  }
+  // Parameter doesn't exist in the workspace - let's create it
+  RooRealVar *var = ws->var(name.c_str());
+  if (!var) {
+    // The value doesn't matter, our Parameter object will set it later
+    RooRealVar tmp_var(name.c_str(), name.c_str(), 0);
+    ws->import(tmp_var);
+    var = ws->var(name.c_str());
+    FNLOGC(log(), verbosity_ > 1)
+        << "Created new RooRealVar for rateParam: " << name << "\n";
+    if (verbosity_ > 1) var->Print();
+  } else {
+    FNLOGC(log(), verbosity_ > 1)
+        << "Reusing existing RooRealVar for rateParam: " << name << "\n";
+  }
+  if (!params_.count(name))
+    params_[name] = std::make_shared<Parameter>(Parameter());
+  Parameter * param = params_.at(name).get();
+  param->set_name(name);
+  // If the RooRealVar in the workpsace isn't in the list, add it
+  bool var_in_par = false;
+  for (auto const& ptr : param->vars()) {
+    if (ptr == var) {
+      var_in_par = true;
+      break;
+    }
+  }
+  if (!var_in_par) {
+    param->vars().push_back(var);
+  }
+  // Then this propagates the value to the RooRealVar
+  FNLOGC(log(), verbosity_ > 1) << "Updating parameter value from "
+                                << param->val();
+  param->set_val(val);
+  if (verbosity_ > 1) log() << " to " << param->val() << "\n";
+  return param;
+}
+
+void CombineHarvester::SetupRateParamFunc(std::string const& name,
+                                          std::string const& formula,
+                                          std::string const& pars) {
+  RooWorkspace *ws = nullptr;
+  if (!wspaces_.count("_rateParams")) {
+    ws = this->SetupWorkspace(RooWorkspace("_rateParams","_rateParams")).get();
+  } else {
+    ws = wspaces_.at("_rateParams").get();
+  }
+  RooAbsReal *form = ws->function(name.c_str());
+  // No parameter to make, this is a formula
+  if (!form) {
+    RooFormulaVar formularvar(name.c_str(), name.c_str(),
+                          formula.c_str(),
+                          RooArgList(ws->argSet(pars.c_str())));
+    ws->import(formularvar);
+    form = ws->function(name.c_str());
+    FNLOGC(log(), verbosity_ > 1)
+        << "Created new RooFormulaVar for rateParam: " << name << "\n";
+    if (verbosity_ > 1) form->Print();
+  }
 }
 }

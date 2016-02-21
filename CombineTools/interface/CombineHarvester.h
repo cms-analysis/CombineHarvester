@@ -117,6 +117,7 @@ class CombineHarvester {
 
   void WriteDatacard(std::string const& name, std::string const& root_file);
   void WriteDatacard(std::string const& name, TFile & root_file);
+  void WriteDatacard(std::string const& name);
   /**@}*/
 
   /**
@@ -273,6 +274,37 @@ class CombineHarvester {
 
   void VariableRebin(std::vector<double> bins);
   void SetPdfBins(unsigned nbins);
+
+  /**
+   * Add parameters to a given group
+   *
+   * A parameter will be added to the given group if its name passes a regex
+   * match with any of the input patterns. A parameter can belong to any
+   * number of groups.
+   *
+   * @param name The group name to set
+   * @param patterns A vector of regex pattern strings
+   */
+  void SetGroup(std::string const& name, std::vector<std::string> const& patterns);
+
+  /**
+   * Remove parameters to a given group
+   *
+   * A parameter will be removed from the given group if its name passes a
+   * regex match with any of the input patterns.
+   *
+   * @param name The group name to remove
+   * @param patterns A vector of regex pattern strings
+   */
+  void RemoveGroup(std::string const& name, std::vector<std::string> const& patterns);
+
+  /**
+   * Rename a nuisance parameter group
+   *
+   * @param oldname The current name
+   * @param newname The new name
+   */
+  void RenameGroup(std::string const& oldname, std::string const& newname);
   /**@}*/
 
   /**
@@ -355,7 +387,8 @@ class CombineHarvester {
 
   void AddSystFromProc(Process const& proc, std::string const& name,
                        std::string const& type, bool asymm, double val_u,
-                       double val_d);
+                       double val_d, std::string const& formula,
+                       std::string const& args);
 
   template <class Map>
   void AddSyst(CombineHarvester & target, std::string const& name,
@@ -455,12 +488,15 @@ class CombineHarvester {
 
   RooAbsData const* FindMatchingData(Process const* proc);
 
+  ch::Parameter * SetupRateParamVar(std::string const& name, double val);
+  void SetupRateParamFunc(std::string const& name, std::string const& formula,
+                          std::string const& pars);
 
   // ---------------------------------------------------------------
   // Private methods for the shape writing routines
   // ---------------------------------------------------------------
   void WriteHistToFile(
-      TH1 const* hist,
+      TH1 * hist,
       TFile * file,
       std::vector<HistMapping> const& mappings,
       std::string const& bin,
@@ -610,8 +646,10 @@ void CombineHarvester::AddSyst(CombineHarvester& target,
     added_procs.push_back(procs_[i].get());
     double val_u = valmap.ValU(procs_[i].get());
     double val_d = valmap.ValD(procs_[i].get());
+    std::string formula = valmap.Formula(procs_[i].get());
+    std::string args = valmap.Args(procs_[i].get());
     target.AddSystFromProc(*(procs_[i]), name, type, valmap.IsAsymm(),
-                           val_u, val_d);
+                           val_u, val_d, formula, args);
   }
   if (tuples.size() && verbosity_ >= 1) {
     log() << ">> Map keys that were not used to create a Systematic:\n";
