@@ -19,15 +19,18 @@ NAMECOUNTER = 0
 
 
 def read(scan, param, files, chop, remove_near_min, rezero,
-         remove_delta=None, improve=False):
+         remove_delta=None, improve=False, remove_dups=True):
     # print files
     goodfiles = [f for f in files if plot.TFileIsGood(f)]
     limit = plot.MakeTChain(goodfiles, 'limit')
     graph = plot.TGraphFromTree(
         limit, param, '2*deltaNLL', 'quantileExpected > -0.5')
+    # print 'INPUT'
+    # graph.Print()
     graph.SetName(scan)
     graph.Sort()
-    plot.RemoveGraphXDuplicates(graph)
+    if remove_dups:
+        plot.RemoveGraphXDuplicates(graph)
     if remove_delta is not None:
         plot.RemoveSmallDelta(graph, remove_delta)
     plot.RemoveGraphYAbove(graph, chop)
@@ -53,6 +56,7 @@ def ProcessEnvelope(main, others, relax_safety=0):
     vals = {}
     for oth in others:
         gr = oth['graph']
+        # gr.Print()
         for i in xrange(gr.GetN()):
             x = gr.GetX()[i]
             y = gr.GetY()[i]
@@ -76,6 +80,9 @@ def ProcessEnvelope(main, others, relax_safety=0):
     for i, key in enumerate(sorted(vals)):
         gr.SetPoint(i, key, min(vals[key]))
 
+    # print 'Envelope'
+    # gr.Print()
+
     spline = ROOT.TSpline3("spline3", gr)
     global NAMECOUNTER
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
@@ -90,9 +97,10 @@ def ProcessEnvelope(main, others, relax_safety=0):
     for oth in others:
         for i in xrange(oth['graph'].GetN()):
             oth['graph'].GetY()[i] -= min_y
+        # print 'OTHER'
+        # oth['graph'].Print()
 
     plot.RemoveGraphXDuplicates(gr)
-    gr.Print()
     return gr
 
 
@@ -105,8 +113,9 @@ def BuildScan(scan, param, files, color, yvals, chop,
               improve=False):
     print files
     if pregraph is None:
+        remove_dups = not envelope
         graph = read(scan, param, files, chop, remove_near_min,
-                     rezero, remove_delta, improve)
+                     rezero, remove_delta, improve, remove_dups)
         plot.RemoveGraphYAbove(graph, chop)
 
     else:
@@ -255,7 +264,7 @@ if args.premade:
     tmp_file = ROOT.TFile(args.main)
     tmp_gr = tmp_file.Get('main').Clone()
 main_scan = BuildScan(args.output, args.POI, [args.main], args.main_color, yvals, args.chop,
-                        args.remove_near_min, args.rezero, remove_delta=main_remove_delta, improve=main_improve, pregraph=tmp_gr)
+                        args.remove_near_min, args.rezero, remove_delta=main_remove_delta, improve=main_improve, pregraph=tmp_gr, envelope=args.envelope)
 
 n_brk = 0
 n_env = len(args.others) if args.others is not None else 0
