@@ -91,6 +91,7 @@ parser.add_argument('--fix', action='store_true', help='fix drawing of the kappa
 parser.add_argument('--masses', help='particle masses')
 parser.add_argument('--x-range', default='0.07,300', help='custom x-axis range')
 parser.add_argument('--y-range', default=None, help='custom y-axis range')
+parser.add_argument('--ratio', action='store_true', help='custom y-axis range')
 args = parser.parse_args()
 
 SM_VEV = 246.22
@@ -125,9 +126,9 @@ kappa_graph = ROOT.TGraphAsymmErrors(len(k1_res.keys()))
 
 kappa_graph_fix = ROOT.TGraphAsymmErrors(1)
 
-
+split = args.ratio
 canv = ROOT.TCanvas(args.output, args.output)
-pads = plot.OnePad()
+pads = pads = plot.TwoPadSplit(0.30, 0.006, 0.006) if split else plot.OnePad()
 
 haxis = plot.CreateAxisHist(c68, True)
 haxis.GetXaxis().SetTitle('Particle mass [GeV]')
@@ -137,6 +138,8 @@ haxis.SetMinimum(7E-5)
 pads[0].SetLogx(True)
 pads[0].SetLogy(True)
 pads[0].cd()
+pads[0].SetTickx(True)
+pads[0].SetTicky(True)
 if args.x_range is not None:
     haxis.GetXaxis().SetLimits(float(args.x_range.split(',')[0]),float(args.x_range.split(',')[1]))
 if args.y_range is not None:
@@ -148,6 +151,36 @@ c95.Draw('SAME3')
 c68.Draw('SAME3')
 sm.Draw('LSAME')
 best_line.Draw('LXSAME')
+
+if split:
+    haxis_lower = haxis.Clone()
+    pads[1].cd()
+    pads[1].SetLogx(True)
+    haxis_lower.Draw()
+    plot.SetupTwoPadSplitAsRatio(pads, haxis, haxis_lower, "Ratio to SM", True, 0.0, 1.5)
+    sm_lower = sm.Clone()
+    best_line_lower = best_line.Clone()
+    for i in xrange(sm.GetN()):
+        sm_lower.GetY()[i] = sm.GetY()[i] / sm.Eval(sm.GetX()[i])
+    for i in xrange(best_line.GetN()):
+        best_line_lower.GetY()[i] = best_line.GetY()[i] / sm.Eval(best_line.GetX()[i])
+    c68_lower = c68.Clone()
+    for i in xrange(c68.GetN()):
+        c68_lower.GetY()[i] = c68.GetY()[i] / sm.Eval(c68.GetX()[i])
+        c68_lower.GetEYhigh()[i] = c68.GetEYhigh()[i] / sm.Eval(c68.GetX()[i])
+        c68_lower.GetEYlow()[i] = c68.GetEYlow()[i] / sm.Eval(c68.GetX()[i])
+    c95_lower = c95.Clone()
+    for i in xrange(c95.GetN()):
+        c95_lower.GetY()[i] = c95.GetY()[i] / sm.Eval(c95.GetX()[i])
+        c95_lower.GetEYhigh()[i] = c95.GetEYhigh()[i] / sm.Eval(c95.GetX()[i])
+        c95_lower.GetEYlow()[i] = c95.GetEYlow()[i] / sm.Eval(c95.GetX()[i])
+    c95_lower.Draw('SAME3')
+    c68_lower.Draw('SAME3')
+    sm_lower.Draw('LSAME')
+    best_line_lower.Draw('LXSAME')
+
+
+pads[0].cd()
 
 xmin = haxis.GetXaxis().GetXmin()
 xmax = haxis.GetXaxis().GetXmax()
@@ -163,7 +196,8 @@ pb = pads[0].GetBottomMargin()
 latex = ROOT.TLatex()
 latex.SetNDC()
 plot.Set(latex, TextAlign=21, TextSize=0.04)
-
+if split:
+    plot.Set(latex, TextSize=0.03)
 for i, POI in enumerate(k1_res):
     particle = POI.replace('kappa_','')
     mass = mass_dict[particle]
@@ -183,7 +217,7 @@ for i, POI in enumerate(k1_res):
     pad_x = pl + (1-pl-pr) * pad_x
     if particle == 'W': pad_x -= 0.01
     if particle == 'Z': pad_x += 0.01
-    pad_y = (pb + (1-pt-pb) * pad_y) + 0.025
+    pad_y = (pb + (1-pt-pb) * pad_y) + (0.02 if split else 0.025)
     text = particle
     if particle in ['tau', 'mu']:
         text = '#' + text
@@ -199,13 +233,34 @@ kappa_graph.Draw('P0SAME')
 if args.fix:
     kappa_graph_fix.Draw('P0ZSAME')
 
-legend = ROOT.TLegend(0.20, 0.68, 0.6, 0.78, '', 'NBNDC')
+if split:
+    pads[1].cd()
+    kappa_graph_lower = kappa_graph.Clone()
+    for i in xrange(kappa_graph.GetN()):
+        kappa_graph_lower.GetY()[i] = kappa_graph.GetY()[i] / sm.Eval(kappa_graph.GetX()[i])
+        kappa_graph_lower.GetEYhigh()[i] = kappa_graph.GetEYhigh()[i] / sm.Eval(kappa_graph.GetX()[i])
+        kappa_graph_lower.GetEYlow()[i] = kappa_graph.GetEYlow()[i] / sm.Eval(kappa_graph.GetX()[i])
+    kappa_graph_lower.Draw('P0SAME')
+    if args.fix:
+        kappa_graph_fix_lower = kappa_graph_fix.Clone()
+        for i in xrange(kappa_graph_fix.GetN()):
+            kappa_graph_fix_lower.GetY()[i] = kappa_graph_fix.GetY()[i] / sm.Eval(kappa_graph_fix.GetX()[i])
+            kappa_graph_fix_lower.GetEYhigh()[i] = kappa_graph_fix.GetEYhigh()[i] / sm.Eval(kappa_graph.GetX()[i])
+            kappa_graph_fix_lower.GetEYlow()[i] = kappa_graph_fix.GetEYlow()[i] / sm.Eval(kappa_graph.GetX()[i])
+        kappa_graph_fix_lower.Draw('P0ZSAME')
+    pads[1].RedrawAxis()
+pads[0].cd()
+
+l_off = 0.03 if split else 0.
+
+legend = ROOT.TLegend(0.20, 0.68+l_off, 0.6, 0.78+l_off, '', 'NBNDC')
 legend.AddEntry(kappa_graph, 'Observed (68% CL)', 'EP')
 legend.AddEntry(sm, 'SM Higgs Boson', 'L')
 legend.Draw()
 
-legend2 = ROOT.TLegend(0.68, 0.16, 0.93, 0.37, '', 'NBNDC')
-legend2.SetHeader('(M, #epsilon) fit')
+l_off2 = 0.2 if split else 0.
+legend2 = ROOT.TLegend(0.68, 0.16+l_off2, 0.93, 0.37+l_off2, '', 'NBNDC')
+legend2.SetHeader('(M, #varepsilon) fit')
 legend2.AddEntry(best_line, 'Observed', 'L')
 legend2.AddEntry(c68, '68% CL', 'F')
 legend2.AddEntry(c95, '95% CL', 'F')
