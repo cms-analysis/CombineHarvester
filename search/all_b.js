@@ -9,7 +9,7 @@ var searchData=
   ['makehist1d',['makeHist1D',['../namespaceplotting.html#affe8f293686abdb2bf4cec1f17d7bbb6',1,'plotting']]],
   ['makehist2d',['makeHist2D',['../namespaceplotting.html#a152c9876f212cb864bcfb2080c8e2660',1,'plotting']]],
   ['makemorphdebugplots',['MakeMorphDebugPlots',['../namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d',1,'ch']]],
-  ['makeratiohist',['MakeRatioHist',['../_plotting_8h.html#a526842799b4de3a542d8114989dba48d',1,'Plotting.h']]],
+  ['makeratiohist',['MakeRatioHist',['../_plotting_8h.html#a526842799b4de3a542d8114989dba48d',1,'MakeRatioHist():&#160;Plotting.h'],['../namespaceplotting.html#a8e9aa50e693ba0dc50f85235f4194f35',1,'plotting.MakeRatioHist()']]],
   ['maketchain',['MakeTChain',['../namespaceplotting.html#aed1c39d2a59ed2ffe536dbda4a6628b3',1,'plotting']]],
   ['makeunique_2eh',['MakeUnique.h',['../_make_unique_8h.html',1,'']]],
   ['makevarbinhist2d',['makeVarBinHist2D',['../namespaceplotting.html#aca3ba03eb5d94f302886c35b710cf03a',1,'plotting']]],
@@ -25,5 +25,6 @@ var searchData=
   ['morphfunctions_2ecc',['MorphFunctions.cc',['../_morph_functions_8cc.html',1,'']]],
   ['morphfunctions_2eh',['MorphFunctions.h',['../_morph_functions_8h.html',1,'']]],
   ['model_20dependent_20limits_20using_20morphingmssmupdate',['Model dependent Limits using MorphingMSSMUpdate',['../_m_s_s_m_update_model_dep.html',1,'']]],
-  ['mssmyieldtable_2ecpp',['MSSMYieldTable.cpp',['../_m_s_s_m_yield_table_8cpp.html',1,'']]]
+  ['mssmyieldtable_2ecpp',['MSSMYieldTable.cpp',['../_m_s_s_m_yield_table_8cpp.html',1,'']]],
+  ['multiratiosplit',['MultiRatioSplit',['../namespaceplotting.html#aeff720afd7d0ca9416ced3d72540addf',1,'plotting']]]
 ];
