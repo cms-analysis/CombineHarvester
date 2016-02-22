@@ -73,12 +73,12 @@ int main(int argc, char** argv) {
   //Example - could fill this map with hardcoded binning for different
   //categories if manual_rebin is turned on
   map<string, vector<double> > binning;
-  binning["et_nobtagnotwoprong"] = {500, 700, 900, 3900};
-  binning["et_btagnotwoprong"] = {500,3900};
-  binning["mt_nobtagnotwoprong"] = {500,700,900,1300,1700,1900,3900};
-  binning["mt_btagnotwoprong"] = {500,1300,3900};
-  binning["tt_nobtagnotwoprong"] = {500,3900};
-  binning["tt_btagnotwoprong"] = {500,3900};
+  binning["et_nobtag"] = {500, 700, 900, 3900};
+  binning["et_btag"] = {500,3900};
+  binning["mt_nobtag"] = {500,700,900,1300,1700,1900,3900};
+  binning["mt_btag"] = {500,1300,3900};
+  binning["tt_nobtag"] = {500,3900};
+  binning["tt_btag"] = {500,3900};
   binning["em_nobtag"] = {500,3900};
   binning["em_btag"] = {500,3900};
 
@@ -87,14 +87,14 @@ int main(int argc, char** argv) {
   ch::CombineHarvester cb;
   // Uncomment this next line to see a *lot* of debug information
   // cb.SetVerbosity(3);
-
+ 
   // Here we will just define two categories for an 8TeV analysis. Each entry in
   // the vector below specifies a bin name and corresponding bin_id.
   //
   map<string,Categories> cats;
   cats["et_13TeV"] = {
-    {8, "et_nobtagnotwoprong"},
-    {9, "et_btagnotwoprong"}
+    {8, "et_nobtag"},
+    {9, "et_btag"}
     };
 
   cats["em_13TeV"] = {
@@ -103,13 +103,13 @@ int main(int argc, char** argv) {
     };
 
   cats["tt_13TeV"] = {
-    {8, "tt_nobtagnotwoprong"},
-    {9, "tt_btagnotwoprong"}
+    {8, "tt_nobtag"},
+    {9, "tt_btag"}
     };
   
   cats["mt_13TeV"] = {
-    {8, "mt_nobtagnotwoprong"},
-    {9, "mt_btagnotwoprong"}
+    {8, "mt_nobtag"},
+    {9, "mt_btag"}
     };
  
 
@@ -138,7 +138,6 @@ int main(int argc, char** argv) {
 
 
   ch::AddMSSMRun2Systematics(cb);
-  
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
@@ -185,6 +184,9 @@ int main(int argc, char** argv) {
     .SetFixNorm(true);
   bbb.MergeAndAdd(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}), cb); 
   cout << " done\n";
+
+  //Switch JES over to lnN:
+  //cb.cp().syst_name({"CMS_scale_j_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");})};
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
