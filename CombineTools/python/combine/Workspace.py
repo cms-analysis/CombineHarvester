@@ -52,6 +52,8 @@ class ModifyDataSet(CombineToolBase):
         ws = f.Get(ws_in[1])
         if len(ws_in) == 3:
             data = ws.data(ws_in[2])
+            if len(ws_out) == 3:
+                data.SetName(ws_out[2])
         else:
             ws_d = self.args.data.split(':')
             print '>> Data: ' + str(ws_d)
@@ -60,8 +62,8 @@ class ModifyDataSet(CombineToolBase):
                 data = f_d.Get(ws_d[1])
             else:
                 data = f_d.Get(ws_d[1]).data(ws_d[2])
+            if len(ws_out) == 3:
+                data.SetName(ws_out[2])
             getattr(ws, 'import')(data)
         ws.SetName(ws_out[1])
-        if len(ws_out) == 3:
-            data.SetName(ws_out[2])
         ws.writeToFile(ws_out[0])

@@ -236,6 +236,7 @@ int main() {
 
   RooWorkspace ws("htt", "htt");
   RooRealVar mh("MH", "", 125, 90, 145);
+  mh.setConstant(true);
 
   // TFile demo("htt_sm_morphing_debug.root", "RECREATE");
   //! [part1]

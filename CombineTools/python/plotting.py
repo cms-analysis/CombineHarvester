@@ -256,6 +256,19 @@ def SetBirdPalette():
     R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
 
 
+def SetDeepSeaPalette():
+    nRGBs = 9
+    stops = array(
+        'd', [0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000])
+    red = array(
+        'd', reversed([0./255.,  9./255., 13./255., 17./255., 24./255.,  32./255.,  27./255.,  25./255.,  29./255.]))
+    green = array(
+        'd', reversed([0./255.,  0./255.,  0./255.,  2./255., 37./255.,  74./255., 113./255., 160./255., 221./255.]))
+    blue = array(
+        'd', reversed([28./255., 42./255., 59./255., 78./255., 98./255., 129./255., 154./255., 184./255., 221./255.]))
+    R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
+
+
 def CreateTransparentColor(color, alpha):
     adapt = R.gROOT.GetColor(color)
     new_idx = R.gROOT.GetListOfColors().GetLast() + 1
@@ -304,6 +317,43 @@ def TwoPadSplit(split_point, gap_low, gap_high):
     upper.cd()
     result = [upper, lower]
     return result
+
+
+def MultiRatioSplit(split_points, gaps_low, gaps_high):
+    """Create a set of TPads split vertically on the TCanvas
+
+    This is a generalisation of the two pad main/ratio split but for the case
+    of multiple ratio pads.
+    
+    Args:
+
+        split_points (list[float]): Height of each ratio pad as a fraction of the
+        canvas height. Pads will be created from the bottom of the frame
+        upwards. The final, main pad will occupy however much space remains,
+        therefore the size of this list should be [number of pads] - 1.
+        gaps_low (list[float]): Gaps between ratio pad frames created on the
+        lower pad side at each boundary. Give  a list of zeroes for no gap
+        between pad frames. Should be the same length as `split_points`.1
+        gaps_high (list[float]): Gaps between ratio pad frames created on the
+        upper pad side at each boundary. Give a list of zeroes for no gap
+        between pad frames.
+    
+    Returns:
+        list[TPad]: List of TPads, indexed from top to bottom on the canvas.
+    """
+    pads = []
+    for i in xrange(len(split_points)+1):
+        pad = R.TPad('pad%i'%i, '', 0., 0., 1., 1.)
+        print i
+        if i > 0:
+            pad.SetBottomMargin(sum(split_points[0:i])+gaps_high[i-1])
+        if i < len(split_points):
+            pad.SetTopMargin(1.-sum(split_points[0:i+1])+gaps_low[i])
+        pad.SetFillStyle(4000)
+        pad.Draw()
+        pads.append(pad)
+    pads.reverse()
+    return pads
 
 
 def TwoPadSplitColumns(split_point, gap_left, gap_right):
@@ -773,6 +823,31 @@ def GraphDivide(num, den):
             res.GetEYlow()[i] = res.GetEYlow()[i]/den.Eval(res.GetX()[i])
 
     return res
+
+
+def MakeRatioHist(num, den, num_err, den_err):
+    """Make a new ratio TH1 from numerator and denominator TH1s with optional
+    error propagation
+    
+    Args:
+        num (TH1): Numerator histogram
+        den (TH1): Denominator histogram
+        num_err (bool): Propagate the error in the numerator TH1
+        den_err (bool): Propagate the error in the denominator TH1
+    
+    Returns:
+        TH1: A new TH1 containing the ratio
+    """
+    result = num.Clone()
+    if not num_err:
+        for i in xrange(1, result.GetNbinsX()+1):
+            result.SetBinError(i, 0.)
+    den_fix = den.Clone()
+    if not den_err:
+        for i in xrange(1, den_fix.GetNbinsX()+1):
+            den_fix.SetBinError(i, 0.)
+    result.Divide(den_fix)
+    return result
 ##@}
 
 
@@ -784,8 +859,7 @@ def GraphDivide(num, den):
 def RemoveGraphXDuplicates(graph):
     for i in xrange(graph.GetN() - 1):
         if graph.GetX()[i + 1] == graph.GetX()[i]:
-            # print 'Removing duplicate point (%f, %f)' % (graph.GetX()[i+1],
-            # graph.GetY()[i+1])
+            # print 'Removing duplicate point (%f, %f)' % (graph.GetX()[i+1], graph.GetY()[i+1])
             graph.RemovePoint(i + 1)
             RemoveGraphXDuplicates(graph)
             break
@@ -799,7 +873,7 @@ def ApplyGraphYOffset(graph, y_off):
 def RemoveGraphYAll(graph, val):
     for i in xrange(graph.GetN()):
         if graph.GetY()[i] == val:
-            print 'Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
+            print '[RemoveGraphYAll] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
             graph.RemovePoint(i)
             RemoveGraphYAll(graph, val)
             break
@@ -943,12 +1017,16 @@ def RemoveNearMin(graph, val, spacing=None):
     if spacing is None:
         spacing = (graph.GetX()[n - 1] - graph.GetX()[0]) / float(n - 2)
         # print '[RemoveNearMin] Graph has spacing of %.3f' % spacing
+    bf_i = None
     for i in xrange(graph.GetN()):
         if graph.GetY()[i] == 0.:
             bf = graph.GetX()[i]
             bf_i = i
             # print '[RemoveNearMin] Found best-fit at %.3f' % bf
             break
+    if bf_i is None:
+        print '[RemoveNearMin] No minimum found!'
+        return
     for i in xrange(graph.GetN()):
         if i == bf_i:
             continue
@@ -1483,6 +1561,7 @@ def fillTH2(hist2d, graph):
             yc = hist2d.GetYaxis().GetBinCenter(y)
             val = graph.Interpolate(xc, yc)
             hist2d.SetBinContent(x, y, val)
+
 
 # Functions 'NewInterpolate' and 'rebin' are taken, translated and modified into python from:
 # https://indico.cern.ch/event/256523/contribution/2/attachments/450198/624259/07JUN2013_cawest.pdf
