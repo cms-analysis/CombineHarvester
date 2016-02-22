@@ -3,6 +3,7 @@ var plotting_8py =
     [ "SetTDRStyle", "plotting_8py.html#ae9921ec8c4b6b4eabfe4603431231a12", null ],
     [ "ModTDRStyle", "plotting_8py.html#a54515e51dabf8327c983dc428c2999df", null ],
     [ "SetBirdPalette", "plotting_8py.html#a352c801d8b36f5e37b3a7e61bd3cee47", null ],
+    [ "SetDeepSeaPalette", "plotting_8py.html#a5009faab4d0d9e1e48be0c5237cad7e5", null ],
     [ "CreateTransparentColor", "plotting_8py.html#a0fd3e3bac0aae39cd325961446d8c916", null ],
     [ "Set", "plotting_8py.html#a30511a379335c5e5c295f88dc146e448", null ],
     [ "OnePad", "plotting_8py.html#a1126597eb4f60cba5a5b87ab05dcc46b", null ],

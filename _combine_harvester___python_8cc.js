@@ -22,6 +22,7 @@ var _combine_harvester___python_8cc =
     [ "Overload1_GetShapeWithUncertainty", "_combine_harvester___python_8cc.html#a7d1d219e693aee751381b6b0c69183b3", null ],
     [ "Overload2_GetShapeWithUncertainty", "_combine_harvester___python_8cc.html#ab6c4f6ec0c916ba232ed49a719fd2030", null ],
     [ "Overload1_UpdateParameters", "_combine_harvester___python_8cc.html#a60ee5f7aebc1607ef31cbe9a483f9964", null ],
+    [ "Overload1_GetParameter", "_combine_harvester___python_8cc.html#a8e3067a95e092715a51b2364ce3e4057", null ],
     [ "Overload_AddBinByBin", "_combine_harvester___python_8cc.html#aa2f8905924850bfc4854a97020c11bda", null ],
     [ "Overload_Obs_set_shape", "_combine_harvester___python_8cc.html#a50a42ab1acdb345846900e61aa878b94", null ],
     [ "Overload_Proc_set_shape", "_combine_harvester___python_8cc.html#a133b8f1f3f1955a3c611973b3d8fe278", null ],

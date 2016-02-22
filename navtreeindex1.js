@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"_plotting_8h.html#aa098641a0337d718d1074531133b884f":[17,0,1,1,16,0],
 "_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98":[17,0,1,1,16,17],
 "_plotting_8h.html#aaeb0dadc50435965db936e967dde2799":[17,0,1,1,16,3],
 "_plotting_8h.html#aafd63f976dd4c5ae271062e0f91c2681":[17,0,1,1,16,6],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "classch_1_1_fn_timer_1_1_token.html#a8f09c19cbce557ae83281e8a0c36c8e9":[16,0,0,6,0,1],
 "classch_1_1_object.html":[16,0,0,8],
 "classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba":[16,0,0,8,8],
-"classch_1_1_object.html#a1bae4062339f6b27251fa40eb3360120":[16,0,0,8,11],
-"classch_1_1_object.html#a1d58aeeeea90ab0492d114ad75b9da66":[16,0,0,8,3]
+"classch_1_1_object.html#a1bae4062339f6b27251fa40eb3360120":[16,0,0,8,11]
 };

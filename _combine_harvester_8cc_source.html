@@ -803,52 +803,58 @@ $(document).ready(function(){initNavTree('_combine_harvester_8cc_source.html',''
 <div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(log(), verbosity_ &gt; 1)</div>
 <div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Reusing existing RooRealVar for rateParam: &quot;</span> &lt;&lt; name &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
 <div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;  }</div>
-<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;  <span class="keywordflow">if</span> (!params_.count(name))</div>
-<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;    params_[name] = std::make_shared&lt;Parameter&gt;(Parameter());</div>
-<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;  Parameter * param = params_.at(name).get();</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;  param-&gt;set_name(name);</div>
-<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;  <span class="comment">// If the RooRealVar in the workpsace isn&#39;t in the list, add it</span></div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;  <span class="keywordtype">bool</span> var_in_par = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; ptr : param-&gt;vars()) {</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;    <span class="keywordflow">if</span> (ptr == var) {</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;      var_in_par = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;    }</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;  }</div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;  <span class="keywordflow">if</span> (!var_in_par) {</div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;    param-&gt;vars().push_back(var);</div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;  }</div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;  <span class="comment">// Then this propagates the value to the RooRealVar</span></div>
-<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;  <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(log(), verbosity_ &gt; 1) &lt;&lt; <span class="stringliteral">&quot;Updating parameter value from &quot;</span></div>
-<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;                                &lt;&lt; param-&gt;val();</div>
-<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;  param-&gt;set_val(val);</div>
-<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;  <span class="keywordflow">if</span> (verbosity_ &gt; 1) log() &lt;&lt; <span class="stringliteral">&quot; to &quot;</span> &lt;&lt; param-&gt;val() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;  <span class="keywordflow">return</span> param;</div>
-<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;}</div>
-<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;</div>
-<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;<span class="keywordtype">void</span> CombineHarvester::SetupRateParamFunc(std::string <span class="keyword">const</span>&amp; name,</div>
-<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;                                          std::string <span class="keyword">const</span>&amp; formula,</div>
-<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;                                          std::string <span class="keyword">const</span>&amp; pars) {</div>
-<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;  RooWorkspace *ws = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;  <span class="keywordflow">if</span> (!wspaces_.count(<span class="stringliteral">&quot;_rateParams&quot;</span>)) {</div>
-<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;    ws = this-&gt;SetupWorkspace(RooWorkspace(<span class="stringliteral">&quot;_rateParams&quot;</span>,<span class="stringliteral">&quot;_rateParams&quot;</span>)).get();</div>
-<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;    ws = wspaces_.at(<span class="stringliteral">&quot;_rateParams&quot;</span>).get();</div>
-<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;  }</div>
-<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;  RooAbsReal *form = ws-&gt;function(name.c_str());</div>
-<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;  <span class="comment">// No parameter to make, this is a formula</span></div>
-<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;  <span class="keywordflow">if</span> (!form) {</div>
-<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;    RooFormulaVar formularvar(name.c_str(), name.c_str(),</div>
-<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;                          formula.c_str(),</div>
-<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;                          RooArgList(ws-&gt;argSet(pars.c_str())));</div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;    ws-&gt;import(formularvar);</div>
-<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;    form = ws-&gt;function(name.c_str());</div>
-<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(log(), verbosity_ &gt; 1)</div>
-<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Created new RooFormulaVar for rateParam: &quot;</span> &lt;&lt; name &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;    <span class="keywordflow">if</span> (verbosity_ &gt; 1) form-&gt;Print();</div>
-<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;  }</div>
-<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;}</div>
-<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;}</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;  Parameter * param = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;  <span class="keywordflow">if</span> (!params_.count(name)) {</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;    params_[name] = std::make_shared&lt;Parameter&gt;(Parameter());</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;    param = params_.at(name).get();</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;    param-&gt;set_name(name);</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;    param-&gt;set_err_u(0.);</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;    param-&gt;set_err_d(0.);</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;    param = params_.at(name).get();</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;  }</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;  <span class="comment">// If the RooRealVar in the workpsace isn&#39;t in the list, add it</span></div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;  <span class="keywordtype">bool</span> var_in_par = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; ptr : param-&gt;vars()) {</div>
+<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;    <span class="keywordflow">if</span> (ptr == var) {</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;      var_in_par = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;    }</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;  }</div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;  <span class="keywordflow">if</span> (!var_in_par) {</div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;    param-&gt;vars().push_back(var);</div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;  }</div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;  <span class="comment">// Then this propagates the value to the RooRealVar</span></div>
+<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;  <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(log(), verbosity_ &gt; 1) &lt;&lt; <span class="stringliteral">&quot;Updating parameter value from &quot;</span></div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;                                &lt;&lt; param-&gt;val();</div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;  param-&gt;set_val(val);</div>
+<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;  <span class="keywordflow">if</span> (verbosity_ &gt; 1) log() &lt;&lt; <span class="stringliteral">&quot; to &quot;</span> &lt;&lt; param-&gt;val() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;  <span class="keywordflow">return</span> param;</div>
+<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;}</div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;</div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;<span class="keywordtype">void</span> CombineHarvester::SetupRateParamFunc(std::string <span class="keyword">const</span>&amp; name,</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;                                          std::string <span class="keyword">const</span>&amp; formula,</div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;                                          std::string <span class="keyword">const</span>&amp; pars) {</div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;  RooWorkspace *ws = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;  <span class="keywordflow">if</span> (!wspaces_.count(<span class="stringliteral">&quot;_rateParams&quot;</span>)) {</div>
+<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;    ws = this-&gt;SetupWorkspace(RooWorkspace(<span class="stringliteral">&quot;_rateParams&quot;</span>,<span class="stringliteral">&quot;_rateParams&quot;</span>)).get();</div>
+<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;    ws = wspaces_.at(<span class="stringliteral">&quot;_rateParams&quot;</span>).get();</div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;  }</div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;  RooAbsReal *form = ws-&gt;function(name.c_str());</div>
+<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;  <span class="comment">// No parameter to make, this is a formula</span></div>
+<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;  <span class="keywordflow">if</span> (!form) {</div>
+<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;    RooFormulaVar formularvar(name.c_str(), name.c_str(),</div>
+<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;                          formula.c_str(),</div>
+<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;                          RooArgList(ws-&gt;argSet(pars.c_str())));</div>
+<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;    ws-&gt;import(formularvar);</div>
+<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;    form = ws-&gt;function(name.c_str());</div>
+<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(log(), verbosity_ &gt; 1)</div>
+<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Created new RooFormulaVar for rateParam: &quot;</span> &lt;&lt; name &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;    <span class="keywordflow">if</span> (verbosity_ &gt; 1) form-&gt;Print();</div>
+<div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;  }</div>
+<div class="line"><a name="l00825"></a><span class="lineno">  825</span>&#160;}</div>
+<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;}</div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a6b7c11550052d3edd98cd0971280ff79"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a6b7c11550052d3edd98cd0971280ff79">ch::CombineHarvester::swap</a></div><div class="ttdeci">friend void swap(CombineHarvester &amp;first, CombineHarvester &amp;second)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8cc_source.html#l00030">CombineHarvester.cc:30</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a463bab1fa1cc7098f35d82c78a10fb9d"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a463bab1fa1cc7098f35d82c78a10fb9d">ch::CombineHarvester::data</a></div><div class="ttdeci">CombineHarvester &amp; data()</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___filters_8cc_source.html#l00124">CombineHarvester_Filters.cc:124</a></div></div>
 <div class="ttc" id="classch_1_1_observation_html_a4f8f4cc0a612fc88effb03189daa3b13"><div class="ttname"><a href="classch_1_1_observation.html#a4f8f4cc0a612fc88effb03189daa3b13">ch::Observation::PrintHeader</a></div><div class="ttdeci">static std::ostream &amp; PrintHeader(std::ostream &amp;out)</div><div class="ttdef"><b>Definition:</b> <a href="_observation_8cc_source.html#l00113">Observation.cc:113</a></div></div>

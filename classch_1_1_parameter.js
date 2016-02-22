@@ -17,6 +17,7 @@ var classch_1_1_parameter =
     [ "range_u", "classch_1_1_parameter.html#ad0958b8f9f2bbe6671bedce5005058f4", null ],
     [ "set_range_d", "classch_1_1_parameter.html#ac6d7d553f9a6eeb1c06105fc531000ff", null ],
     [ "range_d", "classch_1_1_parameter.html#a84965c0df39666449279066216b3f184", null ],
+    [ "set_range", "classch_1_1_parameter.html#a63f525de6f8c58439e852c0224ab2fec", null ],
     [ "set_frozen", "classch_1_1_parameter.html#a1539eec34291394e236f4dc6d7a43279", null ],
     [ "frozen", "classch_1_1_parameter.html#a49f2b0d9cc4170effcbb0005dd8760a2", null ],
     [ "vars", "classch_1_1_parameter.html#a51f57bf4e727f2024da96a2ae2e5cf76", null ],
