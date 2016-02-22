@@ -1,0 +1,5 @@
+{
+ "r" : "#sigma/#sigma_{exp}",
+ "1+CMS_scale_t*0.03" : "#tau^{ES}/#tau^{ES}_{MC}",
+ "eff_t" : "#tau^{ID}/#tau^{ID}_{MC}"
+}
