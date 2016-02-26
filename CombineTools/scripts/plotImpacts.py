@@ -54,6 +54,8 @@ colors = {
     'Unrecognised': 2
 }
 color_hists = {}
+seen_types = set()
+
 for name, col in colors.iteritems():
     color_hists[name] = ROOT.TH1F()
     plot.Set(color_hists[name], FillColor=col, Title=name)
@@ -99,6 +101,7 @@ for page in xrange(n):
         pre = pdata[p]['prefit']
         fit = pdata[p]['fit']
         tp = pdata[p]['type']
+        seen_types.add(tp)
         if pdata[p]['type'] != 'Unconstrained':
             pre_err_hi = (pre[2] - pre[1])
             pre_err_lo = (pre[1] - pre[0])
@@ -186,12 +189,13 @@ for page in xrange(n):
     legend.AddEntry(g_impacts_lo, '-1#sigma Impact', 'F')
     legend.Draw()
 
-    legend2 = ROOT.TLegend(0.01, 0.94, 0.30, 0.99, '', 'NBNDC')
-    legend2.SetNColumns(2)
-    for name, h in color_hists.iteritems():
-        if name == 'Unrecognised': continue
-        legend2.AddEntry(h, name, 'F')
-    legend2.Draw()
+    if len(seen_types) > 1:
+        legend2 = ROOT.TLegend(0.01, 0.94, 0.30, 0.99, '', 'NBNDC')
+        legend2.SetNColumns(2)
+        for name, h in color_hists.iteritems():
+            if name == 'Unrecognised': continue
+            legend2.AddEntry(h, name, 'F')
+        legend2.Draw()
 
     plot.DrawCMSLogo(pads[0], 'CMS', args.cms_label, 0, 0.25, 0.00, 0.00)
     plot.DrawTitle(pads[1], '#hat{%s} = %.3g #pm %.3g' % (
