@@ -10,6 +10,7 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', '-f', help='named input file')
 parser.add_argument('--labels', help='Labels for legend')
+parser.add_argument('--parton_scalings', help='Option to apply parton lumi scaling to some of the curves. Options [ym,yd,n], m and d indicates multiply or divide')
 parser.add_argument('--process', help='The process on which a limit has been calculated. [gg#phi, bb#phi]', default="gg#phi")
 parser.add_argument('--custom_y_range', help='Fix y axis range', action='store_true', default=False)
 parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=0.001)
@@ -36,6 +37,10 @@ if args.labels:
   labels = (args.labels).split(',')
 else:
   labels =[]
+if args.parton_scalings:
+  parton_scalings = (args.parton_scalings).split(',')
+else:
+  parton_scalings = []
 outname = args.outname
 
 if (args.relative or args.absolute) and len(files)!=2:
@@ -54,32 +59,45 @@ if len(labels) < len(files) and not (args.relative or args.absolute) :
 
 
 exp_graph_list = [ROOT.TGraph() for i in range(len(files))]
-if args.relative or args.absolute:
-  obs_graph_list = [ROOT.TGraph() for i in range(len(files))]
+#if args.relative or args.absolute:
+obs_graph_list = [ROOT.TGraph() for i in range(len(files))]
 for i in range(len(files)):
   if ".root" in files[i]:
     exp_graph_list[i] = plot.SortGraph((ROOT.TFile(files[i],'r')).Get('expected'))
-    if args.relative or args.absolute:
-     obs_graph_list[i] = plot.SortGraph((ROOT.TFile(files[i],'r')).Get('observed'))
+ #   if args.relative or args.absolute:
+    obs_graph_list[i] = plot.SortGraph((ROOT.TFile(files[i],'r')).Get('observed'))
   else:
     data = {}
     with open(files[i]) as jsonfile:
       data = json.load(jsonfile)
     exp_graph_list[i] = plot.LimitTGraphFromJSON(data, 'exp0')
-    if args.relative or args.absolute:
-     obs_graph_list[i] = plot.LimitTGraphFromJSON(data, 'obs')
+   # if args.relative or args.absolute:
+    obs_graph_list[i] = plot.LimitTGraphFromJSON(data, 'obs')
 
 max_vals = []
 for i in range(len(exp_graph_list)):
   max_vals.append(ROOT.TMath.MaxElement(exp_graph_list[i].GetN(),exp_graph_list[i].GetY()))
+  if args.relative or args.absolute:
+    relative_exp_graph = plot.GraphDifference(exp_graph_list[0],exp_graph_list[1],True if args.relative else False) 
+    relative_obs_graph = plot.GraphDifference(obs_graph_list[0],obs_graph_list[1],True if args.relative else False)
+    del max_vals[:]
+    max_vals.append(ROOT.TMath.MaxElement(relative_exp_graph.GetN(),relative_exp_graph.GetY()))
+    if not args.expected_only:
+      max_vals.append(ROOT.TMath.MaxElement(relative_obs_graph.GetN(),relative_obs_graph.GetY()))
 
-if args.relative or args.absolute:
-  relative_exp_graph = plot.GraphDifference(exp_graph_list[0],exp_graph_list[1],True if args.relative else False) 
-  relative_obs_graph = plot.GraphDifference(obs_graph_list[0],obs_graph_list[1],True if args.relative else False)
-  del max_vals[:]
-  max_vals.append(ROOT.TMath.MaxElement(relative_exp_graph.GetN(),relative_exp_graph.GetY()))
-  if not args.expected_only:
-    max_vals.append(ROOT.TMath.MaxElement(relative_obs_graph.GetN(),relative_obs_graph.GetY()))
+#Optional code to scale limits by parton lumi factors
+parton_lumis = {90:2.149018,100:2.197008,110:2.241856,120:2.28606,130:2.33067,140:2.37202,160:2.45378,180:2.53216,200:2.60917,250:2.79534,300:2.97773,350:3.15818,400:3.33910,450:3.52189,500:3.70655,600:4.09093,700:4.49192,800:4.92356,900:5.38754,1000:5.887}
+for j in range(len(parton_scalings)):
+  yval, xval, yval_obs, xval_obs = ROOT.Double(0), ROOT.Double(0), ROOT.Double(0), ROOT.Double(0)
+  for i in range((exp_graph_list[j].GetN())):
+    exp_graph_list[j].GetPoint(i,xval,yval)
+    obs_graph_list[j].GetPoint(i,xval_obs,yval_obs)
+    if parton_scalings[j] == 'ym' : 
+        exp_graph_list[j].SetPoint(i,xval,(yval)*parton_lumis[xval])
+        obs_graph_list[j].SetPoint(i,xval_obs,(yval_obs)*parton_lumis[xval_obs])
+    if parton_scalings[j] == 'yd' : 
+        exp_graph_list[j].SetPoint(i,xval,(yval)/parton_lumis[xval])
+        obs_graph_list[j].SetPoint(i,xval_obs,(yval_obs)/parton_lumis[xval_obs])
 
 process_label=args.process
 
@@ -142,6 +160,13 @@ if not (args.relative or args.absolute):
     exp_graph_list[i].SetMarkerColor(colourlist[i])
     exp_graph_list[i].SetLineStyle(2)
     exp_graph_list[i].Draw("PL")
+    if not args.expected_only:
+      obs_graph_list[i].SetLineColor(colourlist[i])
+      obs_graph_list[i].SetLineWidth(3)
+      obs_graph_list[i].SetMarkerStyle(20)
+      obs_graph_list[i].SetMarkerColor(colourlist[i])
+      obs_graph_list[i].SetLineStyle(1)
+      obs_graph_list[i].Draw("PL")
 else:
   relative_exp_graph.SetLineColor(ROOT.kRed)
   relative_exp_graph.SetLineWidth(3)
