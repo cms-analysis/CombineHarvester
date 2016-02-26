@@ -89,21 +89,21 @@ int main(int argc, char** argv) {
     };
 
   cats["mt_13TeV"] = {
-    {1, "mt_inclusive"},
-    {2, "mt_1prong1pi0"},
+    //{1, "mt_inclusive"},
+    //{2, "mt_1prong1pi0"},
     {3, "mt_1prong1pi0Pt20To30"},
     {4, "mt_1prong1pi0Pt30To40"},
-    {5, "mt_1prong1pi0Pt40To50"},
-    {6, "mt_1prong1pi0Pt50To60"},
-    {7, "mt_1prong1pi0Pt60To70"},
-    {8, "mt_1prong1pi0Pt70ToInf"},
-    {9, "mt_3prong"},
-    {10, "mt_3prongPt20To30"},
-    {11, "mt_3prongPt30To40"},
-    {12, "mt_3prongPt40To50"},
-    {13, "mt_3prongPt50To60"},
-    {14, "mt_3prongPt60To70"},
-    {15, "mt_3prongPt70ToInf"}
+    {5, "mt_1prong1pi0Pt40To50"}
+    //{6, "mt_1prong1pi0Pt50To60"},
+    //{7, "mt_1prong1pi0Pt60To70"},
+    //{8, "mt_1prong1pi0Pt70ToInf"},
+    //{9, "mt_3prong"},
+  //  {10, "mt_3prongPt20To30"}
+    //{11, "mt_3prongPt30To40"},
+    //{12, "mt_3prongPt40To50"},
+    //{13, "mt_3prongPt50To60"},
+    //{14, "mt_3prongPt60To70"},
+    //{15, "mt_3prongPt70ToInf"}
     };
  
   // Create an empty CombineHarvester instance that will hold all of the
@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
   ch::CombineHarvester cb;
 
   vector<string> masses = {"-3","-2.5","-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3"}; 
+  //vector<string> masses = {"-3","-2","-1","0","1","2","3"}; 
 
   for(auto chn : chns){
     cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn+"_13TeV"]);
@@ -148,20 +149,20 @@ int main(int argc, char** argv) {
       "CMS_htt_QCD_13TeV","lnN",SystMap<>::init(1.3));
 
   cb.cp().process({"VV"}).AddSyst(cb,
-      "CMS_htt_VVNorm_13TeV", "lnN", SystMap<>::init(1.15));
+      "CMS_htt_VVNorm_13TeV", "lnN", SystMap<>::init(1.30));
 
   cb.cp().process({"W"}).channel({"mt"}).AddSyst(cb,
-     "CMS_htt_WNorm_13TeV","lnN",SystMap<>::init(1.2));
+     "CMS_htt_WNorm_13TeV","lnN",SystMap<>::init(1.50));
 
   
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-rebin.root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process({"ZTT"}).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV-rebin.root",
         "$BIN/ZTT_$MASS",
         "$BIN/ZTT_$MASS_$SYSTEMATIC");
    }
@@ -171,7 +172,9 @@ int main(int argc, char** argv) {
   // which is commonly used in the htt analyses
   ch::SetStandardBinNames(cb);
   //! [part8]
-    
+   
+  //cb.cp().VariableRebin({0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6});    
+  cb.cp().VariableRebin({0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3});    
 
   //! [part9]
   // First we generate a set of bin names:
