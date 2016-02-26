@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--input', '-i', help='input json file')
 parser.add_argument('--output', '-o', help='name of the output file to create')
 parser.add_argument('--translate', '-t', help='JSON file for remapping of parameter names')
-parser.add_argument('--per-page', type=int, default=20, help='Number of parameters to show per page')
+parser.add_argument('--per-page', type=int, default=30, help='Number of parameters to show per page')
 parser.add_argument('--cms-label', default='Internal', help='Label next to the CMS logo')
 args = parser.parse_args()
 
