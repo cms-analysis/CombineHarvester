@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
       {"mt"};
    //   {"mt","et"};
 
-  RooRealVar taues("taues", "taues", -3.0, 3.0);
+  RooRealVar taues("taues", "taues", -6.0, 6.0);
 
   map<string, VString> bkg_procs;
   bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV"};
@@ -77,41 +77,67 @@ int main(int argc, char** argv) {
     {4, "et_1prong1pi0Pt30To40"},
     {5, "et_1prong1pi0Pt40To50"},
     {6, "et_1prong1pi0Pt50To60"},
-    {7, "et_1prong1pi0Pt60To70"},
-    {8, "et_1prong1pi0Pt70ToInf"},
-    {9, "et_3prong"},
-    {10, "et_3prongPt20To30"},
-    {11, "et_3prongPt30To40"},
-    {12, "et_3prongPt40To50"},
-    {13, "et_3prongPt50To60"},
-    {14, "et_3prongPt60To70"},
-    {15, "et_3prongPt70ToInf"}
+    {7, "et_1prong1pi0Pt60ToInf"},
+    {8, "et_3prong"},
+    {9, "et_3prongPt20To30"},
+    {10, "et_3prongPt30To40"},
+    {11, "et_3prongPt40To50"},
+    {12, "et_3prongPt50To60"},
+    {13, "et_3prongPt60ToInf"}
     };
 
   cats["mt_13TeV"] = {
     //{1, "mt_inclusive"},
-    //{2, "mt_1prong1pi0"},
+    {2, "mt_1prong1pi0"},
     {3, "mt_1prong1pi0Pt20To30"},
     {4, "mt_1prong1pi0Pt30To40"},
-    {5, "mt_1prong1pi0Pt40To50"}
-    //{6, "mt_1prong1pi0Pt50To60"},
-    //{7, "mt_1prong1pi0Pt60To70"},
-    //{8, "mt_1prong1pi0Pt70ToInf"},
-    //{9, "mt_3prong"},
-  //  {10, "mt_3prongPt20To30"}
-    //{11, "mt_3prongPt30To40"},
-    //{12, "mt_3prongPt40To50"},
-    //{13, "mt_3prongPt50To60"},
-    //{14, "mt_3prongPt60To70"},
-    //{15, "mt_3prongPt70ToInf"}
+    {5, "mt_1prong1pi0Pt40To50"},
+    {6, "mt_1prong1pi0Pt50To60"},
+    {7, "mt_1prong1pi0Pt60ToInf"},
+    {8, "mt_3prong"},
+    {9, "mt_3prongPt20To30"},
+   {10, "mt_3prongPt30To40"},
+   {11, "mt_3prongPt40To50"},
+   {12, "mt_3prongPt50To60"},
+   {13, "mt_3prongPt60ToInf"}
     };
  
+  map<string, vector<double> > binning;
+  binning["mt_1prong1pi0"] = {0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2};
+  binning["mt_1prong1pi0Pt20To30"] = {0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2};
+  binning["mt_1prong1pi0Pt30To40"] = {0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2};
+  binning["mt_1prong1pi0Pt40To50"] = {0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2};
+  binning["mt_1prong1pi0Pt50To60"] = {0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2};
+  binning["mt_1prong1pi0Pt60ToInf"] = {0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2};
+  binning["mt_3prong"] = {0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5};
+  binning["mt_3prongPt20To30"] = {0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5};
+  binning["mt_3prongPt30To40"] = {0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5};
+  binning["mt_3prongPt40To50"] = {0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5};
+  binning["mt_3prongPt50To60"] = {0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5};
+  binning["mt_3prongPt60ToInf"] = {0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5};
+ //Even coarser binning - for some pt ranges this is the only thing to give us
+ //sensible results for the likelihood scan
+ /* 
+  binning["mt_1prong1pi0Pt30To40"] = {0.4,0.8,1.2};
+  binning["mt_1prong1pi0Pt40To50"] = {0.4,0.8,1.2};
+  binning["mt_1prong1pi0Pt50To60"] = {0.4,0.8,1.2};
+  binning["mt_1prong1pi0Pt60To70"] = {0.4,0.8,1.2};
+  binning["mt_1prong1pi0Pt70ToInf"] = {0.4,0.8,1.2};
+  binning["mt_3prongPt20To30"] = {0.8,1.2,1.5};
+  binning["mt_3prongPt30To40"] = {0.8,1.2,1.5};
+  binning["mt_3prongPt40To50"] = {0.8,1.2,1.5};
+  binning["mt_3prongPt50To60"] = {0.8,1.2,1.5};
+  binning["mt_3prongPt60To70"] = {0.8,1.2,1.5};
+  binning["mt_3prongPt70ToInf"] = {0.8,1.2,1.5};*/
+  
+  
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
   ch::CombineHarvester cb;
 
-  vector<string> masses = {"-3","-2.5","-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3"}; 
-  //vector<string> masses = {"-3","-2","-1","0","1","2","3"}; 
+  vector<string> masses = {"-6","-5.5","-5","-4.75","-4.5","-4.25","-4","-3.75","-3.5","-3.25","-3","-2.75","-2.5","-2.25","-2","-1.75","-1.5","-1.25","-1","-0.75","-0.5","-0.25","0","0.25","0.5","0.75","1","1.25","1.5","1.75","2","2.25","2.5","2.75","3","3.25","3.5","3.75","4","4.25","4.5","4.75","5","5.5","6"}; 
+  //vector<string> masses = {"-3","-2.75","-2.5","-2.25","-2","-1.75","-1.5","-1.25","-1","-0.75","-0.5","-0.25","0","0.25","0.5","0.75","1","1.25","1.5","1.75","2","2.25","2.5","2.75","3"}; 
+ // vector<string> masses = {"-3","-2.5","-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3"}; 
 
   for(auto chn : chns){
     cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn+"_13TeV"]);
@@ -158,24 +184,41 @@ int main(int argc, char** argv) {
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-rebin.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process({"ZTT"}).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV-rebin.root",
+        input_dir + "htt_"+chn+".inputs-mssm-13TeV.root",
         "$BIN/ZTT_$MASS",
         "$BIN/ZTT_$MASS_$SYSTEMATIC");
    }
 
+
+  auto bins = cb.cp().bin_set();
+  bool manual_rebin = true;  
+  if(manual_rebin) {
+      for(auto b : bins) {
+        std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
+        cb.cp().bin({b}).VariableRebin(binning[b]);    
+      }
+  }
+  
+  cout << "Generating bbb uncertainties...";
+  auto bbb = ch::BinByBinFactory()
+    .SetAddThreshold(0.)
+    .SetMergeThreshold(0.4)
+    .SetFixNorm(true);
+  bbb.MergeAndAdd(cb.cp().process({"QCD", "W", "ZJ", "ZL", "TT", "VV", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}), cb); 
+  cout << " done\n";
+
+  // This function modifies every entry to have a standardised bin name of
+  
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
   // which is commonly used in the htt analyses
   ch::SetStandardBinNames(cb);
   //! [part8]
-   
-  //cb.cp().VariableRebin({0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6});    
-  cb.cp().VariableRebin({0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3});    
-
+  
   //! [part9]
   // First we generate a set of bin names:
   RooWorkspace ws("htt", "htt");
