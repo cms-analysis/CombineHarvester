@@ -94,7 +94,7 @@ class Impacts(CombineToolBase):
           continue
         pres["fit"] = paramScanRes[param][param]
         for p in poiList:
-          pres.update({p : paramScanRes[param][p], 'impact_'+p : (paramScanRes[param][p][2] - paramScanRes[param][p][0])/2.})
+          pres.update({p : paramScanRes[param][p], 'impact_'+p : max(map(abs,(paramScanRes[param][p][2],paramScanRes[param][p][0])))})
       res['params'].append(pres)
     self.flush_queue()
     jsondata = json.dumps(res, sort_keys=True, indent=2, separators=(',', ': '))
