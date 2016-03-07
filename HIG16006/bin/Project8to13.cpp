@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
   RooRealVar mh("mh", "mh", 90., 1000.);
 
   typedef vector<string> VString;
-  string in_dir = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM_13TeV/LIMITS111215-legacymssm-unblind/plain/";
+  string in_dir = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16006/LIMITS111215-legacymssm-unblind/plain/";
 
 
   VString chns = {"mt","et","tt","em"};
@@ -152,20 +152,43 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
  
+  //Individual channel-cats 
+  std::string output_folder="projection";
   string folder = "output/projection/cmb/";
   boost::filesystem::create_directories(folder);
-  TFile output((folder + "/htt_mssm_input.root").c_str(), "RECREATE");
-  cb.cp().WriteDatacard(folder + "/htt_mssm.txt", output);
-  output.Close();
-
   for (string chn : chns) {
      string folderchn = "output/projection/"+chn;
-     boost::filesystem::create_directories(folderchn);
-     TFile outputchn((folderchn + "/htt_"+chn+"_mssm_input.root").c_str(), "RECREATE");
-     cb.cp().channel({chn}).WriteDatacard(folderchn + "/htt_"+chn+"_mssm.txt", outputchn);
-     outputchn.Close();
+     auto bins = cb.cp().channel({chn}).bin_set();
+      for (auto b : bins) {
+        string folderchncat = "output/"+output_folder+"/"+b;
+        boost::filesystem::create_directories(folderchn);
+        boost::filesystem::create_directories(folderchncat);
+        TFile output((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+        TFile outputchn((folderchn + "/"+b+"_input.root").c_str(), "RECREATE");
+        TFile outputchncat((folderchncat + "/"+b+"_input.root").c_str(), "RECREATE");
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + ".txt", outputchn);
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchncat + "/" + b + ".txt", outputchncat);
+        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
+        output.Close();
+        outputchn.Close();
+        outputchncat.Close();
+        if(b.find("8")!=string::npos) {
+            string foldercat = "output/"+output_folder+"/htt_cmb_8_13TeV/";
+            boost::filesystem::create_directories(foldercat);
+            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
+            outputcat.Close();
+        }
+        else if(b.find("9")!=string::npos) {
+            string foldercat = "output/"+output_folder+"/htt_cmb_9_13TeV/";
+            boost::filesystem::create_directories(foldercat);
+            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
+            outputcat.Close();
+        }
+      }
   }
-
+     
 
 }
             

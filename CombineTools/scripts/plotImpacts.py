@@ -47,6 +47,20 @@ data['params'].sort(key=lambda x: abs(x['impact_%s' % POIs[0]]), reverse=True)
 show = args.per_page
 n = int(math.ceil(float(len(data['params'])) / float(show)))
 
+colors = {
+    'Gaussian': 1,
+    'Poisson': 8,
+    'AsymmetricGaussian': 9,
+    'Unconstrained': 39,
+    'Unrecognised': 2
+}
+color_hists = {}
+seen_types = set()
+
+for name, col in colors.iteritems():
+    color_hists[name] = ROOT.TH1F()
+    plot.Set(color_hists[name], FillColor=col, Title=name)
+
 for page in xrange(n):
     canv = ROOT.TCanvas(args.output, args.output)
     n_params = len(data['params'][show * page:show * (page + 1)])
@@ -80,29 +94,72 @@ for page in xrange(n):
     g_impacts_hi = ROOT.TGraphAsymmErrors(n_params)
     g_impacts_lo = ROOT.TGraphAsymmErrors(n_params)
     max_impact = 0.
+
+    text_entries = []
+    redo_boxes = []
     for p in xrange(n_params):
         i = n_params - (p + 1)
         pre = pdata[p]['prefit']
-        pre_err = (pre[2] - pre[0]) / 2.
         fit = pdata[p]['fit']
-        imp = pdata[p][POIs[0]]
-        g_pulls.SetPoint(i, (fit[1] - pre[1]) / pre_err, float(i) + 0.5)
-        g_pulls.SetPointError(
-            i, (fit[1] - fit[0]) / pre_err, (fit[2] - fit[1]) / pre_err, 0., 0.)
+        tp = pdata[p]['type']
+        seen_types.add(tp)
+        if pdata[p]['type'] != 'Unconstrained':
+            pre_err_hi = (pre[2] - pre[1])
+            pre_err_lo = (pre[1] - pre[0])
+            pull = fit[1] - pre[1]
+            pull = (pull/pre_err_hi) if pull >= 0 else (pull/pre_err_lo)
+            pull_hi = fit[2] - pre[1]
+            pull_hi = (pull_hi/pre_err_hi) if pull_hi >= 0 else (pull_hi/pre_err_lo)
+            pull_hi = pull_hi - pull
+            pull_lo = fit[0] - pre[1]
+            pull_lo = (pull_lo/pre_err_hi) if pull_lo >= 0 else (pull_lo/pre_err_lo)
+            pull_lo =  pull - pull_lo
+            g_pulls.SetPoint(i, pull, float(i) + 0.5)
+            g_pulls.SetPointError(
+                i, pull_lo, pull_hi, 0., 0.)
+        else:
+            # Hide this point
+            g_pulls.SetPoint(i, 0., 9999.)
+            y1 = ROOT.gStyle.GetPadBottomMargin()
+            y2 = 1. - ROOT.gStyle.GetPadTopMargin()
+            x1 = ROOT.gStyle.GetPadLeftMargin()
+            h = (y2 - y1) / float(n_params)
+            y1 = y1 + ((float(i)+0.5) * h)
+            x1 = x1 + (0.7-x1)/2.
+            text_entries.append((x1, y1, '%.3g^{#plus%-.3g}_{#minus%-.3g}' % (fit[1], fit[2]-fit[1], fit[1]-fit[0])))
+            redo_boxes.append(i)
         g_impacts_hi.SetPoint(i, 0, float(i) + 0.5)
         g_impacts_lo.SetPoint(i, 0, float(i) + 0.5)
+        imp = pdata[p][POIs[0]]
         g_impacts_hi.SetPointError(i, 0, imp[2] - imp[1], 0.5, 0.5)
         g_impacts_lo.SetPointError(i, imp[1] - imp[0], 0, 0.5, 0.5)
         max_impact = max(
             max_impact, abs(imp[1] - imp[0]), abs(imp[2] - imp[1]))
         h_pulls.GetYaxis().SetBinLabel(
-            i + 1, (Translate(pdata[p]['name'], translate)))
+            i + 1, ('#color[%i]{%s}'% (colors.get(tp, 2), Translate(pdata[p]['name'], translate))))
 
     # Style and draw the pulls histo
     plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
     plot.Set(h_pulls.GetYaxis(), LabelSize=0.022, TickLength=0.0)
     h_pulls.GetYaxis().LabelsOption('v')
     h_pulls.Draw()
+
+    for i in redo_boxes:
+        newbox = boxes[i].Clone()
+        newbox.Clear()
+        newbox.SetY1(newbox.GetY1()+0.01)
+        newbox.SetY2(newbox.GetY2()-0.01)
+        newbox.SetX1(ROOT.gStyle.GetPadLeftMargin()+0.001)
+        newbox.SetX2(0.7-0.001)
+        newbox.Draw()
+        boxes.append(newbox)
+    latex = ROOT.TLatex()
+    latex.SetNDC()
+    latex.SetTextFont(42)
+    latex.SetTextSize(0.02)
+    latex.SetTextAlign(22)
+    for entry in text_entries:
+        latex.DrawLatex(*entry)
 
     # Go to the other pad and draw the impacts histo
     pads[1].cd()
@@ -112,8 +169,8 @@ for page in xrange(n):
         '#Delta#hat{%s}' % (Translate(POIs[0], translate)))
     plot.Set(h_impacts.GetYaxis(), LabelSize=0, TickLength=0.0)
     h_impacts.Draw()
-    
-    # Back to the first pad to graph the pulls graph
+
+    # Back to the first pad to draw the pulls graph
     pads[0].cd()
     plot.Set(g_pulls, MarkerSize=0.8, LineWidth=2)
     g_pulls.Draw('PSAME')
@@ -133,6 +190,14 @@ for page in xrange(n):
     legend.AddEntry(g_impacts_hi, '+1#sigma Impact', 'F')
     legend.AddEntry(g_impacts_lo, '-1#sigma Impact', 'F')
     legend.Draw()
+
+    if len(seen_types) > 1:
+        legend2 = ROOT.TLegend(0.01, 0.94, 0.30, 0.99, '', 'NBNDC')
+        legend2.SetNColumns(2)
+        for name, h in color_hists.iteritems():
+            if name == 'Unrecognised': continue
+            legend2.AddEntry(h, name, 'F')
+        legend2.Draw()
 
     plot.DrawCMSLogo(pads[0], 'CMS', args.cms_label, 0, 0.25, 0.00, 0.00)
     plot.DrawTitle(pads[1], '#hat{%s} = %.3g #pm %.3g' % (

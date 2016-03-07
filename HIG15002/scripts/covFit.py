@@ -293,14 +293,16 @@ if type == 'A1_5PDtoA1_4P':
 # A1_5PD --> A1_5D
 if type == 'A1_5PDtoA1_5D':
     wnew = ROOT.RooWorkspace()
+    # for D in ['mu_BR_WW']:
     for D in ['mu_BR_WW', 'mu_BR_ZZ', 'mu_BR_bb', 'mu_BR_gamgam', 'mu_BR_tautau']:
         wnew.factory('%s[1,-10.0,10.0]' % D)
     for P in ['ggFbbH', 'VBF', 'WH', 'ZH', 'ttHtH']:
+        # for D in ['WW']:
         for D in ['WW', 'tautau', 'ZZ', 'bb', 'gamgam']:
             wnew.factory('expr::mu_XS_%s_BR_%s("@0", mu_BR_%s)' % (P, D, D))
     getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
     pdf = wnew.pdf('pdf')
-    pdf.Print('tree')
+    # pdf.Print('tree')
     wfinal = wnew
 
 nll = pdf.createNLL(data)
@@ -369,7 +371,7 @@ for p in xrange(points):
     nllf = nll.getVal()
     print '%s = %f; nll0 = %f; nll = %f, deltaNLL = %f' % (POI, r, nll0, nllf,  nllf - nll0)
     a_deltaNLL[0] = nllf - nll0
-    tout.Fill()
+    if a_deltaNLL[0] > 0.: tout.Fill()
     r += width
 
 tout.Write()
