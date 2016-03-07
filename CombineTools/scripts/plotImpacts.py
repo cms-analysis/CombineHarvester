@@ -147,8 +147,8 @@ for page in xrange(n):
     for i in redo_boxes:
         newbox = boxes[i].Clone()
         newbox.Clear()
-        newbox.SetY1(newbox.GetY1()+0.01)
-        newbox.SetY2(newbox.GetY2()-0.01)
+        newbox.SetY1(newbox.GetY1()+0.005)
+        newbox.SetY2(newbox.GetY2()-0.005)
         newbox.SetX1(ROOT.gStyle.GetPadLeftMargin()+0.001)
         newbox.SetX2(0.7-0.001)
         newbox.Draw()
@@ -163,6 +163,7 @@ for page in xrange(n):
 
     # Go to the other pad and draw the impacts histo
     pads[1].cd()
+    if max_impact == 0.: max_impact = 1E-6  # otherwise the plotting gets screwed up
     h_impacts = ROOT.TH2F(
         "impacts", "impacts", 6, -max_impact * 1.1, max_impact * 1.1, n_params, 0, n_params)
     plot.Set(h_impacts.GetXaxis(), LabelSize=0.03, TitleSize=0.04, Ndivisions=505, Title=
