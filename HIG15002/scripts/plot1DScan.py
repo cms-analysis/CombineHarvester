@@ -427,6 +427,7 @@ for other in other_scans:
         other['func'].SetLineWidth(2)
     if args.pub:
         other['func'].SetLineStyle(2)
+        # other['func'].SetLineWidth(3)
     other['func'].Draw('SAME')
 
 if args.breakdown and args.envelope:
@@ -633,8 +634,10 @@ if 'atlas_' in args.output:
     collab = 'ATLAS'
 
 subtext = '#it{LHC Run 1 Internal}'
-if args.pub: subtext = '#it{#splitline{LHC Run 1}{Internal}}'
-plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS',
+if args.pub:
+    subtext = '#it{#splitline{LHC Run 1}{}}'
+    # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
+plot.DrawCMSLogo(pads[0], 'ATLAS#bf{ and }CMS',
                  subtext, 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS',
 #                  '#it{LHC Run 1 Internal}', 11, 0.045, 0.035, 1.2)
@@ -661,7 +664,6 @@ latex.SetTextSize(0.04)
 legend_l = 0.73
 if len(other_scans) > 0:
     legend_l = legend_l - len(other_scans) * 0.04
-print args.legend_pos
 if args.legend_pos == 1:
     legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
 elif args.legend_pos == 2:
@@ -676,11 +678,14 @@ elif args.legend_pos == 4:
         latex.SetTextSize(0.035)
         latex.DrawLatex(0.50, 0.875, POI_line)
 if len(other_scans) >= 3:
+    y_sub = 0. if args.POI_line is None else 0.07
     if args.envelope:
-        legend = ROOT.TLegend(0.58, 0.79, 0.95, 0.93, '', 'NBNDC')
+        legend = ROOT.TLegend(0.58, 0.79 - y_sub, 0.95, 0.93 - y_sub, '', 'NBNDC')
         legend.SetNColumns(2)
+        if args.POI_line is not None:
+            latex.DrawLatex(0.58, 0.875, POI_line)
     else:
-        legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
+        legend = ROOT.TLegend(0.46, 0.83 - y_sub, 0.95, 0.93 - y_sub, '', 'NBNDC')
         legend.SetNColumns(2)
 
 legend.AddEntry(main_scan['func'], args.main_label, 'L')

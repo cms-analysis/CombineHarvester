@@ -256,6 +256,28 @@ def SetBirdPalette():
     R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
 
 
+def SetDeepSeaPalette():
+    nRGBs = 9
+    stops = array(
+        'd', [0.0000, 0.1250, 0.2500, 0.3750, 0.5000, 0.6250, 0.7500, 0.8750, 1.0000])
+    red = array(
+        'd', reversed([0./255.,  9./255., 13./255., 17./255., 24./255.,  32./255.,  27./255.,  25./255.,  29./255.]))
+    green = array(
+        'd', reversed([0./255.,  0./255.,  0./255.,  2./255., 37./255.,  74./255., 113./255., 160./255., 221./255.]))
+    blue = array(
+        'd', reversed([28./255., 42./255., 59./255., 78./255., 98./255., 129./255., 154./255., 184./255., 221./255.]))
+    R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
+
+
+def SetCorrMatrixPalette():
+    R.TColor.CreateGradientColorTable(3,
+                                      array ("d", [0.00, 0.50, 1.00]),
+                                      array ("d", [1.00, 1.00, 0.00]),
+                                      array ("d", [0.70, 1.00, 0.34]),
+                                      array ("d", [0.00, 1.00, 0.82]),
+                                      255,  1.0)
+
+
 def CreateTransparentColor(color, alpha):
     adapt = R.gROOT.GetColor(color)
     new_idx = R.gROOT.GetListOfColors().GetLast() + 1
