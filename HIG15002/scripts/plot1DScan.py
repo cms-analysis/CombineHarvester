@@ -104,6 +104,57 @@ def ProcessEnvelope(main, others, relax_safety=0):
     return gr
 
 
+def ProcessEnvelopeNew(main, others, relax_safety=0):
+    '[ProcessEnvelope] Will create envelope from %i other scans' % len(others)
+    min_x = min([oth['graph'].GetX()[0] for oth in others])
+    max_x = max([oth['graph'].GetX()[oth['graph'].GetN() - 1] for oth in others])
+    # print '(min_x,max_x) = (%f, %f)' % (min_x, max_x)
+    npoints = 100
+    step = (max_x - min_x) / float(npoints-1)
+    x = min_x
+    xvals = []
+    yvals = []
+    for i in xrange(npoints):
+        yset = []
+        for oth in others:
+            gr = oth['graph']
+            if x >= gr.GetX()[0] and x <= gr.GetX()[gr.GetN() - 1]:
+                yset.append(oth['func'].Eval(x))
+        # print 'At x=%f, possible y vals are %s' % (x, yset)
+        if len(yset) > 0:
+            xvals.append(x)
+            yvals.append(min(yset)) 
+        x = x + step
+
+    gr = ROOT.TGraph()
+    gr.Set(len(xvals))  # will not contain the best fit
+    for i in xrange(gr.GetN()):
+        gr.SetPoint(i, xvals[i], yvals[i])
+
+    # print 'Envelope'
+    # gr.Print()
+
+    spline = ROOT.TSpline3("spline3", gr)
+    global NAMECOUNTER
+    func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
+                    gr.GetX()[0], gr.GetX()[gr.GetN() - 1], 1)
+    min_x, min_y = plot.ImproveMinimum(gr, func)
+    gr.Set(len(xvals) + 1)
+    gr.SetPoint(len(xvals), min_x, min_y)
+    gr.Sort()
+
+    for i in xrange(gr.GetN()):
+        gr.GetY()[i] -= min_y
+    for oth in others:
+        for i in xrange(oth['graph'].GetN()):
+            oth['graph'].GetY()[i] -= min_y
+        # print 'OTHER'
+        # oth['graph'].Print()
+
+    plot.RemoveGraphXDuplicates(gr)
+    return gr
+
+
 def BuildScan(scan, param, files, color, yvals, chop,
               remove_near_min=None,
               rezero=False,
@@ -333,7 +384,7 @@ if args.envelope and args.breakdown:
         other['func'].SetLineWidth(2)
         other['graph'].SetMarkerSize(0.4)
 elif args.envelope:
-    new_gr = ProcessEnvelope(main_scan, other_scans, args.relax_safety)
+    new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety)
     main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
     for other in other_scans:
