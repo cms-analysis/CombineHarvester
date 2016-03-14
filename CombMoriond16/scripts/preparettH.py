@@ -4,6 +4,7 @@ import os
 import pprint
 import argparse
 from collections import defaultdict
+import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -131,6 +132,32 @@ if modify_systs:
         ['QCDscale_ttH']).ForEachSyst(lambda x: Set_QCDscale_ttH(x))
 
 
+add_BRs = True
+
+br_list = [
+    ('param_alphaS',                '.*h(ww|zz|gg|tt|zg|mm)',              1.012),
+    ('param_alphaS',                '.*hbb',                               0.989),
+    ('param_alphaS',                '.*hcc',                               0.942),
+    ('param_alphaS',                '.*hgluglu',                           1.055),
+    ('param_mB',                    '.*h(ww|zz|gg|tt|zg|mm|cc|gluglu)',    0.981),
+    ('param_mB',                    '.*hbb',                               1.014),
+    ('param_mC',                    '.*hcc',                               1.062),
+    ('HiggsDecayWidthTHU_hqq',      '.*h(ww|zz|gg|tt|zg|mm|gluglu)',       0.988),
+    ('HiggsDecayWidthTHU_hqq',      '.*h(bb|cc)',                          1.008),
+    ('HiggsDecayWidthTHU_hvv',      '.*h(ww|zz)',                          1.004),
+    ('HiggsDecayWidthTHU_hll',      '.*h(tt|mm)',                          1.019),
+    ('HiggsDecayWidthTHU_hgg',      '.*hgg',                               1.010),
+    ('HiggsDecayWidthTHU_hzg',      '.*hzg',                               1.051),
+    ('HiggsDecayWidthTHU_hgluglu',  '.*hgluglu',                           1.028)
+]
+
+if add_BRs:
+    cb.syst_name(['CMS_hgg_BR'], False)  # drop existing ones added by the analysts
+    cb.SetVerbosity(3)
+    for entry in br_list:
+        cb.cp().signals().process([entry[1]]).AddSyst(cb,
+            entry[0], 'lnN', ch.SystMap()(entry[2]))
+    cb.SetVerbosity(0)
 
 sig_procs_in_bins = defaultdict(set)
 
