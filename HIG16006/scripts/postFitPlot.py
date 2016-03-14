@@ -172,12 +172,12 @@ background_schemes = {'mt':[backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(
 'em':[backgroundComp("Misidentified e/#mu", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))]}
 
 #Extract relevent histograms from shape file
-[sighist,binname] = getHistogram(histo_file,'TotalSig')
-if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH')[0]
-if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH')[0]
-bkghist = getHistogram(histo_file,'TotalBkg')[0]
+[sighist,binname] = getHistogram(histo_file,'TotalSig', mode)
+if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH', mode)[0]
+if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH', mode)[0]
+bkghist = getHistogram(histo_file,'TotalBkg', mode)[0]
 
-total_datahist = getHistogram(histo_file,"data_obs")[0]
+total_datahist = getHistogram(histo_file,"data_obs", mode)[0]
 blind_datahist = total_datahist.Clone()
 total_datahist.SetMarkerStyle(20)
 blind_datahist.SetMarkerStyle(20)
@@ -237,8 +237,8 @@ if auto_blind or auto_blind_check_only:
           os.system('PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --freeze %(freeze)s'%vars())
     
           testhisto_file = ROOT.TFile(shape_file)
-          testsighist_ggH = getHistogram(testhisto_file,'ggH')[0]
-          testsighist_bbH = getHistogram(testhisto_file,'bbH')[0]
+          testsighist_ggH = getHistogram(testhisto_file,'ggH', mode)[0]
+          testsighist_bbH = getHistogram(testhisto_file,'bbH', mode)[0]
           for j in range(1,bkghist.GetNbinsX()):
               soverb_ggH = testsighist_ggH.GetBinContent(j)/math.sqrt(bkghist.GetBinContent(j))
               soverb_bbH = testsighist_bbH.GetBinContent(j)/math.sqrt(bkghist.GetBinContent(j))
@@ -275,12 +275,12 @@ for i,t in enumerate(background_schemes[channel]):
   plots = t['plot_list']
   h = ROOT.TH1F()
   for j,k in enumerate(plots):
-    if h.GetEntries()==0 and getHistogram(histo_file,k) is not None:
-      h = getHistogram(histo_file,k)[0]
+    if h.GetEntries()==0 and getHistogram(histo_file,k, mode) is not None:
+      h = getHistogram(histo_file,k, mode)[0]
       h.SetName(k)
     else:
-      if getHistogram(histo_file,k) is not None:
-        h.Add(getHistogram(histo_file,k)[0])
+      if getHistogram(histo_file,k, mode) is not None:
+        h.Add(getHistogram(histo_file,k, mode)[0])
   h.SetFillColor(t['colour'])
   h.SetLineColor(ROOT.kBlack)
   h.SetMarkerSize(0)
@@ -356,15 +356,17 @@ axish[0].Draw("axissame")
 legend = plot.PositionedLegend(0.30,0.30,3,0.03)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
+legend.SetFillColor(0)
+bkg_histos.reverse()
+background_schemes[channel].reverse()
+for legi,hists in enumerate(bkg_histos):
+  legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
+legend.AddEntry(bkghist,"Background uncertainty","f")
 if model_dep is True: 
     legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
 else: 
     legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
     legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
-legend.SetFillColor(0)
-for legi,hists in enumerate(bkg_histos):
-  legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
-legend.AddEntry(bkghist,"Background uncertainty","f")
 if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","P")
 legend.Draw("same")
 latex = ROOT.TLatex()
