@@ -1,4 +1,6 @@
 <bin file="MorphingMSSMRun2.cpp" name="MorphingMSSMRun2"></bin>
+<bin file="TauESMeasurement.cpp" name="TauESMeasurement"></bin>
+<bin file="QCDRatioMeasurement.cpp" name="QCDRatioMeasurement"></bin>
 <bin file="Project8to13.cpp" name="Project8to13"></bin>
 <use name="root"/>
 <use name="rootmath"/>
