@@ -736,34 +736,37 @@ $(document).ready(function(){initNavTree('_morph_functions_8cc_source.html','');
 <div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;    <span class="keywordflow">if</span> (h2) <span class="keyword">delete</span> h2;</div>
 <div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;  }</div>
 <div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;  <span class="keywordtype">double</span> m = masses.front();</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;  <span class="keywordtype">double</span> step = 1.;</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;  <span class="keywordtype">double</span> step = 1;</div>
 <div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &gt; 100.) step = step * 10.;</div>
 <div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &gt; 100.) step = step * 10.;</div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;  <span class="keywordflow">while</span> (m &lt;= masses.back()) {</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;    rrv-&gt;setVal(m);</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;    TH1* hm = pdf-&gt;createHistogram(<span class="stringliteral">&quot;CMS_th1x&quot;</span>);</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;    hm-&gt;AddDirectory(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    TH1 * hm2 = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;    <span class="keywordflow">if</span> (ref_bins) { </div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;      hm2 = (TH1*)ref_bins-&gt;Clone();</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;      hm2-&gt;Reset();</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 1; x &lt;= hm2-&gt;GetNbinsX(); ++x) {</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;        hm2-&gt;SetBinContent(x, hm-&gt;GetBinContent(x));</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;      }</div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;      hm2 = hm;</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;      hm = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;    }</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;    hm2-&gt;AddDirectory(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    hm2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;morph_point_%g&quot;</span>, m));</div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    gDirectory-&gt;WriteTObject(hm2);</div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    <span class="keywordflow">if</span> (hm) <span class="keyword">delete</span> hm;</div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    <span class="keywordflow">if</span> (hm2) <span class="keyword">delete</span> hm2;</div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;    m += step;</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;  }</div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;  f-&gt;cd();</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;}</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;}</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &lt; 10.) step = step/10.;</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;  <span class="keywordflow">while</span> (m &lt;= masses.back()) {</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;    rrv-&gt;setVal(m);</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;    TH1* hm = pdf-&gt;createHistogram(<span class="stringliteral">&quot;CMS_th1x&quot;</span>);</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    hm-&gt;AddDirectory(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;    TH1 * hm2 = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;    <span class="keywordflow">if</span> (ref_bins) { </div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;      hm2 = (TH1*)ref_bins-&gt;Clone();</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;      hm2-&gt;Reset();</div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 1; x &lt;= hm2-&gt;GetNbinsX(); ++x) {</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;        hm2-&gt;SetBinContent(x, hm-&gt;GetBinContent(x));</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;      }</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;      hm2 = hm;</div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;      hm = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;    }</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    hm2-&gt;AddDirectory(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    hm2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;morph_point_%g&quot;</span>, m));</div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    <span class="comment">//It struggles with m=0, instead adds really small number close to 0</span></div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    <span class="keywordflow">if</span>(fabs(m) &lt; 1E-5) hm2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;morph_point_0&quot;</span>));</div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;    gDirectory-&gt;WriteTObject(hm2);</div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;    <span class="keywordflow">if</span> (hm) <span class="keyword">delete</span> hm;</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;    <span class="keywordflow">if</span> (hm2) <span class="keyword">delete</span> hm2;</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;    m += step;</div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;  }</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;  f-&gt;cd();</div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;}</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;}</div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a3d265eb50ea8ec70192788d985733d9d"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a3d265eb50ea8ec70192788d985733d9d">ch::CombineHarvester::GetShape</a></div><div class="ttdeci">TH1F GetShape()</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___evaluate_8cc_source.html#l00183">CombineHarvester_Evaluate.cc:183</a></div></div>
 <div class="ttc" id="namespacech_html_a64d9f4241e5148c2ab549c40a731dc8c"><div class="ttname"><a href="namespacech.html#a64d9f4241e5148c2ab549c40a731dc8c">ch::BuildRooMorphing</a></div><div class="ttdeci">void BuildRooMorphing(RooWorkspace &amp;ws, CombineHarvester &amp;cb, std::string const &amp;bin, std::string const &amp;process, RooAbsReal &amp;mass_var, std::string norm_postfix, bool allow_morph, bool verbose, bool force_template_limit=false, TFile *file=nullptr)</div><div class="ttdoc">[part1] </div><div class="ttdef"><b>Definition:</b> <a href="_morph_functions_8cc_source.html#l00019">MorphFunctions.cc:19</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html"><div class="ttname"><a href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a></div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00030">CombineHarvester.h:30</a></div></div>
