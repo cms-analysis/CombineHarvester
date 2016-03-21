@@ -65,7 +65,7 @@ b_cards = [
 
 g_pre = os.path.join(args.i, 'moriond2016/couplings/hgg/')
 g_cards = [
-    'CMS-HGG_mva_13TeV_datacard.txt'
+    'CMS-HGG_mva_13TeV_datacard_TTH.txt'
 ]
 
 for card in l_cards:
@@ -76,19 +76,6 @@ for card in b_cards:
 
 for card in g_cards:
     cb.ParseDatacard(g_pre + card, analysis='ttH', channel='gg', mass='*')
-
-# Temporarily using inclusive hgg card so filter everything that's not
-# TTH
-cb.FilterAll(lambda x:
-             x.channel() == 'gg' and not x.bin().startswith('TTH'))
-
-# cb.SetGroup('blah1', ['.*'])
-# cb.SetGroup('blah2', ['.*_norm'])
-# cb.RemoveGroup('blah1', ['.*tau.*', '.*qcd.*'])
-# cb.RenameGroup('blah1', 'blah3')
-# cb.PrintAll()
-
-# cb.syst_name(['blah'], False)
 
 modify_systs = True
 
@@ -131,6 +118,42 @@ if modify_systs:
     cb.cp().process(['ttH.*']).syst_name(
         ['QCDscale_ttH']).ForEachSyst(lambda x: Set_QCDscale_ttH(x))
 
+correlate_btag_unc = True
+if correlate_btag_unc:
+    rename = {
+        'CMS_ttHl_btag_HF':         'CMS_ttH_CSVHF',
+        'CMS_ttHl_btag_HFStats1':   'CMS_ttH_CSVHFStats1',
+        'CMS_ttHl_btag_HFStats2':   'CMS_ttH_CSVHFStats2',
+        'CMS_ttHl_btag_LF':         'CMS_ttH_CSVLF',
+        'CMS_ttHl_btag_LFStats1':   'CMS_ttH_CSVLFStats1',
+        'CMS_ttHl_btag_LFStats2':   'CMS_ttH_CSVLFStats2',
+        'CMS_ttHl_btag_cErr1':      'CMS_ttH_CSVCErr1',
+        'CMS_ttHl_btag_cErr2':      'CMS_ttH_CSVCErr2'}
+    for oldname, newname in rename.iteritems():
+        cb.cp().syst_name(
+            [oldname]).ForEachSyst(lambda x: x.set_name(newname))
+
+
+    # leptons                         bb                              gg
+    # 'CMS_ttHl_JES'                  'CMS_scale_j'                   'CMS_hgg_JEC_TTH'
+
+    # 'CMS_ttHl_btag_HF'              'CMS_ttH_CSVHF'
+    # 'CMS_ttHl_btag_HFStats1'        'CMS_ttH_CSVHFStats1'
+    # 'CMS_ttHl_btag_HFStats2'        'CMS_ttH_CSVHFStats2'
+    # 'CMS_ttHl_btag_LF'              'CMS_ttH_CSVLF'
+    # 'CMS_ttHl_btag_LFStats1'        'CMS_ttH_CSVLFStats1'
+    # 'CMS_ttHl_btag_LFStats2'        'CMS_ttH_CSVLFStats2'
+    # 'CMS_ttHl_btag_cErr1'           'CMS_ttH_CSVCErr1'
+    # 'CMS_ttHl_btag_cErr2'           'CMS_ttH_CSVCErr2'
+    #                                                                 'CMS_hgg_JetBTagWeight'
+
+    # ''                              ''                              'CMS_hgg_ElectronWeight'
+    # ''                              ''                              'CMS_hgg_MuonWeight'
+    #                                 'CMS_ttH_eff_lepton'
+    #                                 'CMS_ttH_eff_lepton_sl'
+    # 'CMS_ttHl_lepEff_elloose'
+    # 'CMS_ttHl_lepEff_muloose'
+    # 'CMS_ttHl_lepEff_tight'
 
 add_BRs = True
 
@@ -193,6 +216,19 @@ pprint.pprint(dict(correlated_systs), indent=4)
 cb.cp().syst_name(['pdf_Higgs_ttH']).PrintSysts()
 cb.cp().syst_name(['QCDscale_ttH']).PrintSysts()
 cb.cp().syst_name(['lumi_13TeV']).PrintSysts()
+cb.cp().syst_name(['pdf_gg']).PrintSysts()
+cb.cp().syst_name(['pdf_qqbar']).PrintSysts()
+
+for chn in cb.channel_set():
+    print chn
+    pars = cb.cp().channel([chn]).syst_name_set()
+    # print pars
+    cb.SetGroup('channel_%s'%chn, pars)
+    if chn == 'gg':
+        cb.SetGroup('channel_%s'%chn, ['CMS_hgg.*'])
+        cb.RemoveGroup('channel_%s'%chn, ['CMS_hgg_nuisance_HighR9EBPhi_13TeVsmear'])
+
+cb.PrintParams()
 
 # cb.WriteDatacard('ttH_hgg.txt', 'ttH_hgg.root')
 cb.WriteDatacard('ttH_comb.txt', 'ttH_comb.inputs.root')
@@ -201,6 +237,7 @@ cb.WriteDatacard('ttH_comb.txt', 'ttH_comb.inputs.root')
 for chn in cb.channel_set():
     cb.cp().channel([chn]).WriteDatacard(
         'ttH_%s.txt' % chn, 'ttH_%s.inputs.root' % chn)
+
 
 cards = ' '.join(
     [x.replace('.txt', '=') + b_pre + x for x in b_cards] +
