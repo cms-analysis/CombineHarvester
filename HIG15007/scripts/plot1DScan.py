@@ -235,7 +235,7 @@ axishist = plot.GetAxisHist(pads[0])
 # axishist.SetMinimum(1E-5)
 # pads[0].SetLogy(True)
 axishist.SetMaximum(args.y_max)
-axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
+axishist.GetYaxis().SetTitle("- 2 #Delta ln L")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
 
 # main_scan['graph'].Draw('PSAME')
@@ -302,7 +302,7 @@ val_2sig = main_scan['val_2sig']
 
 textfit = '%s = %.3f{}^{#plus %.3f}_{#minus %.3f}' % (fixed_name, val_nom[0], val_nom[1], abs(val_nom[2]))
 if args.upper_cl:
-    textfit = '%s < %.2f (%i%% CL)' % (fixed_name, val_nom[0]+val_nom[1], int(args.upper_cl * 100))
+    textfit = '%s < %.3f (%i%% CL)' % (fixed_name, val_nom[0]+val_nom[1], int(args.upper_cl * 100))
 
 pt = ROOT.TPaveText(0.59, 0.82 - len(other_scans)*0.08, 0.95, 0.91, 'NDCNB')
 if args.envelope: pt.SetY2(0.78)
@@ -314,7 +314,7 @@ if args.breakdown is None and args.envelope is False:
         textfit = '#color[%s]{%s = %.3f{}^{#plus %.3f}_{#minus %.3f}}' % (other_scans_opts[i][2], fixed_name, other['val'][0], other['val'][1], abs(other['val'][2]))
         if args.upper_cl:
             print 'here'
-            textfit = '#color[%s]{%s < %.2f (%i%% CL)}' % (other_scans_opts[i][2], fixed_name, other['val'][1], int(args.upper_cl * 100))
+            textfit = '#color[%s]{%s < %.3f (%i%% CL)}' % (other_scans_opts[i][2], fixed_name, other['val'][1], int(args.upper_cl * 100))
         pt.AddText(textfit)
     
 breakdown_json = {}
@@ -459,10 +459,11 @@ collab = 'Combined'
 if 'cms_' in args.output: collab = 'CMS'
 if 'atlas_' in args.output: collab = 'ATLAS'
 
-plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.045, 0.035, 1.2)
+plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.045, 0.035, 1.2,  cmsTextSize = 1.)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
 
 if not args.no_input_label: plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
+plot.DrawTitle(pads[0], '2.3-2.7 fb^{-1} (13 TeV)', 3)
 # legend_l = 0.70 if len(args) >= 4 else 0.73
 legend_l = 0.73
 if len(other_scans) > 0:
