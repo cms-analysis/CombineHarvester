@@ -167,7 +167,8 @@ SETTINGSA = {
     'cms': {
         'xvar': 'kappa_V',
         'yvar': 'kappa_F',
-        'fill_color': ROOT.TColor.GetColor(250, 226, 235),
+        # 'fill_color': ROOT.TColor.GetColor(250, 226, 235),
+        'fill_color': ROOT.TColor.GetColor(255, 249, 255),
         'line_color': ROOT.kRed,
         'legend': 'CMS',
         'multi': 2
@@ -202,6 +203,7 @@ parser.add_argument('--multi', type=int, default=1, help='scale number of bins')
 parser.add_argument('--thin', type=int, default=1, help='thin graph points')
 parser.add_argument('--order', default='b,tau,Z,gam,W,comb')
 parser.add_argument('--x-range', default=None)
+parser.add_argument('--pub', action='store_true')
 parser.add_argument('--x-axis', default='#kappa_{V}')
 parser.add_argument('--y-axis', default='#kappa_{F}')
 parser.add_argument('--axis-hist', default=None)
@@ -297,7 +299,7 @@ for scan in order:
         for i, c in enumerate(conts95[scan]):
             c.SetLineColor(SETTINGS[scan]['line_color'])
             c.SetLineWidth(3)
-            c.SetLineStyle(9)
+            c.SetLineStyle(3)
             pads[0].cd()
             outfile.WriteTObject(c, 'graph95_%s_%i' % (scan, i))
     legend.AddEntry(conts68[scan][0], SETTINGS[scan]['legend'], 'F')
@@ -343,8 +345,12 @@ legend2.Draw()
 
 box = ROOT.TPave(0.15, 0.82, 0.41, 0.92, 0, 'NBNDC')
 box.Draw()
-plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1}',
-                 11, 0.025, 0.035, 1.1, extraText2='#it{Internal}')
+if args.pub:
+    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1}}', '',
+                     11, 0.025, 0.035, 1.1)
+else:
+    plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }#it{CMS}', '#it{LHC Run 1}',
+                     11, 0.025, 0.035, 1.1, extraText2='#it{Internal}')
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{+}CMS', '#it{LHC Run 1}', 11, 0.02, 0.035, 1.1, extraText2='#it{Internal}')
 pads[0].RedrawAxis()
 canv.Print('.pdf')

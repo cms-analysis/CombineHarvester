@@ -105,11 +105,11 @@ def ProcessEnvelope(main, others, relax_safety=0):
 
 
 def ProcessEnvelopeNew(main, others, relax_safety=0):
-    '[ProcessEnvelope] Will create envelope from %i other scans' % len(others)
+    print '[ProcessEnvelope] Will create envelope from %i other scans' % len(others)
     min_x = min([oth['graph'].GetX()[0] for oth in others])
     max_x = max([oth['graph'].GetX()[oth['graph'].GetN() - 1] for oth in others])
     # print '(min_x,max_x) = (%f, %f)' % (min_x, max_x)
-    npoints = 100
+    npoints = 200
     step = (max_x - min_x) / float(npoints-1)
     x = min_x
     xvals = []
@@ -118,7 +118,7 @@ def ProcessEnvelopeNew(main, others, relax_safety=0):
         yset = []
         for oth in others:
             gr = oth['graph']
-            if x >= gr.GetX()[0] and x <= gr.GetX()[gr.GetN() - 1]:
+            if x >= gr.GetX()[0] and x <= (gr.GetX()[gr.GetN() - 1] + 1E-6):
                 yset.append(oth['func'].Eval(x))
         # print 'At x=%f, possible y vals are %s' % (x, yset)
         if len(yset) > 0:
@@ -250,6 +250,8 @@ parser.add_argument(
     '--pub', action='store_true', help='do not draw the input label')
 parser.add_argument('--signif', action='store_true', help='do significance plot')
 parser.add_argument('--envelope', action='store_true', help='do envelope plot')
+parser.add_argument('--old-envelope', action='store_true', help='do envelope plot (old method)')
+parser.add_argument('--hide-envelope', action='store_true', help='do not show envelope markers')
 parser.add_argument('--upper-cl', type=float, help='quote upper limit instead')
 parser.add_argument('--chop', type=float, default=7., help='remove vals above')
 parser.add_argument('--y-max', type=float, default=8., help='max y to draw')
@@ -362,11 +364,21 @@ if args.envelope and args.breakdown:
         y_off = other_scans[i]['func'].Eval(bf)
         print'>> Evaluating for offset at best-fit of %f gives %f' % (bf, y_off)
         for j in xrange(1, n_brk):
+            oth = other_scans[i+j*n_env]
             print '>> Applying shift of %f to graph %s' % (y_off, other_scans_opts[i+j*n_env][0])
-            plot.ApplyGraphYOffset(other_scans[i+j*n_env]['graph'], y_off)
+            plot.ApplyGraphYOffset(oth['graph'], y_off)
+            color = oth['func'].GetLineColor()
+            oth['spline'] = ROOT.TSpline3("spline3", oth['graph'])
+            oth['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, oth['spline']), oth[
+                                     'graph'].GetX()[0], oth['graph'].GetX()[oth['graph'].GetN() - 1], 1)
+            oth['func'].SetLineColor(color)
+            NAMECOUNTER += 1
     new_others = []
     for j in xrange(n_brk):
-        new_gr = ProcessEnvelope(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)
+        if args.old_envelope:
+            new_gr = ProcessEnvelope(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)
+        else:
+            new_gr = ProcessEnvelopeNew(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)     
         if j == 0:
             main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
@@ -384,7 +396,10 @@ if args.envelope and args.breakdown:
         other['func'].SetLineWidth(2)
         other['graph'].SetMarkerSize(0.4)
 elif args.envelope:
-    new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety)
+    if args.old_envelope:
+        new_gr = ProcessEnvelope(main_scan, other_scans, args.relax_safety)
+    else:
+        new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety)
     main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
     for other in other_scans:
@@ -403,6 +418,8 @@ if args.pub:
     main_scan['graph'].SetMarkerSize(0)
     pads[0].SetTickx(True)
     pads[0].SetTicky(True)
+if args.hide_envelope:
+    main_scan['graph'].SetMarkerSize(0)
 main_scan['graph'].SetMarkerColor(1)
 main_scan['graph'].Draw('AP')
 
@@ -415,7 +432,8 @@ axishist = plot.GetAxisHist(pads[0])
 # axishist.SetMinimum(1E-5)
 # pads[0].SetLogy(True)
 axishist.SetMaximum(args.y_max)
-axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
+# axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
+axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
 if args.x_title is not None:
     axishist.GetXaxis().SetTitle(args.x_title)
@@ -478,6 +496,9 @@ for other in other_scans:
         other['func'].SetLineWidth(2)
     if args.pub:
         other['func'].SetLineStyle(2)
+    if args.hide_envelope:
+        other['func'].SetLineWidth(1)
+        other['graph'].Draw('PSAME') # redraw this
         # other['func'].SetLineWidth(3)
     other['func'].Draw('SAME')
 
@@ -684,12 +705,12 @@ if 'cms_' in args.output:
 if 'atlas_' in args.output:
     collab = 'ATLAS'
 
-subtext = '#it{LHC Run 1 Internal}'
+subtext = '{#it{LHC} #bf{Run 1 Internal}}'
 if args.pub:
-    subtext = '#it{#splitline{LHC Run 1}{}}'
+    subtext = '{#it{LHC} #bf{Run 1}}'
     # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
-plot.DrawCMSLogo(pads[0], 'ATLAS#bf{ and }CMS',
-                 subtext, 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
+plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}'+subtext,
+                 '', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS',
 #                  '#it{LHC Run 1 Internal}', 11, 0.045, 0.035, 1.2)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1
