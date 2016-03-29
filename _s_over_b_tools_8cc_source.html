@@ -138,9 +138,9 @@ $(document).ready(function(){initNavTree('_s_over_b_tools_8cc_source.html','');}
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
 <div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="namespacech.html#a35c9af4e2f53f4686e4c4bbba535eb35">   38</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="namespacech.html#a35c9af4e2f53f4686e4c4bbba535eb35">IntegrateFloatRange</a>(TH1F <span class="keyword">const</span>* hist, <span class="keywordtype">double</span> xmin, <span class="keywordtype">double</span> xmax) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  TAxis* axis = hist-&gt;GetXaxis();</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">int</span> bmin = axis-&gt;FindBin(xmin);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">int</span> bmax = axis-&gt;FindBin(xmax);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  TAxis <span class="keyword">const</span>* axis = hist-&gt;GetXaxis();</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">int</span> bmin = axis-&gt;FindFixBin(xmin);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">int</span> bmax = axis-&gt;FindFixBin(xmax);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">double</span> integral = hist-&gt;Integral(bmin, bmax);</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  integral -= hist-&gt;GetBinContent(bmin) * (xmin - axis-&gt;GetBinLowEdge(bmin)) /</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;              axis-&gt;GetBinWidth(bmin);</div>
