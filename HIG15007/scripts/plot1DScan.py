@@ -263,7 +263,8 @@ for other in other_scans:
     other['graph'].Draw('PSAME')
 
 line = ROOT.TLine()
-line.SetLineColor(ROOT.kRed)
+line.SetLineColor(16)
+# line.SetLineStyle(7)
 for yval in yvals:
     plot.DrawHorizontalLine(pads[0], line, yval)
     if (len(other_scans) == 0 or args.upper_cl is not None) and args.pub is False:
@@ -464,8 +465,18 @@ plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.045, 0.035, 1.2,  cmsT
 
 if not args.no_input_label: plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
 plot.DrawTitle(pads[0], '2.3-2.7 fb^{-1} (13 TeV)', 3)
+plot.DrawTitle(pads[0], 'm_{H} = 125 GeV', 1)
+
+info = ROOT.TPaveText(0.59, 0.75, 0.95, 0.91, 'NDCNB')
+info.SetTextFont(42)
+info.SetTextAlign(12)
+info.AddText('#bf{ttH combination}')
+info.AddText('HIG-15-005 H#rightarrow#gamma#gamma')
+info.AddText('HIG-15-008 H#rightarrowleptons')
+info.AddText('HIG-16-004 H#rightarrowbb')
+info.Draw()
 # legend_l = 0.70 if len(args) >= 4 else 0.73
-legend_l = 0.73
+legend_l = 0.69
 if len(other_scans) > 0:
     legend_l = legend_l - len(other_scans) * 0.04
 legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
@@ -477,9 +488,9 @@ if len(other_scans) >= 3:
         legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
         legend.SetNColumns(2)
 
-legend.AddEntry(main_scan['func'], args.main_label, 'L')
+legend.AddEntry(main_scan['func'], args.main_label + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
 for i, other in enumerate(other_scans):
-    legend.AddEntry(other['func'], other_scans_opts[i][1], 'L')
+    legend.AddEntry(other['func'], other_scans_opts[i][1] + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
 # if len(args) >= 4: legend.AddEntry(syst_scan['func'], 'Stat. Only', 'L')
 legend.Draw()
 
