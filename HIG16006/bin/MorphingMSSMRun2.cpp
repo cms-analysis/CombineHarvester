@@ -29,11 +29,18 @@ namespace po = boost::program_options;
 template <typename T>
 void To1Bin(T* proc)
 {
+    std::unique_ptr<TH1> originalHist = proc->ClonedScaledShape();
     TH1F *hist = new TH1F("hist","hist",1,0,1);
     hist->SetDirectory(0);
-    hist->SetBinContent(1,proc->ClonedScaledShape()->Integral(0,proc->ClonedScaledShape()->GetNbinsX()+1));
+    hist->SetBinContent(1,originalHist->Integral(0,originalHist->GetNbinsX()+1));
     proc->set_shape(*hist,true);
 }
+
+bool BinIsControlRegion(ch::Object const* obj)
+{
+    return boost::regex_search(obj->bin(),boost::regex{"_cr$"});
+}
+
 
 
 int main(int argc, char** argv) {
@@ -169,7 +176,7 @@ int main(int argc, char** argv) {
       // filter QCD in W+jets control regions
       // filter signal processes in control regions
       cb.FilterAll([](ch::Object const* obj) {
-              return (((obj->bin().find("_wjets_") != std::string::npos) && (obj->process() == "QCD")) || (boost::regex_search(obj->bin(),boost::regex{"_cr"}) && obj->signal()));
+              return ((BinIsControlRegion(obj) && (obj->bin().find("_wjets_") != std::string::npos) && (obj->process() == "QCD")) || (BinIsControlRegion(obj) && obj->signal()));
               });
   } 
 
@@ -196,8 +203,8 @@ int main(int argc, char** argv) {
         obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
         });
     } 
-    cb.cp().FilterAll([](ch::Object const* obj) { return ! (boost::regex_search(obj->bin(),boost::regex{"_cr"}));}).ForEachProc(To1Bin<ch::Process>);
-    cb.cp().FilterAll([](ch::Object const* obj) { return ! (boost::regex_search(obj->bin(),boost::regex{"_cr"}));}).ForEachObs(To1Bin<ch::Observation>);
+    cb.cp().FilterAll(BinIsControlRegion).ForEachProc(To1Bin<ch::Process>);
+    cb.cp().FilterAll(BinIsControlRegion).ForEachObs(To1Bin<ch::Observation>);
   
 
   auto rebin = ch::AutoRebin()
@@ -221,7 +228,7 @@ int main(int argc, char** argv) {
     .SetMergeThreshold(0.4)
     .SetFixNorm(true);
   bbb.MergeAndAdd(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}).FilterAll([](ch::Object const* obj) {
-              return (boost::regex_search(obj->bin(),boost::regex{"_cr"}));
+              return BinIsControlRegion(obj);
               }), cb);
   cout << " done\n";
 

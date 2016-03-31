@@ -20,7 +20,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   CombineHarvester src = cb.cp();
   
   if (control_region == 1){
-    //limit to only the btag and nobtag categories
+    // we only want to cosider systematic uncertainties in the signal region.
+    // limit to only the btag and nobtag categories
     src.bin_id({8,9});
   }
 
@@ -188,19 +189,20 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     }
     if (control_region == 1 || control_region == 2) {
       // setup rateParams
+      // this map is needed for bookkeeping of the control-region bin-ids
       std::map<std::string,int> base_categories{{"btag",10},{"nobtag",13}};
       for (auto bin:src.cp().bin_id({8,9}).bin_set()){
         // use cb as we need all categories
         // Add rateParam for W in OS
-        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_rate_"+bin+"_os","rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]},1.0));
+        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_os_rate_"+bin,"rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]},1.0));
         // Add rateParam for W in SS
-        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_rate_"+bin+"_ss","rateParam", SystMap<bin_id>::init({base_categories[bin.substr(3)]+1,base_categories[bin.substr(3)]+2},1.0));
+        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_ss_rate_"+bin,"rateParam", SystMap<bin_id>::init({base_categories[bin.substr(3)]+1,base_categories[bin.substr(3)]+2},1.0));
         // Add rateParam for QCD
         cb.cp().process({"QCD"}).channel({bin.substr(0,2)}).AddSyst(cb, "qcd_rate_"+bin,"rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]+1},1.0));
       }
     }
     if (control_region == 2) {
-      // add the systematic on W+Jets and QCD in the signal region to account for scale factor uncertianties
+      // add the systematic on W+Jets and QCD in the signal region to account for scale factor uncertainties
       src.cp().process({"QCD"}).channel({"et","em","tt","mt"}).bin_id({8,9}).AddSyst(cb,
           "CMS_htt_QCD_13TeV","lnN",SystMap<>::init(1.2));
       src.cp().process({"W"}).channel({"mt"}).bin_id({8,9}).AddSyst(cb,
