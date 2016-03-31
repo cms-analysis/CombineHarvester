@@ -16,6 +16,7 @@ ROOT.gStyle.SetNdivisions(510, "XYZ")
 ROOT.gStyle.SetMarkerSize(0.7)
 
 NAMECOUNTER = 0
+NPX = 200
 
 
 def read(scan, param, files, chop, remove_near_min, rezero,
@@ -42,6 +43,7 @@ def read(scan, param, files, chop, remove_near_min, rezero,
         spline = ROOT.TSpline3("spline3", graph)
         func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
                         graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
+        func.SetNpx(NPX)
         NAMECOUNTER += 1
         plot.ImproveMinimum(graph, func, True)
     # graph.Print()
@@ -87,6 +89,7 @@ def ProcessEnvelope(main, others, relax_safety=0):
     global NAMECOUNTER
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
                     gr.GetX()[0], gr.GetX()[gr.GetN() - 1], 1)
+    func.SetNpx(NPX)
     min_x, min_y = plot.ImproveMinimum(gr, func)
     gr.Set(len(vals) + 1)
     gr.SetPoint(len(vals), min_x, min_y)
@@ -138,6 +141,7 @@ def ProcessEnvelopeNew(main, others, relax_safety=0):
     global NAMECOUNTER
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
                     gr.GetX()[0], gr.GetX()[gr.GetN() - 1], 1)
+    func.SetNpx(NPX)
     min_x, min_y = plot.ImproveMinimum(gr, func)
     gr.Set(len(xvals) + 1)
     gr.SetPoint(len(xvals), min_x, min_y)
@@ -184,6 +188,7 @@ def BuildScan(scan, param, files, color, yvals, chop,
                     partial(Eval, spline),
                     graph.GetX()[0],
                     graph.GetX()[graph.GetN() - 1], 1)
+    func.SetNpx(NPX)
     NAMECOUNTER += 1
     func.SetLineColor(color)
     func.SetLineWidth(3)
@@ -371,6 +376,7 @@ if args.envelope and args.breakdown:
             oth['spline'] = ROOT.TSpline3("spline3", oth['graph'])
             oth['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, oth['spline']), oth[
                                      'graph'].GetX()[0], oth['graph'].GetX()[oth['graph'].GetN() - 1], 1)
+            func.SetNpx(NPX)
             oth['func'].SetLineColor(color)
             NAMECOUNTER += 1
     new_others = []
@@ -391,6 +397,7 @@ if args.envelope and args.breakdown:
         other['spline'] = ROOT.TSpline3("spline3", other['graph'])
         other['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, other['spline']), other[
                                  'graph'].GetX()[0], other['graph'].GetX()[other['graph'].GetN() - 1], 1)
+        func.SetNpx(NPX)
         NAMECOUNTER += 1
         other['func'].SetLineColor(color)
         other['func'].SetLineWidth(2)
@@ -407,6 +414,7 @@ elif args.envelope:
         other['spline'] = ROOT.TSpline3("spline3", other['graph'])
         other['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, other['spline']), other[
                                  'graph'].GetX()[0], other['graph'].GetX()[other['graph'].GetN() - 1], 1)
+        other['func'].SetNpx(NPX)
         NAMECOUNTER += 1
         other['func'].SetLineColor(color)
         other['func'].SetLineWidth(2)
@@ -488,7 +496,7 @@ for i, yval in enumerate(yvals):
             if cr['valid_hi']:
                 line.DrawLine(cr['hi'], 0, cr['hi'], yval)
 
-
+# main_scan['func'].SetNpx(200)
 main_scan['func'].Draw('same')
 for other in other_scans:
     if args.breakdown is not None:
@@ -498,6 +506,8 @@ for other in other_scans:
         other['func'].SetLineStyle(2)
     if args.hide_envelope:
         other['func'].SetLineWidth(1)
+        if args.pub:
+            other['func'].SetLineWidth(2)
         other['graph'].Draw('PSAME') # redraw this
         # other['func'].SetLineWidth(3)
     other['func'].Draw('SAME')
@@ -707,7 +717,7 @@ if 'atlas_' in args.output:
 
 subtext = '{#it{LHC} #bf{Run 1 Internal}}'
 if args.pub:
-    subtext = '{#it{LHC} #bf{Run 1}}'
+    subtext = '{#scale[0.9]{#it{LHC} #bf{Run 1 Internal}}}'
     # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
 plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}'+subtext,
                  '', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
@@ -752,7 +762,7 @@ elif args.legend_pos == 4:
 if len(other_scans) >= 3:
     y_sub = 0. if args.POI_line is None else 0.07
     if args.envelope:
-        legend = ROOT.TLegend(0.58, 0.79 - y_sub, 0.95, 0.93 - y_sub, '', 'NBNDC')
+        legend = ROOT.TLegend(0.54, 0.78 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
         legend.SetNColumns(2)
         if args.POI_line is not None:
             latex.DrawLatex(0.58, 0.875, POI_line)

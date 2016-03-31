@@ -202,6 +202,7 @@ parser.add_argument('--files', '-f', help='named input scans')
 parser.add_argument('--multi', type=int, default=1, help='scale number of bins')
 parser.add_argument('--thin', type=int, default=1, help='thin graph points')
 parser.add_argument('--order', default='b,tau,Z,gam,W,comb')
+parser.add_argument('--legend-order', default='b,tau,Z,gam,W,comb')
 parser.add_argument('--x-range', default=None)
 parser.add_argument('--pub', action='store_true')
 parser.add_argument('--x-axis', default='#kappa_{V}')
@@ -215,6 +216,7 @@ infiles = {key: value for (
 print infiles
 
 order = args.order.split(',')
+legend_order = args.legend_order.split(',')
 
 graph_test = read('test', SETTINGS[order[0]]['xvar'], SETTINGS[
                   order[0]]['yvar'], infiles[order[0]])[0]
@@ -302,6 +304,7 @@ for scan in order:
             c.SetLineStyle(3)
             pads[0].cd()
             outfile.WriteTObject(c, 'graph95_%s_%i' % (scan, i))
+for scan in legend_order:
     legend.AddEntry(conts68[scan][0], SETTINGS[scan]['legend'], 'F')
 for scan in order:
     for i, c in enumerate(conts68[scan]):
@@ -346,7 +349,7 @@ legend2.Draw()
 box = ROOT.TPave(0.15, 0.82, 0.41, 0.92, 0, 'NBNDC')
 box.Draw()
 if args.pub:
-    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1}}', '',
+    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1 Internal}}', '',
                      11, 0.025, 0.035, 1.1)
 else:
     plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }#it{CMS}', '#it{LHC Run 1}',
