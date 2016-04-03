@@ -279,6 +279,7 @@ for scan in order:
         conts95[scan] = plot.contourFromTH2(
             hists[scan], ROOT.Math.chisquared_quantile_c(1 - 0.95, 2))
     for i, c in enumerate(conts68[scan]):
+        c.SetName('graph68_%s_%i' % (scan, i))
         if args.thin > 1:
             newgr = ROOT.TGraph(c.GetN() / args.thin)
             needLast = True
@@ -298,6 +299,7 @@ for scan in order:
         c.Draw('F SAME')
         outfile.WriteTObject(c, 'graph68_%s_%i' % (scan, i))
     if scan in conts95:
+        c.SetName('graph95_%s_%i' % (scan, i))
         for i, c in enumerate(conts95[scan]):
             c.SetLineColor(SETTINGS[scan]['line_color'])
             c.SetLineWidth(3)
@@ -349,7 +351,7 @@ legend2.Draw()
 box = ROOT.TPave(0.15, 0.82, 0.41, 0.92, 0, 'NBNDC')
 box.Draw()
 if args.pub:
-    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1 Internal}}', '',
+    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#scale[0.9]{#it{LHC} #bf{Run 1 Internal}}}', '',
                      11, 0.025, 0.035, 1.1)
 else:
     plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }#it{CMS}', '#it{LHC Run 1}',
@@ -358,4 +360,5 @@ else:
 pads[0].RedrawAxis()
 canv.Print('.pdf')
 canv.Print('.png')
+canv.Print('.C')
 outfile.Close()

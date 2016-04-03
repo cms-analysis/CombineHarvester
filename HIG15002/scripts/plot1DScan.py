@@ -441,7 +441,7 @@ axishist = plot.GetAxisHist(pads[0])
 # pads[0].SetLogy(True)
 axishist.SetMaximum(args.y_max)
 # axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
-axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda")
+axishist.GetYaxis().SetTitle("#minus2 ln #Lambda")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
 if args.x_title is not None:
     axishist.GetXaxis().SetTitle(args.x_title)
@@ -727,11 +727,17 @@ plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}'+subtext,
 # Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
 
 if args.POI_line is not None:
-    POIs = sorted(args.POI_line.split())
+    if args.legend_pos == 5:
+        POIs = args.POI_line.split()
+    else:
+        POIs = sorted(args.POI_line.split())
     for i,P in enumerate(POIs):
         if P in name_translate:
             POIs[i] = name_translate[P]
     POI_line = '['+ ','.join(POIs) + ']'
+    if args.legend_pos == 5:
+        POI_line = '#scale[0.7]{#splitline{['+ ','.join(POIs[:5]) + ',}{' + ','.join(POIs[5:]) + ']}}'
+
 
 if not args.no_input_label:
     plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
@@ -749,16 +755,23 @@ if len(other_scans) > 0:
 if args.legend_pos == 1:
     legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
 elif args.legend_pos == 2:
-    legend = ROOT.TLegend(0.55, legend_l+0.075, 0.85, 0.78+0.075, '', 'NBNDC')
+    legend = ROOT.TLegend(0.6, legend_l+0.075, 0.9, 0.78+0.075, '', 'NBNDC')
     if args.POI_line is not None:
-        latex.DrawLatex(0.55, 0.875, POI_line)
+        latex.DrawLatex(0.6, 0.875, POI_line)
 elif args.legend_pos == 3:
     legend = ROOT.TLegend(0.15, legend_l-0.04, 0.45, 0.78-0.04, '', 'NBNDC')
+    if args.POI_line is not None:
+        latex.DrawLatex(0.6, 0.875, POI_line)
 elif args.legend_pos == 4:
     legend = ROOT.TLegend(0.50, legend_l+0.075, 0.80, 0.78+0.075, '', 'NBNDC')
     if args.POI_line is not None:
         latex.SetTextSize(0.035)
         latex.DrawLatex(0.50, 0.875, POI_line)
+elif args.legend_pos == 5:
+    legend = ROOT.TLegend(0.15, legend_l+0.02, 0.45, 0.78+0.02, '', 'NBNDC')
+    if args.POI_line is not None:
+        latex.DrawLatex(0.55, 0.825, POI_line)
+
 if len(other_scans) >= 3:
     y_sub = 0. if args.POI_line is None else 0.07
     if args.envelope:
