@@ -1,18 +1,8 @@
 #!/usr/bin/env python
 
-import argparse
-import os
-import re
 import sys
 import json
-import math
-import itertools
-import stat
-import glob
-from array import array
-from multiprocessing import Pool
 import CombineHarvester.CombineTools.combine.utils as utils
-from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 
@@ -72,9 +62,9 @@ class Impacts(CombineToolBase):
     if self.args.doInitialFit:
       if self.args.splitInitial:
         for poi in poiList:
-          self.job_queue.append('combine -M MultiDimFit -n _initialFit_%(name)s_POI_%(poi)s --algo singles --redefineSignalPOIs %(poistr)s --floatOtherPOIs 1 --saveInactivePOI 1 -P %(poi)s %(pass_str)s --altCommit' % vars())
+          self.job_queue.append('combine -M MultiDimFit -n _initialFit_%(name)s_POI_%(poi)s --algo singles --redefineSignalPOIs %(poistr)s --floatOtherPOIs 1 --saveInactivePOI 1 -P %(poi)s %(pass_str)s' % vars())
       else:
-        self.job_queue.append('combine -M MultiDimFit -n _initialFit_%(name)s --algo singles --redefineSignalPOIs %(poistr)s %(pass_str)s --altCommit' % vars())
+        self.job_queue.append('combine -M MultiDimFit -n _initialFit_%(name)s --algo singles --redefineSignalPOIs %(poistr)s %(pass_str)s' % vars())
       self.flush_queue()
       sys.exit(0)
     initialRes = utils.get_singles_results('higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
@@ -92,19 +82,20 @@ class Impacts(CombineToolBase):
 
     missing = [ ]
     for param in paramList:
-      pres = { }
+      pres = {'name': param}
+      pres.update(prefit[param])
       # print 'Doing param ' + str(counter) + ': ' + param
       if self.args.doFits:
-        self.job_queue.append('combine -M MultiDimFit -n _paramFit_%(name)s_%(param)s --algo singles --redefineSignalPOIs %(param)s,%(poistr)s -P %(param)s --floatOtherPOIs 1 --saveInactivePOI 1 %(pass_str)s --altCommit' % vars())
+        self.job_queue.append('combine -M MultiDimFit -n _paramFit_%(name)s_%(param)s --algo impact --redefineSignalPOIs %(poistr)s -P %(param)s --floatOtherPOIs 1 --saveInactivePOI 1 %(pass_str)s' % vars())
       else:
         paramScanRes = utils.get_singles_results('higgsCombine_paramFit_%(name)s_%(param)s.MultiDimFit.mH%(mh)s.root' % vars(), [param], poiList + [param])
         if paramScanRes is None:
           missing.append(param)
           continue
-        pres.update({"name" : param, "fit" : paramScanRes[param][param], "prefit" : prefit[param]})
+        pres["fit"] = paramScanRes[param][param]
         for p in poiList:
-          pres.update({p : paramScanRes[param][p], 'impact_'+p : (paramScanRes[param][p][2] - paramScanRes[param][p][0])/2.})
-        res['params'].append(pres)
+          pres.update({p : paramScanRes[param][p], 'impact_'+p : max(map(abs,(x - paramScanRes[param][p][1] for x in (paramScanRes[param][p][2],paramScanRes[param][p][0]))))})
+      res['params'].append(pres)
     self.flush_queue()
     jsondata = json.dumps(res, sort_keys=True, indent=2, separators=(',', ': '))
     print jsondata
@@ -113,4 +104,3 @@ class Impacts(CombineToolBase):
         out_file.write(jsondata)
     if len(missing) > 0:
       print 'Missing inputs: ' + ','.join(missing)
-

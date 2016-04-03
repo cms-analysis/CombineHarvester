@@ -297,11 +297,11 @@ void BuildRooMorphing(RooWorkspace& ws, CombineHarvester& cb,
   multi_array<std::shared_ptr<AsymPow>, 1> ss_asy_arr(extents[ss]);
 
   // Similar set of objects needed for the lms normalisation systematics
-  multi_array<double, 2> lms_k_hi_arr(extents[ss][m]);
-  multi_array<double, 2> lms_k_lo_arr(extents[ss][m]);
-  multi_array<std::shared_ptr<RooSpline1D>, 1> lms_spl_hi_arr(extents[ss]);
-  multi_array<std::shared_ptr<RooSpline1D>, 1> lms_spl_lo_arr(extents[ss]);
-  multi_array<std::shared_ptr<AsymPow>, 1> lms_asy_arr(extents[ss]);
+  multi_array<double, 2> lms_k_hi_arr(extents[lms][m]);
+  multi_array<double, 2> lms_k_lo_arr(extents[lms][m]);
+  multi_array<std::shared_ptr<RooSpline1D>, 1> lms_spl_hi_arr(extents[lms]);
+  multi_array<std::shared_ptr<RooSpline1D>, 1> lms_spl_lo_arr(extents[lms]);
+  multi_array<std::shared_ptr<AsymPow>, 1> lms_asy_arr(extents[lms]);
 
   // Now we'll fill these objects..
 
@@ -374,12 +374,26 @@ void BuildRooMorphing(RooWorkspace& ws, CombineHarvester& cb,
     }
     std::cout << "\n";
     for (unsigned ssi = 0; ssi < ss; ++ssi) {
+      std::cout << ss_vec[ssi] << " Up" << std::endl;
       for (unsigned mi = 0; mi < m; ++mi) {
         std::cout << boost::format("%-10.5g") % ss_k_hi_arr[ssi][mi];
       }
       std::cout << "\n";
+      std::cout << ss_vec[ssi] << " Down" << std::endl;
       for (unsigned mi = 0; mi < m; ++mi) {
         std::cout << boost::format("%-10.5g") % ss_k_lo_arr[ssi][mi];
+      }
+      std::cout << "\n";
+    }
+    for (unsigned lmsi = 0; lmsi < lms; ++lmsi) {
+      std::cout << lms_vec[lmsi] << " Up" << std::endl;
+      for (unsigned mi = 0; mi < m; ++mi) {
+        std::cout << boost::format("%-10.5g") % lms_k_hi_arr[lmsi][mi];
+      }
+      std::cout << "\n";
+      std::cout << lms_vec[lmsi] << " Down" << std::endl;
+      for (unsigned mi = 0; mi < m; ++mi) {
+        std::cout << boost::format("%-10.5g") % lms_k_lo_arr[lmsi][mi];
       }
       std::cout << "\n";
     }
@@ -632,9 +646,10 @@ void MakeMorphDebugPlots(RooMorphingPdf* pdf, RooAbsReal* mass,
     if (h2) delete h2;
   }
   double m = masses.front();
-  double step = 1.;
+  double step = 1;
   if (((masses.back() - masses.front()) / step) > 100.) step = step * 10.;
   if (((masses.back() - masses.front()) / step) > 100.) step = step * 10.;
+  if (((masses.back() - masses.front()) / step) < 10.) step = step/10.;
   while (m <= masses.back()) {
     rrv->setVal(m);
     TH1* hm = pdf->createHistogram("CMS_th1x");
@@ -652,6 +667,8 @@ void MakeMorphDebugPlots(RooMorphingPdf* pdf, RooAbsReal* mass,
     }
     hm2->AddDirectory(false);
     hm2->SetName(TString::Format("morph_point_%g", m));
+    //It struggles with m=0, instead adds really small number close to 0
+    if(fabs(m) < 1E-5) hm2->SetName(TString::Format("morph_point_0"));
     gDirectory->WriteTObject(hm2);
     if (hm) delete hm;
     if (hm2) delete hm2;

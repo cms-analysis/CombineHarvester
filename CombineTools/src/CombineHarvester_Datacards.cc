@@ -368,7 +368,7 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
         }
         sys->set_name(words[i][0]);
         std::string type = words[i][1];
-        if (!contains(std::vector<std::string>{"shape", "shape?", "shapeN2", "lnN", "lnU"},
+        if (!contains(std::vector<std::string>{"shape", "shape?", "shapeN2", "shapeU", "lnN", "lnU"},
                       type)) {
           throw std::runtime_error(
               FNERROR("Systematic type " + type + " not supported"));
@@ -392,7 +392,8 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
           sys->set_value_u(boost::lexical_cast<double>(words[i][p]));
           sys->set_asymm(false);
         }
-        if (sys->type() == "shape" || sys->type() == "shapeN2") {
+        if (sys->type() == "shape" || sys->type() == "shapeN2" ||
+            sys->type() == "shapeU") {
           sys->set_scale(boost::lexical_cast<double>(words[i][p]));
           LoadShapes(sys.get(), hist_mapping);
         } else if (sys->type() == "shape?") {
@@ -410,11 +411,12 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
             sys->set_scale(boost::lexical_cast<double>(words[i][p]));
           }
         }
-        if (sys->type() == "shape" || sys->type() == "shapeN2")
+        if (sys->type() == "shape" || sys->type() == "shapeN2" ||
+            sys->type() == "shapeU")
           sys->set_asymm(true);
 
         CombineHarvester::CreateParameterIfEmpty(sys->name());
-        if (sys->type() == "lnU") {
+        if (sys->type() == "lnU" || sys->type() == "shapeU") {
           params_.at(sys->name())->set_err_d(0.);
           params_.at(sys->name())->set_err_u(0.);
         }
@@ -813,14 +815,26 @@ void CombineHarvester::WriteDatacard(std::string const& name,
   unsigned sig_id = 0;
   unsigned bkg_id = 1;
   for (unsigned p = 0; p < procs_.size(); ++p) {
-    if (!procs_[p]->signal() && p_ids.count(procs_[p]->process()) == 0) {
-      p_ids[procs_[p]->process()] = bkg_id;
-      ++bkg_id;
+    if (!procs_[p]->signal()) {
+      if (p_ids.count(procs_[p]->process()) == 0) {
+        p_ids[procs_[p]->process()] = bkg_id;
+        ++bkg_id;
+      }
+      else {
+        // check if process was already picked up as signal
+        if (p_ids[procs_[p]->process()] <= 0) throw std::runtime_error(FNERROR("Ambiguous definition of process (" + procs_[p]->process() + ") as both signal and background"));
+      }
     }
     unsigned q = procs_.size() - (p + 1);
-    if (procs_[q]->signal() && p_ids.count(procs_[q]->process()) == 0) {
-      p_ids[procs_[q]->process()] = sig_id;
-      --sig_id;
+    if (procs_[q]->signal()) {
+      if (p_ids.count(procs_[q]->process()) == 0) {
+        p_ids[procs_[q]->process()] = sig_id;
+        --sig_id;
+      }
+      else {
+        // check if process was already picked up as background
+        if (p_ids[procs_[q]->process()] > 0) throw std::runtime_error(FNERROR("Ambiguous definition of process (" + procs_[q]->process() + ") as both signal and background"));
+      }
     }
   }
   for (auto const& proc : procs_) {
@@ -859,6 +873,7 @@ void CombineHarvester::WriteDatacard(std::string const& name,
     bool seen_lnU = false;
     bool seen_shape = false;
     bool seen_shapeN2 = false;
+    bool seen_shapeU = false;
     for (unsigned p = 0; p < procs_.size(); ++p) {
       line[p + 2] = "-";
       for (unsigned n = 0; n < proc_sys_map[p].size(); ++n) {
@@ -875,9 +890,10 @@ void CombineHarvester::WriteDatacard(std::string const& name,
                   : (format("%g") % ptr->value_u()).str();
           break;
         }
-        if (tp == "shape" || tp == "shapeN2") {
+        if (tp == "shape" || tp == "shapeN2" || tp == "shapeU") {
           if (tp == "shape") seen_shape = true;
           if (tp == "shapeN2") seen_shapeN2 = true;
+          if (tp == "shapeU") seen_shapeU = true;
           line[p + 2] = (format("%g") % ptr->scale()).str();
           if (ptr->shape_u() && ptr->shape_d()) {
             bool add_dir = TH1::AddDirectoryStatus();
@@ -907,6 +923,8 @@ void CombineHarvester::WriteDatacard(std::string const& name,
     }
     if (seen_shapeN2) {
       line[1] = "shapeN2";
+    } else if (seen_shapeU) {
+      line[1] = "shapeU";
     } else if (seen_lnU) {
       line[1] = "lnU";
     } else if (seen_lnN && !seen_shape) {

@@ -1,6 +1,7 @@
 #include "CombineHarvester/CombineTools/interface/CombineHarvester_Python.h"
 #include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 #include "CombineHarvester/CombineTools/interface/Observation.h"
+#include "CombineHarvester/CombineTools/interface/Parameter.h"
 #include "CombineHarvester/CombineTools/interface/CardWriter.h"
 #include "CombineHarvester/CombineTools/interface/BinByBin.h"
 #include "CombineHarvester/CombineTools/interface/AutoRebin.h"
@@ -21,6 +22,7 @@ using ch::Systematic;
 using ch::CardWriter;
 using ch::BinByBinFactory;
 using ch::AutoRebin;
+using ch::Parameter;
 
 void FilterAllPy(ch::CombineHarvester & cb, boost::python::object func) {
       auto lambda = [func](ch::Object *obj) -> bool {
@@ -139,6 +141,9 @@ TH1F (CombineHarvester::*Overload2_GetShapeWithUncertainty)(
 
 void (CombineHarvester::*Overload1_UpdateParameters)(
   RooFitResult const&) = &CombineHarvester::UpdateParameters;
+
+ch::Parameter* (CombineHarvester::*Overload1_GetParameter)(
+  std::string const& name) = &CombineHarvester::GetParameter;
 
 void (CombineHarvester::*Overload_AddBinByBin)(
     double, bool, CombineHarvester &) = &CombineHarvester::AddBinByBin;
@@ -279,6 +284,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("syst_name_set", &CombineHarvester::syst_name_set)
       .def("syst_type_set", &CombineHarvester::syst_type_set)
       // Modification
+      .def("GetParameter", Overload1_GetParameter,
+        py::return_value_policy<py::reference_existing_object>())
       .def("UpdateParameters", Overload1_UpdateParameters)
       .def("RenameParameter", &CombineHarvester::RenameParameter)
       .def("ForEachObj", ForEachObjPy)
@@ -372,6 +379,25 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("asymm", &Systematic::asymm)
       .def("set_shapes", Overload_Syst_set_shapes)
       .def(py::self_ns::str(py::self_ns::self))
+    ;
+
+    py::class_<Parameter>("Parameter")
+      // .def("set_name", &Systematic::set_name)
+      .def("name", &Parameter::name,
+          py::return_value_policy<py::copy_const_reference>())
+      .def("set_val", &Parameter::set_val)
+      .def("val", &Parameter::val)
+      .def("set_err_u", &Parameter::set_err_u)
+      .def("err_u", &Parameter::err_u)
+      .def("set_err_d", &Parameter::set_err_d)
+      .def("err_d", &Parameter::err_d)
+      .def("set_range_u", &Parameter::set_range_u)
+      .def("range_u", &Parameter::range_u)
+      .def("set_range_d", &Parameter::set_range_d)
+      .def("set_range", &Parameter::set_range)
+      .def("range_d", &Parameter::range_d)
+      .def("set_frozen", &Parameter::set_frozen)
+      .def("frozen", &Parameter::frozen)
     ;
 
     py::class_<CardWriter>("CardWriter", py::init<std::string, std::string>())
