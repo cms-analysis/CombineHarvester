@@ -13,8 +13,10 @@
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Process.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/CardWriter.h"
 #include "CombineHarvester/CombineTools/interface/Systematics.h"
 #include "CombineHarvester/CombineTools/interface/BinByBin.h"
+#include "CombineHarvester/CombineTools/interface/Algorithm.h"
 #include "CombineHarvester/CombineTools/interface/AutoRebin.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
 #include "CombineHarvester/CombineTools/interface/HttSystematics.h"
@@ -33,12 +35,19 @@ void To1Bin(T* proc)
     TH1F *hist = new TH1F("hist","hist",1,0,1);
     hist->SetDirectory(0);
     hist->SetBinContent(1,originalHist->Integral(0,originalHist->GetNbinsX()+1));
+    // TODO: will need to SetBinError here or we won't be able to create bbb later
     proc->set_shape(*hist,true);
 }
 
 bool BinIsControlRegion(ch::Object const* obj)
 {
     return boost::regex_search(obj->bin(),boost::regex{"_cr$"});
+}
+
+// Useful to have the inverse sometimes too
+bool BinIsNotControlRegion(ch::Object const* obj)
+{
+    return !BinIsControlRegion(obj);
 }
 
 
@@ -49,6 +58,7 @@ int main(int argc, char** argv) {
   string SM125= "";
   string mass = "mA";
   string output_folder = "mssm_run2";
+  // TODO: option to pick up cards from different dirs depending on channel?
   string input_folder="Imperial/datacards-76X/";
   string postfix="";
   bool auto_rebin = false;
@@ -67,7 +77,7 @@ int main(int argc, char** argv) {
     ("control_region", po::value<int>(&control_region)->default_value(0));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
-  
+
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   string input_dir =
@@ -107,7 +117,7 @@ int main(int argc, char** argv) {
   ch::CombineHarvester cb;
   // Uncomment this next line to see a *lot* of debug information
   // cb.SetVerbosity(3);
- 
+
   // Here we will just define two categories for an 8TeV analysis. Each entry in
   // the vector below specifies a bin name and corresponding bin_id.
   //
@@ -126,7 +136,7 @@ int main(int argc, char** argv) {
     {8, "tt_nobtag"},
     {9, "tt_btag"}
     };
-  
+
   cats["mt_13TeV"] = {
     {8, "mt_nobtag"},
     {9, "mt_btag"}
@@ -135,18 +145,22 @@ int main(int argc, char** argv) {
   if (control_region > 0){
       // for each channel use the categories >= 10 for the control regions
       // the control regions are ordered in triples (10,11,12),(13,14,15)...
-      for (auto chn:chns){
-          // for em do nothing
-          if ( chn == "em") continue;
-          Categories queue;
-          int binid = 10;
-          for (auto cat:cats[chn+"_13TeV"]){
-            queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
-            queue.push_back(make_pair(binid+1,cat.second+"_qcd_cr"));
-            queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
-            binid += 3;
-          }
-          cats[chn+"_13TeV"].insert(cats[chn+"_13TeV"].end(),queue.begin(),queue.end());
+      for (auto chn : chns){
+        // for em or tt do nothing
+        if (ch::contains({"em", "tt"}, chn)) {
+          std::cout << " - Skipping extra control regions for channel " << chn << "\n";
+          continue;
+        }
+        // if ( chn == "em") continue;
+        Categories queue;
+        int binid = 10;
+        for (auto cat:cats[chn+"_13TeV"]){
+          queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
+          queue.push_back(make_pair(binid+1,cat.second+"_qcd_cr"));
+          queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
+          binid += 3;
+        }
+        cats[chn+"_13TeV"].insert(cats[chn+"_13TeV"].end(),queue.begin(),queue.end());
       }
   }
 
@@ -168,17 +182,17 @@ int main(int argc, char** argv) {
     cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn+"_13TeV"]);
 
     cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn+"_13TeV"], false);
-  
+
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
     }
   if (control_region > 0){
-      // filter QCD in W+jets control regions
-      // filter signal processes in control regions
+      // Since we now account for QCD in the high mT region we only
+      // need to filter signal processes
       cb.FilterAll([](ch::Object const* obj) {
-              return ((BinIsControlRegion(obj) && (obj->bin().find("_wjets_") != std::string::npos) && (obj->process() == "QCD")) || (BinIsControlRegion(obj) && obj->signal()));
+              return (BinIsControlRegion(obj) && obj->signal());
               });
-  } 
+  }
 
   ch::AddMSSMRun2Systematics(cb,control_region);
   //! [part7]
@@ -196,40 +210,48 @@ int main(int argc, char** argv) {
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
-   //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding 
+   //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding
     auto bins = cb.cp().bin_set();
-    for (auto b : bins) {
-        cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
+    // For control region bins data (should) = sum of bkgs already
+    // useful to be able to check this, so don't do the replacement
+    // for these
+    for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+      std::cout << " - Replacing data with asimov in bin " << b << "\n";
+      cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
         obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
-        });
-    } 
-    cb.cp().FilterAll(BinIsControlRegion).ForEachProc(To1Bin<ch::Process>);
-    cb.cp().FilterAll(BinIsControlRegion).ForEachObs(To1Bin<ch::Observation>);
-  
+      });
+    }
+    // Merge to one bin for control region bins
+    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
+    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
+
 
   auto rebin = ch::AutoRebin()
-       .SetBinThreshold(0.)
-   //    .SetBinUncertFraction(0.05)
-       .SetRebinMode(1)
-       .SetPerformRebin(true)
-       .SetVerbosity(1);
+    .SetBinThreshold(0.)
+    // .SetBinUncertFraction(0.05)
+    .SetRebinMode(1)
+    .SetPerformRebin(true)
+    .SetVerbosity(1);
   if(auto_rebin) rebin.Rebin(cb, cb);
 
   if(manual_rebin) {
-      for(auto b : bins) {
-        std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
-        cb.cp().bin({b}).VariableRebin(binning[b]);    
-      }
+    for(auto b : bins) {
+      std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
+      cb.cp().bin({b}).VariableRebin(binning[b]);
+    }
   }
-  
+
   cout << "Generating bbb uncertainties...";
   auto bbb = ch::BinByBinFactory()
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
     .SetFixNorm(true);
-  bbb.MergeAndAdd(cb.cp().process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}).FilterAll([](ch::Object const* obj) {
-              return BinIsControlRegion(obj);
-              }), cb);
+  for (auto chn : chns) {
+    std::cout << " - Doing bbb for channel " << chn << "\n";
+    bbb.MergeAndAdd(cb.cp().channel({chn}).process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}).FilterAll([](ch::Object const* obj) {
+                return BinIsControlRegion(obj);
+                }), cb);
+  }
   cout << " done\n";
 
   //Switch JES over to lnN:
@@ -240,7 +262,7 @@ int main(int argc, char** argv) {
   // which is commonly used in the htt analyses
   ch::SetStandardBinNames(cb);
   //! [part8]
-    
+
 
   //! [part9]
   // First we generate a set of bin names:
@@ -273,52 +295,68 @@ int main(int argc, char** argv) {
   cb.AddWorkspace(ws);
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
-  
-  string folder = "output/"+output_folder+"/cmb";
-  boost::filesystem::create_directories(folder);
- 
+
+
  //Write out datacards. Naming convention important for rest of workflow. We
  //make one directory per chn-cat, one per chn and cmb. In this code we only
  //store the individual datacards for each directory to be combined later, but
  //note that it's also possible to write out the full combined card with CH
- 
- cout << "Writing datacards ...";
-  
+  ch::CardWriter writer("output/" + output_folder + "/$TAG/$BIN.txt",
+                        "output/" + output_folder + "/$TAG/$BIN_input.root");
+  // We're not using mass as an identifier - which we need to tell the CardWriter
+  // otherwise it will see "*" as the mass value for every object and skip it
+  writer.SetWildcardMasses({});
+  writer.SetVerbosity(1);
 
-  //Individual channel-cats  
-  for (string chn : chns) {
-     string folderchn = "output/"+output_folder+"/"+chn;
-     auto bins = cb.cp().channel({chn}).bin_set();
-      for (auto b : bins) {
-        string folderchncat = "output/"+output_folder+"/"+b;
-        boost::filesystem::create_directories(folderchn);
-        boost::filesystem::create_directories(folderchncat);
-        TFile output((folder + "/"+b+"_input.root").c_str(), "RECREATE");
-        TFile outputchn((folderchn + "/"+b+"_input.root").c_str(), "RECREATE");
-        TFile outputchncat((folderchncat + "/"+b+"_input.root").c_str(), "RECREATE");
-        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + ".txt", outputchn);
-        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchncat + "/" + b + ".txt", outputchncat);
-        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
-        output.Close();
-        outputchn.Close();
-        outputchncat.Close();
-        if(b.find("8")!=string::npos) {
-            string foldercat = "output/"+output_folder+"/htt_cmb_8_13TeV/";
-            boost::filesystem::create_directories(foldercat);
-            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
-            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
-            outputcat.Close();
-        }
-        else if(b.find("9")!=string::npos) {
-            string foldercat = "output/"+output_folder+"/htt_cmb_9_13TeV/";
-            boost::filesystem::create_directories(foldercat);
-            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
-            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
-            outputcat.Close();
-        }
-      }
-  }
-     
+  writer.WriteCards("cmb", cb);
+  for (auto chn : chns) writer.WriteCards(chn, cb.cp().channel({chn}));
+  for (auto bin : bins) writer.WriteCards(bin, cb.cp().bin({bin}));
+  // For btag/nobtag areas want to include control regions. This will
+  // work even if the extra categories aren't there.
+  writer.WriteCards("htt_cmb_8_13TeV", cb.cp().bin_id({8, 10, 11, 12}));
+  writer.WriteCards("htt_cmb_9_13TeV", cb.cp().bin_id({9, 13, 14, 15}));
+
+  // string folder = "output/"+output_folder+"/cmb";
+  // boost::filesystem::create_directories(folder);
+
+
+ // cout << "Writing datacards ...";
+
+
+ //  //Individual channel-cats
+ //  for (string chn : chns) {
+ //     string folderchn = "output/"+output_folder+"/"+chn;
+ //     auto bins = cb.cp().channel({chn}).bin_set();
+ //      for (auto b : bins) {
+ //        string folderchncat = "output/"+output_folder+"/"+b;
+ //        boost::filesystem::create_directories(folderchn);
+ //        boost::filesystem::create_directories(folderchncat);
+ //        TFile output((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+ //        TFile outputchn((folderchn + "/"+b+"_input.root").c_str(), "RECREATE");
+ //        TFile outputchncat((folderchncat + "/"+b+"_input.root").c_str(), "RECREATE");
+ //        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + ".txt", outputchn);
+ //        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchncat + "/" + b + ".txt", outputchncat);
+ //        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
+ //        output.Close();
+ //        outputchn.Close();
+ //        outputchncat.Close();
+ //        if(b.find("8")!=string::npos) {
+ //            string foldercat = "output/"+output_folder+"/htt_cmb_8_13TeV/";
+ //            boost::filesystem::create_directories(foldercat);
+ //            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+ //            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
+ //            outputcat.Close();
+ //        }
+ //        else if(b.find("9")!=string::npos) {
+ //            string foldercat = "output/"+output_folder+"/htt_cmb_9_13TeV/";
+ //            boost::filesystem::create_directories(foldercat);
+ //            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
+ //            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
+ //            outputcat.Close();
+ //        }
+ //      }
+ //  }
+
   cb.PrintAll();
   cout << " done\n";
 
