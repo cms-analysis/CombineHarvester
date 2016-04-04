@@ -16,8 +16,14 @@ using ch::syst::process;
 using ch::JoinStr;
 
 
-void AddMSSMRun2Systematics(CombineHarvester & cb) {
+void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   CombineHarvester src = cb.cp();
+  
+  if (control_region == 1){
+    // we only want to cosider systematic uncertainties in the signal region.
+    // limit to only the btag and nobtag categories
+    src.bin_id({8,9});
+  }
 
   auto signal = Set2Vec(src.cp().signals().SetFromProcs(
       std::mem_fn(&Process::process)));
@@ -116,30 +122,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb) {
   
  src.cp().channel({"et","tt","mt"}).process({"ZL","ZJ"}).AddSyst(cb, "CMS_htt_zttNorm_13TeV", "lnN", SystMap<>::init(1.03));
 
- // QCD Normalisation - separate nuisance for each channel/category
- src.cp().process({"QCD"}).channel({"mt"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_QCDNorm_mt_nobtag_13TeV","lnN",SystMap<>::init(1.1));
- 
- src.cp().process({"QCD"}).channel({"mt"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_QCDNorm_mt_btag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"QCD"}).channel({"et"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_QCDNorm_et_nobtag_13TeV","lnN",SystMap<>::init(1.1));
- 
- src.cp().process({"QCD"}).channel({"et"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_QCDNorm_et_btag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"QCD"}).channel({"tt"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_QCDNorm_tt_nobtag_13TeV","lnN",SystMap<>::init(1.35));
- 
- src.cp().process({"QCD"}).channel({"tt"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_QCDNorm_tt_btag_13TeV","lnN",SystMap<>::init(1.35));
- 
- src.cp().process({"QCD"}).channel({"em"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_QCDNorm_em_nobtag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"QCD"}).channel({"em"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_QCDNorm_em_btag_13TeV","lnN",SystMap<>::init(1.3));
 
  // Diboson and ttbar Normalisation - fully correlated
  src.cp().process({"VV"}).AddSyst(cb,
@@ -149,32 +131,82 @@ void AddMSSMRun2Systematics(CombineHarvester & cb) {
       .AddSyst(cb, "CMS_htt_ttbarNorm_13TeV", "lnN", SystMap<era>::init
         ({"13TeV"}, 1.10));
 
- // W Normalisation - separate nuisance for each channel/category
- 
- src.cp().process({"W"}).channel({"mt"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_WNorm_mt_nobtag_13TeV","lnN",SystMap<>::init(1.1));
- 
- src.cp().process({"W"}).channel({"mt"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_WNorm_mt_btag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"W"}).channel({"et"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_WNorm_et_nobtag_13TeV","lnN",SystMap<>::init(1.1));
- 
- src.cp().process({"W"}).channel({"et"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_WNorm_et_btag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"W"}).channel({"tt"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_WNorm_tt_nobtag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"W"}).channel({"tt"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_WNorm_tt_btag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"W"}).channel({"em"}).bin_id({8}).AddSyst(cb,
-      "CMS_htt_WNorm_em_nobtag_13TeV","lnN",SystMap<>::init(1.3));
- 
- src.cp().process({"W"}).channel({"em"}).bin_id({9}).AddSyst(cb,
-      "CMS_htt_WNorm_em_btag_13TeV","lnN",SystMap<>::init(1.3));
 
+  if (control_region == 0 || control_region == 1) {
+    // the uncertainty model in the signal region is the classical one
+    // QCD Normalisation - separate nuisance for each channel/category
+    src.cp().process({"QCD"}).channel({"mt"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_QCDNorm_mt_nobtag_13TeV","lnN",SystMap<>::init(1.1));
+    
+    src.cp().process({"QCD"}).channel({"mt"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_QCDNorm_mt_btag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"QCD"}).channel({"et"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_QCDNorm_et_nobtag_13TeV","lnN",SystMap<>::init(1.1));
+    
+    src.cp().process({"QCD"}).channel({"et"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_QCDNorm_et_btag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"QCD"}).channel({"tt"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_QCDNorm_tt_nobtag_13TeV","lnN",SystMap<>::init(1.35));
+    
+    src.cp().process({"QCD"}).channel({"tt"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_QCDNorm_tt_btag_13TeV","lnN",SystMap<>::init(1.35));
+    
+    src.cp().process({"QCD"}).channel({"em"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_QCDNorm_em_nobtag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"QCD"}).channel({"em"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_QCDNorm_em_btag_13TeV","lnN",SystMap<>::init(1.3));
+        src.cp().process({"W"}).channel({"mt"}).AddSyst(cb,
+            "CMS_htt_WNorm_13TeV","lnN",SystMap<>::init(1.2));
 
-}
+    // W Normalisation - separate nuisance for each channel/category
+    
+    src.cp().process({"W"}).channel({"mt"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_WNorm_mt_nobtag_13TeV","lnN",SystMap<>::init(1.1));
+    
+    src.cp().process({"W"}).channel({"mt"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_WNorm_mt_btag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"W"}).channel({"et"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_WNorm_et_nobtag_13TeV","lnN",SystMap<>::init(1.1));
+    
+    src.cp().process({"W"}).channel({"et"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_WNorm_et_btag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"W"}).channel({"tt"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_WNorm_tt_nobtag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"W"}).channel({"tt"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_WNorm_tt_btag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"W"}).channel({"em"}).bin_id({8}).AddSyst(cb,
+        "CMS_htt_WNorm_em_nobtag_13TeV","lnN",SystMap<>::init(1.3));
+    
+    src.cp().process({"W"}).channel({"em"}).bin_id({9}).AddSyst(cb,
+        "CMS_htt_WNorm_em_btag_13TeV","lnN",SystMap<>::init(1.3));
+    }
+    if (control_region == 1 || control_region == 2) {
+      // setup rateParams
+      // this map is needed for bookkeeping of the control-region bin-ids
+      std::map<std::string,int> base_categories{{"btag",10},{"nobtag",13}};
+      for (auto bin:src.cp().bin_id({8,9}).bin_set()){
+        // use cb as we need all categories
+        // Add rateParam for W in OS
+        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_os_rate_"+bin,"rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]},1.0));
+        // Add rateParam for W in SS
+        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_ss_rate_"+bin,"rateParam", SystMap<bin_id>::init({base_categories[bin.substr(3)]+1,base_categories[bin.substr(3)]+2},1.0));
+        // Add rateParam for QCD
+        cb.cp().process({"QCD"}).channel({bin.substr(0,2)}).AddSyst(cb, "qcd_rate_"+bin,"rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]+1},1.0));
+      }
+    }
+    if (control_region == 2) {
+      // add the systematic on W+Jets and QCD in the signal region to account for scale factor uncertainties
+      src.cp().process({"QCD"}).channel({"et","em","tt","mt"}).bin_id({8,9}).AddSyst(cb,
+          "CMS_htt_QCD_13TeV","lnN",SystMap<>::init(1.2));
+      src.cp().process({"W"}).channel({"mt"}).bin_id({8,9}).AddSyst(cb,
+          "CMS_htt_WNorm_13TeV","lnN",SystMap<>::init(1.1));
+    }
+  }
 }

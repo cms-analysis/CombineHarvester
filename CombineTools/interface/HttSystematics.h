@@ -30,7 +30,7 @@ void AddMSSMUpdateSystematics_tt(CombineHarvester& cb);
 
 // Run2 MSSM analysis systematics
 // Implemented in src/HttSystematics_MSSMRun2.cc
-void AddMSSMRun2Systematics(CombineHarvester& cb);
+void AddMSSMRun2Systematics(CombineHarvester& cb, int control_region);
 
 // Hhh systematics
 // Implemented in src/HhhSystematics.cc
