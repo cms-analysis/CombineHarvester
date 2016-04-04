@@ -287,7 +287,7 @@ int main(int argc, char** argv) {
       auto procs = cb.cp().bin({b}).signals().process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                             "norm", true, true, false, &demo);
+                             "norm", true, false, false, &demo);
       }
     }
   }
@@ -309,8 +309,13 @@ int main(int argc, char** argv) {
   writer.SetVerbosity(1);
 
   writer.WriteCards("cmb", cb);
-  for (auto chn : chns) writer.WriteCards(chn, cb.cp().channel({chn}));
-  for (auto bin : bins) writer.WriteCards(bin, cb.cp().bin({bin}));
+  for (auto chn : chns) {
+    // per-channel
+    writer.WriteCards(chn, cb.cp().channel({chn}));
+    // And per-channel-category
+    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn}).bin_id({8, 10, 11, 12}));
+    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn}).bin_id({9, 13, 14, 15}));
+  }
   // For btag/nobtag areas want to include control regions. This will
   // work even if the extra categories aren't there.
   writer.WriteCards("htt_cmb_8_13TeV", cb.cp().bin_id({8, 10, 11, 12}));
@@ -362,4 +367,3 @@ int main(int argc, char** argv) {
 
 
 }
-

@@ -198,7 +198,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
       // setup rateParams
       // this map is needed for bookkeeping of the control-region bin-ids
       std::map<std::string,int> base_categories{{"btag",10},{"nobtag",13}};
-      for (auto bin:src.cp().bin_id({8,9}).bin_set()){
+      for (auto bin:src.cp().channel({"et", "mt"}).bin_id({8,9}).bin_set()){
         // use cb as we need all categories
         // Add rateParam for W in OS
         cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_os_rate_"+bin,"rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]},1.0));
