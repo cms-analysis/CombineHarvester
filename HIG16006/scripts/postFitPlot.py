@@ -80,6 +80,7 @@ parser.add_argument('--log_y', action='store_true',help='Use log for y axis')
 parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='',help='Optional string for start of output filename')
+parser.add_argument('--bkg_fractions', default=False, action='store_true', help='Instead of yields for each process plot fraction of total bkg in each bin')
 
 
 args = parser.parse_args()
@@ -110,6 +111,10 @@ y_axis_max = float(args.y_axis_max)
 model_dep = args.model_dep
 log_y=args.log_y
 log_x=args.log_x
+fractions=args.bkg_fractions
+#If plotting bkg fractions don't want to use log scale on y axis
+if fractions:
+  log_y = False
 if(args.outname != ''):
   outname=args.outname + '_'
 else:
@@ -276,7 +281,8 @@ if auto_blind or auto_blind_check_only:
 
 
 #Normalise by bin width except in soverb_plot mode, where interpretation is easier without normalising
-if not soverb_plot:
+#Also don't normalise by bin width if plotting fractional bkg contribution
+if not soverb_plot and not fractions:
     blind_datahist.Scale(1.0,"width")
     total_datahist.Scale(1.0,"width")
     sighist.Scale(1.0,"width")
@@ -302,7 +308,10 @@ for i,t in enumerate(background_schemes[channel]):
   h.SetFillColor(t['colour'])
   h.SetLineColor(ROOT.kBlack)
   h.SetMarkerSize(0)
-  if not soverb_plot: h.Scale(1.0,"width")
+  if not soverb_plot and not fractions : h.Scale(1.0,"width")
+  if fractions:
+    for i in range(1,h.GetNbinsX()+1) :
+      h.SetBinContent(i,h.GetBinContent(i)/bkghist.GetBinContent(i))
   bkg_histos.append(h)
 
 stack = ROOT.THStack("hs","")
@@ -321,7 +330,7 @@ else:
 pads[0].cd()
 if(log_y): pads[0].SetLogy(1)
 if(log_x): pads[0].SetLogx(1)
-if args.ratio:
+if args.ratio and not fractions:
   if(log_x): pads[1].SetLogx(1)
   axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax())
   axish[1].GetXaxis().SetTitle("m_{T,#tau#tau} (GeV)")
@@ -343,10 +352,12 @@ else:
   axish[0].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
     axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
-  if custom_y_range:
+  if custom_y_range and not fractions:
     axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
-if not soverb_plot: axish[0].GetYaxis().SetTitle("dN/dM_{T,#tau#tau} (1/GeV)")
-else: axish[0].GetYaxis().SetTitle("Events")
+  elif fractions: axish[0].GetYaxis().SetRangeUser(0,1)
+if not soverb_plot and not fractions: axish[0].GetYaxis().SetTitle("dN/dM_{T,#tau#tau} (1/GeV)")
+elif soverb_plot: axish[0].GetYaxis().SetTitle("Events")
+elif fractions: axish[0].GetYaxis().SetTitle("Fraction of total bkg")
 axish[0].GetXaxis().SetTitle("m_{T,#tau#tau} (GeV)")
 if not custom_y_range: axish[0].SetMaximum(extra_pad*bkghist.GetMaximum())
 if not custom_y_range: 
@@ -360,17 +371,19 @@ bkghist.SetLineColor(0)
 bkghist.SetMarkerSize(0)
 
 stack.Draw("histsame")
-bkghist.Draw("e2same")
-#Add signal, either model dependent or independent
-if model_dep is True: 
-    sighist.SetLineColor(ROOT.kRed)
-    sighist.Draw("histsame")
-else: 
-    sighist_ggH.SetLineColor(ROOT.kBlue)
-    sighist_bbH.SetLineColor(ROOT.kBlue + 3)
-    sighist_ggH.Draw("histsame")
-    sighist_bbH.Draw("histsame")
-if not soverb_plot: blind_datahist.DrawCopy("psame")
+#Don't draw total bkgs/signal if plotting bkg fractions
+if not fractions:
+  bkghist.Draw("e2same")
+  #Add signal, either model dependent or independent
+  if model_dep is True: 
+      sighist.SetLineColor(ROOT.kRed)
+      sighist.Draw("histsame")
+  else: 
+      sighist_ggH.SetLineColor(ROOT.kBlue)
+      sighist_bbH.SetLineColor(ROOT.kBlue + 3)
+      sighist_ggH.Draw("histsame")
+      sighist_bbH.Draw("histsame")
+if not soverb_plot and not fractions: blind_datahist.DrawCopy("psame")
 axish[0].Draw("axissame")
 
 #Setup legend
@@ -384,24 +397,24 @@ background_schemes[channel].reverse()
 for legi,hists in enumerate(bkg_histos):
   legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
 legend.AddEntry(bkghist,"Background uncertainty","f")
-if model_dep is True: 
-    legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
-else: 
-    legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
-    legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
-if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","P")
+if not fractions:
+  if model_dep is True: 
+      legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
+  else: 
+      legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
+      legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
+  if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","P")
+  latex = ROOT.TLatex()
+  latex.SetNDC()
+  latex.SetTextAngle(0)
+  latex.SetTextColor(ROOT.kBlack)
+  latex.SetTextSize(0.026)
+  if model_dep is True: 
+      latex.DrawLatex(0.61,0.53,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
+  else: 
+      latex.DrawLatex(0.63,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
+      latex.DrawLatex(0.63,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
 legend.Draw("same")
-latex = ROOT.TLatex()
-latex.SetNDC()
-latex.SetTextAngle(0)
-latex.SetTextColor(ROOT.kBlack)
-latex.SetTextSize(0.026)
-if model_dep is True: 
-    latex.DrawLatex(0.61,0.53,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
-else: 
-    latex.DrawLatex(0.63,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
-    latex.DrawLatex(0.63,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
-
 latex2 = ROOT.TLatex()
 latex2.SetNDC()
 latex2.SetTextAngle(0)
@@ -416,7 +429,7 @@ plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], "2.3 fb^{-1} (13 TeV)", 3);
 
 #Add ratio plot if required
-if args.ratio and not soverb_plot:
+if args.ratio and not soverb_plot and not fractions:
   ratio_bkghist = bkghist.Clone()
   ratio_bkghist.Divide(bkghist)
   blind_datahist.Divide(bkghist)
