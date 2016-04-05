@@ -110,7 +110,10 @@ y_axis_max = float(args.y_axis_max)
 model_dep = args.model_dep
 log_y=args.log_y
 log_x=args.log_x
-outname=args.outname + '_'
+if(args.outname != ''):
+  outname=args.outname + '_'
+else:
+  outname=''
 
 if args.dir and args.file and not args.postfitshapes:
   print 'Provide either directory or filename, not both'
@@ -321,7 +324,7 @@ if(log_x): pads[0].SetLogx(1)
 if args.ratio:
   if(log_x): pads[1].SetLogx(1)
   axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax())
-  axish[1].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
+  axish[1].GetXaxis().SetTitle("m_{T,#tau#tau} (GeV)")
   axish[1].GetYaxis().SetNdivisions(4)
   if not soverb_plot: axish[1].GetYaxis().SetTitle("Obs/Exp")
   else: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
@@ -342,9 +345,9 @@ else:
     axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
   if custom_y_range:
     axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
-if not soverb_plot: axish[0].GetYaxis().SetTitle("dN/dM_{#tau#tau} (1/GeV)")
+if not soverb_plot: axish[0].GetYaxis().SetTitle("dN/dM_{T,#tau#tau} (1/GeV)")
 else: axish[0].GetYaxis().SetTitle("Events")
-axish[0].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
+axish[0].GetXaxis().SetTitle("m_{T,#tau#tau} (GeV)")
 if not custom_y_range: axish[0].SetMaximum(extra_pad*bkghist.GetMaximum())
 if not custom_y_range: 
   if(log_y): axish[0].SetMinimum(0.0009)
@@ -410,7 +413,7 @@ latex2.DrawLatex(0.125,0.96,channel_label)
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.15)
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], "2.2 fb^{-1} (13 TeV)", 3);
+plot.DrawTitle(pads[0], "2.3 fb^{-1} (13 TeV)", 3);
 
 #Add ratio plot if required
 if args.ratio and not soverb_plot:
