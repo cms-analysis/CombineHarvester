@@ -59,7 +59,11 @@ int main(int argc, char** argv) {
   string mass = "mA";
   string output_folder = "mssm_run2";
   // TODO: option to pick up cards from different dirs depending on channel?
-  string input_folder="Imperial/datacards-76X/";
+  // ^ Something like line 90?
+  string input_folder_em="Imperial/";
+  string input_folder_et="Imperial/";
+  string input_folder_mt="Imperial/";
+  string input_folder_tt="Imperial/";
   string postfix="";
   bool auto_rebin = false;
   bool manual_rebin = false;
@@ -68,7 +72,10 @@ int main(int argc, char** argv) {
   po::options_description config("configuration");
   config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
-    ("input_folder", po::value<string>(&input_folder)->default_value("Imperial/datacards-76X"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial"))
     ("postfix", po::value<string>(&postfix)->default_value(""))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
@@ -80,10 +87,11 @@ int main(int argc, char** argv) {
 
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
-  string input_dir =
-      //string(getenv("CMSSW_BASE")) + "/src/auxiliaries/shapes/Imperial/";
-      //"./datacards-2501/";
-      "./shapes/"+input_folder+"/";
+  std::map<string, string> input_dir;
+  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_em+"/";
+  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_mt+"/";
+  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_et+"/";
+  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_tt+"/";
 
   VString chns =
       //{"tt"};
@@ -164,8 +172,7 @@ int main(int argc, char** argv) {
       }
   }
 
-  vector<string> masses = {"90","100","110","120","130","140","160","180", "250", "300", "450", "500", "600", "700", "900","1000","1200","1500","1600","1800","2000","2600","2900","3200"}; //Not all mass points available for fall15
-  //vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1500","1600","1800","2000","2300","2600","2900","3200"};
+  vector<string> masses = {"90","100","110","120","130","140","160","180", /*"200",*/ "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200",/*"1400",*/"1500","1600","1800","2000","2300","2600","2900","3200"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -198,15 +205,15 @@ int main(int argc, char** argv) {
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+        input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+        input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/ggH$MASS",
         "$BIN/ggH$MASS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
-        input_dir + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+        input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
    }
@@ -255,7 +262,7 @@ int main(int argc, char** argv) {
   cout << " done\n";
 
   //Switch JES over to lnN:
-  //cb.cp().syst_name({"CMS_scale_j_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");})};
+  //cb.cp().syst_name({"CMS_scale_j_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
