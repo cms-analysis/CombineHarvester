@@ -33,10 +33,14 @@ void To1Bin(T* proc)
 {
     std::unique_ptr<TH1> originalHist = proc->ClonedScaledShape();
     TH1F *hist = new TH1F("hist","hist",1,0,1);
+    double err = 0;
+    double rate =
+        originalHist->IntegralAndError(0, originalHist->GetNbinsX() + 1, err);
     hist->SetDirectory(0);
-    hist->SetBinContent(1,originalHist->Integral(0,originalHist->GetNbinsX()+1));
-    // TODO: will need to SetBinError here or we won't be able to create bbb later
-    proc->set_shape(*hist,true);
+    hist->SetBinContent(1, rate);
+    hist->SetBinError(1, err);
+    proc->set_shape(*hist, true);  // True means adjust the process rate to the
+                                   // integral of the hist
 }
 
 bool BinIsControlRegion(ch::Object const* obj)
@@ -250,6 +254,7 @@ int main(int argc, char** argv) {
 
   cout << "Generating bbb uncertainties...";
   auto bbb = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
     .SetFixNorm(true);
@@ -259,6 +264,16 @@ int main(int argc, char** argv) {
                 return BinIsControlRegion(obj);
                 }), cb);
   }
+  // And now do bbb for the control region with a slightly different config:
+  auto bbb_ctl = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetAddThreshold(0.)
+    .SetMergeThreshold(0.4)
+    .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
+    .SetVerbosity(1);
+  // Will merge but only for non W and QCD processes, to be on the safe side
+  bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
+  bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
   cout << " done\n";
 
   //Switch JES over to lnN:
@@ -328,49 +343,6 @@ int main(int argc, char** argv) {
   writer.WriteCards("htt_cmb_8_13TeV", cb.cp().bin_id({8, 10, 11, 12}));
   writer.WriteCards("htt_cmb_9_13TeV", cb.cp().bin_id({9, 13, 14, 15}));
 
-  // string folder = "output/"+output_folder+"/cmb";
-  // boost::filesystem::create_directories(folder);
-
-
- // cout << "Writing datacards ...";
-
-
- //  //Individual channel-cats
- //  for (string chn : chns) {
- //     string folderchn = "output/"+output_folder+"/"+chn;
- //     auto bins = cb.cp().channel({chn}).bin_set();
- //      for (auto b : bins) {
- //        string folderchncat = "output/"+output_folder+"/"+b;
- //        boost::filesystem::create_directories(folderchn);
- //        boost::filesystem::create_directories(folderchncat);
- //        TFile output((folder + "/"+b+"_input.root").c_str(), "RECREATE");
- //        TFile outputchn((folderchn + "/"+b+"_input.root").c_str(), "RECREATE");
- //        TFile outputchncat((folderchncat + "/"+b+"_input.root").c_str(), "RECREATE");
- //        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + ".txt", outputchn);
- //        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchncat + "/" + b + ".txt", outputchncat);
- //        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
- //        output.Close();
- //        outputchn.Close();
- //        outputchncat.Close();
- //        if(b.find("8")!=string::npos) {
- //            string foldercat = "output/"+output_folder+"/htt_cmb_8_13TeV/";
- //            boost::filesystem::create_directories(foldercat);
- //            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
- //            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
- //            outputcat.Close();
- //        }
- //        else if(b.find("9")!=string::npos) {
- //            string foldercat = "output/"+output_folder+"/htt_cmb_9_13TeV/";
- //            boost::filesystem::create_directories(foldercat);
- //            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
- //            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
- //            outputcat.Close();
- //        }
- //      }
- //  }
-
   cb.PrintAll();
   cout << " done\n";
-
-
 }

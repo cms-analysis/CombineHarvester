@@ -52,14 +52,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
       "CMS_scale_j_13TeV","lnN",SystMapAsymm<channel,bin_id,process>::init
        ({"mt"},{8}, {"TT"}, 1.014,0.986)
        ({"mt"},{8}, {"bbH"}, 1.01,0.99)
-       ({"mt"},{9}, {"W"}, 0,2.08)
+       ({"mt"},{9}, {"W"}, 0.1,2.08) // changed the lower one from 0.0 to 0.1
        ({"mt"},{9}, {"QCD"}, 1.027,0.975)
        ({"mt"},{9}, {"ZL"}, 0.97,0.91)
        ({"mt"},{9}, {"ZJ"}, 0.968,0.960)
        ({"mt"},{9}, {"ZTT"}, 0.969,1.026)
        ({"mt"},{9}, {"TT"}, 1.092,0.917)
        ({"mt"},{9}, {"VV"}, 1.0415,0.979)
-       ({"mt"},{9}, {"ggH"}, 1,0.94) 
+       ({"mt"},{9}, {"ggH"}, 1,0.94)
        ({"mt"},{9}, {"bbH"}, 1.02,0.98)
        ({"et"},{8}, {"TT"}, 1.013,0.987)
        ({"et"},{8}, {"bbH"}, 1.01,0.99)
@@ -203,6 +203,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   if (control_region == 0 || control_region == 1) {
     // the uncertainty model in the signal region is the classical one
     // QCD Normalisation - separate nuisance for each channel/category
+    // TODO: one function call?
     src.cp().process({"QCD"}).channel({"mt"}).bin_id({8}).AddSyst(cb,
         "CMS_htt_QCDNorm_mt_nobtag_13TeV","lnN",SystMap<>::init(1.1));
 
@@ -230,7 +231,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
             "CMS_htt_WNorm_13TeV","lnN",SystMap<>::init(1.2));
 
     // W Normalisation - separate nuisance for each channel/category
-
+    // TODO: one function call?
     src.cp().process({"W"}).channel({"mt"}).bin_id({8}).AddSyst(cb,
         "CMS_htt_WNorm_mt_nobtag_13TeV","lnN",SystMap<>::init(1.1));
 
@@ -256,25 +257,42 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
         "CMS_htt_WNorm_em_btag_13TeV","lnN",SystMap<>::init(1.3));
     }
     if (control_region == 1 || control_region == 2) {
-      // TODO neeed to adjust this because now we want:
-      // 1 rateParam for all W in every region
-      // 1 rateParam for QCD in low mT
-      // 1 rateParam for QCD in high mT
-      // lnN for the QCD OS/SS ratio (stat and syst)
-      // lnN for the W+jets OS/SS ratio (MC stat and syst)
+      // Create rateParams for control regions:
+      //  - [x] 1 rateParam for all W in every region
+      //  - [x] 1 rateParam for QCD in low mT
+      //  - [x] 1 rateParam for QCD in high mT
+      //  - [ ] lnNs for the QCD OS/SS ratio
+      //         * should account for stat + syst
+      //         * systs should account for: extrap. from anti-iso to iso region,
+      //           possible difference between ratio in low mT and high mT (overkill?)
+      //  - [ ] lnNs for the W+jets OS/SS ratio
+      //         * should account for stat only if not being accounted for with bbb,
+      //           i.e. because the OS/SS ratio was measured with a relaxed selection
+      //         * systs should account for: changes in low/high mT and OS/SS due to JES
+      //           and btag (if relevant); OS/SS being wrong in the MC (from enriched data?);
+      //           low/high mT being wrong in the MC (fake rate dependence?)
 
-      // setup rateParams
-      // this map is needed for bookkeeping of the control-region bin-ids
-      std::map<std::string,int> base_categories{{"btag",10},{"nobtag",13}};
-      for (auto bin:src.cp().channel({"et", "mt"}).bin_id({8,9}).bin_set()){
-        // use cb as we need all categories
-        // Add rateParam for W in OS
-        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_os_rate_"+bin,"rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]},1.0));
-        // Add rateParam for W in SS
-        cb.cp().process({"W"}).channel({bin.substr(0,2)}).AddSyst(cb, "wjets_ss_rate_"+bin,"rateParam", SystMap<bin_id>::init({base_categories[bin.substr(3)]+1,base_categories[bin.substr(3)]+2},1.0));
-        // Add rateParam for QCD
-        cb.cp().process({"QCD"}).channel({bin.substr(0,2)}).AddSyst(cb, "qcd_rate_"+bin,"rateParam", SystMap<bin_id>::init({*(src.cp().bin({bin}).bin_id_set().begin()),base_categories[bin.substr(3)]+1},1.0));
+      // Going to use the regex filtering to select the right subset of
+      // categories for each rateParam
+      cb.SetFlag("filters-use-regex", true);
+      for (auto bin : src.cp().channel({"et", "mt"}).bin_id({8, 9}).bin_set()) {
+        // Regex that matches, e.g. mt_nobtag or mt_nobtag_X
+        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_"+bin, "rateParam", SystMap<>::init(1.0));
+
+        // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
+        cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"QCD"}).AddSyst(cb,
+          "rate_QCD_lowmT_"+bin, "rateParam", SystMap<>::init(1.0));
+
+        // Regex that matches, e.g. mt_nobtag_wjets_cr or mt_nobtag_wjets_ss_cr
+        cb.cp().bin({bin+"_wjets(|_ss)_cr$"}).process({"QCD"}).AddSyst(cb,
+          "rate_QCD_highmT_"+bin, "rateParam", SystMap<>::init(1.0));
       }
+      // Should set a sensible range for our rateParams
+      for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
+        cb.GetParameter(sys)->set_range(0.0, 2.0);
+      }
+      cb.SetFlag("filters-use-regex", false);
     }
     if (control_region == 2) {
       // add the systematic on W+Jets and QCD in the signal region to account for scale factor uncertainties
