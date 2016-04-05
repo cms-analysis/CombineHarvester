@@ -50,18 +50,23 @@ files = {
         'KIT': 'ztt_mt_mt_inclusive_13TeV_fall15.root'
     },
     'em': {
-        'Wisconsin': 'htt_em.inputs-sm-13TeV.root'
+        'Wisconsin': 'htt_em.inputs-sm-13TeV.root',
+        'DESY' : 'htt_em.inputs-sm-13TeV_pzeta.root'
     },
     'tt': {
         'Wisconsin': 'htt_tt.inputs-sm-13TeV.root'
-    }
+    },
+    ##'mm': {
+    ##    'Florida': ''
+    ##}
 }
 
 inputs = {
     'et': 'KIT',
     'mt': 'KIT',
-    'em': 'Wisconsin',
-    'tt': 'Wisconsin'
+    'em': 'DESY',
+    'tt': 'Wisconsin',
+    ##'mm': 'Florida'
 }
 
 #####################################################################################
@@ -85,21 +90,27 @@ constrain_eff_t = False
 
 cb.cp().AddSyst(
     cb, 'CMS_eff_m', 'lnN', ch.SystMap('channel', 'process')
-        (['mt'], real_m, 1.05)
-        (['em'], real_m + ['W'], 1.05))
+        (['mt'], real_m, 1.03)
+        (['em'], real_m + ['W'], 1.03))
 
 cb.cp().AddSyst(
     cb, 'CMS_eff_e', 'lnN', ch.SystMap('channel', 'process')
-        (['et'], real_e, 1.05)
-        (['em'], real_e + ['W'], 1.05))
+        (['et'], real_e, 1.03)
+        (['em'], real_e + ['W'], 1.03))
 
 # Only create the eff_t lnN if we want this to be constrained,
-# otherwise set a rateParam
+# otherwise set a rateParam.
+# Split tau ID efficiency uncertainty into part ("CMS_eff_t") that is correlated between channels
+# and part ("CMS_eff_t_et", "CMS_eff_t_mt", "CMS_eff_t_tt") that is uncorrelated
 if constrain_eff_t:
     cb.cp().AddSyst(
         cb, 'CMS_eff_t', 'lnN', ch.SystMap('channel', 'process')
-            (['et', 'mt'], ['ZTT', 'TT', 'VV'], 1.08)
-            (['tt'],       ['ZTT', 'TT', 'VV'], 1.16))
+            (['et', 'mt'], ['ZTT', 'TT', 'VV'], 1.05)
+            (['tt'],       ['ZTT', 'TT', 'VV'], 1.10))
+    cb.cp().AddSyst(
+        cb, 'CMS_eff_t_$CHANNEL', 'lnN', ch.SystMap('channel', 'process')
+            (['et', 'mt'], ['ZTT', 'TT', 'VV'], 1.03)
+            (['tt'],       ['ZTT', 'TT', 'VV'], 1.06))
 else:
     cb.cp().AddSyst(
         cb, 'CMS_eff_t', 'rateParam', ch.SystMap('channel', 'process')
@@ -108,9 +119,14 @@ else:
     # We should set a sensible range for the resulting parameter
     cb.GetParameter('CMS_eff_t').set_range(0.5, 1.5)
 
+# Split tau energy scale uncertainty into part ("CMS_scale_t") that is correlated between channels
+# and part ("CMS_scale_t_et", "CMS_scale_t_mt", "CMS_scale_t_tt") that is uncorrelated
+cb.cp().AddSyst(
+    cb, 'CMS_scale_t_$ERA', 'shape', ch.SystMap('channel', 'process')
+        (['et', 'mt'], ['ZTT'], 0.833))
 cb.cp().AddSyst(
     cb, 'CMS_scale_t_$CHANNEL_$ERA', 'shape', ch.SystMap('channel', 'process')
-        (['et', 'mt'], ['ZTT'], 1.00))
+        (['et', 'mt'], ['ZTT'], 0.500))
 
 cb.cp().process(['QCD']).AddSyst(
     cb, 'CMS_$ANALYSIS_qcdSyst_$BIN_$ERA', 'lnN', ch.SystMap('channel')
@@ -133,12 +149,15 @@ cb.cp().process(['W']).AddSyst(
         (['et', 'mt', 'tt'],  1.20))
 
 # KIT cards only have one zllFakeTau param, but need at least three:
-#  - e->tau fake rate
-#  - mu-tau fake rate
-#  - jet-tau fake rate
+#  - e->tau fake rate 
+#  - mu->tau fake rate (CV: use 100% uncertainty for now, as no measurement of mu->tau fake-rate in Run 2 data available yet)
+#  - jet->tau fake rate
 cb.cp().process(['ZL']).AddSyst(
-    cb, 'CMS_$ANALYSIS_zlFakeTau_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
-        (['et', 'mt'],  1.30))
+    cb, 'CMS_$ANALYSIS_rate_eFakeTau_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
+        (['et'],  1.30))
+cb.cp().process(['ZL']).AddSyst(
+    cb, 'CMS_$ANALYSIS_rate_mFakeTau_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
+        (['mt'],  2.00))
 
 cb.cp().process(['ZJ']).AddSyst(
     cb, 'CMS_$ANALYSIS_zjFakeTau_$ERA', 'lnN', ch.SystMap('channel')
@@ -146,8 +165,8 @@ cb.cp().process(['ZJ']).AddSyst(
 
 cb.cp().AddSyst(
     cb, 'lumi_$ERA', 'lnN', ch.SystMap('channel', 'process')
-        (['et', 'mt'], ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'], 1.046)
-        (['em', 'tt'], ['ZTT', 'ZLL', 'TT', 'VV'],      1.046))
+        (['et', 'mt'], ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'], 1.027)
+        (['em', 'tt'], ['ZTT', 'ZLL', 'TT', 'VV'],      1.027))
 
 
 #####################################################################################

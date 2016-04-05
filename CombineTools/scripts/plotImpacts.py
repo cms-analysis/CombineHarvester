@@ -15,6 +15,8 @@ parser.add_argument('--output', '-o', help='name of the output file to create')
 parser.add_argument('--translate', '-t', help='JSON file for remapping of parameter names')
 parser.add_argument('--per-page', type=int, default=30, help='Number of parameters to show per page')
 parser.add_argument('--cms-label', default='Internal', help='Label next to the CMS logo')
+parser.add_argument('--transparent', action='store_true', help='Draw areas as hatched lines instead of solid')
+parser.add_argument('--color-groups', default=None, help='Comma separated list of GROUP=COLOR')
 args = parser.parse_args()
 
 
@@ -54,11 +56,21 @@ colors = {
     'Unrecognised': 2
 }
 color_hists = {}
+color_group_hists = {}
+
+if args.color_groups is not None:
+    color_groups = {
+        x.split('=')[0]: int(x.split('=')[1]) for x in args.color_groups.split(',')
+    }
+
 seen_types = set()
 
 for name, col in colors.iteritems():
     color_hists[name] = ROOT.TH1F()
     plot.Set(color_hists[name], FillColor=col, Title=name)
+for name, col in color_groups.iteritems():
+    color_group_hists[name] = ROOT.TH1F()
+    plot.Set(color_group_hists[name], FillColor=col, Title=name)
 
 for page in xrange(n):
     canv = ROOT.TCanvas(args.output, args.output)
@@ -134,8 +146,11 @@ for page in xrange(n):
         g_impacts_lo.SetPointError(i, imp[1] - imp[0], 0, 0.5, 0.5)
         max_impact = max(
             max_impact, abs(imp[1] - imp[0]), abs(imp[2] - imp[1]))
+        col = colors.get(tp, 2)
+        if args.color_groups is not None and len(pdata[p]['groups']) == 1:
+            col = color_groups.get(pdata[p]['groups'][0], 1)
         h_pulls.GetYaxis().SetBinLabel(
-            i + 1, ('#color[%i]{%s}'% (colors.get(tp, 2), Translate(pdata[p]['name'], translate))))
+            i + 1, ('#color[%i]{%s}'% (col, Translate(pdata[p]['name'], translate))))
 
     # Style and draw the pulls histo
     plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
@@ -146,8 +161,8 @@ for page in xrange(n):
     for i in redo_boxes:
         newbox = boxes[i].Clone()
         newbox.Clear()
-        newbox.SetY1(newbox.GetY1()+0.01)
-        newbox.SetY2(newbox.GetY2()-0.01)
+        newbox.SetY1(newbox.GetY1()+0.005)
+        newbox.SetY2(newbox.GetY2()-0.005)
         newbox.SetX1(ROOT.gStyle.GetPadLeftMargin()+0.001)
         newbox.SetX2(0.7-0.001)
         newbox.Draw()
@@ -162,6 +177,7 @@ for page in xrange(n):
 
     # Go to the other pad and draw the impacts histo
     pads[1].cd()
+    if max_impact == 0.: max_impact = 1E-6  # otherwise the plotting gets screwed up
     h_impacts = ROOT.TH2F(
         "impacts", "impacts", 6, -max_impact * 1.1, max_impact * 1.1, n_params, 0, n_params)
     plot.Set(h_impacts.GetXaxis(), LabelSize=0.03, TitleSize=0.04, Ndivisions=505, Title=
@@ -176,9 +192,10 @@ for page in xrange(n):
 
     # And back to the second pad to draw the impacts graphs
     pads[1].cd()
-    g_impacts_hi.SetFillColor(46)
+    alpha = 0.7 if args.transparent else 1.0
+    g_impacts_hi.SetFillColor(plot.CreateTransparentColor(46, alpha))
     g_impacts_hi.Draw('2SAME')
-    g_impacts_lo.SetFillColor(38)
+    g_impacts_lo.SetFillColor(plot.CreateTransparentColor(38, alpha))
     g_impacts_lo.Draw('2SAME')
     pads[1].RedrawAxis()
 
@@ -189,7 +206,13 @@ for page in xrange(n):
     legend.AddEntry(g_impacts_lo, '-1#sigma Impact', 'F')
     legend.Draw()
 
-    if len(seen_types) > 1:
+    if args.color_groups is not None:
+        legend2 = ROOT.TLegend(0.01, 0.94, 0.30, 0.99, '', 'NBNDC')
+        legend2.SetNColumns(2)
+        for name, h in color_group_hists.iteritems():
+            legend2.AddEntry(h, Translate(name, translate), 'F')
+        legend2.Draw()
+    elif len(seen_types) > 1:
         legend2 = ROOT.TLegend(0.01, 0.94, 0.30, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
         for name, h in color_hists.iteritems():
