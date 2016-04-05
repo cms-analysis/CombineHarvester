@@ -88,13 +88,13 @@ int main(int argc, char** argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   std::map<string, string> input_dir;
-  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_em+"/";
-  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_mt+"/";
-  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_et+"/";
-  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/shapes/"+input_folder_tt+"/";
+  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16006/shapes/"+input_folder_em+"/";
+  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16006/shapes/"+input_folder_mt+"/";
+  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16006/shapes/"+input_folder_et+"/";
+  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16006/shapes/"+input_folder_tt+"/";
 
   VString chns =
-      //{"tt"};
+   //   {"tt"};
    //   {"mt"};
       {"mt","et","tt","em"};
 
