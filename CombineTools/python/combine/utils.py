@@ -83,6 +83,7 @@ def prefit_from_workspace(file, workspace, params):
         elif pdf == None or pdf.IsA().InheritsFrom(ROOT.RooUniform.Class()):
             res[p]['type'] = 'Unconstrained'
             res[p]['prefit'] = [var.getVal(), var.getVal(), var.getVal()]
+        res[p]['groups'] = [x.replace('group_', '') for x in var.attributes() if x.startswith('group_')]
     return res
 
 
