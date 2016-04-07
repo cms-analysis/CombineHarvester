@@ -289,7 +289,9 @@ parser.add_argument('--box-frac', default=0.625, type=float, help='fraction of t
 parser.add_argument('--x-title', default=None)
 parser.add_argument('--x-range', default=None)
 parser.add_argument('--premade', action='store_true')
+parser.add_argument('--no-sort', action='store_true')
 parser.add_argument('--vertical-line', type=float, default=None)
+parser.add_argument('--legend-off', default=0.0, type=float, help='legend x-offset')
 
 args = parser.parse_args()
 if args.pub:
@@ -729,14 +731,18 @@ plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}'+subtext,
 if args.POI_line is not None:
     if args.legend_pos == 5:
         POIs = args.POI_line.split()
-    else:
+    elif not args.no_sort:
         POIs = sorted(args.POI_line.split())
+    else:
+        POIs = args.POI_line.split()
     for i,P in enumerate(POIs):
         if P in name_translate:
             POIs[i] = name_translate[P]
-    POI_line = '['+ ','.join(POIs) + ']'
+    POI_line = '['+ ', '.join(POIs) + ']'
     if args.legend_pos == 5:
-        POI_line = '#scale[0.7]{#splitline{['+ ','.join(POIs[:5]) + ',}{' + ','.join(POIs[5:]) + ']}}'
+        POI_line = '#scale[0.7]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
+    if args.legend_pos == 8:
+        POI_line = '#scale[1.0]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
 
 
 if not args.no_input_label:
@@ -752,27 +758,40 @@ latex.SetTextSize(0.04)
 legend_l = 0.73
 if len(other_scans) > 0:
     legend_l = legend_l - len(other_scans) * 0.04
-if args.legend_pos == 1:
+    if args.legend_pos == 6:
+        legend_l = legend_l - len(other_scans) * 0.015
+if args.legend_pos in [1,6]:
     legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
 elif args.legend_pos == 2:
-    legend = ROOT.TLegend(0.6, legend_l+0.075, 0.9, 0.78+0.075, '', 'NBNDC')
+    legend = ROOT.TLegend(0.56+args.legend_off, legend_l+0.075, 0.9+args.legend_off, 0.78+0.075, '', 'NBNDC')
     if args.POI_line is not None:
-        latex.DrawLatex(0.6, 0.875, POI_line)
+        latex.DrawLatex(0.56+args.legend_off, 0.875, POI_line)
 elif args.legend_pos == 3:
     legend = ROOT.TLegend(0.15, legend_l-0.04, 0.45, 0.78-0.04, '', 'NBNDC')
     if args.POI_line is not None:
-        latex.DrawLatex(0.6, 0.875, POI_line)
+        latex.DrawLatex(0.53, 0.875, POI_line)
 elif args.legend_pos == 4:
     legend = ROOT.TLegend(0.50, legend_l+0.075, 0.80, 0.78+0.075, '', 'NBNDC')
     if args.POI_line is not None:
         latex.SetTextSize(0.035)
         latex.DrawLatex(0.50, 0.875, POI_line)
-elif args.legend_pos == 5:
+elif args.legend_pos in [5]:
     legend = ROOT.TLegend(0.15, legend_l+0.02, 0.45, 0.78+0.02, '', 'NBNDC')
     if args.POI_line is not None:
-        latex.DrawLatex(0.55, 0.825, POI_line)
+        latex.DrawLatex(0.52, 0.855, POI_line)
+elif args.legend_pos in [8]:
+    legend = ROOT.TLegend(0.56, legend_l+0.02, 0.92, 0.78+0.02, '', 'NBNDC')
+    if args.POI_line is not None:
+        latex.DrawLatex(0.56, 0.855, POI_line)
+elif args.legend_pos == 7:
+    y_sub = 0. if args.POI_line is None else 0.07
+    legend = ROOT.TLegend(0.65, 0.68 - y_sub, 0.93, 0.91 - y_sub, '', 'NBNDC')
+    legend.SetNColumns(1)
+    if args.POI_line is not None:
+        latex.DrawLatex(0.58, 0.875, POI_line)
 
-if len(other_scans) >= 3:
+
+if len(other_scans) >= 3 and args.legend_pos == 1:
     y_sub = 0. if args.POI_line is None else 0.07
     if args.envelope:
         legend = ROOT.TLegend(0.54, 0.78 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')

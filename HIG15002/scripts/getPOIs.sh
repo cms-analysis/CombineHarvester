@@ -98,7 +98,7 @@ K1_mm) POIs="kappa_W kappa_Z kappa_tau kappa_t kappa_b kappa_mu" ;
 K2) POIs="kappa_W kappa_Z kappa_tau kappa_t kappa_b kappa_g kappa_gam" ;
     POIsF=",BRinv"
     POIsR="kappa_W=0,2:kappa_Z=0,2:kappa_tau=0,2:kappa_t=0,5:kappa_b=0,2:kappa_g=0,2:kappa_gam=0,2:BRinv=0,0.0000000" ;;
-K2_BSM) POIs="kappa_W kappa_Z kappa_tau kappa_t kappa_b kappa_g kappa_gam BRinv" ;
+K2_BSM) POIs="kappa_Z kappa_W kappa_t kappa_tau kappa_b kappa_g kappa_gam BRinv" ;
         POIsR="kappa_W=0,1:kappa_Z=0,1:kappa_tau=0,2:kappa_t=0,5:kappa_b=0,2:kappa_g=0,2:kappa_gam=0,2:BRinv=0,0.6" ;;
 K2_BSM_N) POIs="kappa_W kappa_Z kappa_tau kappa_t kappa_b kappa_g kappa_gam BRinv" ;
         POIsR="kappa_W=0,1:kappa_Z=0,1:kappa_tau=0,2:kappa_t=0,5:kappa_b=0,2:kappa_g=0,2:kappa_gam=0,2:BRinv=-1,0.6" ;;
