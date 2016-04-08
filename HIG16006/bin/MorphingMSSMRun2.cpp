@@ -232,6 +232,12 @@ int main(int argc, char** argv) {
     }
   });
 
+  // And convert any shapes in the CRs to lnN:
+  // Convert all shapes to lnN at this stage
+  cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
+    sys->set_type("lnN");
+  });
+
    //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding
     auto bins = cb.cp().bin_set();
     // For control region bins data (should) = sum of bkgs already
