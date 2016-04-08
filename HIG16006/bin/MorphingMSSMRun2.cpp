@@ -103,6 +103,7 @@ int main(int argc, char** argv) {
       {"mt","et","tt","em"};
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
+  mA.setConstant(true);
   RooRealVar mH("mH", "mH", 90., 3200.);
   RooRealVar mh("mh", "mh", 90., 3200.);
 
@@ -220,7 +221,17 @@ int main(int argc, char** argv) {
         input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
-   }
+  }
+
+  // Now rename the ttbar shape (temporary)
+  cb.cp().ForEachSyst([&](ch::Systematic *sys) {
+    std::string name = sys->name();
+    if (name.find("CMS_htt_ttbarShape_") != name.npos) {
+      sys->set_name("CMS_htt_ttbarShape_13TeV");
+      cb.RenameParameter(name, "CMS_htt_ttbarShape_13TeV");
+    }
+  });
+
    //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding
     auto bins = cb.cp().bin_set();
     // For control region bins data (should) = sum of bkgs already
