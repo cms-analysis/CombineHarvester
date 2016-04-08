@@ -68,9 +68,11 @@ seen_types = set()
 for name, col in colors.iteritems():
     color_hists[name] = ROOT.TH1F()
     plot.Set(color_hists[name], FillColor=col, Title=name)
-for name, col in color_groups.iteritems():
-    color_group_hists[name] = ROOT.TH1F()
-    plot.Set(color_group_hists[name], FillColor=col, Title=name)
+
+if args.color_groups is not None:
+    for name, col in color_groups.iteritems():
+        color_group_hists[name] = ROOT.TH1F()
+        plot.Set(color_group_hists[name], FillColor=col, Title=name)
 
 for page in xrange(n):
     canv = ROOT.TCanvas(args.output, args.output)
