@@ -216,6 +216,8 @@ infiles = {key: value for (
 print infiles
 
 order = args.order.split(',')
+if 'cms' in order and 'atlas' in order and 'comb' in order:
+    SETTINGS["comb"]["legend"] = 'ATLAS+CMS'
 legend_order = args.legend_order.split(',')
 
 graph_test = read('test', SETTINGS[order[0]]['xvar'], SETTINGS[
@@ -248,6 +250,9 @@ if args.layout == 1:
 if args.layout == 2:
     legend = ROOT.TLegend(0.15, 0.11, 0.46, 0.27, '', 'NBNDC')
     legend.SetNColumns(2)
+if args.layout == 3:
+    legend = ROOT.TLegend(0.15, 0.53, 0.45, 0.74, '', 'NBNDC')
+    legend.SetFillStyle(0)
 
 
 graphs = {}
@@ -334,7 +339,7 @@ sm_point.Draw('PSAME')
 
 legend.Draw()
 
-if args.layout == 1:
+if args.layout in [1,3]:
     legend2 = ROOT.TLegend(0.15, 0.11, 0.94, 0.15, '', 'NBNDC')
     legend2.SetNColumns(4)
 if args.layout == 2:
