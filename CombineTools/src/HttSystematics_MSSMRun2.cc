@@ -220,7 +220,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // Cross-sections and lumi
   // -----------------------
   cb.cp().process(JoinStr({signal, {"TT", "VV", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
-    "lumi_13TeV", "lnN", SystMap<>::init(1.026));
+    "lumi_13TeV", "lnN", SystMap<>::init(1.027));
 
   cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL"}).AddSyst(cb,
     "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
@@ -231,6 +231,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
   cb.cp().process({"TT"}).AddSyst(cb,
     "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
+  
+  // W norm, just for em and tt where MC norm is from MC
+  cb.cp().process({"W"}).channel({"tt","em"}).AddSyst(cb,
+    "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
   // Category-acceptance
   // -------------------
@@ -250,6 +254,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     "CMS_htt_eFakeTau_loose_13TeV", "lnN", SystMap<>::init(1.10));
 
   cb.cp().process({"ZJ"}).channel({"et", "mt", "tt"}).AddSyst(cb,
+    "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
+  
+  cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
 
   cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
