@@ -37,17 +37,19 @@ bkg_procs = {
     'et': ['W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
     'mt': ['W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
     'em': ['W', 'QCD', 'ZLL', 'TT', 'VV'],
-    'tt': ['W', 'QCD', 'TT', 'VV']
+    'tt': ['W', 'QCD', 'TT', 'VV'],
+    'mm': ['QCD', 'ZLL', 'TT', 'VV']
 }
 
 bins = {
     'et': [(0, 'et_inclusive')],
     'mt': [(0, 'mt_inclusive')],
     'em': [(0, 'emu_inclusive')],
-    'tt': [(0, 'tt_inclusive')]
+    'tt': [(0, 'tt_inclusive')],
+    'mm': [(0, 'mm_inclusive')]
 }
 
-channels = ['et', 'mt', 'em', 'tt']
+channels = ['et', 'mt', 'em', 'tt', 'mm']
 
 ##########################################################################
 # Set input shape files
@@ -66,9 +68,9 @@ files = {
     'tt': {
         'Wisconsin': 'htt_tt.inputs-sm-13TeV.root'
     },
-    # 'mm': {
-    # 'Florida': ''
-    # }
+    'mm': {
+        'DESY': 'htt_mm.inputs-sm-13TeV_mvis.root'
+    }
 }
 
 inputs = {
@@ -76,7 +78,7 @@ inputs = {
     'mt': 'KIT',
     'em': 'DESY',
     'tt': 'Wisconsin',
-    # 'mm': 'Florida'
+    'mm': 'DESY'
 }
 
 ##########################################################################
@@ -98,8 +100,9 @@ real_e = ['ZTT', 'ZLL', 'ZL', 'ZJ', 'TT', 'VV']  # procs with a real electron
 
 cb.cp().AddSyst(
     cb, 'CMS_eff_m', 'lnN', ch.SystMap('channel', 'process')
-        (['mt'], real_m, 1.03)
-        (['em'], ['ZTT', 'TT', 'W', 'VV'], 1.03))
+        (['mt'], real_m,                    1.03)
+        (['em'], ['ZTT', 'TT', 'W', 'VV'],  1.03)
+        (['mm'], ['ZTT', 'VV', 'ZLL'],      1.06))
 
 cb.cp().AddSyst(
     cb, 'CMS_eff_e', 'lnN', ch.SystMap('channel', 'process')
@@ -145,7 +148,8 @@ cb.cp().AddSyst(
         (['em'], ['ZTT', 'TT', 'W', 'VV'], 1.0))
 cb.cp().AddSyst(
     cb, 'CMS_scale_m', 'shape', ch.SystMap('channel', 'process')
-        (['em'], ['ZTT', 'TT', 'W', 'VV'], 1.0))
+        (['em'], ['ZTT', 'TT', 'W', 'VV'],      1.0)
+        (['mm'], ['ZTT', 'TT', 'VV', 'ZLL'],    1.0))
 cb.cp().AddSyst(
     cb, 'CMS_topPt', 'shape', ch.SystMap('channel', 'process')
         (['em'], ['TT'], 1.0))
@@ -170,11 +174,12 @@ cb.cp().process(['QCD']).AddSyst(
     cb, 'CMS_$ANALYSIS_qcdSyst_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
         (['et', 'mt'],      1.10)
         (['em'],            1.15)
+        (['mm'],            1.21)
         (['tt'],            1.06))  # From Tyler's studies
 
 cb.cp().process(['TT']).AddSyst(
     cb, 'CMS_$ANALYSIS_ttjXsec_$ERA', 'lnN', ch.SystMap('channel')
-        (['et', 'mt', 'em', 'tt'],  1.06))
+        (['et', 'mt', 'em', 'tt', 'mm'],  1.06))
 cb.cp().process(['TT']).AddSyst(
     cb, 'CMS_$ANALYSIS_ttjExtrapol_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
         (['et', 'mt', 'em', 'tt'],  1.10))
@@ -182,6 +187,14 @@ cb.cp().process(['TT']).AddSyst(
 cb.cp().process(['VV']).AddSyst(
     cb, 'CMS_$ANALYSIS_vvXsec_$ERA', 'lnN', ch.SystMap('channel')
         (['et', 'mt', 'em', 'tt'],  1.10))
+cb.cp().process(['VV']).AddSyst(
+    cb, 'CMS_$ANALYSIS_vvXSyst_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
+        (['mm'],  1.30))
+
+cb.cp().channel(['mm']).process(['ZTT', 'ZLL']).AddSyst(
+    cb, 'CMS_$ANALYSIS_mm_BDT_DY', 'lnN', ch.SystMap('process')
+        (['ZTT'],  1.033)
+        (['ZLL'],  1.052))
 
 # W xsec uncertainty only applied to tt and em. et and mt use data-driven method
 cb.cp().process(['W']).AddSyst(
@@ -217,16 +230,22 @@ cb.cp().process(['ZJ']).AddSyst(
 cb.cp().AddSyst(
     cb, 'lumi_$ERA', 'lnN', ch.SystMap('channel', 'process')
         (['et', 'mt'], ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'], 1.027)
-        (['em', 'tt'], ['ZTT', 'ZLL', 'TT', 'VV', 'W'], 1.027))
+        (['em', 'tt'], ['ZTT', 'ZLL', 'TT', 'VV', 'W'], 1.027)
+        (['mm'],       ['ZTT', 'VV', 'ZLL'],            1.027))
 
 
 ##########################################################################
 # Load the shapes
 ##########################################################################
 for chn in channels:
-    cb.cp().channel([chn]).ExtractShapes(
-        '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]),
-        '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    if chn == 'mm':
+        cb.cp().channel([chn]).ExtractShapes(
+            '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]),
+            '$PROCESS', '$PROCESS_$SYSTEMATIC')
+    else:
+        cb.cp().channel([chn]).ExtractShapes(
+            '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]),
+            '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
 
 
 ##########################################################################
@@ -238,10 +257,9 @@ cb.ForEachSyst(lambda sys: RenameSyst(cb, sys, 'CMS_scale_t', 'CMS_scale_t'))
 
 # Then scale the constraint to 2.5%/3%:
 tau_es_scaling = 2.5/3.0
-# Unless the tau ES is going to be floating, in which case rescale it such that
-# x = 1 => es +1%
+# Unless the tau ES is going to be floating, in which case don't rescale
 if not args.constrain_tau_scale:
-    tau_es_scaling = 1.0/3.0
+    tau_es_scaling = 1.0
 
 cb.cp().syst_name(['CMS_scale_t']).ForEachSyst(lambda sys: sys.set_scale(tau_es_scaling))
 
