@@ -1,5 +1,7 @@
 # Z->tautau cross section
 
+**Updated 9/4/16**
+
 Run all commands from inside the HIG15007 directory:
 
         cd $CMSSW_BASE/src/CombineHarvester/HIG15007
@@ -11,25 +13,34 @@ Make sure the `shapes` repository is present and up-to-date:
         git pull --rebase
         cd ..
 
+# Make datacards and workspaces
 Run the datacard creation script:
 
         python scripts/setupDatacards.py
 
 The cards will be arranged in subdirectories of `output/LIMITS/` - one combined directory for all channels (`cmb`) and one directory per channel.
 
-Create the workspaces:
+Create the workspace for the combination:
 
-    combineTool.py -M T2W -i output/LIMITS/*/datacard.txt -o workspace.root
+    combineTool.py -M T2W -o wsp.root -i output/LIMITS/cmb/datacard.txt
 
-Now we can do some fits, e.g. in the cmb directory:
+# Max-lilelihood fit and pre-/post-fit plots
 
-    cd output/LIMITS/cmb/
+Do the ML fit on the combined:
 
-Do a quick scan of the NLL in r to get an idea of the uncertainty:
+    combineTool.py -M MaxLikelihoodFit -m 90 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad  -d output/LIMITS/cmb/wsp.root -v 3 --skipBOnlyFit --setPhysicsModelParameterRanges r=0.5,1.5 --there
 
-    combine -M MultiDimFit workspace.root --algo singles --setPhysicsModelParameterRanges r=0.5,1.5 --minimizerAlgoForMinos Minuit2,Migrad --robustFit 1 --minimizerStrategy 0
+Create the pre- and post-fit output:
 
-Add `-t -1 --expectSignal 1` to scan a pre-fit asimov dataset.
+    PostFitShapesFromWorkspace -w output/LIMITS/cmb/wsp.root -d output/LIMITS/cmb/datacard.txt -o ztt_shapes.root -f output/LIMITS/cmb/mlfit.Test.root:fit_s -m 90 --postfit --sampling --print
+
+Make the plots, using log scale for mm:
+
+    for CHN in mt et tt em; do for TYPE in prefit postfit; do python scripts/postFitPlot.py -i ztt_shapes.root:${CHN}_inclusive_${TYPE} -c ${CHN}; done; done
+    for CHN in mm; do for TYPE in prefit postfit; do python scripts/postFitPlot.py -i ztt_shapes.root:${CHN}_inclusive_${TYPE} -c ${CHN} --logy --y-min 50; done; done
+
+
+**Everything below this point is out-of-date and will be replaced soon**
 
 ## Uncertainty Breakdown
 
