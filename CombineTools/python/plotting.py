@@ -387,6 +387,19 @@ def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered,
         lower.SetMinimum(y_min)
         lower.SetMaximum(y_max)
 
+
+def StandardAxes(xaxis, yaxis, var, units, fmt='.1f'):
+    width = xaxis.GetBinWidth(1)
+    w_label = ("%"+fmt) % width
+    if units == "":
+        xaxis.SetTitle(var)
+        yaxis.SetTitle("Events / " + w_label)
+    else:
+        xaxis.SetTitle(var + " (" + units + ")")
+        yaxis.SetTitle("Events / " + w_label + " " + units)
+
+
+
 ##@}
 
 
