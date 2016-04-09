@@ -37,7 +37,7 @@ bkg_procs = {
     'et': ['W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
     'mt': ['W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
     'em': ['W', 'QCD', 'ZLL', 'TT', 'VV'],
-    'tt': ['W', 'QCD', 'TT', 'VV'],
+    'tt': ['W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
     'mm': ['QCD', 'ZLL', 'TT', 'VV']
 }
 
@@ -214,6 +214,9 @@ cb.cp().process(['ZJ', 'ZJ', 'ZLL']).AddSyst(
 #  - mu->tau fake rate (CV: use 100% uncertainty for now, as no measurement of mu->tau fake-rate in Run 2 data available yet)
 #  - jet->tau fake rate
 cb.cp().process(['ZL']).AddSyst(
+    cb, 'CMS_$ANALYSIS_rate_eFakeTau_loose_$ERA', 'lnN', ch.SystMap('channel')
+        (['tt'],  1.10))
+cb.cp().process(['ZL']).AddSyst(
     cb, 'CMS_$ANALYSIS_rate_eFakeTau_tight_$ERA', 'lnN', ch.SystMap('channel')
         (['et'],  1.30))
 cb.cp().process(['ZL']).AddSyst(
@@ -225,13 +228,14 @@ cb.cp().process(['ZL']).AddSyst(
 
 cb.cp().process(['ZJ']).AddSyst(
     cb, 'CMS_$ANALYSIS_zjFakeTau_$ERA', 'lnN', ch.SystMap('channel')
-        (['et', 'mt'],  1.30))
+        (['et', 'mt', 'tt'],  1.30))
 
 cb.cp().AddSyst(
     cb, 'lumi_$ERA', 'lnN', ch.SystMap('channel', 'process')
-        (['et', 'mt'], ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'], 1.027)
-        (['em', 'tt'], ['ZTT', 'ZLL', 'TT', 'VV', 'W'], 1.027)
-        (['mm'],       ['ZTT', 'VV', 'ZLL'],            1.027))
+        (['et', 'mt'],  ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'],        1.027)
+        (['tt'],        ['ZTT', 'ZL', 'ZJ', 'TT', 'VV', 'W'],   1.027)
+        (['em'],        ['ZTT', 'ZLL', 'TT', 'VV', 'W'],        1.027)
+        (['mm'],        ['ZTT', 'VV', 'ZLL'],                   1.027))
 
 
 ##########################################################################
@@ -247,7 +251,7 @@ for chn in channels:
             '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]),
             '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
 
-
+cb.cp().bin(['emu_inclusive']).ForEachObj(lambda x: x.set_bin('em_inclusive'))
 ##########################################################################
 # Tau ES modifcations
 ##########################################################################
