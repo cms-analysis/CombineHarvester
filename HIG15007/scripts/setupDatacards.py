@@ -126,7 +126,7 @@ else:
             (['et', 'mt'], ['ZTT', 'TT', 'VV'], 1.0)
             (['tt'],       ['ZTT', 'TT', 'VV'], 1.0))
     # We should set a sensible range for the resulting parameter
-    cb.GetParameter('CMS_eff_t').set_range(0.5, 1.5)
+    cb.GetParameter('CMS_eff_t').set_range(0.0, 4.0)
 
 # Always create the terms that decorrelate the channels
 cb.cp().AddSyst(
@@ -236,6 +236,14 @@ cb.cp().AddSyst(
         (['tt'],        ['ZTT', 'ZL', 'ZJ', 'TT', 'VV', 'W'],   1.027)
         (['em'],        ['ZTT', 'ZLL', 'TT', 'VV', 'W'],        1.027)
         (['mm'],        ['ZTT', 'VV', 'ZLL'],                   1.027))
+
+# Signal acceptance
+cb.cp().process(['ZTT']).AddSyst(
+    cb, 'CMS_$ANALYSIS_pdf_$ERA', 'lnN', ch.SystMap()(1.015))
+cb.cp().process(['ZTT']).AddSyst(
+    cb, 'CMS_$ANALYSIS_QCDscale_$ERA', 'lnN', ch.SystMap()(1.005))
+cb.cp().process(['ZTT']).channel(['tt']).AddSyst(
+    cb, 'CMS_$ANALYSIS_QCDscale_$CHANNEL_$ERA', 'lnN', ch.SystMap()(1.06))
 
 
 ##########################################################################

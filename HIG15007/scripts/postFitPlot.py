@@ -158,7 +158,7 @@ plot.DrawTitle(pads[0], '2.3 fb^{-1} (13 TeV)', 3)
 plot.DrawTitle(pads[0], CHANNELS[args.channel], 1)
 
 # ... and we're done
-canv.Print('.pdf')
 canv.Print('.png')
+canv.Print('.pdf')
 
 

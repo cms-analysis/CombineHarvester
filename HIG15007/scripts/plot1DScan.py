@@ -456,26 +456,9 @@ if args.json is not None:
     with open(args.json, 'w') as outfile:
         json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
-collab = 'Combined'
-if 'cms_' in args.output: collab = 'CMS'
-if 'atlas_' in args.output: collab = 'ATLAS'
-
 plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.045, 0.035, 1.2,  cmsTextSize = 1.)
-# plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
 
-if not args.no_input_label: plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
-plot.DrawTitle(pads[0], '2.3-2.7 fb^{-1} (13 TeV)', 3)
-plot.DrawTitle(pads[0], 'm_{H} = 125 GeV', 1)
 
-info = ROOT.TPaveText(0.59, 0.75, 0.95, 0.91, 'NDCNB')
-info.SetTextFont(42)
-info.SetTextAlign(12)
-info.AddText('#bf{ttH combination}')
-info.AddText('HIG-15-005 H#rightarrow#gamma#gamma')
-info.AddText('HIG-15-008 H#rightarrowleptons')
-info.AddText('HIG-16-004 H#rightarrowbb')
-info.Draw()
-# legend_l = 0.70 if len(args) >= 4 else 0.73
 legend_l = 0.69
 if len(other_scans) > 0:
     legend_l = legend_l - len(other_scans) * 0.04
@@ -488,9 +471,9 @@ if len(other_scans) >= 3:
         legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
         legend.SetNColumns(2)
 
-legend.AddEntry(main_scan['func'], args.main_label + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
+legend.AddEntry(main_scan['func'], args.main_label, 'L')
 for i, other in enumerate(other_scans):
-    legend.AddEntry(other['func'], other_scans_opts[i][1] + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
+    legend.AddEntry(other['func'], other_scans_opts[i][1], 'L')
 # if len(args) >= 4: legend.AddEntry(syst_scan['func'], 'Stat. Only', 'L')
 legend.Draw()
 
@@ -512,4 +495,3 @@ if args.meta != '':
     with open(args.output+'.json', 'w') as outmeta:
         json.dump(meta, outmeta, sort_keys=True, indent=4, separators=(',', ': '))
 
-# canv.Print('.C')
