@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
   string postfix="";
   bool auto_rebin = false;
   bool manual_rebin = false;
+  bool real_data = false;
   int control_region = 0;
   po::variables_map vm;
   po::options_description config("configuration");
@@ -82,6 +83,7 @@ int main(int argc, char** argv) {
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial"))
     ("postfix", po::value<string>(&postfix)->default_value(""))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
+    ("real_data", po::value<bool>(&real_data)->default_value(false))
     ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
@@ -243,12 +245,14 @@ int main(int argc, char** argv) {
     // For control region bins data (should) = sum of bkgs already
     // useful to be able to check this, so don't do the replacement
     // for these
-    for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
-      std::cout << " - Replacing data with asimov in bin " << b << "\n";
-      cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
-        obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
-      });
-    }
+  if(!real_data){
+      for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+          std::cout << " - Replacing data with asimov in bin " << b << "\n";
+          cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
+            obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
+          });
+        }
+  }
     // Merge to one bin for control region bins
     cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
     cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
