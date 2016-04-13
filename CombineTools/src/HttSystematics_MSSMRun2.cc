@@ -212,10 +212,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
   // top-quark pT reweighting
   // ------------------------
-  // Note - shape files have the $CHANNEL string, we'll rename this in the main
-  // code after the shapes are extracted to remove the $CHANNEL part
   cb.cp().process({"TT"}).AddSyst(cb,
-    "CMS_htt_ttbarShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+    "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
 
   // Cross-sections and lumi
   // -----------------------

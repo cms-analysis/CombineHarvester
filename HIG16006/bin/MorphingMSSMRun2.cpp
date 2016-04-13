@@ -225,15 +225,6 @@ int main(int argc, char** argv) {
         "$BIN/bbH$MASS_$SYSTEMATIC");
   }
 
-  // Now rename the ttbar shape (temporary)
-  cb.cp().ForEachSyst([&](ch::Systematic *sys) {
-    std::string name = sys->name();
-    if (name.find("CMS_htt_ttbarShape_") != name.npos) {
-      sys->set_name("CMS_htt_ttbarShape_13TeV");
-      cb.RenameParameter(name, "CMS_htt_ttbarShape_13TeV");
-    }
-  });
-
   // And convert any shapes in the CRs to lnN:
   // Convert all shapes to lnN at this stage
   cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
