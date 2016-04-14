@@ -81,6 +81,7 @@ parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='',help='Optional string for start of output filename')
 parser.add_argument('--bkg_fractions', default=False, action='store_true', help='Instead of yields for each process plot fraction of total bkg in each bin')
+parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.7,1.3")
 
 
 args = parser.parse_args()
@@ -414,7 +415,7 @@ if not fractions:
   else: 
       latex.DrawLatex(0.63,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
       latex.DrawLatex(0.63,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
-legend.Draw("same")
+if not args.bkg_fractions: legend.Draw("same")
 latex2 = ROOT.TLatex()
 latex2.SetNDC()
 latex2.SetTextAngle(0)
@@ -424,7 +425,7 @@ latex2.DrawLatex(0.125,0.96,channel_label)
 
 
 #CMS and lumi labels
-plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.15)
+plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], "2.3 fb^{-1} (13 TeV)", 3);
 
@@ -436,8 +437,8 @@ if args.ratio and not soverb_plot and not fractions:
   pads[1].cd()
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
-  axish[1].SetMinimum(0.7)
-  axish[1].SetMaximum(1.3)
+  axish[1].SetMinimum(float(args.ratio_range.split(',')[0]))
+  axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
   ratio_bkghist.SetMarkerSize(0)
   ratio_bkghist.Draw("e2same")
   blind_datahist.DrawCopy("psame")
