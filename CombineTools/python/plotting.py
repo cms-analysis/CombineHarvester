@@ -1132,7 +1132,7 @@ def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
     for obj in pad_obs:
         if obj.InheritsFrom(R.TH1.Class()):
             hobj = obj
-            for j in xrange(1, hobj.GetNbinsX()):
+            for j in xrange(1, hobj.GetNbinsX()+1):
                 if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
                         hobj.GetBinLowEdge(j) > x_max):
                         continue
