@@ -6,11 +6,12 @@ import json
 import sys
 import os
 import fnmatch
+from array import array
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 ROOT.TH1.AddDirectory(False)
 
-def getHistogram(fname, histname, dirname='', postfitmode='prefit', allowEmpty=False):
+def getHistogram(fname, histname, dirname='', postfitmode='prefit', allowEmpty=False, logx=False):
   outname = fname.GetName()
   for key in fname.GetListOfKeys():
     histo = fname.Get(key.GetName())
@@ -18,9 +19,22 @@ def getHistogram(fname, histname, dirname='', postfitmode='prefit', allowEmpty=F
     if dirname == '' : dircheck=True
     elif dirname in key.GetName(): dircheck=True
     if isinstance(histo,ROOT.TH1F) and key.GetName()==histname:
+      if logx:
+        xbins = []
+        xbins.append(1)
+        axis = histo.GetXaxis()
+        for i in range(1,histo.GetNbinsX()+1):
+         xbins.append(axis.GetBinUpEdge(i))
+        rethist = ROOT.TH1F(histname,histname,histo.GetNbinsX(),array('d',xbins))
+        rethist.SetBinContent(1,histo.GetBinContent(1)*(histo.GetBinWidth(1)-1)/(histo.GetBinWidth(1)))
+        rethist.SetBinError(1,histo.GetBinError(1)*(histo.GetBinWidth(1)-1)/(histo.GetBinWidth(1)))
+        for i in range(2,histo.GetNbinsX()+1):
+          rethist.SetBinContent(i,histo.GetBinContent(i))
+          rethist.SetBinError(i,histo.GetBinError(i))
+        histo = rethist
       return [histo,outname]
     elif isinstance(histo,ROOT.TDirectory) and postfitmode in key.GetName() and dircheck:
-      return getHistogram(histo,histname, allowEmpty=allowEmpty)
+      return getHistogram(histo,histname, allowEmpty=allowEmpty, logx=logx)
   print 'Failed to find %(postfitmode)s histogram with name %(histname)s in file %(fname)s '%vars()
   if allowEmpty:
     return [ROOT.TH1F('empty', '', 1, 0, 1), outname]
@@ -202,12 +216,12 @@ background_schemes = {'mt':[backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(
 'em':[backgroundComp("Misidentified e/#mu", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))]}
 
 #Extract relevent histograms from shape file
-[sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal)
-if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH',file_dir, mode, args.no_signal)[0]
-if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH',file_dir, mode, args.no_signal)[0]
-bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode)[0]
+[sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
+if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH',file_dir, mode, args.no_signal, log_x)[0]
+if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH',file_dir, mode, args.no_signal, log_x)[0]
+bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
 
-total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode)[0]
+total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode, logx=log_x)[0]
 blind_datahist = total_datahist.Clone()
 total_datahist.SetMarkerStyle(20)
 blind_datahist.SetMarkerStyle(20)
@@ -267,8 +281,8 @@ if auto_blind or auto_blind_check_only:
           os.system('PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --freeze %(freeze)s'%vars())
     
           testhisto_file = ROOT.TFile(shape_file)
-          testsighist_ggH = getHistogram(testhisto_file,'ggH', file_dir,mode)[0]
-          testsighist_bbH = getHistogram(testhisto_file,'bbH', file_dir,mode)[0]
+          testsighist_ggH = getHistogram(testhisto_file,'ggH', file_dir,mode,logx=log_x)[0]
+          testsighist_bbH = getHistogram(testhisto_file,'bbH', file_dir,mode,logx=log_x)[0]
           for j in range(1,bkghist.GetNbinsX()):
               soverb_ggH = testsighist_ggH.GetBinContent(j)/math.sqrt(bkghist.GetBinContent(j))
               soverb_bbH = testsighist_bbH.GetBinContent(j)/math.sqrt(bkghist.GetBinContent(j))
@@ -307,12 +321,12 @@ for i,t in enumerate(background_schemes[channel]):
   plots = t['plot_list']
   h = ROOT.TH1F()
   for j,k in enumerate(plots):
-    if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode) is not None:
-      h = getHistogram(histo_file,k, file_dir,mode)[0]
+    if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode,logx=log_x) is not None:
+      h = getHistogram(histo_file,k, file_dir,mode, logx=log_x)[0]
       h.SetName(k)
     else:
-      if getHistogram(histo_file,k, file_dir,mode) is not None:
-        h.Add(getHistogram(histo_file,k, file_dir,mode)[0])
+      if getHistogram(histo_file,k, file_dir,mode, logx=log_x) is not None:
+        h.Add(getHistogram(histo_file,k, file_dir,mode,logx=log_x)[0])
   h.SetFillColor(t['colour'])
   h.SetLineColor(ROOT.kBlack)
   h.SetMarkerSize(0)
@@ -386,10 +400,13 @@ if not fractions:
   if not args.no_signal:
     if model_dep is True: 
       sighist.SetLineColor(ROOT.kRed)
+      sighist.SetLineWidth(3)
       sighist.Draw("histsame")
     else: 
       sighist_ggH.SetLineColor(ROOT.kBlue)
       sighist_bbH.SetLineColor(ROOT.kBlue + 3)
+      sighist_ggH.SetLineWidth(3)
+      sighist_bbH.SetLineWidth(3)
       sighist_ggH.Draw("histsame")
       sighist_bbH.Draw("histsame")
 if not soverb_plot and not fractions: blind_datahist.DrawCopy("psame")
