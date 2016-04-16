@@ -319,19 +319,21 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     // Should affect signal region and SS low mT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
-      ({"mt"}, {8}, 1.130)
-      ({"mt"}, {9}, 1.020)
-      ({"et"}, {8}, 1.150)
-      ({"et"}, {9}, 1.020));
+      ({"mt"}, {8}, 1.020)
+      ({"mt"}, {9}, 1.130)
+      ({"et"}, {8}, 1.020)
+      ({"et"}, {9}, 1.150));
 
     // low/high mT W factor syst. uncertainty
-    // Currently to be determined, could be motivated by low vs high mT jet->tau FR
+    // Currently to be determined, could be motivated by low vs high mT jet->tau FR,
+    // where we see a 10-15% variation from low to high mT. Go with 20% for now which
+    // is comparable to what was used in Run 1 0-jet (20%) and the MSSM update (30%)
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
-      ({"mt"}, {8}, 1.10)
-      ({"mt"}, {9}, 1.10)
-      ({"et"}, {8}, 1.10)
-      ({"et"}, {9}, 1.10));
+      ({"mt"}, {8}, 1.20)
+      ({"mt"}, {9}, 1.20)
+      ({"et"}, {8}, 1.20)
+      ({"et"}, {9}, 1.20));
 
     // OS/SS QCD factor syst. uncertainty
     // Based on variation in fitted factor from different anti-iso sidebands
