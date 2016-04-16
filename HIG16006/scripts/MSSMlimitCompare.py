@@ -24,12 +24,14 @@ parser.add_argument('--expected_only', help='Plot expected limit difference only
 parser.add_argument('--outname','-o', help='Name of output plot', default='limit_comparison')
 parser.add_argument('--relative',help='Relative difference in limit',action='store_true', default=False)
 parser.add_argument('--absolute',help='Absolute difference in limit',action='store_true', default=False)
-parser.add_argument('--title',help='Plot label', default='2.1 fb^{-1} (13 TeV)')
+parser.add_argument('--channel_label',default='#mu#tau_{h} no b-tag',help='Channel - category label')
+parser.add_argument('--title',help='Plot label', default='2.3 fb^{-1} (13 TeV)')
 parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
 #parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
+channel_label = args.channel_label
 
 colourlist=[ROOT.kGreen+3,ROOT.kRed,ROOT.kBlue,ROOT.kBlack,ROOT.kYellow+2,ROOT.kOrange+10,ROOT.kCyan+3,ROOT.kMagenta+2,ROOT.kViolet-5,ROOT.kGray]
 files = (args.file).split(',')
@@ -206,6 +208,13 @@ elif args.absolute:
   if not args.expected_only:
     legend.AddEntry(relative_obs_graph,"Obs 2*("+labels[0]+"-"+labels[1]+")/("+labels[0]+"+"+labels[1]+")","PL")
 legend.Draw()
+
+latex2 = ROOT.TLatex()
+latex2.SetNDC()
+latex2.SetTextAngle(0)
+latex2.SetTextColor(ROOT.kBlack)
+latex2.SetTextSize(0.032)
+latex2.DrawLatex(0.125,0.96,channel_label)
 
 plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.15, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], '%s'%args.title, 3);
