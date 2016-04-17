@@ -183,6 +183,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
+  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
+    "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
+
   // Electron energy scale
   // ---------------------
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,
@@ -403,19 +406,19 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
         // Should affect signal region and SS low mT
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 11}, 1.130)
-          ({"mt"}, {9, 14}, 1.020)
-          ({"et"}, {8, 11}, 1.150)
-          ({"et"}, {9, 14}, 1.020));
+          ({"mt"}, {8, 11}, 1.020)
+          ({"mt"}, {9, 14}, 1.130)
+          ({"et"}, {8, 11}, 1.020)
+          ({"et"}, {9, 14}, 1.150));
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 11}, 1.10)
-          ({"mt"}, {9, 14}, 1.10)
-          ({"et"}, {8, 11}, 1.10)
-          ({"et"}, {9, 14}, 1.10));
+          ({"mt"}, {8, 11}, 1.20)
+          ({"mt"}, {9, 14}, 1.20)
+          ({"et"}, {8, 11}, 1.20)
+          ({"et"}, {9, 14}, 1.20));
 
         // OS/SS QCD factor syst. uncertainty
         // Based on variation in fitted factor from different anti-iso sidebands
@@ -463,7 +466,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
       }
       // Should set a sensible range for our rateParams
       for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
-        cb.GetParameter(sys)->set_range(0.0, 2.0);
+        cb.GetParameter(sys)->set_range(0.0, 5.0);
       }
       cb.SetFlag("filters-use-regex", false);
     }
