@@ -2,6 +2,7 @@
 <bin file="TauESMeasurement.cpp" name="TauESMeasurement"></bin>
 <bin file="QCDRatioMeasurement.cpp" name="QCDRatioMeasurement"></bin>
 <bin file="Project8to13.cpp" name="Project8to13"></bin>
+<bin file="Project8Updateto13.cpp" name="Project8Updateto13"></bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
