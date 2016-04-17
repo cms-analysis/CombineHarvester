@@ -73,6 +73,7 @@ int main(int argc, char** argv) {
   bool manual_rebin = false;
   bool real_data = false;
   int control_region = 0;
+  bool check_neg_bins = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -87,7 +88,8 @@ int main(int argc, char** argv) {
     ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
-    ("control_region", po::value<int>(&control_region)->default_value(0));
+    ("control_region", po::value<int>(&control_region)->default_value(0))
+    ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -248,10 +250,23 @@ int main(int argc, char** argv) {
     cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
     cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
 
+  // Rebinning
+  // --------------------
+  // Keep track of shapes before and after rebinning for comparison
+  // and for checking the effect of negative bin contents
+  std::map<std::string, TH1F> before_rebin;
+  std::map<std::string, TH1F> after_rebin;
+  std::map<std::string, TH1F> after_rebin_neg;
+  if (check_neg_bins) {
+    for (auto b : bins) {
+      before_rebin[b] = cb.cp().bin({b}).backgrounds().GetShape();
+    }
+  }
+
 
   auto rebin = ch::AutoRebin()
     .SetBinThreshold(0.)
-    // .SetBinUncertFraction(0.05)
+    // .SetBinUncertFraction(0.5)
     .SetRebinMode(1)
     .SetPerformRebin(true)
     .SetVerbosity(1);
@@ -263,6 +278,94 @@ int main(int argc, char** argv) {
       cb.cp().bin({b}).VariableRebin(binning[b]);
     }
   }
+
+  if (check_neg_bins) {
+    for (auto b : bins) {
+      after_rebin[b] = cb.cp().bin({b}).backgrounds().GetShape();
+      // std::cout << "Bin: " << b << " (before)\n";
+      // before_rebin[b].Print("range");
+      // std::cout << "Bin: " << b << " (after)\n";
+      // after_rebin[b].Print("range");
+      // Build a sum-of-bkgs TH1 that doesn't truncate the negative yields
+      // like the CH GetShape does
+      for (auto p : cb.cp().bin({b}).backgrounds().process_set()) {
+        TH1F proc_hist;
+        cb.cp().bin({b}).process({p}).ForEachProc([&](ch::Process *proc) {
+          proc_hist = proc->ShapeAsTH1F();
+          proc_hist.Scale(proc->no_norm_rate());
+          for (int i = 1; i <= proc_hist.GetNbinsX(); ++i) {
+            if (proc_hist.GetBinContent(i) < 0.) {
+              std::cout << p << " bin " << i << ": " << proc_hist.GetBinContent(i) << "\n";
+            }
+          }
+        });
+        if (after_rebin_neg.count(b)) {
+          after_rebin_neg[b].Add(&proc_hist);
+        } else {
+          after_rebin_neg[b] = proc_hist;
+        }
+      }
+      std::cout << "Bin: " << b << "\n";
+      for (int i = 1; i <= after_rebin[b].GetNbinsX(); ++i) {
+        double offset = after_rebin[b].GetBinContent(i) - after_rebin_neg[b].GetBinContent(i);
+        double offset_by_yield = offset / after_rebin[b].GetBinContent(i);
+        double offset_by_err = offset / after_rebin[b].GetBinError(i);
+        printf("%-2i offset %-10.4f tot %-10.4f err %-10.4f off/tot %-10.4f off/err %-10.4f\n", i , offset, after_rebin[b].GetBinContent(i), after_rebin[b].GetBinError(i), offset_by_yield, offset_by_err);
+      }
+    }
+  }
+
+  // Uncomment this to inject 1 obs event in the last bin of every signal-region
+  // category
+  // if(!real_data){
+  //     for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+  //       std::cout << " - Adjusting data in bin " << b << "\n";
+  //         cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
+  //           TH1F new_obs = cb.cp().bin({b}).GetObservedShape();
+  //           new_obs.SetBinContent(new_obs.GetNbinsX(), 1.);
+  //           new_obs.Print("range");
+  //           obs->set_shape(new_obs, true);
+  //         });
+  //       }
+  // }
+
+  // At this point we can fix the negative bins
+  cb.ForEachProc([](ch::Process *p) {
+    if (ch::HasNegativeBins(p->shape())) {
+      std::cout << "[Negative bins] Fixing negative bins for " << p->bin()
+                << "," << p->process() << "\n";
+      // std::cout << "[Negative bins] Before:\n";
+      // p->shape()->Print("range");
+      auto newhist = p->ClonedShape();
+      ch::ZeroNegativeBins(newhist.get());
+      // Set the new shape but do not change the rate, we want the rate to still
+      // reflect the total integral of the events
+      p->set_shape(std::move(newhist), false);
+      // std::cout << "[Negative bins] After:\n";
+      // p->shape()->Print("range");
+    }
+  });
+
+  cb.ForEachSyst([](ch::Systematic *s) {
+    if (s->type().find("shape") == std::string::npos) return;
+    if (ch::HasNegativeBins(s->shape_u()) || ch::HasNegativeBins(s->shape_d())) {
+      std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
+                << "," << s->process() << "," << s->name() << "\n";
+      // std::cout << "[Negative bins] Before:\n";
+      // s->shape_u()->Print("range");
+      // s->shape_d()->Print("range");
+      auto newhist_u = s->ClonedShapeU();
+      auto newhist_d = s->ClonedShapeD();
+      ch::ZeroNegativeBins(newhist_u.get());
+      ch::ZeroNegativeBins(newhist_d.get());
+      // Set the new shape but do not change the rate, we want the rate to still
+      // reflect the total integral of the events
+      s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
+      // std::cout << "[Negative bins] After:\n";
+      // s->shape_u()->Print("range");
+      // s->shape_d()->Print("range");
+    }
+  });
 
   cout << "Generating bbb uncertainties...";
   auto bbb = ch::BinByBinFactory()
