@@ -93,3 +93,15 @@ The plotting code can then be used in postfit mode and passed the output of the 
 
 PostFitShapesFromWorkspace -d output/mssm_freezing_080416//htt_mt_8_13TeV/htt_mt_8_13TeV.txt -w output/mssm_freezing_080416/htt_mt_8_13TeV/ggPhi.root -o htt_mt_8_13TeV_shapes_080416_postfit.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700 --postfit --sampling -f output/mssm_freezing_080416/cmb/out/mlfit.Test.root:fit_s
 python scripts/postFitPlot.py --file=htt_mt_8_13TeV_shapes_080416_postfit.root --ratio --extra_pad=0.3 --custom_x_range --x_axis_max=999.9 --x_axis_min=0.0 --r_ggH=0.1 --r_bbH=0.1 --mPhi=700 --file_dir="htt_mt_8_13TeV" --fitresult=output/mssm_freezing_080416/cmb/out/mlfit.Test.root --mode="postfit"
+
+7) Temporary - postfit plots for pre-approval
+
+export DIR=mssm_preapp_unblind
+MorphingMSSMRun2 --output_folder=${DIR} -m MH  --postfix="-mtsv" --control_region=1 --auto_rebin=true --real_data 1
+combineTool.py -M T2W -o "ggPhi.root" -P CombineHarvester.CombinePdfs.ModelIndependent:floatingMSSMXSHiggs --PO 'modes=ggH' --PO 'ggHRange=0:20' -i output/${DIR}/* --parallel 4
+cd output/${DIR}/cmb
+combine -M MaxLikelihoodFit -d ggPhi.root -m 90 --setPhysicsModelParameters r_ggH=0,r_bbH=0 --setPhysicsModelParameterRanges r_ggH=0,0.0001:r_bbH=0,0.0001 --minimizerTolerance 0.01 --freezeNuisances r_bbH
+PostFitShapesFromWorkspace -d combined.txt.cmb -w ggPhi.root -o shapes.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700 --postfit --sampling -f mlfit.root:fit_b
+cd -
+cp output/${DIR}/cmb/shapes.root ./
+python scripts/makeMassPlots.py
