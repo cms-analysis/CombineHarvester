@@ -355,7 +355,7 @@ if(log_y): pads[0].SetLogy(1)
 if(log_x): pads[0].SetLogx(1)
 if args.ratio and not fractions:
   if(log_x): pads[1].SetLogx(1)
-  axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax())
+  axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
   axish[1].GetXaxis().SetTitle(args.x_title)
   axish[1].GetYaxis().SetNdivisions(4)
   if not soverb_plot: axish[1].GetYaxis().SetTitle("Obs/Exp")
@@ -365,16 +365,16 @@ if args.ratio and not fractions:
   axish[0].GetYaxis().SetTitleOffset(1.4)
   axish[1].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
-    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
-    axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
+    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+    axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
   if custom_y_range:
     axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
     axish[1].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
 else:
-  axish = createAxisHists(1,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax())
+  axish = createAxisHists(1,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
   axish[0].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
-    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
+    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
   if custom_y_range and not fractions:
     axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
   elif fractions: axish[0].GetYaxis().SetRangeUser(0,1)
