@@ -20,14 +20,15 @@ def getHistogram(fname, histname, dirname='', postfitmode='prefit', allowEmpty=F
     elif dirname in key.GetName(): dircheck=True
     if isinstance(histo,ROOT.TH1F) and key.GetName()==histname:
       if logx:
+        bin_width = histo.GetBinWidth(1)
         xbins = []
-        xbins.append(1)
+        xbins.append(bin_width - 1)
         axis = histo.GetXaxis()
         for i in range(1,histo.GetNbinsX()+1):
          xbins.append(axis.GetBinUpEdge(i))
         rethist = ROOT.TH1F(histname,histname,histo.GetNbinsX(),array('d',xbins))
-        rethist.SetBinContent(1,histo.GetBinContent(1)*(histo.GetBinWidth(1)-1)/(histo.GetBinWidth(1)))
-        rethist.SetBinError(1,histo.GetBinError(1)*(histo.GetBinWidth(1)-1)/(histo.GetBinWidth(1)))
+        rethist.SetBinContent(1,histo.GetBinContent(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
+        rethist.SetBinError(1,histo.GetBinError(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
         for i in range(2,histo.GetNbinsX()+1):
           rethist.SetBinContent(i,histo.GetBinContent(i))
           rethist.SetBinError(i,histo.GetBinError(i))
