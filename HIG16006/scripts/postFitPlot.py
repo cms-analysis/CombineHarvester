@@ -353,6 +353,8 @@ else:
 pads[0].cd()
 if(log_y): pads[0].SetLogy(1)
 if(log_x): pads[0].SetLogx(1)
+if custom_x_range:
+    if x_axis_max > bkghist.GetXaxis().GetXmax(): x_axis_max = bkghist.GetXaxis().GetXmax()
 if args.ratio and not fractions:
   if(log_x): pads[1].SetLogx(1)
   axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
