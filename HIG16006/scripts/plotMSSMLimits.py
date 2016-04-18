@@ -99,6 +99,7 @@ if args.auto_style is not None:
         iline[x] = i+1
 
 # Process each input argument
+has_band = False
 for src in args.input:
     splitsrc = src.split(':')
     file = splitsrc[0]
@@ -113,6 +114,8 @@ for src in args.input:
         pads[0].RedrawAxis()
         pads[0].RedrawAxis('g')
         pads[0].GetFrame().Draw()
+        has_band = True  # useful to know later if we want to do style settings
+                         # based on whether or not the expected band has been drawn
 
     # limit.json:X => Draw a single graph for entry X in the json file 
     # 'limit.json:X:Title="Blah",LineColor=4,...' =>
@@ -149,9 +152,15 @@ if args.process == "bb#phi":
 axis[0].GetXaxis().SetTitle(args.x_title)
 axis[0].GetXaxis().SetLabelOffset(axis[0].GetXaxis().GetLabelOffset()*2)
 
+
 if args.logy:
     axis[0].SetMinimum(0.1)  # we'll fix this later
     pads[0].SetLogy(True)
+    # Apparently switching to logy puts the band back over the top of the axis
+    if has_band:
+        pads[0].RedrawAxis()
+        pads[0].RedrawAxis('g')
+        pads[0].GetFrame().Draw()
     # axis[0].GetYaxis().SetMoreLogLabels()
     # axis[0].SetNdivisions(50005, "X")
 
@@ -197,6 +206,7 @@ legend.Draw()
 #box.Draw()
 
 legend.Draw()
+
 
 plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.035, 1.2, '', 0.8)
 plot.DrawTitle(pads[0], args.title_right, 3)
