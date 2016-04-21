@@ -103,7 +103,6 @@ int main(int argc, char* argv[]){
   //TH1F * data = new TH1F("data","data",195,0,3900); 
   TH1F * total_bkg = new TH1F("total_bkg","total_bkg",195,0,3900); 
   TH1F * ggH = new TH1F("ggH","ggH",195,0,3900); 
-  TH1F * ggH = new TH1F("ggH","ggH",195,0,3900); 
   
   //data = (TH1F*)f->Get("em_nobtag/data_obs");
   total_bkg = (TH1F*)f->Get("htt_em_8_13TeV_prefit/TotalBkg");
