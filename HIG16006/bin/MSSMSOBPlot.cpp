@@ -80,7 +80,7 @@ int main(int argc, char* argv[]){
   // Plot::SetHTTStyle();
 
   string shape_file = "";
-
+  string bin_id="em_nobtag";
   string output           = "";
 
   po::options_description config("configuration");
@@ -90,6 +90,8 @@ int main(int argc, char* argv[]){
     ("help,h",  "print the help message")
     ("shape_file,f",
       po::value<string>(&shape_file)->required())
+    ("bin_id",
+      po::value<string>(&bin_id))
     ("output",
       po::value<string>(&output)->required(),
       "[REQUIRED] output name (no extension)");
@@ -101,27 +103,46 @@ int main(int argc, char* argv[]){
 
   TFile *f = new TFile(shape_file.c_str()); 
   //TH1F * data = new TH1F("data","data",195,0,3900); 
-  TH1F * total_bkg = new TH1F("total_bkg","total_bkg",195,0,3900); 
-  TH1F * ggH = new TH1F("ggH","ggH",195,0,3900); 
+  TH1F * total_bkg = (TH1F*)(f->Get((bin_id+"/total_bkg").c_str()));
+  std::map<string,TH1F*> ggH;
+  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1500","1600","1800","2000","2300","2600","2900","3200"};
+  for(auto const& mass : masses){
+    ggH[mass] = (TH1F*)(f->Get((bin_id+"/ggH"+mass).c_str()));
+  }
   
-  //data = (TH1F*)f->Get("em_nobtag/data_obs");
-  total_bkg = (TH1F*)f->Get("htt_em_8_13TeV_prefit/TotalBkg");
-  ggH = (TH1F*)f->Get("htt_em_8_13TeV_prefit/ggH");
-   
-
-  string bins[] = {"em_nobtag"};
+  //string bins[] = {"em_nobtag"};
 //  auto bins = cmb.SetFromObs(std::mem_fn(&ch::Observation::bin));
   map<string, ch::SOverBInfo> weights;
-  for (auto const& bin : bins) {
-    
-    weights[bin] = ch::SOverBInfo(ggH, total_bkg, 3500, 0.682);
-    std::cout << "Bin: " << bin << "  " << weights[bin].x_lo << "-" << weights[bin].x_hi << "\n";
-    std::cout << "  sig:   " << (weights[bin].x_hi-weights[bin].x_lo)/2. << "\n";
-    std::cout << "  s:     " << weights[bin].s << "\n";
-    std::cout << "  b:     " << weights[bin].b << "\n";
-    std::cout << "  s/s+b: " << weights[bin].s/(weights[bin].s + weights[bin].b) << "\n";
-    std::cout << "  s/root(b): " << weights[bin].s/(sqrt(weights[bin].b)) << "\n";
+  map<string, double> sob_;
+  map<string, double> sosb_;
+  for (auto const& mass : masses) {
+    weights[mass] = ch::SOverBInfo(ggH[mass], total_bkg, 3500, 0.682);
+    sob_[mass] = weights[mass].s/(sqrt(weights[mass].b));
+    sosb_[mass] = weights[mass].s/(weights[mass].b+weights[mass].s);
+    std::cout << " Mass: " << mass << "  " << weights[mass].x_lo << "-" << weights[mass].x_hi << "\n";
+    std::cout << "  sig:   " << (weights[mass].x_hi-weights[mass].x_lo)/2. << "\n";
+    std::cout << "  s:     " << weights[mass].s << "\n";
+    std::cout << "  b:     " << weights[mass].b << "\n";
+    std::cout << "  s/s+b: " << weights[mass].s/(weights[mass].s + weights[mass].b) << "\n";
+    std::cout << "  s/root(b): " << weights[mass].s/(sqrt(weights[mass].b)) << "\n";
   }
+
+  TGraph *sob_graph = new TGraph(masses.size());
+  TGraph *sosb_graph = new TGraph(masses.size());
+  sob_graph->SetName("sob_graph");
+  sosb_graph->SetName("sosb_graph");
+
+  for(unsigned i = 0; i< masses.size(); ++i){
+    sob_graph->SetPoint(i,atoi(masses.at(i).c_str()),sob_[masses.at(i)]);
+    sosb_graph->SetPoint(i,atoi(masses.at(i).c_str()),sosb_[masses.at(i)]);
+  }
+ 
+  TFile * outfile = new TFile(output.c_str(),"RECREATE");
+  sob_graph->Write();
+  sosb_graph->Write();
+  outfile->Close();
+
+ 
 
 /*
   for (auto const& bin : bins) {
