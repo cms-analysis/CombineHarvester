@@ -187,7 +187,10 @@ class CombineToolBase:
         script_list = []
         if self.job_mode in ['script', 'lxbatch', 'SGE']:
             if self.prefix_file != '':
-                job_prefix_file = open(self.prefix_file,'r')
+                if self.prefix_file.endswith('.txt'):
+                  job_prefix_file = open(self.prefix_file,'r')
+                else :
+                  job_prefix_file = open(os.environ['CMSSW_BASE']+"/src/CombineHarvester/CombineTools/input/job_prefixes/job_prefix_"+self.prefix_file+".txt",'r')
                 global JOB_PREFIX
                 JOB_PREFIX=job_prefix_file.read() %({
                   'CMSSW_BASE': os.environ['CMSSW_BASE'],
