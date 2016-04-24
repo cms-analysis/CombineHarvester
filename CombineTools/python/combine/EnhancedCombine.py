@@ -2,6 +2,7 @@ import itertools
 import CombineHarvester.CombineTools.combine.utils as utils
 import json
 import os
+import bisect
 from CombineHarvester.CombineTools.combine.opts import OPTS
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 
@@ -33,10 +34,11 @@ class EnhancedCombine(CombineToolBase):
             '-s', '--seed', help='Supports range strings for multiple RNG seeds, uses the same format as the --mass argument')
         group.add_argument(
             '-d', '--datacard', nargs='*', default=[], help='Operate on multiple datacards')
-        group.add_argument(
-            '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
+        group.add_argument(
+            '--setPhysicsModelParameterRanges', help='Some other options will modify or add to the list of parameter ranges')
+
 
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
@@ -46,6 +48,8 @@ class EnhancedCombine(CombineToolBase):
             '--there', action='store_true', help='Run combine in the same directory as the workspace')
         group.add_argument('--split-points', type=int, default=0,
                            help='When used in conjunction with --points will create multiple combine calls that each run at most the number of points specified here.')
+        group.add_argument(
+            '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
 
     def set_args(self, known, unknown):
         CombineToolBase.set_args(self, known, unknown)
@@ -109,9 +113,26 @@ class EnhancedCombine(CombineToolBase):
         # elif len(self.args.datacard) == 1:
         #     self.passthru.extend(['-d', self.args.datacard[0]])
 
+        current_ranges = self.args.setPhysicsModelParameterRanges
+        put_back_ranges = current_ranges is not None
+
         if self.args.boundlist is not None:
+            # We definitely don't need to put the parameter ranges back
+            # into the args because they're going in via the boundlist
+            # option instead
+            put_back_ranges = False
             with open(self.args.boundlist) as json_file:
                 bnd = json.load(json_file)
+            bound_pars = list(bnd.keys())
+            print 'Found bounds for parameters %s' % ','.join(bound_pars)
+            # Fill a dictionaries of the bound info of the form:
+            #  { 'PAR1' : [(MASS, LOWER, UPER), ...], ...}
+            bound_vals = {}
+            for par in bound_pars:
+                bound_vals[par] = list()
+                for mass, bounds in bnd[par].iteritems():
+                    bound_vals[par].append((float(mass), bounds[0], bounds[1]))
+                bound_vals[par].sort(key=lambda x: x[0])
             # find the subbed_vars entry containing the mass
             # We will extend it to also specify the ranges
             dict_key = None
@@ -124,15 +145,29 @@ class EnhancedCombine(CombineToolBase):
             new_list = []
             for entry in subbed_vars[dict_key]:
                 command = []
+                if current_ranges is not None:
+                    command.append(current_ranges)
                 mval = entry[mass_idx]
-                for model in bnd:
-                    command.append(model+'=0,'+str(bnd[model][mval]))
-                new_list.append(entry + (':'.join(command),))
+                for par in bound_pars:
+                    # The (mass, None, None) is just a trick to make bisect_left do the comparison
+                    # with the list of tuples in bound_var[par]
+                    lower_bound = bisect.bisect_left(bound_vals[par], (float(mval), None, None))
+                    # If lower_bound == 0 this means we are at or below the lowest mass point,
+                    # in which case we should increase by one to take the bounds from this lowest
+                    # point
+                    if lower_bound == 0:
+                        lower_bound += 1
+                    command.append('%s=%g,%g' % (par, bound_vals[par][lower_bound-1][1], bound_vals[par][lower_bound-1][2]))
+                new_list.append(entry + (str(':'.join(command)),))
             # now remove the current mass information from subbed_vars
             # and replace it with the updated one
             del subbed_vars[dict_key]
             subbed_vars[new_key] = new_list
             self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUND)s'])
+
+        # We might need to put the intercepted --setPhysicsModelParameterRanges arg back in
+        if put_back_ranges:
+            self.put_back_arg('setPhysicsModelParameterRanges', '--setPhysicsModelParameterRanges')
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])
