@@ -34,9 +34,9 @@ This will perform the same recursive application of text2workspace, this time ap
 
 This can be done directly with combine, but again combineTool makes life a lot easier for us by allowing successive calls (with different choices of job submission, and parallelisation of calculations):
 
-combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000,1200,1400,1500,1600,1800,2000,2300,2600,2900,3200" -M Asymptotic --boundlist ../CombinePdfs/scripts/mssm_ggh_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_freezing_080416/*/ggPhi.root --there -n ".ggH"
+combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000,1200,1400,1500,1600,1800,2000,2300,2600,2900,3200" -M Asymptotic --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_freezing_080416/*/ggPhi.root --there -n ".ggH"
 
-combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000,1200,1400,1500,1600,1800,2000,2300,2600,2900,3200" -M Asymptotic --boundlist ../CombinePdfs/scripts/mssm_bbh_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_freezing_080416/*/bbPhi.root --there -n ".bbH"
+combineTool.py -m "90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000,1200,1400,1500,1600,1800,2000,2300,2600,2900,3200" -M Asymptotic --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0  -t -1 -d output/mssm_freezing_080416/*/bbPhi.root --there -n ".bbH"
 
 This goes to each subdirectory of output/mssm_freezing_080416/ (--there) and performs the combine calculation for the masses listed on the workspace (either ggH or bbH workspace). The combine output files are stored in the directories alongside the datacards. Note the optin --parallel = X allows you to run the calculations interactively with X in parallel, and e.g.' --job-mode 'lxbatch' --task-name 'mssm_ggH' --sub-opts '-q 1nh' --merge=4 ' could be used to instead run on the lxbatch, merging 4 masspoints into 1 job and submitting to the 1 hour queue.
 
