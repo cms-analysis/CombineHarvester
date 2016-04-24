@@ -74,6 +74,7 @@ int main(int argc, char** argv) {
   bool real_data = false;
   int control_region = 0;
   bool check_neg_bins = false;
+  bool poisson_bbb = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -89,7 +90,8 @@ int main(int argc, char** argv) {
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
-    ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false));
+    ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
+    ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -372,7 +374,8 @@ int main(int argc, char** argv) {
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
-    .SetFixNorm(true);
+    .SetFixNorm(true)
+    .SetPoissonErrors(poisson_bbb);
   for (auto chn : chns) {
     std::cout << " - Doing bbb for channel " << chn << "\n";
     bbb.MergeAndAdd(cb.cp().channel({chn}).process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTJ", "WJets", "Dibosons"}).FilterAll([](ch::Object const* obj) {
