@@ -28,7 +28,7 @@ parser.add_argument('--title',help='Plot label', default='2.3 fb^{-1} (13 TeV)')
 args = parser.parse_args()
 
 
-colourlist=[ROOT.kGreen+3,ROOT.kRed,ROOT.kBlue,ROOT.kBlack,ROOT.kYellow+2,ROOT.kOrange+10,ROOT.kCyan+3,ROOT.kMagenta+2,ROOT.kViolet-5,ROOT.kGray]
+colourlist=[ROOT.kGreen+3,ROOT.kRed,ROOT.kBlue,ROOT.kBlack,ROOT.kYellow+2,ROOT.kOrange,ROOT.kCyan+3,ROOT.kMagenta+2,ROOT.kViolet-5,ROOT.kGray]
 files = (args.file).split(',')
 outname = args.outname
 if args.labels:
