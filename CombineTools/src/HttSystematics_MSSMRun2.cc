@@ -21,6 +21,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // categories
   CombineHarvester cb_sig = cb.cp();
 
+  std::vector<std::string> ggH = {"ggH", "ggH_Htautau", "ggA_Atautau", "ggh_htautau"};
+  std::vector<std::string> bbH = {"bbH", "bbH_Htautau", "bbA_Atautau", "bbh_htautau"};
+
   if (control_region == 1){
     // we only want to cosider systematic uncertainties in the signal region.
     // limit to only the btag and nobtag categories
@@ -49,42 +52,42 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   cb.cp().AddSyst(cb,
     "CMS_scale_j_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
     ({"mt"}, {8}, {"TT"},   1.014,  0.986)
-    ({"mt"}, {8}, {"bbH"},  1.01 ,  0.990)
+    ({"mt"}, {8}, {bbH},  1.01 ,  0.990)
     ({"mt"}, {9}, {"ZL"},   0.97 ,  0.91)
     ({"mt"}, {9}, {"ZJ"},   0.968,  0.960)
     ({"mt"}, {9}, {"ZTT"},  0.969,  1.026)
     ({"mt"}, {9}, {"TT"},   1.092,  0.917)
     ({"mt"}, {9}, {"VV"},   1.0415, 0.979)
-    ({"mt"}, {9}, {"ggH"},  1,      0.94)
-    ({"mt"}, {9}, {"bbH"},  1.02,   0.98)
+    ({"mt"}, {9}, {ggH},  1,      0.94)
+    ({"mt"}, {9}, {bbH},  1.02,   0.98)
     ({"et"}, {8}, {"TT"},   1.013,  0.987)
-    ({"et"}, {8}, {"bbH"},  1.01,   0.99)
+    ({"et"}, {8}, {bbH},  1.01,   0.99)
     ({"et"}, {9}, {"ZL"},   0.983,  1.028)
     ({"et"}, {9}, {"ZJ"},   1.001,  1.112)
     ({"et"}, {9}, {"ZTT"},  0.989,  1.015)
     ({"et"}, {9}, {"VV"},   1.037,  0.955)
     ({"et"}, {9}, {"TT"},   1.0978, 0.9112)
-    ({"et"}, {9}, {"ggH"},  1.06,   0.96)
-    ({"et"}, {9}, {"ggH"},  0.98,   1)
+    ({"et"}, {9}, {ggH},  1.06,   0.96)
+    ({"et"}, {9}, {ggH},  0.98,   1)
     ({"em"}, {8}, {"TT"},   1.015,  0.986)
-    ({"em"}, {8}, {"bbH"},  1.01,   0.99)
-    ({"em"}, {8}, {"ggH"},  1,      1)
+    ({"em"}, {8}, {bbH},  1.01,   0.99)
+    ({"em"}, {8}, {ggH},  1,      1)
     ({"em"}, {9}, {"W"},    0.879,  0.965)
     ({"em"}, {9}, {"QCD"},  0.979,  0.984)
     ({"em"}, {9}, {"ZLL"},  1.2811, 1.018)
     ({"em"}, {9}, {"ZTT"},  0.9965, 1.0292)
     ({"em"}, {9}, {"VV"},   1.0359, 0.9618)
     ({"em"}, {9}, {"TT"},   1.0808, 0.9202)
-    ({"em"}, {9}, {"ggH"},  1.01,   0.99)
-    ({"em"}, {9}, {"bbH"},  0.98,   1.02)
+    ({"em"}, {9}, {ggH},  1.01,   0.99)
+    ({"em"}, {9}, {bbH},  0.98,   1.02)
     ({"tt"}, {8}, {"W"},    1,      0.969)
     ({"tt"}, {8}, {"ZL"},   1.01,   0.99)
     ({"tt"}, {8}, {"ZJ"},   1.01,   0.99)
     ({"tt"}, {8}, {"ZTT"},  1.01,   0.99)
     ({"tt"}, {8}, {"VV"},   1.01,   0.97)
     ({"tt"}, {8}, {"TT"},   1.04,   0.96)
-    ({"tt"}, {8}, {"ggH"},  1.01,   0.99)
-    ({"tt"}, {8}, {"bbH"},  1.02,   0.98)
+    ({"tt"}, {8}, {ggH},  1.01,   0.99)
+    ({"tt"}, {8}, {bbH},  1.02,   0.98)
     ({"tt"}, {9}, {"W"},    1.06,   1.23)
     ({"tt"}, {9}, {"QCD"},  1.004,  1.009)
     ({"tt"}, {9}, {"ZL"},   0.91,   1.12)
@@ -92,8 +95,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"tt"}, {9}, {"ZTT"},  0.96,   1.04)
     ({"tt"}, {9}, {"VV"},   1.05,   1.08)
     ({"tt"}, {9}, {"TT"},   1.08,   0.92)
-    ({"tt"}, {9}, {"bbH"},  0.98,   1.04)
-    ({"tt"}, {9}, {"ggH"},  0.98,   1.02));
+    ({"tt"}, {9}, {bbH},  0.98,   1.04)
+    ({"tt"}, {9}, {ggH},  0.98,   1.02));
 
   // b-tagging efficiency and fake rate
   // ----------------------------------
@@ -102,7 +105,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     // ({"mt"},{8}, {"W"}, 0.99,1.01)
     ({"mt"}, {8}, {"VV"},   1.01,   0.99)
     ({"mt"}, {8}, {"TT"},   1.06,   0.95)
-    ({"mt"}, {8}, {"bbH"},  1.01,   0.99)
+    ({"mt"}, {8}, {bbH},  1.01,   0.99)
     // ({"mt"},{9}, {"W"}, 1.41,0.62)
     // ({"mt"},{9}, {"QCD"}, 0.99,1.01)
     ({"mt"}, {9}, {"ZL"},   0.98,   1.02)
@@ -110,12 +113,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"mt"}, {9}, {"ZTT"},  0.97,   1.03)
     ({"mt"}, {9}, {"VV"},   0.98,   1.03)
     ({"mt"}, {9}, {"TT"},   0.98,   1.02)
-    ({"mt"}, {9}, {"ggH"},  0.98,   1)
-    ({"mt"}, {9}, {"bbH"},  0.97,   1.04)
+    ({"mt"}, {9}, {ggH},  0.98,   1)
+    ({"mt"}, {9}, {bbH},  0.97,   1.04)
     // ({"et"},{8}, {"W"}, 0.99,1.01)
     ({"et"}, {8}, {"VV"},   1.01,   0.99)
     ({"et"}, {8}, {"TT"},   1.05,   0.95)
-    ({"et"}, {8}, {"bbH"},  1.01,   0.99)
+    ({"et"}, {8}, {bbH},  1.01,   0.99)
     // ({"et"},{9}, {"W"}, 1.19,0.91)
     // ({"et"},{9}, {"QCD"}, 0.99,1)
     ({"et"}, {9}, {"ZL"},   0.99,   1.03)
@@ -123,8 +126,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"et"}, {9}, {"ZTT"},  0.96,   1.03)
     ({"et"}, {9}, {"VV"},   0.97,   1.03)
     ({"et"}, {9}, {"TT"},   0.98,   1.02)
-    ({"et"}, {9}, {"ggH"},  0.96,   1.03)
-    ({"et"}, {9}, {"bbH"},  0.98,   1.03)
+    ({"et"}, {9}, {ggH},  0.96,   1.03)
+    ({"et"}, {9}, {bbH},  0.98,   1.03)
     ({"em"}, {8}, {"VV"},   1.01,   0.99)
     ({"em"}, {8}, {"TT"},   1.06,   0.95)
     ({"em"}, {8}, {"bbH"},  1.01,   0.99)
@@ -133,17 +136,17 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"em"}, {9}, {"ZTT"},  0.97,   1.03)
     ({"em"}, {9}, {"VV"},   0.98,   1.02)
     ({"em"}, {9}, {"TT"},   0.98,   1.02)
-    ({"em"}, {9}, {"ggH"},  0.97,   1.03)
-    ({"em"}, {9}, {"bbH"},  0.97,   1.03)
+    ({"em"}, {9}, {ggH},  0.97,   1.03)
+    ({"em"}, {9}, {bbH},  0.97,   1.03)
     ({"tt"}, {8}, {"W"},    1,      0.99)
     ({"tt"}, {8}, {"ZL"},   1.01,   0.99)
     ({"tt"}, {8}, {"TT"},   1.03,   0.92)
-    ({"tt"}, {8}, {"bbH"},  1.01,   0.99)
+    ({"tt"}, {8}, {bbH},  1.01,   0.99)
     ({"tt"}, {9}, {"W"},    1,      1.1)
     ({"tt"}, {9}, {"ZL"},   0.93,   1.03)
     ({"tt"}, {9}, {"ZTT"},  0.99,   1.01)
     ({"tt"}, {9}, {"TT"},   0.99,   1.01)
-    ({"tt"}, {9}, {"bbH"},  0.98,   1.02));
+    ({"tt"}, {9}, {bbH},  0.98,   1.02));
 
 
   cb.cp().AddSyst(cb,
@@ -152,18 +155,18 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"mt"}, {9}, {"ZL"},   0.995,  1.03)
     ({"mt"}, {9}, {"ZJ"},   0.96,   1.02)
     ({"mt"}, {9}, {"ZTT"},  0.99,   1.01)
-    ({"mt"}, {9}, {"ggH"},  0.97,   1.03)
+    ({"mt"}, {9}, {ggH},  0.97,   1.03)
     ({"et"}, {9}, {"ZL"},   0.99,   1)
     ({"et"}, {9}, {"ZL"},   0.95,   1.02)
     ({"et"}, {9}, {"ZTT"},  0.99,   1.01)
     ({"em"}, {9}, {"ZTT"},  0.99,   1.01)
-    ({"em"}, {9}, {"ggH"},  0.97,   1.04)
+    ({"em"}, {9}, {ggH},  0.97,   1.04)
     ({"tt"}, {8}, {"TT"},   1.01,   0.998)
-    ({"tt"}, {8}, {"ggH"},  1.01,   0.99)
+    ({"tt"}, {8}, {ggH},  1.01,   0.99)
     ({"tt"}, {9}, {"ZL"},   0.96,   1.03)
     ({"tt"}, {9}, {"ZTT"},  0.98,   1.03)
     ({"tt"}, {9}, {"VV"},   1.01,   1.03)
-    ({"tt"}, {9}, {"ggH"},  0.97,   1.03));
+    ({"tt"}, {9}, {ggH},  0.97,   1.03));
 
   // Tau-related systematics
   // -----------------------
@@ -183,8 +186,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
-  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
-    "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
+/*  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
+    "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));*/
 
   // Electron energy scale
   // ---------------------

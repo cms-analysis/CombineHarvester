@@ -104,8 +104,8 @@ int main(int argc, char** argv) {
   input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16006/shapes/"+input_folder_tt+"/";
 
   VString chns =
-   //   {"tt"};
-   //   {"mt"};
+  //    {"tt"};
+ //     {"mt"};
       {"mt","et","tt","em"};
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
@@ -118,6 +118,8 @@ int main(int argc, char** argv) {
   bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
+
+  VString SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
   //Example - could fill this map with hardcoded binning for different
   //categories if manual_rebin is turned on
@@ -203,6 +205,8 @@ int main(int argc, char** argv) {
 
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
+    if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);  
+    if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);  
     }
   if (control_region > 0){
       // Since we now account for QCD in the high mT region we only
@@ -219,6 +223,10 @@ int main(int argc, char** argv) {
         input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
+    if(SM125==string("signal_SM125")) cb.cp().channel({chn}).process(SM_procs).ExtractShapes(
+         input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+         "$BIN/$PROCESS",
+         "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
         input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/ggH$MASS",
@@ -424,7 +432,7 @@ int main(int argc, char** argv) {
   if (do_morphing) {
     auto bins = cb.bin_set();
     for (auto b : bins) {
-      auto procs = cb.cp().bin({b}).signals().process_set();
+      auto procs = cb.cp().bin({b}).process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
                              "norm", true, false, false, &demo);
