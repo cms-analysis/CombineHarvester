@@ -81,6 +81,7 @@ int main(int argc, char* argv[]){
 
   string shape_file = "";
   string bin_id="em_nobtag";
+  string mode="ggH";
   string output           = "";
 
   po::options_description config("configuration");
@@ -92,6 +93,8 @@ int main(int argc, char* argv[]){
       po::value<string>(&shape_file)->required())
     ("bin_id",
       po::value<string>(&bin_id))
+    ("mode",
+      po::value<string>(&mode))
     ("output",
       po::value<string>(&output)->required(),
       "[REQUIRED] output name (no extension)");
@@ -107,7 +110,7 @@ int main(int argc, char* argv[]){
   std::map<string,TH1F*> ggH;
   vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1500","1600","1800","2000","2300","2600","2900","3200"};
   for(auto const& mass : masses){
-    ggH[mass] = (TH1F*)(f->Get((bin_id+"/ggH"+mass).c_str()));
+    ggH[mass] = (TH1F*)(f->Get((bin_id+"/"+mode+mass).c_str()));
   }
   
   //string bins[] = {"em_nobtag"};
