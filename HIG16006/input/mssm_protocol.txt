@@ -105,3 +105,59 @@ PostFitShapesFromWorkspace -d combined.txt.cmb -w ggPhi.root -o shapes.root --pr
 cd -
 cp output/${DIR}/cmb/shapes.root ./
 python scripts/makeMassPlots.py
+
+8) creating datacards for pulls and GOF tests
+
+MorphingMSSMRun2 --output_folder="mssm_unblinding_data" -m MH  --postfix="-mtsv" --control_region=1 --auto_rebin=true --real_data=true
+
+For creating the workspace from the datacards we use the default model. This allows easier handling for the b-only fit.
+
+combineTool.py -M T2W -o "ws.root" -i output/mssm_unblinding_data/*
+
+8a) Running the GoF jobs
+
+We look at the Goodness of Fit for three different algorithms. The saturated model (saturated), Anderson-Darling (AD) and Kolmogorow-Smirnow (KS).
+For the AD and KS it is sufficient to run the fits for the combined cards as the test-statitic for the individual channels can be extracted from these results. For the saturated model it is necessary to run them independtly of each other.
+The choice of the mass value as 160 is arbitrary and not of any relevance here as we look at background only fits,
+
+ALGO=AD (or ALGO=KS, ALGO=saturated)
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_unblinding_data/cmb/ws.root -n ".$ALGO.toys" --fixedSignalStrength=0 -t 500
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_unblinding_data/cmb/ws.root -n ".$ALGO" --fixedSignalStrength=0
+
+ALGO=saturated
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_unblinding_data/*_13TeV/ws.root -n ".$ALGO.toys" --fixedSignalStrength=0 -t 500
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_unblinding_data/*_13TeV/ws.root -n ".$ALGO" --fixedSignalStrength=0
+
+The toys can also be split in multiple batches by adding e.g. -s 0:10:1 as option (setting the seed to be 0-10 in 11 jobs)
+
+8b) Collecting GoF outputs
+
+For the saturated model run for each category seperatly
+
+combineTool.py -M CollectGoodnessOfFit --input output/mssm_unblinding_data/htt_et_8_13TeV/higgsCombine.saturated.GoodnessOfFit.mH160.root --input-toys output/mssm_unblinding_data/htt_et_8_13TeV/higgsCombine.saturated.toys.GoodnessOfFit.mH160.*.root -o htt_et_8_13TeV_saturated.json
+
+For the AD and KS run
+
+ALGO=AD (or ALGO=KS)
+combineTool.py -M CollectGoodnessOfFit --input output/mssm_unblinding_data/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH160.root --input-toys output/mssm_unblinding_data/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH160.*.root -o cmb_$ALGO.json
+
+8c) Plotting the GoF results
+
+For the saturated model you again need to run the plotting once per cateogry like
+
+python CombineTools/scripts/plotGof.py --statistic saturated --mass 160.0 -o htt_et_9_13TeV-saturated htt_et_9_13TeV_saturated.json  --title-right="2.3 fb^{-1} (13 TeV)" --title-left="e#tau_{h}, btag"
+
+For the AD or KS algorithm the plotting is done for all categories in one go (inclusing labelling of the plots)
+
+ALGO=AD (or ALGO=KS)
+python CombineTools/scripts/plotGof.py --statistic $ALGO --mass 160.0 cmb_$ALGO.json --title-right="2.3 fb^{-1} (13 TeV)" --output='-$ALGO'
+
+8d) Getting the pulls
+
+For determining the pulls in the b-only fit we run
+
+combineTool.py -M MaxLikelihoodFit output/mssm_unblinding_data/cmb/ws.root
+
+From this point on the pulls can then be extracted using the script diffNuisances.py which is provided together with combine.
+WARNING: the version provided with combine includes informations about the b-only and the s+b fit. These are also saved to the output. The current workaround is to use a modified version which ignores the s+b fit.
+python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f html mlfit.Test.root > mlfit.html

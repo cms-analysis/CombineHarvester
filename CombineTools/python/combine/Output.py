@@ -137,3 +137,125 @@ class CollectLimits(CombineToolBase):
                     print '>> Writing output %s from files:' % outname
                     pprint.pprint(filenames, indent=2)
                     out_file.write(jsondata)
+
+class CollectGoodnessOfFit(CombineToolBase):
+    description = 'Aggregate Goodness of Fit output from fit and toys'
+    requires_root = True
+    default_name = 'gof.json'
+
+    def __init__(self):
+        CombineToolBase.__init__(self)
+
+    def attach_args(self, group):
+        CombineToolBase.attach_args(self, group)
+        group.add_argument('--input', nargs='+', default=[], help='The input files')
+        group.add_argument('--input-toys', nargs='+', default=[], help='The toy input files')
+        group.add_argument(
+            '-o', '--output', nargs='?', const='gof.json',
+            default='gof.json', help="""The name of the output json file.
+            When the --use-dirs option is set the enclosing directory name
+            will be appended to the filename given here.""")
+        group.add_argument(
+            '--use-dirs', action='store_true',
+            help="""Use the directory structure to create multiple limit
+                 outputs and to set the output file names""")
+
+    def run_method(self):
+        limit_sets = defaultdict(list)
+        for filename in self.args.input:
+            if not plot.TFileIsGood(filename):
+                print '>> File %s is corrupt or incomplete, skipping' % filename
+            if not self.args.use_dirs:
+                if 'default' not in limit_sets:
+                    limit_sets['default'] = ([],[])
+                limit_sets['default'][0].append(filename)
+            else:
+                label = 'default'
+                dirs = filename.split('/')
+                # The last dir could be the mass, if so we ignore it and check the next
+                if len(dirs) > 1:
+                    if not isfloat(dirs[-2]):
+                        label = dirs[-2]
+                    elif len(dirs) > 2:
+                        label = dirs[-3]
+                if label not in limit_sets:
+                    limit_sets[label] = ([],[])
+                limit_sets[label][0].append(filename)
+        for filename in self.args.input_toys:
+            if not plot.TFileIsGood(filename):
+                print '>> File %s is corrupt or incomplete, skipping' % filename
+            if not self.args.use_dirs:
+                limit_sets['default'][1].append(filename)
+            else:
+                label = 'default'
+                dirs = filename.split('/')
+                # The last dir could be the mass, if so we ignore it and check the next
+                if len(dirs) > 1:
+                    if not isfloat(dirs[-2]):
+                        label = dirs[-2]
+                    elif len(dirs) > 2:
+                        label = dirs[-3]
+                limit_sets[label][1].append(filename)
+        # print limit_sets
+
+        for label, (filenames, toyfiles) in limit_sets.iteritems():
+            js_out = {}
+            for filename in filenames:
+                file = ROOT.TFile(filename)
+                tree = file.Get('limit')
+                for evt in tree:
+                    branches = []
+                    for branch in list(tree.GetListOfBranches()):
+                        if all([sub in branch.GetName() for sub in ["htt","13TeV"]]) and any([sub in branch.GetName() for sub in ["et","mt","tt","em"]]):
+                            branches.append(branch.GetName())
+                    mh = str(evt.mh)
+                    if mh not in js_out:
+                        js_out[mh] = {}
+                    if evt.quantileExpected == -1:
+                        if branches:
+                            for branch in branches:
+                                if branch not in js_out[mh]:
+                                    js_out[mh][branch] = {}
+                                js_out[mh][branch]['obs'] = [getattr(evt,branch)]
+                        else:
+                            js_out[mh]['obs'] = [evt.limit]
+            for filename in toyfiles:
+                file = ROOT.TFile(filename)
+                tree = file.Get('limit')
+                for evt in tree:
+                    branches = []
+                    for branch in list(tree.GetListOfBranches()):
+                        if all([sub in branch.GetName() for sub in ["htt","13TeV"]]) and any([sub in branch.GetName() for sub in ["et","mt","tt","em"]]):
+                            branches.append(branch.GetName())
+                    mh = str(evt.mh)
+                    if mh not in js_out:
+                        js_out[mh] = {}
+                    if evt.quantileExpected == -1:
+                        if branches:
+                            for branch in branches:
+                                if branch not in js_out[mh]:
+                                    js_out[mh][branch] = {}
+                                if 'toy' not in js_out[mh][branch]:
+                                    js_out[mh][branch]['toy'] = []
+                                js_out[mh][branch]['toy'].append(getattr(evt,branch))
+                        else:
+                            if 'toy' not in js_out[mh]:
+                                js_out[mh]['toy'] = []
+                            js_out[mh]['toy'].append(evt.limit)
+            for mh in js_out:
+                if all([entry in js_out[mh] for entry in ['toy','obs']]):
+                    js_out[mh]["p"] = float(len([toy for toy in js_out[mh]['toy'] if toy >= js_out[mh]['obs'][0]]))/len(js_out[mh]['toy'])
+                else:
+                    for branch in js_out[mh]:
+                        js_out[mh][branch]["p"] = float(len([toy for toy in js_out[mh][branch]['toy'] if toy >= js_out[mh][branch]['obs'][0]]))/len(js_out[mh][branch]['toy'])
+
+            # print js_out
+            jsondata = json.dumps(
+                js_out, sort_keys=True, indent=2, separators=(',', ': '))
+            # print jsondata
+            if self.args.output is not None:
+                outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
+                with open(outname, 'w') as out_file:
+                    print '>> Writing output %s from files:' % outname
+                    pprint.pprint(filenames, indent=2)
+                    out_file.write(jsondata)

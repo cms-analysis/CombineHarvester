@@ -3,6 +3,7 @@ import math
 from array import array
 import re
 import json
+import types
 
 COL_STORE = []
 
@@ -684,6 +685,32 @@ def LimitTGraphFromJSONFile(jsfile, label):
         js = json.load(jsonfile)
     return LimitTGraphFromJSON(js, label)
 
+def ToyTGraphFromJSON(js, label):
+    xvals = []
+    yvals = []
+    if isinstance(label,types.StringTypes):
+        for entry in js[label]:
+            xvals.append(float(entry))
+            yvals.append(1.0)
+    else:
+        if len(label) == 1:
+            return ToyTGraphFromJSON(js,label[0])
+        else:
+            return ToyTGraphFromJSON(js[label[0]],label[1:])
+    graph = R.TGraph(len(xvals), array('d', xvals), array('d', yvals))
+    graph.Sort()
+    return graph
+    # hist = R.TH1F("toy", "toy", 100, min(xvals), max(xvals))
+    # for xval in xvals:
+        # hist.AddBinContent(hist.GetXaxis().FindBin(xval))
+    # return hist
+
+
+
+def ToyTGraphFromJSONFile(jsfile, label):
+    with open(jsfile) as jsonfile:
+        js = json.load(jsonfile)
+    return ToyTGraphFromJSON(js, label)
 
 def LimitBandTGraphFromJSON(js, central, lo, hi):
     xvals = []

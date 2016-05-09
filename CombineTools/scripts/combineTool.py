@@ -9,7 +9,7 @@ from CombineHarvester.CombineTools.combine.ImpactsFromScans import ImpactsFromSc
 from CombineHarvester.CombineTools.combine.Workspace import PrintWorkspace, ModifyDataSet
 from CombineHarvester.CombineTools.combine.CovMatrix import CovMatrix
 from CombineHarvester.CombineTools.combine.LimitGrids import AsymptoticGrid, HybridNewGrid
-from CombineHarvester.CombineTools.combine.Output import PrintFit, CollectLimits
+from CombineHarvester.CombineTools.combine.Output import PrintFit, CollectLimits, CollectGoodnessOfFit
 from CombineHarvester.CombineTools.combine.T2W import T2W
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -35,6 +35,7 @@ register_method(parser, methods, ModifyDataSet)
 register_method(parser, methods, Impacts)
 register_method(parser, methods, ImpactsFromScans)
 register_method(parser, methods, CollectLimits)
+register_method(parser, methods, CollectGoodnessOfFit)
 register_method(parser, methods, CovMatrix)
 register_method(parser, methods, PrintFit)
 register_method(parser, methods, AsymptoticGrid)
