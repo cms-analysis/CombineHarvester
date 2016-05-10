@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
   string output_folder = "mssm_run2";
   // TODO: option to pick up cards from different dirs depending on channel?
   // ^ Something like line 90?
-  string input_folder_em="Imperial/";
+  string input_folder_em="DESY/";
   string input_folder_et="Imperial/";
   string input_folder_mt="Imperial/";
   string input_folder_tt="Imperial/";
