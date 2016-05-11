@@ -285,6 +285,7 @@ parser.add_argument(
 parser.add_argument(
     '--meta', default='', help='Other metadata to save in format KEY:VAL,KEY:VAL')
 parser.add_argument('--legend-pos', default=1, type=int, help='Predefined legend area')
+parser.add_argument('--line-style', default=1, type=int, help='Line style')
 parser.add_argument('--box-frac', default=0.625, type=float, help='fraction of the pad occupied by box')
 parser.add_argument('--x-title', default=None)
 parser.add_argument('--x-range', default=None)
@@ -499,6 +500,8 @@ for i, yval in enumerate(yvals):
                 line.DrawLine(cr['hi'], 0, cr['hi'], yval)
 
 # main_scan['func'].SetNpx(200)
+if args.pub:
+    main_scan['func'].SetLineStyle(args.line_style)
 main_scan['func'].Draw('same')
 for other in other_scans:
     if args.breakdown is not None:
@@ -510,9 +513,12 @@ for other in other_scans:
         other['func'].SetLineWidth(1)
         if args.pub:
             other['func'].SetLineWidth(2)
+            # other['func'].SetLineStyle(9)
         other['graph'].Draw('PSAME') # redraw this
         # other['func'].SetLineWidth(3)
     other['func'].Draw('SAME')
+
+# main_scan['func'].Draw('same')
 
 if args.breakdown and args.envelope:
     for other in new_others:
