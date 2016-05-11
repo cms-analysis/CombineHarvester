@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   po::options_description config("configuration");
   config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("DESY"))
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial"))
