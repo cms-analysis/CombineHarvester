@@ -383,6 +383,7 @@ int main(int argc, char** argv) {
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
     .SetFixNorm(true)
+    // .SetMergeZeroBins(false)
     .SetPoissonErrors(poisson_bbb);
   for (auto chn : chns) {
     std::cout << " - Doing bbb for channel " << chn << "\n";
