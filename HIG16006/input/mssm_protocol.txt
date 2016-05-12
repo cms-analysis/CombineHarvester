@@ -58,7 +58,7 @@ The asymptotic grid mode reads in an input json to define a set of mA-tanb point
 
 The usual Brazil band plots can be made using this script, for e.g. the mutau channel:
 
-python scripts/plotMSSMLimits.py --logy --logx mssm_120516_unblinding_ggH_mt.json --show exp --cms-sub="Preliminary" -o mssm_120516_unblinding_mt
+python scripts/plotMSSMLimits.py --logy --logx mssm_120516_unblinding_ggH_mt.json --cms-sub="Preliminary" -o mssm_120516_unblinding_mt
 
 Or comparison plots can be made using the following script:
 
