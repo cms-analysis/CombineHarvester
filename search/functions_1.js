@@ -8,6 +8,7 @@ var searchData=
   ['bin_5fset',['bin_set',['../classch_1_1_combine_harvester.html#a869c951c635b86fba33b2c550c9c39c9',1,'ch::CombineHarvester']]],
   ['binbybinfactory',['BinByBinFactory',['../classch_1_1_bin_by_bin_factory.html#ad83ac54b41f5ee9eabc33866bb61b834',1,'ch::BinByBinFactory']]],
   ['bkginfo',['BkgInfo',['../struct_bkg_info.html#a0ea51e03c4a8105333b7272e8532861c',1,'BkgInfo']]],
-  ['boost_5fpython_5fmodule',['BOOST_PYTHON_MODULE',['../_combine_harvester___python_8cc.html#ad143df8635f271b58faa7864c2e1b423',1,'CombineHarvester_Python.cc']]],
-  ['buildroomorphing',['BuildRooMorphing',['../namespacech.html#a64d9f4241e5148c2ab549c40a731dc8c',1,'ch']]]
+  ['boost_5fpython_5fmodule',['BOOST_PYTHON_MODULE',['../_combine_harvester___python_8cc.html#ad143df8635f271b58faa7864c2e1b423',1,'BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools):&#160;CombineHarvester_Python.cc'],['../_python_8cc.html#ae158b0ed03c906858425fd2e4f7c5f22',1,'BOOST_PYTHON_MODULE(libCombineHarvesterCombinePdfs):&#160;Python.cc']]],
+  ['buildroomorphing',['BuildRooMorphing',['../namespacech.html#a64d9f4241e5148c2ab549c40a731dc8c',1,'ch']]],
+  ['buildroomorphingpy',['BuildRooMorphingPy',['../_python_8h.html#aac190afbb9da9e7598b2cd0167c88387',1,'BuildRooMorphingPy(bp::object &amp;ws, ch::CombineHarvester &amp;cb, std::string const &amp;bin, std::string const &amp;process, bp::object &amp;mass_var, std::string norm_postfix, bool allow_morph, bool verbose, bool force_template_limit, bp::object &amp;file):&#160;Python.cc'],['../_python_8cc.html#aac190afbb9da9e7598b2cd0167c88387',1,'BuildRooMorphingPy(bp::object &amp;ws, ch::CombineHarvester &amp;cb, std::string const &amp;bin, std::string const &amp;process, bp::object &amp;mass_var, std::string norm_postfix, bool allow_morph, bool verbose, bool force_template_limit, bp::object &amp;file):&#160;Python.cc']]]
 ];

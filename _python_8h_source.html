@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.10"/>
-<title>CombineHarvester: CombinePdfs/src Directory Reference</title>
+<title>CombineHarvester: CombinePdfs/interface/Python.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('dir_a11d860a120a6ee231a0ac3c6fec920f.html','');});
+$(document).ready(function(){initNavTree('_python_8h_source.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -97,18 +97,27 @@ $(document).ready(function(){initNavTree('dir_a11d860a120a6ee231a0ac3c6fec920f.h
 
 <div class="header">
   <div class="headertitle">
-<div class="title">src Directory Reference</div>  </div>
+<div class="title">Python.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:_morph_functions_8cc"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_morph_functions_8cc.html">MorphFunctions.cc</a> <a href="_morph_functions_8cc_source.html">[code]</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:_python_8cc"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_python_8cc.html">Python.cc</a> <a href="_python_8cc_source.html">[code]</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-</div><!-- contents -->
+<a href="_python_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;boost/python.hpp&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;boost/python/type_id.hpp&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;TPython.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_morph_functions_8h.html">CombineHarvester/CombinePdfs/interface/MorphFunctions.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>bp = boost::python;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> <a class="code" href="_python_8h.html#aac190afbb9da9e7598b2cd0167c88387">BuildRooMorphingPy</a>(bp::object &amp; ws, <a class="code" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a>&amp; cb,</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                      std::string <span class="keyword">const</span>&amp; bin, std::string <span class="keyword">const</span>&amp; process,</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                      bp::object &amp; mass_var, std::string norm_postfix,</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;                      <span class="keywordtype">bool</span> allow_morph, <span class="keywordtype">bool</span> verbose, <span class="keywordtype">bool</span> force_template_limit, bp::object &amp; file);</div>
+<div class="ttc" id="classch_1_1_combine_harvester_html"><div class="ttname"><a href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a></div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00030">CombineHarvester.h:30</a></div></div>
+<div class="ttc" id="_python_8h_html_aac190afbb9da9e7598b2cd0167c88387"><div class="ttname"><a href="_python_8h.html#aac190afbb9da9e7598b2cd0167c88387">BuildRooMorphingPy</a></div><div class="ttdeci">void BuildRooMorphingPy(bp::object &amp;ws, ch::CombineHarvester &amp;cb, std::string const &amp;bin, std::string const &amp;process, bp::object &amp;mass_var, std::string norm_postfix, bool allow_morph, bool verbose, bool force_template_limit, bp::object &amp;file)</div><div class="ttdef"><b>Definition:</b> <a href="_python_8cc_source.html#l00008">Python.cc:8</a></div></div>
+<div class="ttc" id="_morph_functions_8h_html"><div class="ttname"><a href="_morph_functions_8h.html">MorphFunctions.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.6-->
 <!-- start footer part -->
