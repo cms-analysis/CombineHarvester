@@ -158,7 +158,7 @@ if args.postfitshapes and not args.dir:
 if manual_blind and auto_blind :
     print 'Pick only one option for blinding strategy out of --manual_blind and --auto_blind'
 #For now, force that one type of blinding is always included! When unblinding the below line will need to be removed
-if not manual_blind and not auto_blind: manual_blind=True    
+#if not manual_blind and not auto_blind: manual_blind=True    
 
 if (args.auto_blind or args.auto_blind_check_only) and args.model_dep:
   print 'Automated blinding only supported for model independent plots, please use manual blinding'
