@@ -99,6 +99,9 @@ def get_singles_results(file, scanned, columns):
         res[param] = {}
         for col in columns:
             allvals = [getattr(evt, col) for evt in t]
+            if len(allvals) < (1 + len(scanned)*2):
+                print 'File %s did not contain a sufficient number of entries, skipping' % file
+                return None
             res[param][col] = [
                 allvals[i * 2 + 1], allvals[0], allvals[i * 2 + 2]]
     return res
