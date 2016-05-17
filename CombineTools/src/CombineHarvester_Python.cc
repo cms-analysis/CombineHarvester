@@ -11,6 +11,7 @@
 #include "boost/python.hpp"
 #include "TFile.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TGraph.h"
 #include "RooFitResult.h"
 namespace py = boost::python;
@@ -191,6 +192,9 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
   py::to_python_converter<TH1F,
                           convert_cpp_root_to_py_root<TH1F>>();
 
+  py::to_python_converter<TH2F,
+                          convert_cpp_root_to_py_root<TH2F>>();
+
   py::to_python_converter<TGraph,
                           convert_cpp_root_to_py_root<TGraph>>();
 
@@ -205,6 +209,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
   convert_py_seq_to_cpp_vector<double>();
   convert_py_root_to_cpp_root<TFile>();
   convert_py_root_to_cpp_root<TH1F>();
+  convert_py_root_to_cpp_root<TH2F>();
   convert_py_root_to_cpp_root<TH1>();
   convert_py_root_to_cpp_root<TGraph>();
   convert_py_root_to_cpp_root<RooFitResult>();
@@ -305,6 +310,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("GetShape", &CombineHarvester::GetShape)
       .def("GetShapeWithUncertainty", Overload1_GetShapeWithUncertainty)
       .def("GetShapeWithUncertainty", Overload2_GetShapeWithUncertainty)
+      .def("GetRateCovariance", &CombineHarvester::GetRateCovariance)
+      .def("GetRateCorrelation", &CombineHarvester::GetRateCorrelation)
       .def("GetObservedShape", &CombineHarvester::GetObservedShape)
       // Creation
       .def("__AddObservations__", &CombineHarvester::AddObservations)
