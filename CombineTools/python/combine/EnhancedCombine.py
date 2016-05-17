@@ -150,8 +150,9 @@ class EnhancedCombine(CombineToolBase):
                 mval = entry[mass_idx]
                 for par in bound_pars:
                     # The (mass, None, None) is just a trick to make bisect_left do the comparison
-                    # with the list of tuples in bound_var[par]
-                    lower_bound = bisect.bisect_left(bound_vals[par], (float(mval), None, None))
+                    # with the list of tuples in bound_var[par]. The +1E-5 is to avoid float rounding
+                    # issues
+                    lower_bound = bisect.bisect_left(bound_vals[par], (float(mval)+1E-5, None, None))
                     # If lower_bound == 0 this means we are at or below the lowest mass point,
                     # in which case we should increase by one to take the bounds from this lowest
                     # point
