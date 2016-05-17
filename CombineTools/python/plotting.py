@@ -1426,6 +1426,9 @@ def DrawTitle(pad, text, align):
 #      TGraphs in the correct order
 ##@{
 
+def isclose(a, b, rel_tol=1e-9, abs_tol=0.0):
+    return abs(a-b) <= max(abs_tol, rel_tol * max(abs(a),abs(b)))
+
 def StyleLimitBand(graph_dict):
     if 'obs' in graph_dict:
         graph_dict['obs'].SetLineWidth(2)
@@ -1580,6 +1583,24 @@ def frameTH2D(hist, threshold, frameValue=1000):
                 framed.SetBinContent(x, y, hist.GetBinContent(ux - 2, uy - 2))
     return framed
 
+def fastFillTH2(hist2d, graph, initalValue=99999, interpolateMissing=False):
+    for x in xrange(1,hist2d.GetNbinsX()+1):
+        for y in xrange(1,hist2d.GetNbinsY()+1):
+            hist2d.SetBinContent(x,y,initalValue)
+    # for i in xrange(graph.GetN()):
+        # hist2d.Fill(graph.GetX()[i],graph.GetY()[i],graph.GetZ()[i])
+    for i in xrange(graph.GetN()):
+        xbin = hist2d.GetXaxis().FindBin(graph.GetX()[i])
+        ybin = hist2d.GetYaxis().FindBin(graph.GetY()[i])
+        if isclose(hist2d.GetXaxis().GetBinCenter(xbin), graph.GetX()[i], rel_tol=1e-4) and isclose(hist2d.GetYaxis().GetBinCenter(ybin), graph.GetY()[i], rel_tol=1e-4):
+            hist2d.SetBinContent(xbin, ybin, graph.GetZ()[i])
+    interpolated = 0
+    if interpolateMissing:
+        for x in xrange(1,hist2d.GetNbinsX()+1):
+            for y in xrange(1,hist2d.GetNbinsY()+1):
+                if hist2d.GetBinContent(x,y) == initalValue:
+                    interpolated += 1
+                    hist2d.SetBinContent(x, y, graph.Interpolate(hist2d.GetXaxis().GetBinCenter(x),hist2d.GetYaxis().GetBinCenter(y)))
 
 def fillTH2(hist2d, graph):
     for x in xrange(1, hist2d.GetNbinsX() + 1):
