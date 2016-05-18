@@ -34,6 +34,7 @@ var searchData=
   ['setbinthreshold',['SetBinThreshold',['../classch_1_1_auto_rebin.html#aa08dc119e1c1f3296fbeb59732529338',1,'ch::AutoRebin']]],
   ['setbinuncertfraction',['SetBinUncertFraction',['../classch_1_1_auto_rebin.html#ab156ebbbbbfc264c736d06f182da7c25',1,'ch::AutoRebin']]],
   ['setbirdpalette',['SetBirdPalette',['../namespaceplotting.html#a352c801d8b36f5e37b3a7e61bd3cee47',1,'plotting']]],
+  ['setcorrmatrixpalette',['SetCorrMatrixPalette',['../namespaceplotting.html#a4483ee4bc42483af96ae6f67e0dc6980',1,'plotting']]],
   ['setdeepseapalette',['SetDeepSeaPalette',['../namespaceplotting.html#a5009faab4d0d9e1e48be0c5237cad7e5',1,'plotting']]],
   ['setfixnorm',['SetFixNorm',['../classch_1_1_bin_by_bin_factory.html#a05d997b69c619df3c2f7d20e4e7106b7',1,'ch::BinByBinFactory']]],
   ['setflag',['SetFlag',['../classch_1_1_combine_harvester.html#a4b18f900247617db79a26ea0a08df15c',1,'ch::CombineHarvester']]],
