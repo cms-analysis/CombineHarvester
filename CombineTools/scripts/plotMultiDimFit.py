@@ -6,12 +6,14 @@ from array import array
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
-parser.add_argument('--files', '-f', help='named input files')
+parser.add_argument('files', help='Input files')
 parser.add_argument(
     '--output', '-o', default='limit', help="""Name of the output
     plot without file extension""")
 parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
+parser.add_argument(
+    '--mass', default='', help="""Mass label on the plot""")
 parser.add_argument(
     '--title-right', default='', help="""Right header text above the frame""")
 parser.add_argument(
@@ -93,11 +95,8 @@ for i, p in enumerate(cont_1sigma):
 best.Draw("P SAME")
 legend.AddEntry(best, "Best fit", "P")
 
-
-hmass=""
-if (args.files.find(".mH") != -1):
-    hmass = args.files[args.files.find(".mH")+3:args.files.find(".root")]
-    legend.SetHeader("m_{#phi} = "+hmass+" GeV")
+if args.mass:
+    legend.SetHeader("m_{#phi} = "+args.mass+" GeV")
 legend.Draw("same")
 
 plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.035, 1.2, '', 1.0)
