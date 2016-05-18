@@ -356,7 +356,7 @@ legend2.Draw()
 box = ROOT.TPave(0.15, 0.82, 0.41, 0.92, 0, 'NBNDC')
 box.Draw()
 if args.pub:
-    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#scale[0.9]{#it{LHC} #bf{Run 1 Internal}}}', '',
+    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1}}', '',
                      11, 0.025, 0.035, 1.1)
 else:
     plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }#it{CMS}', '#it{LHC Run 1}',

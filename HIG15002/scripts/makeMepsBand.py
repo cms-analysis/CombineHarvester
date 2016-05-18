@@ -270,7 +270,7 @@ legend2.AddEntry(c95, '95% CL', 'F')
 legend2.Draw()
 
 plot.DrawTitle(pads[0], args.title_right, 3)
-plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1 Internal}}', '', 11, 0.045, 0.035, 1.2)
+plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1}}', '', 11, 0.045, 0.035, 1.2)
 
 pads[0].RedrawAxis()
 

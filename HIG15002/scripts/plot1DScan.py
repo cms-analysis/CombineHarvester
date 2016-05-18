@@ -645,7 +645,9 @@ if args.signif:
             txt_signif = '[Significance = %.2f#sigma]' % (signif)
             pt.AddText(txt_cross)
             pt.AddText(txt_signif)
-            print '-2#DeltalnL @ %s = %.1f is %.3f]' % (fixed_name, 1., main_scan['func'].Eval(1.0))
+    signif = ROOT.Math.normal_quantile_c(
+                ROOT.Math.chisquared_cdf_c(main_scan['func'].Eval(1.0), 1) / 2., 1)
+    print '-2#DeltalnL @ %s = %.1f is %.3f, signif = %.2fsigma' % (fixed_name, 1., main_scan['func'].Eval(1.0), signif)
 
 
 # pt.AddText(textfit)
@@ -725,7 +727,7 @@ if 'atlas_' in args.output:
 
 subtext = '{#it{LHC} #bf{Run 1 Internal}}'
 if args.pub:
-    subtext = '{#scale[0.9]{#it{LHC} #bf{Run 1 Internal}}}'
+    subtext = '{#it{LHC} #bf{Run 1}}'
     # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
 plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}'+subtext,
                  '', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
