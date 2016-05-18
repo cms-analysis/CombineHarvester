@@ -269,6 +269,15 @@ def SetDeepSeaPalette():
     R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
 
 
+def SetCorrMatrixPalette():
+    R.TColor.CreateGradientColorTable(3,
+                                      array ("d", [0.00, 0.50, 1.00]),
+                                      array ("d", [1.00, 1.00, 0.00]),
+                                      array ("d", [0.70, 1.00, 0.34]),
+                                      array ("d", [0.00, 1.00, 0.82]),
+                                      255,  1.0)
+
+
 def CreateTransparentColor(color, alpha):
     adapt = R.gROOT.GetColor(color)
     new_idx = R.gROOT.GetListOfColors().GetLast() + 1
