@@ -33,6 +33,34 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   auto signal = Set2Vec(cb.cp().signals().SetFromProcs(
       std::mem_fn(&Process::process)));
 
+  //SM theory uncertainties
+  cb.cp().process({"ggH_SM125"}).AddSyst(cb, "QCDscale_ggH", "lnN",
+    SystMapAsymm<>::init(1.076,0.919));
+
+  cb.cp().process({"qqH_SM125"}).AddSyst(cb, "QCDscale_qqH", "lnN",
+    SystMapAsymm<>::init(1.004,0.997));
+
+
+  cb.cp().process({"ZH_SM125","WplusH_SM125","WminusH_SM125"}).AddSyst(cb, "QCDscale_VH", "lnN",
+    SystMapAsymm<process>::init
+     ({"ZH_SM125"}, 1.038, 0.969)
+     ({"WplusH_SM125","WminusH_SM125"},1.005,0.993));
+
+  cb.cp().process({"TTH_SM125"}).AddSyst(cb,"QCDscale_ttH","lnN", 
+    SystMapAsymm<>::init(1.058,0.908));
+
+  cb.cp().process({"ggH_SM125"}).AddSyst(cb, "pdf_Higgs_gg","lnN",
+    SystMap<>::init(1.031));
+
+  cb.cp().process({"TTH_SM125"}).AddSyst(cb, "pdf_Higgs_ttH","lnN",
+    SystMap<>::init(1.036));
+
+  cb.cp().process({"ZH_SM125","WplusH_SM125","WminusH_SM125","qqH_SM125"}).AddSyst(cb, "pdf_Higgs_qqbar","lnN",
+    SystMap<process>::init
+      ({"ZH_SM125"},1.016)
+      ({"WplusH_SM125","WminusH_SM125"},1.019)
+      ({"qqH_SM125"},1.021)); 
+    
 
   // Electron and muon efficiencies
   // ------------------------------
