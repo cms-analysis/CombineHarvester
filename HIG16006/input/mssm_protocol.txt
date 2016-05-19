@@ -34,7 +34,7 @@ These workspaces can also be used for the ggH-bbH 2D limits.
 
 2b) Setting up workspaces for model dependent limits (asymptotic and MSSMvsSM)
 
-combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$CMSSW_BASE/src/auxiliaries/models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 [--PO debugOutput=mhmodp_mu200_13TeV_debug.root" --PO makePlots ] -i output/mssm_120516_unblinding_mhmodp/*
+combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$CMSSW_BASE/src/auxiliaries/models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 [--PO debugOutput="mhmodp_mu200_13TeV_debug.root" --PO makePlots ] -i output/mssm_120516_unblinding_mhmodp/*
 
 This will perform the same recursive application of text2workspace, this time applying the mhmodp physics model.
 
