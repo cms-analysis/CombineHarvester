@@ -299,7 +299,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
     "CMS_htt_QCD_OS_SS_syst_$BIN", "lnN", SystMap<bin_id>::init
     ({8}, 1.16)
-    ({9}, 1.18));
+    ({9}, 1.40));
 
   cb.cp().process({"QCD"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_QCD_norm_syst_$BIN", "lnN", SystMap<bin_id>::init
