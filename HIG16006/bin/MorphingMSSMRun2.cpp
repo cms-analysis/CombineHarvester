@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
 
-  VString SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125","TTH_SM125"};
+  VString SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
   //Example - could fill this map with hardcoded binning for different
   //categories if manual_rebin is turned on
@@ -256,9 +256,9 @@ int main(int argc, char** argv) {
      cb.cp().process({"ZH_SM125"}).ForEachProc([&](ch::Process *proc){
        proc->set_rate(proc->rate()*0.8839);
      });
-     cb.cp().process({"TTH_SM125"}).ForEachProc([&](ch::Process *proc){
+/*     cb.cp().process({"TTH_SM125"}).ForEachProc([&](ch::Process *proc){
        proc->set_rate(proc->rate()*0.5071);
-     });
+     });*/
   }
 
   // And convert any shapes in the CRs to lnN:

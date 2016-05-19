@@ -368,7 +368,7 @@ class MSSMHiggsModel(PhysicsModel):
             self.doHistFunc('br_AZh_%s'%era, f.Get(hd['br_AZh']), pars)
             self.PROC_SETS.append((['ggA'], ['AZhLLtautau'], [era]))
             # And the SM terms
-            for X in ['ggH', 'qqH', 'VH', 'ZH', 'WminusH', 'WplusH','TTH']:
+            for X in ['ggH', 'qqH', 'VH', 'ZH', 'WminusH', 'WplusH']:
                 self.PROC_SETS.append((['%s'%X], ['SM125'], [era]))
 
     def preProcessNuisances(self,nuisances):
