@@ -57,6 +57,12 @@ parser.add_argument(
     hist""")
 parser.add_argument(
     '--z-title', default=None, help="""z-axis title of the COLZ hist""")
+parser.add_argument(
+    '--model_file', default=None, help="""Model file for drawing mh
+    exclusion""")
+parser.add_argument(
+    '--mass_histogram', default="m_h", help="""Specify histogram to extract
+     mh exclusion from""")
 args = parser.parse_args()
 
 
@@ -78,6 +84,14 @@ h_proto = plot.TH2FromTGraph2D(graphs[types[0]], method=args.bin_method,
                                force_y_width=args.force_y_width)
 h_axis = h_proto
 h_axis = plot.TH2FromTGraph2D(graphs[types[0]])
+
+# Get histogram to plot m_h exclusion from the model file if provided
+if args.model_file is not None:
+    modelfile = ROOT.TFile(args.model_file)
+    h_mh = modelfile.Get(args.mass_histogram)
+else:
+    h_mh = None
+
 # Create the debug output file if requested
 if args.debug_output is not None:
     debug = ROOT.TFile(args.debug_output, 'RECREATE')
@@ -94,6 +108,18 @@ for c in types:
         debug.WriteTObject(hists[c], 'hist_%s' % c)
         for i, cont in enumerate(contours[c]):
             debug.WriteTObject(cont, 'cont_%s_%i' % (c, i))
+
+#Extract mh contours if mh histogram exists:
+if h_mh is not None:
+  h_mh_inverted = h_mh.Clone("mhInverted")
+  for i in range(1,h_mh.GetNbinsX()+1):
+     for j in range(1, h_mh.GetNbinsY()+1):
+         h_mh_inverted.SetBinContent(i,j,1-(1./h_mh.GetBinContent(i,j)))
+  mh122_contours = plot.contourFromTH2(h_mh_inverted, (1-1./122), 5, frameValue=1)
+  mh128_contours = plot.contourFromTH2(h_mh, 128, 5, frameValue=1)
+else : 
+  mh122_contours = None
+  mh128_contours = None
 
 # Setup the canvas: we'll use a two pad split, with a small top pad to contain
 # the CMS logo and the legend
@@ -178,6 +204,16 @@ if 'obs' in contours:
         gr.Draw(fillstyle)
         gr.Draw('LSAME')
 
+if mh122_contours is not None:
+    for i, gr in enumerate(mh122_contours):
+        plot.Set(gr, LineWidth=2, LineColor=ROOT.kRed,FillStyle=3004,FillColor=ROOT.kRed)
+        gr.Draw(fillstyle)
+        gr.Draw('LSAME')
+    for i, gr in enumerate(mh128_contours):
+        plot.Set(gr, LineWidth=2, LineColor=ROOT.kRed,FillStyle=3004,FillColor=ROOT.kRed)
+        gr.Draw(fillstyle)
+        gr.Draw('LSAME')
+
 # We just want the top pad to look like a box, so set all the text and tick
 # sizes to zero
 pads[0].cd()
@@ -200,6 +236,8 @@ if 'exp0' in contours:
         legend.AddEntry(contours['exp0'][0], "Expected", "F")
 if 'exp-2' in contours and 'exp+2' in contours:
     legend.AddEntry(contours['exp-2'][0], "#pm 2#sigma Expected", "F")
+if mh122_contours is not None and len(mh122_contours)>0:
+    legend.AddEntry(mh122_contours[0], "m_{h}^{SM} #neq 125 #pm 3 GeV","F")
 legend.Draw()
 
 # Draw logos and titles
