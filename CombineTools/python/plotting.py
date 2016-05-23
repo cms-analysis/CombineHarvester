@@ -1592,7 +1592,7 @@ def fastFillTH2(hist2d, graph, initalValue=99999, interpolateMissing=False):
     for i in xrange(graph.GetN()):
         xbin = hist2d.GetXaxis().FindBin(graph.GetX()[i])
         ybin = hist2d.GetYaxis().FindBin(graph.GetY()[i])
-        if isclose(hist2d.GetXaxis().GetBinCenter(xbin), graph.GetX()[i], rel_tol=1e-4) and isclose(hist2d.GetYaxis().GetBinCenter(ybin), graph.GetY()[i], rel_tol=1e-4):
+        if isclose(hist2d.GetXaxis().GetBinCenter(xbin), graph.GetX()[i], rel_tol=1e-2) and isclose(hist2d.GetYaxis().GetBinCenter(ybin), graph.GetY()[i], rel_tol=1e-2):
             hist2d.SetBinContent(xbin, ybin, graph.GetZ()[i])
     interpolated = 0
     if interpolateMissing:

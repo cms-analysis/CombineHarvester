@@ -6,7 +6,7 @@ from array import array
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
-parser.add_argument('files', help='Input files')
+parser.add_argument('files', nargs="+", help='Input files')
 parser.add_argument(
     '--output', '-o', default='limit', help="""Name of the output
     plot without file extension""")
@@ -39,11 +39,11 @@ if args.debug_output is not None:
 else:
     debug = None
 
-limit = plot.MakeTChain([args.files], 'limit')
+limit = plot.MakeTChain(args.files, 'limit')
 graph = plot.TGraph2DFromTree(
     limit, "r_ggH", "r_bbH", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
 best = plot.TGraphFromTree(
-    limit, "r_ggH", "r_bbH", 'quantileExpected > -0.5 && deltaNLL == 0')
+    limit, "r_ggH", "r_bbH", 'deltaNLL == 0')
 plot.RemoveGraphXDuplicates(best)
 hists = plot.TH2FromTGraph2D(graph, method='BinCenterAligned')
 plot.fastFillTH2(hists, graph,interpolateMissing=True)
@@ -53,13 +53,14 @@ hists.SetContour(255)
 # c2=ROOT.TCanvas()
 # hists.Draw("COLZ")
 # c2.SaveAs("heatmap.png")
-axis =  hists.Clone()
+
+axis = ROOT.TH2D(hists.GetName(),hists.GetName(),hists.GetXaxis().GetNbins(),0,hists.GetXaxis().GetXmax(),hists.GetYaxis().GetNbins(),0,hists.GetYaxis().GetXmax())
 axis.Reset()
 axis.GetXaxis().SetTitle(args.x_title)
 axis.GetYaxis().SetTitle(args.y_title)
 
-cont_1sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.68, 2), 10, 20)
-cont_2sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.95, 2), 10, 20)
+cont_1sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.68, 2), 10, frameValue=20)
+cont_2sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.95, 2), 10, frameValue=20)
 
 if debug is not None:
     debug.WriteTObject(hists, 'hist')
@@ -92,6 +93,8 @@ for i, p in enumerate(cont_1sigma):
     p.Draw("L SAME")
     legend.AddEntry(cont_2sigma[0], "95% CL", "F")
 
+best.SetMarkerStyle(34)
+best.SetMarkerSize(3)
 best.Draw("P SAME")
 legend.AddEntry(best, "Best fit", "P")
 
