@@ -278,7 +278,10 @@ TH1F CombineHarvester::GetShapeInternal(ProcSystMap const& lookup,
     } else if (procs_[i]->pdf()) {
       RooAbsData const* data_obj = FindMatchingData(procs_[i].get());
       std::string var_name = "CMS_th1x";
-      if (data_obj) var_name = data_obj->get()->first()->GetName();
+      //if (data_obj) var_name = data_obj->get()->first()->GetName();
+      if (data_obj) {
+        var_name = ch::ObservablesByName(procs_[i]->pdf(), data_obj->get()).first()->GetName();
+      }
       TH1::AddDirectory(false);
       TH1F *tmp = dynamic_cast<TH1F*>(
           procs_[i]->pdf()->createHistogram(var_name.c_str()));
@@ -333,6 +336,33 @@ TH1F CombineHarvester::GetObservedShape() {
       std::string var_name = obs_[i]->data()->get()->first()->GetName();
       TH1F *tmp = dynamic_cast<TH1F*>(obs_[i]->data()->createHistogram(
                              var_name.c_str()));
+      proc_shape = *tmp;
+      delete tmp;
+      proc_shape.Scale(1. / proc_shape.Integral());
+    }
+    proc_shape.Scale(p_rate);
+    if (!shape_init) {
+      proc_shape.Copy(shape);
+      shape.Reset();
+      shape_init = true;
+    }
+    shape.Add(&proc_shape);
+  }
+  return shape;
+}
+
+TH1F CombineHarvester::GetObservedShapeNamed(std::string const& obs) {
+  TH1F shape;
+  bool shape_init = false;
+
+  for (unsigned i = 0; i < obs_.size(); ++i) {
+    TH1F proc_shape;
+    double p_rate = obs_[i]->rate();
+    if (obs_[i]->shape()) {
+      proc_shape = obs_[i]->ShapeAsTH1F();
+    } else if (obs_[i]->data()) {
+      TH1F *tmp = dynamic_cast<TH1F*>(obs_[i]->data()->createHistogram(
+                             obs.c_str()));
       proc_shape = *tmp;
       delete tmp;
       proc_shape.Scale(1. / proc_shape.Integral());

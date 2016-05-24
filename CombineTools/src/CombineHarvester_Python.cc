@@ -306,6 +306,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("GetShapeWithUncertainty", Overload1_GetShapeWithUncertainty)
       .def("GetShapeWithUncertainty", Overload2_GetShapeWithUncertainty)
       .def("GetObservedShape", &CombineHarvester::GetObservedShape)
+      .def("GetObservedShapeNamed", &CombineHarvester::GetObservedShapeNamed)
       // Creation
       .def("__AddObservations__", &CombineHarvester::AddObservations)
       .def("__AddProcesses__", &CombineHarvester::AddProcesses)
