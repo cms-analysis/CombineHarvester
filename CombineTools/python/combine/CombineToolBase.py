@@ -175,7 +175,7 @@ class CombineToolBase:
                 tee = 'tee' if i == 0 else 'tee -a'
                 log_part = '\n'
                 if do_log: log_part = ' 2>&1 | %s ' % tee + logname + log_part
-                if command.startswith('combine'):
+                if command.startswith('combine') or command.startswith('pushd'):
                     text_file.write(
                         'eval ' + command + log_part)
                 else:
