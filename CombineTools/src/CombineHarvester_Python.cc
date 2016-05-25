@@ -316,6 +316,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("InsertObservation", &CombineHarvester::InsertObservation)
       .def("InsertProcess", &CombineHarvester::InsertProcess)
       .def("InsertSystematic", &CombineHarvester::InsertSystematic)
+      .def("AddWorkspace", &CombineHarvester::AddWorkspace)
+      .def("ExtractPdfs", &CombineHarvester::ExtractPdfs)
       ;
 
     py::class_<Object>("Object")
