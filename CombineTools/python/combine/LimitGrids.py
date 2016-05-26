@@ -286,7 +286,7 @@ class HybridNewGrid(CombineToolBase):
 
         # Set all the parameter values locally using defaults if necessary
         grids           = cfg['grids']
-        grids_to_remove = cfg['grids_to_remove']
+        grids_to_remove = cfg.get('grids_to_remove', None)
         POIs            = cfg['POIs']
         opts            = cfg['opts']
         toys_per_cycle  = cfg['toys_per_cycle']
@@ -325,9 +325,10 @@ class HybridNewGrid(CombineToolBase):
 
         #In between cycles of toys we may find there's something wrong with some of the points in the grid and therefore want to remove them:
         points_to_remove = [];
-        for igrid in grids_to_remove:
-            assert(len(igrid) == 2)
-            points_to_remove.extend(itertools.product(utils.split_vals(igrid[0]),utils.split_vals(igrid[1])))
+        if grids_to_remove is not None :
+            for igrid in grids_to_remove:
+                assert(len(igrid) == 2)
+                points_to_remove.extend(itertools.product(utils.split_vals(igrid[0]),utils.split_vals(igrid[1])))
 
         for p in points_to_remove:
             points.remove(p)
