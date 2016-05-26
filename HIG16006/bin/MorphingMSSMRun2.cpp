@@ -23,6 +23,7 @@
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
 #include "TH2.h"
+#include "TF1.h"
 
 using namespace std;
 using boost::starts_with;
@@ -75,6 +76,7 @@ int main(int argc, char** argv) {
   int control_region = 0;
   bool check_neg_bins = false;
   bool poisson_bbb = false;
+  bool do_w_weighting = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -91,7 +93,8 @@ int main(int argc, char** argv) {
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
-    ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false));
+    ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
+    ("fake_rate", po::value<bool>(&do_w_weighting)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -280,9 +283,54 @@ int main(int argc, char** argv) {
           });
         }
   }
-    // Merge to one bin for control region bins
-    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
-    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
+
+  if (do_w_weighting) {
+    TFile weight_file("FakeWeights.root");
+    TH2F *weights = (TH2F*)(weight_file.Get("hist")->Clone());
+    weights->SetDirectory(0);
+    weight_file.Close();
+    TFile outfile("WFakeWeights_Debug.root", "RECREATE");
+    TF1 *landau = new TF1("fn","9.794*TMath::Landau(x,210,137,0)", 0, 200);
+    cb.cp().channel({"et", "mt"}).bin_id({8, 9}).process({"W"}).ForEachProc([&](ch::Process *p){
+      auto shape_old = p->ClonedScaledShape();
+      auto shape_new = p->ClonedScaledShape();
+      auto shape_new2 = p->ClonedScaledShape();
+      for (int i = 1; i <= shape_new->GetNbinsX(); ++i) {
+          int weight_i = weights->GetXaxis()->FindFixBin(shape_new->GetBinCenter(i));
+          float tot_weight = 0.;
+          for (int j = 1; j <= weights->GetNbinsY(); ++j) {
+            tot_weight += (weights->GetBinContent(weight_i, j) *
+                           landau->Eval(std::min(
+                               weights->GetYaxis()->GetBinCenter(j), 200.)));
+          }
+          if (tot_weight == 0.) tot_weight = 1.;
+          shape_new->SetBinContent(i, shape_new->GetBinContent(i)*tot_weight);
+          shape_new2->SetBinContent(i, shape_new2->GetBinContent(i)*tot_weight*tot_weight);
+          // float centre = std::min(200., shape_new->GetBinCenter(i));
+      }
+      shape_new->Scale(shape_old->Integral()/shape_new->Integral());
+      shape_new2->Scale(shape_old->Integral()/shape_new2->Integral());
+      std::cout << *p << "\n";
+      std::cout << "Correction:\n";
+      shape_new->Print("range");
+      std::cout << "Up Systematic:\n";
+      shape_new2->Print("range");
+      outfile.WriteTObject(shape_old.get(), (p->bin()+"_Down").c_str());
+      outfile.WriteTObject(shape_new.get(), (p->bin()+"_Nominal").c_str());
+      outfile.WriteTObject(shape_new2.get(), (p->bin()+"_Up").c_str());
+      cb.AddSystFromProc(*p, "CMS_htt_wFakeShape_13TeV", "shape", true, 1.0, 1.0, "", "");
+      cb.cp().bin({p->bin()}).process({p->process()}).syst_name({"CMS_htt_wFakeShape_13TeV"}).ForEachSyst([&](ch::Systematic *sys) {
+        sys->set_shapes(std::move(shape_new2), std::move(shape_old), shape_new.get());
+      });
+      p->set_shape(std::move(shape_new), false);
+    });
+    outfile.Close();
+  }
+
+
+  // Merge to one bin for control region bins
+  cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
+  cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
 
   // Rebinning
   // --------------------

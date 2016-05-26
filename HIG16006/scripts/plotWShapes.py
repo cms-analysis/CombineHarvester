@@ -50,6 +50,7 @@ rlo = slo.Clone()
 rhi.Divide(nom)
 rlo.Divide(nom)
 rhi.Draw('HIST')
+rlo.Draw('HISTSAME')
 
 plot.SetupTwoPadSplitAsRatio(
     pads, plot.GetAxisHist(
