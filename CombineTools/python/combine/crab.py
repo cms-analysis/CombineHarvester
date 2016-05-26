@@ -28,4 +28,5 @@ config.Data.outputDatasetTag = ''
 config.section_('User')
 
 config.section_('Site')
+config.Site.blacklist = ['T3_IT_Bologna']
 config.Site.storageSite = 'T2_CH_CERN'
