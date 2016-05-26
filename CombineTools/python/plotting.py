@@ -1429,20 +1429,30 @@ def DrawTitle(pad, text, align):
 def isclose(a, b, rel_tol=1e-9, abs_tol=0.0):
     return abs(a-b) <= max(abs_tol, rel_tol * max(abs(a),abs(b)))
 
-def StyleLimitBand(graph_dict):
+def StyleLimitBand(graph_dict, higgs_bg=False, higgs_inj=False):
     if 'obs' in graph_dict:
         graph_dict['obs'].SetLineWidth(2)
     if 'exp0' in graph_dict:
         graph_dict['exp0'].SetLineWidth(2)
         graph_dict['exp0'].SetLineColor(R.kRed)
     if 'exp1' in graph_dict:
-        graph_dict['exp1'].SetFillColor(R.kGreen)
+        if higgs_bg:
+            graph_dict['exp1'].SetFillColor(R.kGreen+2)
+        if higgs_inj:
+            graph_dict['exp1'].SetFillColor(R.kAzure-4)
+        else:
+            graph_dict['exp1'].SetFillColor(R.kGreen)
     if 'exp2' in graph_dict:
-        graph_dict['exp2'].SetFillColor(R.kYellow)
+        if higgs_bg:
+            graph_dict['exp2'].SetFillColor(R.kSpring+5)
+        elif higgs_inj:
+            graph_dict['exp2'].SetFillColor(R.kAzure-9)
+        else:
+            graph_dict['exp2'].SetFillColor(R.kYellow)
 
 
 def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
-                  legend=None):
+                  legend=None, higgs_bg=False, higgs_inj=False):
     pad.cd()
     do_obs = False
     do_exp0 = False
@@ -1464,11 +1474,22 @@ def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
         if do_obs:
             legend.AddEntry(graph_dict['obs'], 'Observed', 'LP')
         if do_exp0:
-            legend.AddEntry(graph_dict['exp0'], 'Expected', 'L')
+            if higgs_bg:
+                legend.AddEntry(graph_dict['exp0'], 'Expected for H(125 GeV) as BG', 'L')
+            if higgs_inj:
+                legend.AddEntry(graph_dict['exp0'], 'Expected for H(125 GeV)', 'L')
+            else:
+                legend.AddEntry(graph_dict['exp0'], 'Expected', 'L')
         if do_exp1:
-            legend.AddEntry(graph_dict['exp1'], '#pm1#sigma Expected', 'F')
+            if higgs_bg:
+                legend.AddEntry(graph_dict['exp1'], '#pm1#sigma H(125 GeV) as BG', 'F')
+            else:
+                legend.AddEntry(graph_dict['exp1'], '#pm1#sigma Expected', 'F')
         if do_exp2:
-            legend.AddEntry(graph_dict['exp2'], '#pm2#sigma Expected', 'F')
+            if higgs_bg:
+                legend.AddEntry(graph_dict['exp2'], '#pm2#sigma H(125 GeV) as BG', 'F')
+            else:
+                legend.AddEntry(graph_dict['exp2'], '#pm2#sigma Expected', 'F')
 
 
 ##@}

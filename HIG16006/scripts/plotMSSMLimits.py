@@ -38,6 +38,10 @@ parser.add_argument(
     '--pad-style', default=None, help="""Extra style options for the pad, e.g. Grid=(1,1)""")
 parser.add_argument(
     '--auto-style', nargs='?', const='', default=None, help="""Take line colors and styles from a pre-defined list""")
+parser.add_argument(
+    '--higgs-bg', action='store_true', help="""Draw with style for higgs as bg (green bands)""")
+parser.add_argument(
+    '--higgs-injected', action='store_true', help="""Draw with style for higgs injected (blue bands)""")
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
@@ -77,7 +81,10 @@ for padx in pads:
 graphs = []
 graph_sets = []
 
-legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
+if args.higgs_bg or args.higgs_injected:
+    legend = plot.PositionedLegend(0.4, 0.25, 3, 0.015)
+else:
+    legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
 #legend = plot.PositionedLegend(0.45, 0.10, 3, 0.015)
 #plot.Set(legend, NColumns=2)
 
@@ -109,8 +116,8 @@ for src in args.input:
         if axis is None:
             axis = plot.CreateAxisHists(len(pads), graph_sets[-1].values()[0], True)
             DrawAxisHists(pads, axis, pads[0])
-        plot.StyleLimitBand(graph_sets[-1])
-        plot.DrawLimitBand(pads[0], graph_sets[-1], legend=legend)
+        plot.StyleLimitBand(graph_sets[-1], higgs_bg=args.higgs_bg, higgs_inj=args.higgs_injected)
+        plot.DrawLimitBand(pads[0], graph_sets[-1], legend=legend, higgs_bg=args.higgs_bg, higgs_inj=args.higgs_injected)
         pads[0].RedrawAxis()
         pads[0].RedrawAxis('g')
         pads[0].GetFrame().Draw()

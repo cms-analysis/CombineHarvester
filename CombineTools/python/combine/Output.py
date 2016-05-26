@@ -4,6 +4,7 @@ import ROOT
 import json
 import os
 import pprint
+import numpy as np
 from collections import defaultdict
 
 import CombineHarvester.CombineTools.combine.utils as utils
@@ -250,6 +251,108 @@ class CollectGoodnessOfFit(CombineToolBase):
                         js_out[mh][branch]["p"] = float(len([toy for toy in js_out[mh][branch]['toy'] if toy >= js_out[mh][branch]['obs'][0]]))/len(js_out[mh][branch]['toy'])
 
             # print js_out
+            jsondata = json.dumps(
+                js_out, sort_keys=True, indent=2, separators=(',', ': '))
+            # print jsondata
+            if self.args.output is not None:
+                outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
+                with open(outname, 'w') as out_file:
+                    print '>> Writing output %s from files:' % outname
+                    pprint.pprint(filenames, indent=2)
+                    out_file.write(jsondata)
+
+class CollectToyLimits(CombineToolBase):
+    description = 'Aggregate limit output from combine output for toys'
+    requires_root = True
+    default_name='limits.json'
+
+    def __init__(self):
+        CombineToolBase.__init__(self)
+
+    def attach_args(self, group):
+        CombineToolBase.attach_args(self, group)
+        group.add_argument(
+            'input', nargs='+', default=[], help='The input files')
+        group.add_argument(
+            '--obs-input', nargs='+', default=[], help='The input files for the observation')
+        group.add_argument(
+            '-o', '--output', nargs='?', const='limits.json',
+            default='limits.json', help="""The name of the output json file.
+            When the --use-dirs option is set the enclosing directory name
+            will be appended to the filename given here.""")
+        group.add_argument(
+            '--use-dirs', action='store_true',
+            help="""Use the directory structure to create multiple limit
+                 outputs and to set the output file names""")
+
+    def run_method(self):
+        limit_sets = defaultdict(list)
+        obs_limit_sets = defaultdict(list)
+        for filename in self.args.input:
+            if not plot.TFileIsGood(filename):
+                print '>> File %s is corrupt or incomplete, skipping' % filename
+                continue
+            if self.args.use_dirs is False:
+                limit_sets['default'].append(filename)
+            else:
+                label = 'default'
+                dirs = filename.split('/')
+                # The last dir could be the mass, if so we ignore it and check the next
+                if len(dirs) > 1:
+                    if not isfloat(dirs[-2]):
+                        label = dirs[-2]
+                    elif len(dirs) > 2:
+                        label = dirs[-3]
+                limit_sets[label].append(filename)
+        for filename in self.args.obs_input:
+            if not plot.TFileIsGood(filename):
+                print '>> File %s is corrupt or incomplete, skipping' % filename
+                continue
+            if self.args.use_dirs is False:
+                obs_limit_sets['default'].append(filename)
+            else:
+                label = 'default'
+                dirs = filename.split('/')
+                # The last dir could be the mass, if so we ignore it and check the next
+                if len(dirs) > 1:
+                    if not isfloat(dirs[-2]):
+                        label = dirs[-2]
+                    elif len(dirs) > 2:
+                        label = dirs[-3]
+                obs_limit_sets[label].append(filename)
+
+        for label, filenames in limit_sets.iteritems():
+            js_toys = {}
+            js_out = {}
+            # first take case of the observed limit
+            for filename in obs_limit_sets[label]:
+                file = ROOT.TFile(filename)
+                tree = file.Get('limit')
+                for evt in tree:
+                    mh = str(evt.mh)
+                    if mh not in js_out:
+                        js_out[mh] = {}
+                    if evt.quantileExpected == -1:
+                        js_out[mh]['obs'] = evt.limit
+            # no go thorugh the files with the toys for the expected limits and save the results as lists
+            for filename in filenames:
+                file = ROOT.TFile(filename)
+                tree = file.Get('limit')
+                for evt in tree:
+                    mh = str(evt.mh)
+                    if mh not in js_toys:
+                        js_toys[mh] = []
+                    if evt.quantileExpected == -1:
+                        js_toys[mh].append(evt.limit)
+            # in the final step go thorugh the generated toys and extract the mean,+-1 and +-2 sigma values
+            for mh in js_toys:
+                if mh not in js_out:
+                    js_out[mh] = {}
+                js_out[mh]["exp0"] = np.percentile(np.array(js_toys[mh]),50)
+                js_out[mh]["exp-2"] = np.percentile(np.array(js_toys[mh]),2.5)
+                js_out[mh]["exp-1"] = np.percentile(np.array(js_toys[mh]),16)
+                js_out[mh]["exp+1"] = np.percentile(np.array(js_toys[mh]),84)
+                js_out[mh]["exp+2"] = np.percentile(np.array(js_toys[mh]),97.5)
             jsondata = json.dumps(
                 js_out, sort_keys=True, indent=2, separators=(',', ': '))
             # print jsondata
