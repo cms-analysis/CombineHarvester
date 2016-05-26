@@ -121,7 +121,7 @@ The options --absolute and --relative can be used to make ratio plots as well. N
 
 4b) Plotting model dependent limits
 
-python ../CombineTools/scripts/plotLimitGrid.py asymptotic_grid.root --scenario-label="m_{h}^{mod+} scenario"  --output="mssm_120516_unblinding_mhmodp_cmb" --title-right="2.3 fb^{-1} (13 TeV)" --contours="exp-2,exp-1,exp0,exp+1,exp+2"
+python ../CombineTools/scripts/plotLimitGrid.py asymptotic_grid.root --scenario-label="m_{h}^{mod+} scenario"  --output="mssm_120516_unblinding_mhmodp_cmb" --title-right="2.3 fb^{-1} (13 TeV)" --contours="exp-2,exp-1,exp0,exp+1,exp+2,obs" --model_file=../../auxiliaries/models/mhmodp_mu200_13TeV.root --extra_contour_file=shapes/8TeVObs/8TeV_mhmodp_contours.root --extra_contour_title="8 TeV observed (HIG-14-029)"
 
 The plotting takes the asymptotic_grid or HybridNewGridMSSM file as input, and performs interpolation to produce smooth contours of exclusion for a 2D mA-tanb plot. Note that this script contains many different optional settings for this interpolation. 
 
