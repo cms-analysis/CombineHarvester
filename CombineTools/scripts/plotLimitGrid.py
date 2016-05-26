@@ -233,7 +233,7 @@ if mh122_contours is not None:
 
 if extra_contours is not None:
    for gr in extra_contours:
-     plot.Set(gr,LineWidth=3,LineColor=ROOT.kBlue)
+     plot.Set(gr,LineWidth=2,LineColor=ROOT.kBlue)
      gr.Draw('LSAME')
    
 
