@@ -58,6 +58,12 @@ parser.add_argument(
 parser.add_argument(
     '--z-title', default=None, help="""z-axis title of the COLZ hist""")
 parser.add_argument(
+    '--extra_contour_file', default=None, help="""Root file containing graphs
+    to be superimposed on plots""")
+parser.add_argument(
+    '--extra_contour_title', default="", help="""Legend label for extra
+    contours""")
+parser.add_argument(
     '--model_file', default=None, help="""Model file for drawing mh
     exclusion""")
 parser.add_argument(
@@ -91,6 +97,17 @@ if args.model_file is not None:
     h_mh = modelfile.Get(args.mass_histogram)
 else:
     h_mh = None
+
+#Get extra contours from file, if provided:
+if args.extra_contour_file is not None:
+    extra_contour_file = ROOT.TFile(args.extra_contour_file)
+    extra_contour_file_contents = extra_contour_file.GetListOfKeys()
+    extra_contour_names = []
+    for i in range(0,len(extra_contour_file_contents)):
+      extra_contour_names.append(extra_contour_file_contents[i].GetName())
+    extra_contours = [extra_contour_file.Get(c) for c in extra_contour_names]
+else:
+    extra_contours = None
 
 # Create the debug output file if requested
 if args.debug_output is not None:
@@ -214,6 +231,12 @@ if mh122_contours is not None:
         gr.Draw(fillstyle)
         gr.Draw('LSAME')
 
+if extra_contours is not None:
+   for gr in extra_contours:
+     plot.Set(gr,LineWidth=3,LineColor=ROOT.kBlue)
+     gr.Draw('LSAME')
+   
+
 # We just want the top pad to look like a box, so set all the text and tick
 # sizes to zero
 pads[0].cd()
@@ -237,7 +260,9 @@ if 'exp0' in contours:
 if 'exp-2' in contours and 'exp+2' in contours:
     legend.AddEntry(contours['exp-2'][0], "#pm 2#sigma Expected", "F")
 if mh122_contours is not None and len(mh122_contours)>0:
-    legend.AddEntry(mh122_contours[0], "m_{h}^{SM} #neq 125 #pm 3 GeV","F")
+    legend.AddEntry(mh122_contours[0], "m_{h}^{MSSM} #neq 125 #pm 3 GeV","F")
+if extra_contours is not None:
+    legend.AddEntry(extra_contours[0],args.extra_contour_title,"L")
 legend.Draw()
 
 # Draw logos and titles
