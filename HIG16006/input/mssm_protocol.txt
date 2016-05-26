@@ -95,7 +95,7 @@ combineTool.py -m 160 -M GenerateOnly --setPhysicsModelParameters r_ggH=0,r_bbH=
 
 Based on this snapshot (it is called clean) the toys can then be generated.
 
-combineTool.py -m "160"  -M GenerateOnly --setPhysicsModelParameters r_ggH=0,r_bbH=0 --snapshot clean --freezeNuisances r_SM --rerefineSignalPOI r_ggH,r_bbH -t 50 -d output/mssm_unblinding_withSM/cmb/higgsCombine.InitalFit.GenerateOnly.mH700.root --there -n ".Toys" -s 0 --saveToys
+combineTool.py -m "160"  -M GenerateOnly --setPhysicsModelParameters r_ggH=0,r_bbH=0 --snapshot clean --freezeNuisances r_SM --rerefineSignalPOI r_ggH,r_bbH -t 50 -d output/mssm_unblinding_withSM/cmb/higgsCombine.InitalFit.GenerateOnly.mH160.root --there -n ".Toys" -s 0 --saveToys
 
 As these toys are later on fitted in one job each, it is recommended to generate multiple of these smaller toy files (as usual the option -s can be modified to generate multiple files based on different seeds in one go)
 
