@@ -206,7 +206,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
     ({"et", "mt"}, 1.03)
-    ({"tt"},       1.06));
+    ({"tt"},       1.092));
 
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
@@ -259,7 +259,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
   // Diboson and ttbar Normalisation - fully correlated
   cb.cp().process({"VV"}).AddSyst(cb,
-    "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.10));
+    "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
 
   cb.cp().process({"TT"}).AddSyst(cb,
     "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
@@ -274,7 +274,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // on Z->mumu calibration. Also only apply this to signal-region
   // categories for now, using cb_sig instead of cb
   cb_sig.cp().process({"ZTT"}).AddSyst(cb,
-    "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<>::init(1.05));
+    "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
+    ({8}, 1.03)
+    ({9}, 1.05));
   // Should also add something for ttbar
 
   // Fake-rates
@@ -285,8 +287,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   cb.cp().process({"ZL"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_eFakeTau_loose_13TeV", "lnN", SystMap<>::init(1.10));
 
-  cb.cp().process({"ZJ"}).channel({"et", "mt", "tt"}).AddSyst(cb,
-    "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
+  cb.cp().channel({"et", "mt", "tt"}).AddSyst(cb,
+    "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
+    ({8,9,10,11,12,13,14,15}, {"ZJ"},1.20)
+    ({8,10,11,12},            {"TT"},1.08)
+    ({9,13,14,15},            {"TT"},1.04));
   
   cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
