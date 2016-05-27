@@ -54,7 +54,7 @@ rlo.Draw('HISTSAME')
 
 plot.SetupTwoPadSplitAsRatio(
     pads, plot.GetAxisHist(
-        pads[0]), plot.GetAxisHist(pads[1]), 'Stitched/Inc', True, 0.6, 1.4)
+        pads[0]), plot.GetAxisHist(pads[1]), 'Ratio', True, 0.6, 1.4)
 
 plot.GetAxisHist(pads[1]).GetXaxis().SetRangeUser(0, 700)
 
