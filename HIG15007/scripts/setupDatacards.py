@@ -44,7 +44,7 @@ bkg_procs = {
 bins = {
     'et': [(0, 'et_inclusive')],
     'mt': [(0, 'mt_inclusive')],
-    'em': [(0, 'emu_inclusive')],
+    'em': [(0, 'em_inclusive')],
     'tt': [(0, 'tt_inclusive')],
     'mm': [(0, 'mm_inclusive')]
 }
@@ -63,7 +63,8 @@ files = {
     },
     'em': {
         'Wisconsin': 'htt_em.inputs-sm-13TeV.root',
-        'DESY': 'htt_em.inputs-sm-13TeV_mvis.root'
+        'DESY': 'ztt_em.inputs-sm-13TeV_msv.root',
+        'KIT': 'ztt_em.inputs-sm-13TeV-svfit_pzeta_fall15.root'
     },
     'tt': {
         'Wisconsin': 'htt_tt.inputs-sm-13TeV.root'
@@ -144,17 +145,19 @@ cb.cp().AddSyst(
         (['et', 'mt', 'tt'], ['ZTT'], 1.0))
 
 cb.cp().AddSyst(
-    cb, 'CMS_scale_e', 'shape', ch.SystMap('channel', 'process')
+    cb, 'CMS_scale_e_$CHANNEL_$ERA', 'shape', ch.SystMap('channel', 'process')
         (['em'], ['ZTT', 'TT', 'W', 'VV'], 1.0))
 cb.cp().AddSyst(
+    cb, 'CMS_scale_m_$CHANNEL_$ERA', 'shape', ch.SystMap('channel', 'process')
+        (['em'], ['ZTT', 'TT', 'W', 'VV'],      1.0))
+cb.cp().AddSyst(
     cb, 'CMS_scale_m', 'shape', ch.SystMap('channel', 'process')
-        (['em'], ['ZTT', 'TT', 'W', 'VV'],      1.0)
         (['mm'], ['ZTT', 'TT', 'VV', 'ZLL'],    1.0))
 cb.cp().AddSyst(
-    cb, 'CMS_topPt', 'shape', ch.SystMap('channel', 'process')
+    cb, 'CMS_htt_ttbarShape_$ERA', 'shape', ch.SystMap('channel', 'process')
         (['em'], ['TT'], 1.0))
 cb.cp().AddSyst(
-    cb, 'CMS_ztt_em_qcdShape', 'shape', ch.SystMap('channel', 'process')
+    cb, 'CMS_htt_em_qcdShape_$ERA', 'shape', ch.SystMap('channel', 'process')
         (['em'], ['QCD'], 1.0))
 
 cb.cp().AddSyst(
