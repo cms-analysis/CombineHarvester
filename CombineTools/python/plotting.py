@@ -1438,7 +1438,7 @@ def StyleLimitBand(graph_dict, higgs_bg=False, higgs_inj=False):
     if 'exp1' in graph_dict:
         if higgs_bg:
             graph_dict['exp1'].SetFillColor(R.kGreen+2)
-        if higgs_inj:
+        elif higgs_inj:
             graph_dict['exp1'].SetFillColor(R.kAzure-4)
         else:
             graph_dict['exp1'].SetFillColor(R.kGreen)
@@ -1476,7 +1476,7 @@ def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
         if do_exp0:
             if higgs_bg:
                 legend.AddEntry(graph_dict['exp0'], 'Expected for H(125 GeV) as BG', 'L')
-            if higgs_inj:
+            elif higgs_inj:
                 legend.AddEntry(graph_dict['exp0'], 'Expected for H(125 GeV)', 'L')
             else:
                 legend.AddEntry(graph_dict['exp0'], 'Expected', 'L')
