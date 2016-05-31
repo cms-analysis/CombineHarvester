@@ -160,20 +160,12 @@ By default (essentially hardcoded until we pass preapproval) the data will be bl
 
 Postfit plots require a sensible choice of fit. You can choose either the model independent or model dependent workspace, and simply need to set the appropriate parameters to soemthign sensible, e.g: 
 
-combineTool.py -M MaxLikelihoodFit -t -1 --setPhysicsModelParameters MH=700,r_ggH=0.1,r_bbH=0.1 --expectSignal 1 --skipBOnlyFit -d output/mssm_310516_freezing/cmb/ws.root --out=output/mssm_310516_freezing/cmb/out --redefineSignalPOIs r_ggH
+combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters MH=700,r_ggH=0.1,r_bbH=0.1 -d output/mssm_310516_freezing/cmb/ws.root --redefineSignalPOIs r_ggH --there -m 700 --boundlist input/mssm_boundaries.json --minimizerTolerance 0.01 --minimizerStrategy 1
 
 The plotting code can then be used in postfit mode and passed the output of the maximum likelihood fit, to make post fit plots instead of prefit:
 
-PostFitShapesFromWorkspace -d output/mssm_310516_freezing//htt_mt_8_13TeV/htt_mt_8_13TeV.txt -w output/mssm_310516_freezing/htt_mt_8_13TeV/ws.root -o htt_mt_8_13TeV_shapes_080416_postfit.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700 --postfit --sampling -f output/mssm_310516_freezing/cmb/out/mlfit.Test.root:fit_s
-python scripts/postFitPlot.py --file=htt_mt_8_13TeV_shapes_080416_postfit.root --ratio --extra_pad=0.3 --custom_x_range --x_axis_max=999.9 --x_axis_min=0.0 --r_ggH=0.1 --r_bbH=0.1 --mPhi=700 --file_dir="htt_mt_8_13TeV" --fitresult=output/mssm_310516_freezing/cmb/out/mlfit.Test.root --mode="postfit"
+PostFitShapesFromWorkspace -d output/mssm_310516_freezing/cmb/combined.txt.cmb -w output/mssm_310516_freezing/cmb/ws.root -o shapes.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700 --postfit --sampling -f output/mssm_310516_freezing/cmb/mlfit.Test.root:fit_s
 
-7) Postfit plots for unblinding
-
-cd output/mssm_120516_unblinding/cmb
-combine -M MaxLikelihoodFit -d ggPhi.root -m 700 --setPhysicsModelParameters r_ggH=0.1,r_bbH=0.1 --setPhysicsModelParameterRanges r_ggH=-3,3:r_bbH=-3,3 --minimizerTolerance 0.01 --robustFit 1  --minimizerAlgoForMinos Minuit2,Migrad
-PostFitShapesFromWorkspace -d combined.txt.cmb -w ggPhi.root -o shapes.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700 --postfit --sampling -f mlfit.root:fit_s
-cd -
-cp output/mssm_120516_unblinding/cmb/shapes.root ./
 python scripts/makeMassPlots.py
 
 8) creating datacards for pulls and GOF tests
