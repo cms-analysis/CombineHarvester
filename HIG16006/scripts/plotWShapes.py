@@ -8,7 +8,7 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 plot.ModTDRStyle()
 
 cat = 'mt_nobtag'
-fin = ROOT.TFile('WFakeWeights_Debug.root')
+fin = ROOT.TFile('WJetsFakeWeights_Debug.root')
 
 nom = fin.Get(cat+'_Nominal')
 shi = fin.Get(cat+'_Up')

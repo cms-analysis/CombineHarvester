@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
   int control_region = 0;
   bool check_neg_bins = false;
   bool poisson_bbb = false;
-  bool do_w_weighting = false;
+  bool do_w_weighting = true;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
-    ("fake_rate", po::value<bool>(&do_w_weighting)->default_value(false));
+    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(true));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -208,8 +208,8 @@ int main(int argc, char** argv) {
 
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
-    if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);  
-    if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);  
+    if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
+    if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
     }
   if (control_region > 0){
       // Since we now account for QCD in the high mT region we only
@@ -285,45 +285,68 @@ int main(int argc, char** argv) {
   }
 
   if (do_w_weighting) {
-    TFile weight_file("FakeWeights.root");
+    // Grab the 2D hist of mT,tautau vs jet pT
+    TFile weight_file("shapes/resources/WJetsFakeWeights.root");
     TH2F *weights = (TH2F*)(weight_file.Get("hist")->Clone());
     weights->SetDirectory(0);
     weight_file.Close();
-    TFile outfile("WFakeWeights_Debug.root", "RECREATE");
-    TF1 *landau = new TF1("fn","9.794*TMath::Landau(x,210,137,0)", 0, 200);
-    cb.cp().channel({"et", "mt"}).bin_id({8, 9}).process({"W"}).ForEachProc([&](ch::Process *p){
-      auto shape_old = p->ClonedScaledShape();
-      auto shape_new = p->ClonedScaledShape();
-      auto shape_new2 = p->ClonedScaledShape();
+
+    // Create an output file to contain the shapes that are produced
+    TFile outfile("WJetsFakeWeights_Debug.root", "RECREATE");
+
+    // Weighting function, defined up to jet pT of 200 GeV
+    double pt_max = 200.;
+    TF1 *landau = new TF1("fn","9.794*TMath::Landau(x,210,137,0)", 0, pt_max);
+
+    // Only correct W shape in e-tau and mu-tau signal regions
+    cb.cp().channel({"et", "mt"}).bin_id({8, 9}).process({"W"}).ForEachProc([&](ch::Process *p) {
+      // Three copies of the nomianl shape
+      auto shape_old = p->ClonedScaledShape(); // Leave this unchanged, will become Down syst
+      auto shape_new = p->ClonedScaledShape();  // Will become new nominal
+      auto shape_new2 = p->ClonedScaledShape(); // Will become Up shape with double correction
       for (int i = 1; i <= shape_new->GetNbinsX(); ++i) {
+          // For each bin do the weighted sum of jet pT scale factors retrieved
+          // from the landu function
           int weight_i = weights->GetXaxis()->FindFixBin(shape_new->GetBinCenter(i));
           float tot_weight = 0.;
           for (int j = 1; j <= weights->GetNbinsY(); ++j) {
             tot_weight += (weights->GetBinContent(weight_i, j) *
                            landau->Eval(std::min(
-                               weights->GetYaxis()->GetBinCenter(j), 200.)));
+                               weights->GetYaxis()->GetBinCenter(j), pt_max)));
           }
           if (tot_weight == 0.) tot_weight = 1.;
           shape_new->SetBinContent(i, shape_new->GetBinContent(i)*tot_weight);
           shape_new2->SetBinContent(i, shape_new2->GetBinContent(i)*tot_weight*tot_weight);
-          // float centre = std::min(200., shape_new->GetBinCenter(i));
       }
+      // Normalise the corrected shapes to the initial integral
       shape_new->Scale(shape_old->Integral()/shape_new->Integral());
       shape_new2->Scale(shape_old->Integral()/shape_new2->Integral());
-      std::cout << *p << "\n";
-      std::cout << "Correction:\n";
-      shape_new->Print("range");
-      std::cout << "Up Systematic:\n";
-      shape_new2->Print("range");
+
+      // std::cout << *p << "\n";
+      // std::cout << "Correction:\n";
+      // shape_new->Print("range");
+      // std::cout << "Up Systematic:\n";
+      // shape_new2->Print("range");
+
+      // Write shapes into debug file
       outfile.WriteTObject(shape_old.get(), (p->bin()+"_Down").c_str());
       outfile.WriteTObject(shape_new.get(), (p->bin()+"_Nominal").c_str());
       outfile.WriteTObject(shape_new2.get(), (p->bin()+"_Up").c_str());
+
+      // Create shape systematic
       cb.AddSystFromProc(*p, "CMS_htt_wFakeShape_13TeV", "shape", true, 1.0, 1.0, "", "");
-      cb.cp().bin({p->bin()}).process({p->process()}).syst_name({"CMS_htt_wFakeShape_13TeV"}).ForEachSyst([&](ch::Systematic *sys) {
-        sys->set_shapes(std::move(shape_new2), std::move(shape_old), shape_new.get());
-      });
+      // Import the shapes into the Process and Systematic objects
+      cb.cp()
+          .bin({p->bin()})
+          .process({p->process()})
+          .syst_name({"CMS_htt_wFakeShape_13TeV"})
+          .ForEachSyst([&](ch::Systematic *sys) {
+            sys->set_shapes(std::move(shape_new2), std::move(shape_old), shape_new.get());
+          });
       p->set_shape(std::move(shape_new), false);
     });
+
+    // Close the debug file
     outfile.Close();
   }
 
