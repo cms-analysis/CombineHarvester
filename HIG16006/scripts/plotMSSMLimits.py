@@ -18,6 +18,8 @@ parser.add_argument(
 parser.add_argument(
     '--x-title', default='m_{#phi} (GeV)', help="""Title for the x-axis""")
 parser.add_argument(
+    '--y-title', default=None, help="""Title for the y-axis""")
+parser.add_argument(
     '--process', help='The process on which a limit has been calculated. [gg#phi, bb#phi]', default="gg#phi")
 parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
@@ -156,6 +158,8 @@ for src in args.input:
 axis[0].GetYaxis().SetTitle('95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
 if args.process == "bb#phi":
     axis[0].GetYaxis().SetTitle('95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
+if args.y_title is not None:
+    axis[0].GetYaxis().SetTitle(args.y_title)
 axis[0].GetXaxis().SetTitle(args.x_title)
 axis[0].GetXaxis().SetLabelOffset(axis[0].GetXaxis().GetLabelOffset()*2)
 

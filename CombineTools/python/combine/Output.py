@@ -6,6 +6,7 @@ import os
 import pprint
 import numpy as np
 from collections import defaultdict
+from array import array
 
 import CombineHarvester.CombineTools.combine.utils as utils
 import CombineHarvester.CombineTools.plotting as plot
@@ -87,6 +88,9 @@ class CollectLimits(CombineToolBase):
             '--use-dirs', action='store_true',
             help="""Use the directory structure to create multiple limit
                  outputs and to set the output file names""")
+        group.add_argument(
+            '--toys', action='store_true',
+            help="""Collect toy values""")
 
     def run_method(self):
         limit_sets = defaultdict(list)
@@ -116,18 +120,54 @@ class CollectLimits(CombineToolBase):
                     mh = str(evt.mh)
                     if mh not in js_out:
                         js_out[mh] = {}
-                    if evt.quantileExpected == -1:
-                        js_out[mh]['obs'] = evt.limit
-                    elif abs(evt.quantileExpected - 0.5) < 1E-4:
-                        js_out[mh]["exp0"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.025) < 1E-4:
-                        js_out[mh]["exp-2"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.160) < 1E-4:
-                        js_out[mh]["exp-1"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.840) < 1E-4:
-                        js_out[mh]["exp+1"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.975) < 1E-4:
-                        js_out[mh]["exp+2"] = evt.limit
+                        if self.args.toys:
+                            js_out[mh]['toys'] = {}
+                            for limit in ['obs', 'exp0', 'exp-2', 'exp-1', 'exp+1', 'exp+2']:
+                                js_out[mh]['toys'][limit] = []
+                    if self.args.toys:
+                        if evt.quantileExpected == -1:
+                            js_out[mh]['toys']['obs'].append(evt.limit)
+                        elif abs(evt.quantileExpected - 0.5) < 1E-4:
+                            js_out[mh]['toys']["exp0"].append(evt.limit)
+                        elif abs(evt.quantileExpected - 0.025) < 1E-4:
+                            js_out[mh]['toys']["exp-2"].append(evt.limit)
+                        elif abs(evt.quantileExpected - 0.160) < 1E-4:
+                            js_out[mh]['toys']["exp-1"].append(evt.limit)
+                        elif abs(evt.quantileExpected - 0.840) < 1E-4:
+                            js_out[mh]['toys']["exp+1"].append(evt.limit)
+                        elif abs(evt.quantileExpected - 0.975) < 1E-4:
+                            js_out[mh]['toys']["exp+2"].append(evt.limit)
+                    else:
+                        if evt.quantileExpected == -1:
+                            js_out[mh]['obs'] = evt.limit
+                        elif abs(evt.quantileExpected - 0.5) < 1E-4:
+                            js_out[mh]["exp0"] = evt.limit
+                        elif abs(evt.quantileExpected - 0.025) < 1E-4:
+                            js_out[mh]["exp-2"] = evt.limit
+                        elif abs(evt.quantileExpected - 0.160) < 1E-4:
+                            js_out[mh]["exp-1"] = evt.limit
+                        elif abs(evt.quantileExpected - 0.840) < 1E-4:
+                            js_out[mh]["exp+1"] = evt.limit
+                        elif abs(evt.quantileExpected - 0.975) < 1E-4:
+                            js_out[mh]["exp+2"] = evt.limit
+
+            if self.args.toys:
+                for mh in js_out.keys():
+                    print mh
+                    limits = sorted(js_out[mh]['toys']['obs'])
+                    # if mh == '90.0':
+                    #     limits = [x for x in limits if x > 2.0]
+                    quantiles = array('d', [0.025, 0.160, 0.5, 0.840, 0.975])
+                    res = array('d', [0., 0., 0., 0., 0.])
+                    empty = array('i', [0])
+                    ROOT.TMath.Quantiles(len(limits), len(quantiles), array('d', limits), res, quantiles, True, empty, 1)
+                    print res
+                    js_out[mh]['obs'] = res[2]
+                    js_out[mh]['exp-2'] = res[0]
+                    js_out[mh]['exp-1'] = res[1]
+                    js_out[mh]['exp0'] = res[2]
+                    js_out[mh]['exp+1'] = res[3]
+                    js_out[mh]['exp+2'] = res[4]
             # print js_out
             jsondata = json.dumps(
                 js_out, sort_keys=True, indent=2, separators=(',', ': '))
@@ -136,7 +176,7 @@ class CollectLimits(CombineToolBase):
                 outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
                 with open(outname, 'w') as out_file:
                     print '>> Writing output %s from files:' % outname
-                    pprint.pprint(filenames, indent=2)
+                    # pprint.pprint(filenames, indent=2)
                     out_file.write(jsondata)
 
 class CollectGoodnessOfFit(CombineToolBase):
