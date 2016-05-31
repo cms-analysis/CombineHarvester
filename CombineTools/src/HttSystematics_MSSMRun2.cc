@@ -30,8 +30,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     cb_sig.bin_id({8,9});
   }
 
+  std::vector<std::string> SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
+
   auto signal = Set2Vec(cb.cp().signals().SetFromProcs(
       std::mem_fn(&Process::process)));
+
+  signal = JoinStr({signal,SM_procs});
 
   //SM theory uncertainties
   cb.cp().process({"ggH_SM125"}).AddSyst(cb, "QCDscale_ggH", "lnN",
