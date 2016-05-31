@@ -61,6 +61,7 @@ def createAxisHists(n,src,xmin=0,xmax=499):
   return result
   
 
+plot.ModTDRStyle(r=0.06, l=0.12)
 
 parser = argparse.ArgumentParser()
 #Ingredients when output of PostFitShapes is already provided
@@ -343,7 +344,6 @@ for hists in bkg_histos:
 
 
 #Setup style related things
-plot.ModTDRStyle(r=0.06, l=0.12)
 c2 = ROOT.TCanvas()
 c2.cd()
 if args.ratio:
