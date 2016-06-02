@@ -14,7 +14,7 @@ from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBas
 import CombineHarvester.CombineTools.plotting as plot
 
 class AsymptoticGrid(CombineToolBase):
-  description = 'Calculate asymptotic limits on parameter grids' 
+  description = 'Calculate asymptotic limits on parameter grids'
   requires_root = True
 
   def __init__(self):
@@ -41,11 +41,11 @@ class AsymptoticGrid(CombineToolBase):
     #    - ok
     #  - If we have anything in the third category proceed to produce output files
     #  - Anything in the first two gets added to the queue only if --doFits is specified
-    #    so that the 
+    #    so that the
 
 
     # Step 1 - open the json config file
-    with open(self.args.config) as json_file:    
+    with open(self.args.config) as json_file:
         cfg = json.load(json_file)
     # to do - have to handle the case where it doesn't exist
     points = []; blacklisted_points = []
@@ -94,7 +94,7 @@ class AsymptoticGrid(CombineToolBase):
     bail_out = len(self.job_queue) > 0
     self.flush_queue()
 
-    if bail_out: 
+    if bail_out:
         print '>> New jobs were created / run in this cycle, run the script again to collect the output'
         sys.exit(0)
 
@@ -170,11 +170,13 @@ class HybridNewGrid(CombineToolBase):
         CombineToolBase.attach_intercept_args(self, group)
         group.add_argument('--setPhysicsModelParameters', default=None)
         group.add_argument('--freezeNuisances', default=None)
+
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
         group.add_argument('config', help='json config file')
         group.add_argument('--cycles', default=0, type=int, help='Number of job cycles to create per point')
         group.add_argument('--output', action='store_true', help='Write CLs grids into an output file')
+        group.add_argument('--from-asymptotic', default=None, help='JSON file which will be used to create a limit grid automatically')
 
     def GetCombinedHypoTest(self, files):
         if len(files) == 0: return None
@@ -275,7 +277,6 @@ class HybridNewGrid(CombineToolBase):
         results['ok'] = all_ok
         return (all_ok, results)
 
-
     def run_method(self):
         ROOT.PyConfig.IgnoreCommandLineOptions = True
         ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -301,6 +302,7 @@ class HybridNewGrid(CombineToolBase):
         # Write CLs values into the output even if current toys do not pass validation
         incomplete      = cfg.get('output_incomplete', False)
         outfile         = cfg.get('output','hybrid_grid.root')
+        from_asymptotic_settings = cfg.get('from_asymptotic_settings', dict())
         # NB: blacklisting not yet implemented for this method
 
         # Have to merge some arguments from both the command line and the "opts" in the json file
@@ -315,11 +317,40 @@ class HybridNewGrid(CombineToolBase):
         if hasattr(self.args, 'freezeNuisances') and self.args.freezeNuisances is not None:
             to_freeze.append(self.args.freezeNuisances)
 
-        points = []; blacklisted_points = []
+        points = []
+        blacklisted_points = []
+
+        # For the automatic grid for the "from_asymptotic option" we should fix the format specifier for
+        # the grid points, as the numerical precision of a given point may change once the grid spacing is
+        # modified. By default we let split_vals do it's thing however
+        fmt_spec = None
+
+        # In this mode we're doing a classic limit search vs MH instead of a 2D grid.
+        # Most of the same code can be used however. First we'll use the json file containing the
+        # asymptotic limits to create a new grid from scratch.
+        grids = []
+        if self.args.from_asymptotic is not None:
+            fmt_spec = '%.5g'
+            with open(self.args.from_asymptotic) as limit_json:
+                limits = json.load(limit_json)
+            for m in limits.keys():
+                limit_vals = [x for x in limits[m].values()]
+                max_limit = max(limit_vals)
+                min_limit = min(limit_vals)
+                # print (min_limit, max_limit)
+                width = max_limit - min_limit
+                max_limit += width * 0.3
+                min_limit = max(0.0, min_limit - width * 0.3)
+                nsteps = from_asymptotic_settings.get('points', 100)
+                step_width = (max_limit - min_limit) / nsteps
+                grids.append([m, '%g:%g|%g' % (min_limit, max_limit, step_width), ''])
+                # print (min_limit, max_limit)
+            # sys.exit(0)
+
         for igrid in grids:
             assert(len(igrid) == 3)
             if igrid[2] == '':
-                points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1])))
+                points.extend(itertools.product(utils.split_vals(igrid[0], fmt_spec=fmt_spec), utils.split_vals(igrid[1], fmt_spec=fmt_spec)))
             else:
                 blacklisted_points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1]), utils.split_vals(igrid[2])))
 
@@ -392,7 +423,7 @@ class HybridNewGrid(CombineToolBase):
         output_ntoys = []
         output_clserr = {}
         output_signif = {}
-        # One list of Z-values per contour 
+        # One list of Z-values per contour
         for contour in contours:
             output_data[contour] = []
             output_clserr[contour] = []
@@ -412,7 +443,7 @@ class HybridNewGrid(CombineToolBase):
             res = self.GetCombinedHypoTest(files)
 
             # Do the validation of this model point
-            # 
+            #
             ok, point_res = self.ValidateHypoTest(res,
                 min_toys = min_toys,
                 max_toys = max_toys,
@@ -423,14 +454,14 @@ class HybridNewGrid(CombineToolBase):
                 verbose  = verbose) if res is not None else (False, {"ntoys" : 0})
 
             print '>> Point %s [%i toys, %s]' % (name, point_res['ntoys'], 'DONE' if ok else 'INCOMPLETE')
-            
+
             if ok:
                 complete_points += 1
-            
+
             # Make plots of the test statistic distributions if requested
             if res is not None and make_plots:
                 self.PlotTestStat(res, 'plot_'+name, opts = cfg['plot_settings'], poi_vals = (float(key[0]), float(key[1])))
-  
+
             # Add the resulting CLs values to the output arrays. Normally just
             # for the model points that passed the validation criteria, but if "output_incomplete"
             # has been set to true then we'll write all model points where at least one HypoTestResult
@@ -443,7 +474,7 @@ class HybridNewGrid(CombineToolBase):
                     output_data[contour].append(point_res[contour][0])
                     output_clserr[contour].append(point_res[contour][1])
                     output_signif[contour].append(point_res[contour][2])
-            
+
             # Do the job cycle generation if requested
             if not ok and self.args.cycles > 0:
                 print '>>> Going to generate %i job(s) for point %s' % (self.args.cycles, key)
@@ -452,15 +483,17 @@ class HybridNewGrid(CombineToolBase):
                 done_cycles = val.keys()
                 new_idx = max(done_cycles)+1 if len(done_cycles) > 0 else 1
                 new_cycles = range(new_idx, new_idx+self.args.cycles)
-                
+
                 print '>>> Done cycles: ' + ','.join(str(x) for x in done_cycles)
                 print '>>> New cycles: ' + ','.join(str(x) for x in new_cycles)
-                
+
                 # Build to combine command. Here we'll take responsibility for setting the name and the
                 # model parameters, making sure the latter are frozen
                 set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
                 freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
                 point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
+                if self.args.from_asymptotic:
+                    point_args += ' --singlePoint %s' % key[1]
                 # Build a command for each job cycle setting the number of toys and random seed and passing through any other
                 # user options from the config file or the command line
                 for idx in new_cycles:
@@ -492,62 +525,65 @@ class HybridNewGrid(CombineToolBase):
             fout.Close()
 
     def PlotTestStat(self, result, name, opts, poi_vals):
-      null_vals = [x * -2. for x in result.GetNullDistribution().GetSamplingDistribution()]
-      alt_vals = [x * -2. for x in result.GetAltDistribution().GetSamplingDistribution()]
-      if len(null_vals) == 0 or len(alt_vals) == 0:
-        print '>> Errror in PlotTestStat for %s, null and/or alt distributions are empty'
-        return
-      plot.ModTDRStyle()
-      canv = ROOT.TCanvas(name, name)
-      pad = plot.OnePad()[0]
-      min_val = min(min(alt_vals), min(null_vals))
-      max_val = max(max(alt_vals), max(null_vals))
-      min_plot_range = min_val - 0.05 * (max_val - min_val)
-      if opts['one_sided']:
-        min_plot_range = 0.
-        pad.SetLogy(True)
-      max_plot_range = max_val + 0.05 * (max_val - min_val)
-      hist_null = ROOT.TH1F('null', 'null', 40, min_plot_range, max_plot_range)
-      hist_alt = ROOT.TH1F('alt', 'alt', 40, min_plot_range, max_plot_range)
-      for val in null_vals: hist_null.Fill(val)
-      for val in alt_vals: hist_alt.Fill(val)
-      hist_alt.SetLineColor(ROOT.TColor.GetColor(4, 4, 255))
-      hist_alt.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(4, 4, 255), 0.4))
-      hist_alt.GetXaxis().SetTitle('-2 #times ln(^{}L_{%s}/^{}L_{%s})' % (opts['alt_label'], opts['null_label']))
-      hist_alt.GetYaxis().SetTitle('Pseudo-experiments')
-      hist_alt.Draw()
-      hist_null.SetLineColor(ROOT.TColor.GetColor(252, 86, 11))
-      hist_null.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(254, 195, 40), 0.4))
-      hist_null.Draw('SAME')
-      val_obs = result.GetTestStatisticData() * -2.
-      obs = ROOT.TArrow(val_obs, 0, val_obs, hist_alt.GetMaximum() * 0.3, 0.05 , '<-|')
-      obs.SetLineColor(ROOT.kRed)
-      obs.SetLineWidth(3)
-      obs.Draw()
-      plot.FixTopRange(pad, plot.GetPadYMax(pad), 0.25)
-      leg = plot.PositionedLegend(0.22, 0.2, 3, 0.02)
-      leg.AddEntry(hist_alt, opts['alt_label'], 'F')
-      leg.AddEntry(hist_null, opts['null_label'], 'F')
-      leg.AddEntry(obs, 'Observed', 'L')
-      leg.Draw()
-      plot.DrawCMSLogo(pad, 'CMS', opts['cms_subtitle'], 0, 0.15, 0.035, 1.2)
-      pt_l = ROOT.TPaveText(0.23, 0.75, 0.33, 0.9, 'NDCNB')
-      pt_l.AddText('Model:')
-      pt_l.AddText('Toys:')
-      pt_l.AddText('CLs+b:')
-      pt_l.AddText('CLb:')
-      pt_l.AddText('CLs:')
-      plot.Set(pt_l, TextAlign=11, TextFont=62, BorderSize=0)
-      pt_l.Draw()
-      pt_r = ROOT.TPaveText(0.33, 0.75, 0.63, 0.9, 'NDCNB')
-      pt_r.AddText('%s [%s = %.1f, %s = %.1f]' % (opts['model_label'], opts['poi_labels'][0], poi_vals[0], opts['poi_labels'][1], poi_vals[1]))
-      pt_r.AddText('%i (%s) + %i (%s)' % (result.GetNullDistribution().GetSize(), opts['null_label'], result.GetAltDistribution().GetSize(), opts['alt_label']))
-      pt_r.AddText('%.3f #pm %.3f' % (result.CLsplusb(), result.CLsplusbError()))
-      pt_r.AddText('%.3f #pm %.3f' % (result.CLb(), result.CLbError()))
-      pt_r.AddText('%.3f #pm %.3f' % (result.CLs(), result.CLsError()))
-      plot.Set(pt_r, TextAlign=11, TextFont=42, BorderSize=0)
-      pt_r.Draw()
-      pad.GetFrame().Draw()
-      pad.RedrawAxis()
-      for fmt in opts['formats']:
-          canv.SaveAs(fmt)
+        sign = -1.
+        if opts['one_sided']:
+            sign = 1.
+        null_vals = [x * sign * 2. for x in result.GetNullDistribution().GetSamplingDistribution()]
+        alt_vals = [x * sign * 2. for x in result.GetAltDistribution().GetSamplingDistribution()]
+        if len(null_vals) == 0 or len(alt_vals) == 0:
+            print '>> Errror in PlotTestStat for %s, null and/or alt distributions are empty'
+            return
+        plot.ModTDRStyle()
+        canv = ROOT.TCanvas(name, name)
+        pad = plot.OnePad()[0]
+        min_val = min(min(alt_vals), min(null_vals))
+        max_val = max(max(alt_vals), max(null_vals))
+        min_plot_range = min_val - 0.05 * (max_val - min_val)
+        if opts['one_sided']:
+            min_plot_range = 0.
+            pad.SetLogy(True)
+        max_plot_range = max_val + 0.05 * (max_val - min_val)
+        hist_null = ROOT.TH1F('null', 'null', 40, min_plot_range, max_plot_range)
+        hist_alt = ROOT.TH1F('alt', 'alt', 40, min_plot_range, max_plot_range)
+        for val in null_vals: hist_null.Fill(val)
+        for val in alt_vals: hist_alt.Fill(val)
+        hist_alt.SetLineColor(ROOT.TColor.GetColor(4, 4, 255))
+        hist_alt.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(4, 4, 255), 0.4))
+        hist_alt.GetXaxis().SetTitle('-2 #times ln(^{}L_{%s}/^{}L_{%s})' % (opts['alt_label'], opts['null_label']))
+        hist_alt.GetYaxis().SetTitle('Pseudo-experiments')
+        hist_alt.Draw()
+        hist_null.SetLineColor(ROOT.TColor.GetColor(252, 86, 11))
+        hist_null.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(254, 195, 40), 0.4))
+        hist_null.Draw('SAME')
+        val_obs = result.GetTestStatisticData() * sign * 2.
+        obs = ROOT.TArrow(val_obs, 0, val_obs, hist_alt.GetMaximum() * 0.3, 0.05, '<-|')
+        obs.SetLineColor(ROOT.kRed)
+        obs.SetLineWidth(3)
+        obs.Draw()
+        plot.FixTopRange(pad, plot.GetPadYMax(pad), 0.25)
+        leg = plot.PositionedLegend(0.22, 0.2, 3, 0.02)
+        leg.AddEntry(hist_alt, opts['alt_label'], 'F')
+        leg.AddEntry(hist_null, opts['null_label'], 'F')
+        leg.AddEntry(obs, 'Observed', 'L')
+        leg.Draw()
+        plot.DrawCMSLogo(pad, 'CMS', opts['cms_subtitle'], 0, 0.15, 0.035, 1.2)
+        pt_l = ROOT.TPaveText(0.23, 0.75, 0.33, 0.9, 'NDCNB')
+        pt_l.AddText('Model:')
+        pt_l.AddText('Toys:')
+        pt_l.AddText('CLs+b:')
+        pt_l.AddText('CLb:')
+        pt_l.AddText('CLs:')
+        plot.Set(pt_l, TextAlign=11, TextFont=62, BorderSize=0)
+        pt_l.Draw()
+        pt_r = ROOT.TPaveText(0.33, 0.75, 0.63, 0.9, 'NDCNB')
+        pt_r.AddText('%s [%s = %.1f, %s = %.1f]' % (opts['model_label'], opts['poi_labels'][0], poi_vals[0], opts['poi_labels'][1], poi_vals[1]))
+        pt_r.AddText('%i (%s) + %i (%s)' % (result.GetNullDistribution().GetSize(), opts['null_label'], result.GetAltDistribution().GetSize(), opts['alt_label']))
+        pt_r.AddText('%.3f #pm %.3f' % (result.CLsplusb(), result.CLsplusbError()))
+        pt_r.AddText('%.3f #pm %.3f' % (result.CLb(), result.CLbError()))
+        pt_r.AddText('%.3f #pm %.3f' % (result.CLs(), result.CLsError()))
+        plot.Set(pt_r, TextAlign=11, TextFont=42, BorderSize=0)
+        pt_r.Draw()
+        pad.GetFrame().Draw()
+        pad.RedrawAxis()
+        for fmt in opts['formats']:
+            canv.SaveAs(fmt)
