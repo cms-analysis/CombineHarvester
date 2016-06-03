@@ -6,6 +6,7 @@ import sys
 import re
 import zipfile
 import os
+import bisect
 from math import floor
 from array import array
 
@@ -330,6 +331,8 @@ class HybridNewGrid(CombineToolBase):
         # asymptotic limits to create a new grid from scratch.
         grids = []
         if self.args.from_asymptotic is not None:
+            bound_vals = None
+            bound_pars = []
             fmt_spec = '%.5g'
             with open(self.args.from_asymptotic) as limit_json:
                 limits = json.load(limit_json)
@@ -344,6 +347,18 @@ class HybridNewGrid(CombineToolBase):
                 nsteps = from_asymptotic_settings.get('points', 100)
                 step_width = (max_limit - min_limit) / nsteps
                 grids.append([m, '%g:%g|%g' % (min_limit, max_limit, step_width), ''])
+                boundlist_file = from_asymptotic_settings.get('boundlist', '')
+                if boundlist_file:
+                    with open(boundlist_file) as json_file:
+                        bnd = json.load(json_file)
+                    bound_pars = list(bnd.keys())
+                    print 'Found bounds for parameters %s' % ','.join(bound_pars)
+                    bound_vals = {}
+                    for par in bound_pars:
+                        bound_vals[par] = list()
+                        for mass, bounds in bnd[par].iteritems():
+                            bound_vals[par].append((float(mass), bounds[0], bounds[1]))
+                        bound_vals[par].sort(key=lambda x: x[0])
                 # print (min_limit, max_limit)
             # sys.exit(0)
 
@@ -493,7 +508,23 @@ class HybridNewGrid(CombineToolBase):
                 freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
                 point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
                 if self.args.from_asymptotic:
+                    mval = key[0]
+                    command = []
+                    for par in bound_pars:
+                        # The (mass, None, None) is just a trick to make bisect_left do the comparison
+                        # with the list of tuples in bound_var[par]. The +1E-5 is to avoid float rounding
+                        # issues
+                        lower_bound = bisect.bisect_left(bound_vals[par], (float(mval)+1E-5, None, None))
+                        # If lower_bound == 0 this means we are at or below the lowest mass point,
+                        # in which case we should increase by one to take the bounds from this lowest
+                        # point
+                        if lower_bound == 0:
+                            lower_bound += 1
+                        command.append('%s=%g,%g' % (par, bound_vals[par][lower_bound-1][1], bound_vals[par][lower_bound-1][2]))
+                    point_args += (' --setPhysicsModelParameterRanges %s' % (':'.join(command)))
+                    # print per_mass_point_args
                     point_args += ' --singlePoint %s' % key[1]
+                    point_args += ' -m %s' % mval
                 # Build a command for each job cycle setting the number of toys and random seed and passing through any other
                 # user options from the config file or the command line
                 for idx in new_cycles:
@@ -505,7 +536,7 @@ class HybridNewGrid(CombineToolBase):
 
         # Create and write output CLs TGraph2Ds here
         # TODO: add graphs with the CLs errors, the numbers of toys and whether or not the point passes
-        if self.args.output:
+        if self.args.output and not self.args.from_asymptotic:
             fout = ROOT.TFile(outfile, 'RECREATE')
             for c in contours:
                 graph = ROOT.TGraph2D(len(output_data[c]), array('d', output_x), array('d', output_y), array('d', output_data[c]))
@@ -516,13 +547,35 @@ class HybridNewGrid(CombineToolBase):
                 graph.SetName('clsErr_'+c)
                 fout.WriteTObject(graph, 'clsErr_'+c)
                 # And a Graph with the significance
-                graph = ROOT.TGraph2D(len(output_signif[c]), array('d', output_x), array('d', output_y), array('d', output_signif[c]))
+                graph = ROOT.TGraph2D(len(output_signif[c]), array('objectd', output_x), array('d', output_y), array('d', output_signif[c]))
                 graph.SetName('signif_'+c)
                 fout.WriteTObject(graph, 'signif_'+c)
             graph = ROOT.TGraph2D(len(output_ntoys), array('d', output_x), array('d', output_y), array('d', output_ntoys))
             graph.SetName('ntoys'+c)
             fout.WriteTObject(graph, 'ntoys')
             fout.Close()
+
+        if self.args.output and self.args.from_asymptotic:
+            # Need to collect all the files for each mass point and hadd them:
+            files_by_mass = {}
+            for key,val in file_dict.iteritems():
+                if key[0] not in files_by_mass:
+                    files_by_mass[key[0]] = list()
+                files_by_mass[key[0]].extend(val.values())
+            for m, files in files_by_mass.iteritems():
+                gridfile = 'higgsCombine.gridfile.%s.%s.%s.root' % (POIs[0], m, POIs[1])
+                self.job_queue.append('hadd -f %s %s' % (gridfile, ' '.join(files)))
+                for exp in ['', '0.025', '0.160', '0.500', '0.840', '0.975']:
+                    self.job_queue.append(' '.join([
+                            'combine -M HybridNew --rAbsAcc 0',
+                            opts,
+                            '--grid %s' % gridfile,
+                            '-n .final.%s.%s.%s' % (POIs[0], m, POIs[1]),
+                            '-m %s' % (m),
+                            ('--expectedFromGrid %s' % exp) if exp else '--noUpdateGrid'
+                        ] + self.passthru))
+                self.flush_queue()
+
 
     def PlotTestStat(self, result, name, opts, poi_vals):
         sign = -1.
