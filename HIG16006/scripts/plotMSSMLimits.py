@@ -47,6 +47,32 @@ parser.add_argument(
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
 
+style_dict_bg = {
+        'style' : {
+            'exp1' : { 'FillColor' : ROOT.kGreen+2},
+            'exp2' : { 'FillColor' : ROOT.kSpring+5}
+            },
+        'legend' : {
+            'exp0' : { 'Label' : 'Expected for H(125 GeV) as BG'},
+            'exp1' : { 'Label' : '#pm1#sigma H(125 GeV) as BG'},
+            'exp2' : { 'Label' : '#pm2#sigma H(125 GeV) as BG'}
+            }
+        }
+style_dict_inj = {
+        'style' : {
+            'exp1' : { 'FillColor' : ROOT.kAzure-4},
+            'exp2' : { 'FillColor' : ROOT.kAzure-9}
+            },
+        'legend' : {
+            'exp0' : { 'Label' : 'Expected for H(125 GeV)'}
+            }
+        }
+
+style_dict=None
+if args.higgs_bg:
+    style_dict = style_dict_bg
+if args.higgs_injected:
+    style_dict = style_dict_inj
 
 def DrawAxisHists(pads, axis_hists, def_pad=None):
     for i, pad in enumerate(pads):
@@ -118,8 +144,12 @@ for src in args.input:
         if axis is None:
             axis = plot.CreateAxisHists(len(pads), graph_sets[-1].values()[0], True)
             DrawAxisHists(pads, axis, pads[0])
-        plot.StyleLimitBand(graph_sets[-1], higgs_bg=args.higgs_bg, higgs_inj=args.higgs_injected)
-        plot.DrawLimitBand(pads[0], graph_sets[-1], legend=legend, higgs_bg=args.higgs_bg, higgs_inj=args.higgs_injected)
+        if args.higgs_bg or args.higgs_injected:
+            plot.StyleLimitBand(graph_sets[-1],overwrite_style_dict=style_dict["style"])
+            plot.DrawLimitBand(pads[0], graph_sets[-1], legend=legend,legend_overwrite=style_dict["legend"])
+        else:
+            plot.StyleLimitBand(graph_sets[-1])
+            plot.DrawLimitBand(pads[0], graph_sets[-1])
         pads[0].RedrawAxis()
         pads[0].RedrawAxis('g')
         pads[0].GetFrame().Draw()
