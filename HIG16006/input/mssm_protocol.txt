@@ -44,7 +44,7 @@ combineTool.py -M T2W -o "ws_SM_and_MSSM.root" -P HiggsAnalysis.CombinedLimit.Ph
 
 2b) Setting up workspaces for model dependent limits (asymptotic and MSSMvsSM)
 
-combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$CMSSW_BASE/src/auxiliaries/models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 [--PO debugOutput="mhmodp_mu200_13TeV_debug.root" --PO makePlots ] -i output/mssm_310516_freezing_mhmodp/*
+combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$PWD/shapes/Models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 [--PO debugOutput="mhmodp_mu200_13TeV_debug.root" --PO makePlots ] -i output/mssm_310516_freezing_mhmodp/*
 
 This will perform the same recursive application of text2workspace, this time applying the mhmodp physics model.
 
@@ -80,7 +80,7 @@ combineTool.py -M HybridNewGrid ./scripts/mssm_hybrid_grid.json --cycles 2 -d ou
 
 The mssm_hybrid_grid.json file specifies ao the mA-tanb points to scan, for more info see CombineHarvester/docs/HybridNewGrid.md
 
-Like in AsymptoticGrid mode, points can be added or more toys can be generated for points which haven't met the significance/number of toy requirements specified in mssm_hybrid_grid.json. To check the progress of points, run with --cycles 0, the output graphs can be added by adding the --output option. This will write out a file HybridNewGridMSSM.root
+Like in AsymptoticGrid mode, points can be added or more toys can be generated for points which haven't met the significance/number of toy requirements specified in mssm_hybrid_grid.json. To check the progress of points, copy the output files back over from dcache and run with --cycles 0, the output graphs can be added by adding the --output option. This will write out a file HybridNewGridMSSM.root
 
 3d) Running ggH-bbH 2D limits
 
@@ -129,7 +129,7 @@ python scripts/plotMSSMLimits.py --logy --logx mssm_freezing_withSMBG_ggH_mt.jso
 
 4b) Plotting model dependent limits
 
-python ../CombineTools/scripts/plotLimitGrid.py asymptotic_grid.root --scenario-label="m_{h}^{mod+} scenario"  --output="mssm_310516_freezing_mhmodp_cmb" --title-right="2.3 fb^{-1} (13 TeV)" --contours="exp-2,exp-1,exp0,exp+1,exp+2,obs" --model_file=../../auxiliaries/models/mhmodp_mu200_13TeV.root --extra_contour_file=shapes/8TeVObs/8TeV_mhmodp_contours.root --extra_contour_title="8 TeV observed (HIG-14-029)"
+python ../CombineTools/scripts/plotLimitGrid.py HybridNewGridMSSM.root --scenario-label="m_{h}^{mod+} scenario"  --output="mssm_310516_freezing_mhmodp_cmb" --title-right="2.3 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --contours="exp-2,exp-1,exp0,exp+1,exp+2,obs" --model_file=../../auxiliaries/models/mhmodp_mu200_13TeV.root --extra_contour_file="shapes/8TeVObs/8TeV_mhmodp_expected_contours,shapes/8TeVObs/8TeV_mhmodp_contours.root" --extra_contour_title="7+8 TeV expected (HIG-14-029), 7+8 TeV observed (HIG-14-029)" --extra_contour_style="2,1"
 
 The plotting takes the asymptotic_grid or HybridNewGridMSSM file as input, and performs interpolation to produce smooth contours of exclusion for a 2D mA-tanb plot. Note that this script contains many different optional settings for this interpolation. 
 

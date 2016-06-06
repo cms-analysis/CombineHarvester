@@ -64,6 +64,9 @@ parser.add_argument(
     '--extra_contour_title', default="", help="""Legend label for extra
     contours""")
 parser.add_argument(
+    '--extra_contour_style', default="", help="""Line style for plotting
+    extra contours""")
+parser.add_argument(
     '--model_file', default=None, help="""Model file for drawing mh
     exclusion""")
 parser.add_argument(
@@ -100,12 +103,16 @@ else:
 
 #Get extra contours from file, if provided:
 if args.extra_contour_file is not None:
-    extra_contour_file = ROOT.TFile(args.extra_contour_file)
-    extra_contour_file_contents = extra_contour_file.GetListOfKeys()
-    extra_contour_names = []
-    for i in range(0,len(extra_contour_file_contents)):
-      extra_contour_names.append(extra_contour_file_contents[i].GetName())
-    extra_contours = [extra_contour_file.Get(c) for c in extra_contour_names]
+    contour_files  = args.extra_contour_file.split(',')
+    extra_contours = []
+    for filename in contour_files:
+        extra_contour_file = ROOT.TFile(filename)
+        extra_contour_file_contents = extra_contour_file.GetListOfKeys()
+        extra_contour_names = []
+        for i in range(0,len(extra_contour_file_contents)):
+            extra_contour_names.append(extra_contour_file_contents[i].GetName())
+            extra_contours_per_index = [extra_contour_file.Get(c) for c in extra_contour_names]
+        extra_contours.append(extra_contours_per_index)
 else:
     extra_contours = None
 
@@ -232,9 +239,14 @@ if mh122_contours is not None:
         gr.Draw('LSAME')
 
 if extra_contours is not None:
-   for gr in extra_contours:
-     plot.Set(gr,LineWidth=2,LineColor=ROOT.kBlue)
-     gr.Draw('LSAME')
+    if args.extra_contour_style is not None: 
+        contour_styles = args.extra_contour_style.split(',')
+        print contour_styles
+        print extra_contours
+    for i in range(0,len(extra_contours)):
+        for gr in extra_contours[i]:
+            plot.Set(gr,LineWidth=2,LineColor=ROOT.kBlue,LineStyle=int(contour_styles[i]))
+            gr.Draw('LSAME')
    
 
 # We just want the top pad to look like a box, so set all the text and tick
@@ -262,7 +274,10 @@ if 'exp-2' in contours and 'exp+2' in contours:
 if mh122_contours is not None and len(mh122_contours)>0:
     legend.AddEntry(mh122_contours[0], "m_{h}^{MSSM} #neq 125 #pm 3 GeV","F")
 if extra_contours is not None:
-    legend.AddEntry(extra_contours[0],args.extra_contour_title,"L")
+    if args.extra_contour_title is not None: 
+        contour_title = args.extra_contour_title.split(',')
+    for i in range(0,len(extra_contours)): 
+        legend.AddEntry(extra_contours[i][0],contour_title[i],"L")
 legend.Draw()
 
 # Draw logos and titles
