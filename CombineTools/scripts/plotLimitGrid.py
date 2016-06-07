@@ -94,6 +94,10 @@ h_proto = plot.TH2FromTGraph2D(graphs[types[0]], method=args.bin_method,
 h_axis = h_proto
 h_axis = plot.TH2FromTGraph2D(graphs[types[0]])
 
+graph_ntoys = file.Get("ntoys")
+h_ntoys = h_proto.Clone("h_ntoys")
+plot.fillTH2(h_ntoys, graph_ntoys)
+
 # Get histogram to plot m_h exclusion from the model file if provided
 if args.model_file is not None:
     modelfile = ROOT.TFile(args.model_file)
@@ -127,6 +131,13 @@ for c in types:
     print 'Filling histo for %s' % c
     hists[c] = h_proto.Clone(c)
     plot.fillTH2(hists[c], graphs[c])
+    #check for bins which have 0 toys run - these can have failed fits which
+    #gives a CLs value of 0 yielding an artificial exclusion
+    for i in range(1,hists[c].GetNbinsX()+1):
+        for j in range(1, hists[c].GetNbinsY()+1):
+            if h_ntoys.GetBinContent(i,j) == 0:
+                print "bin", i, " ", j, "has 0 toys contributing, setting CLs value to 1.0"
+                hists[c].SetBinContent(i,j,1.0)
     contours[c] = plot.contourFromTH2(hists[c], CL, 5, frameValue=1)
     if debug is not None:
         debug.WriteTObject(hists[c], 'hist_%s' % c)
