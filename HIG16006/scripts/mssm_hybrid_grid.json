@@ -3,30 +3,22 @@
   "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --clsAcc 0 --fullBToys --fork 0",
   "POIs" : ["mA", "tanb"],
   "grids" : [
-    ["130:1980|50", "2:30|2", ""],
-    ["130:1980|50", "30:60|5", ""]
-  ],
-  "grids_to_remove" : [
-    ["1880","10"],
-    ["1880","14"],
-    ["1980","14"],
-    ["1680","20"],
-    ["1980","8"],
-    ["1930","10"],
-    ["1930","12"],
-    ["1980","12"],
-    ["1930","8"],
-    ["1930","14"],
-    ["1980","10"],
-    ["1880","12"]
+    ["90:200|10", "1:30|1", ""],
+    ["90:200|10", "30:60|2", ""],
+    ["200:1000|20", "1:30|1", ""],
+    ["200:1000|20", "30:60|2", ""],
+    ["1000:1400|60", "1:30|1", ""],
+    ["1000:1400|60", "30:60|2", ""],
+    ["1400:2000|50", "1:60|5", ""],
+    ["1400:2000|50", "60", ""]
   ],
   "toys_per_cycle"  : 500,
   "min_toys"        : 500,
-  "max_toys"        : 5000,
+  "max_toys"        : 200000,
   "signif"          : 3.0,
   "CL"              : 0.95,
   "contours"        : ["obs", "exp-2", "exp-1", "exp0", "exp+1", "exp+2"],
-  "make_plots"      : true,
+  "make_plots"      : false,
   "plot_settings" : {
       "one_sided"     : false,
       "model_label"   : "m_{H}^{mod+}",
@@ -36,7 +28,8 @@
       "cms_subtitle"  : "Internal",
       "formats"       : [".pdf", ".png"]
   },
-  "zipfile"         : "collected.zip",
+  "zipfile"         : "/srv/localstage/amd12/mhmodp_plots/collected.zip",
+  "statusfile"      : "/srv/localstage/amd12/mhmodp_plots/status.json",
   "output"          : "HybridNewGridMSSM.root",
   "output_incomplete" : true
 }

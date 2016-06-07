@@ -31,6 +31,10 @@ parser.add_argument(
 parser.add_argument(
     '--y-title', default='tan#beta', help="""Title for the y-axis""")
 parser.add_argument(
+    '--x-range', default=None, type=str, help="""x-axis range""")
+parser.add_argument(
+    '--y-range', default=None, type=str, help="""y-axis range""")
+parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
 parser.add_argument(
     '--scenario-label', default='', help="""Scenario name to be drawn in top
@@ -163,6 +167,10 @@ pads = plot.TwoPadSplit(0.8, 0, 0)
 pads[1].cd()
 h_axis.GetXaxis().SetTitle(args.x_title)
 h_axis.GetYaxis().SetTitle(args.y_title)
+if args.x_range is not None:
+    h_axis.GetXaxis().SetRangeUser(float(args.x_range.split(',')[0]),float(args.x_range.split(',')[1]))
+if args.y_range is not None:
+    h_axis.GetYaxis().SetRangeUser(float(args.y_range.split(',')[0]),float(args.y_range.split(',')[1]))
 h_axis.Draw()
 
 if args.hist is not None:
@@ -252,8 +260,6 @@ if mh122_contours is not None:
 if extra_contours is not None:
     if args.extra_contour_style is not None: 
         contour_styles = args.extra_contour_style.split(',')
-        print contour_styles
-        print extra_contours
     for i in range(0,len(extra_contours)):
         for gr in extra_contours[i]:
             plot.Set(gr,LineWidth=2,LineColor=ROOT.kBlue,LineStyle=int(contour_styles[i]))
