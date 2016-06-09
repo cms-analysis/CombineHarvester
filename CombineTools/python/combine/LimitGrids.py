@@ -489,7 +489,7 @@ class HybridNewGrid(CombineToolBase):
             # for the model points that passed the validation criteria, but if "output_incomplete"
             # has been set to true then we'll write all model points where at least one HypoTestResult
             # is present
-            if res is not None and (ok or incomplete) and self.args.output:
+            if (res is not None or precomputed is not None) and (ok or incomplete) and self.args.output:
                 output_x.append(float(key[0]))
                 output_y.append(float(key[1]))
                 output_ntoys.append(point_res['ntoys'])
