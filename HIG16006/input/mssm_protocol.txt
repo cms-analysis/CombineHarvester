@@ -129,7 +129,7 @@ python scripts/plotMSSMLimits.py --logy --logx mssm_freezing_withSMBG_ggH_mt.jso
 
 4b) Plotting model dependent limits
 
-python ../CombineTools/scripts/plotLimitGrid.py HybridNewGridMSSM.root --scenario-label="m_{h}^{mod+} scenario"  --output="mssm_310516_freezing_mhmodp_cmb" --title-right="2.3 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --contours="exp-2,exp-1,exp0,exp+1,exp+2,obs" --model_file=../../auxiliaries/models/mhmodp_mu200_13TeV.root --extra_contour_file="shapes/8TeVObs/8TeV_mhmodp_expected_contours,shapes/8TeVObs/8TeV_mhmodp_contours.root" --extra_contour_title="7+8 TeV expected (HIG-14-029), 7+8 TeV observed (HIG-14-029)" --extra_contour_style="2,1"
+python ../CombineTools/scripts/plotLimitGrid.py HybridNewGridMSSM.root --scenario-label="m_{h}^{mod+} scenario"  --output="mssm_310516_freezing_mhmodp_cmb" --title-right="2.3 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --contours="exp-2,exp-1,exp0,exp+1,exp+2,obs" --model_file=$PWD/shapes/Models/mhmodp_mu200_13TeV.root --extra_contour_file="shapes/8TeVObs/8TeV_mhmodp_expected_contours,shapes/8TeVObs/8TeV_mhmodp_contours.root" --extra_contour_title="7+8 TeV expected (HIG-14-029), 7+8 TeV observed (HIG-14-029)" --extra_contour_style="2,1"
 
 The plotting takes the asymptotic_grid or HybridNewGridMSSM file as input, and performs interpolation to produce smooth contours of exclusion for a 2D mA-tanb plot. Note that this script contains many different optional settings for this interpolation. 
 
@@ -165,6 +165,12 @@ combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters MH=700,r_ggH=0.1,
 The plotting code can then be used in postfit mode and passed the output of the maximum likelihood fit, to make post fit plots instead of prefit:
 
 PostFitShapesFromWorkspace -d output/mssm_310516_freezing/cmb/combined.txt.cmb -w output/mssm_310516_freezing/cmb/ws.root -o shapes.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700 --postfit --sampling -f output/mssm_310516_freezing/cmb/mlfit.Test.root:fit_s
+
+**for the final plots in the docs:**
+
+combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters mA=1000,tanb=50 -d output/mssm_310516_freezing_mhmodp/cmb/mhmodp.root --there --minimizerTolerance 0.01 --minimizerStrategy 1
+
+PostFitShapesFromWorkspace -d output/mssm_310516_freezing/cmb/combined.txt.cmb -w output/mssm_310516_freezing_mhmodp/cmb/mhmodp.root -o shapes.root --print --freeze mA=1000,tanb=50,r=1,x=1 --postfit --sampling -f output/mssm_310516_freezing_mhmodp/cmb/mlfit.Test.root:fit_s
 
 python scripts/makeMassPlots.py
 

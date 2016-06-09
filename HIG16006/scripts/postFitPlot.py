@@ -61,7 +61,7 @@ def createAxisHists(n,src,xmin=0,xmax=499):
   return result
   
 
-plot.ModTDRStyle(r=0.06, l=0.12)
+plot.ModTDRStyle(r=0.04, l=0.14)
 
 parser = argparse.ArgumentParser()
 #Ingredients when output of PostFitShapes is already provided
@@ -221,6 +221,8 @@ background_schemes = {'mt':[backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(
 [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
 if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH',file_dir, mode, args.no_signal, log_x)[0]
 if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH',file_dir, mode, args.no_signal, log_x)[0]
+for i in range(0,sighist.GetNbinsX()):
+  if sighist.GetBinContent(i) < y_axis_min: sighist.SetBinContent(i,y_axis_min)
 bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
 
 total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode, logx=log_x)[0]
@@ -347,7 +349,7 @@ for hists in bkg_histos:
 c2 = ROOT.TCanvas()
 c2.cd()
 if args.ratio:
-  pads=plot.TwoPadSplit(0.29,0.005,0.005)
+  pads=plot.TwoPadSplit(0.29,0.01,0.01)
 else:
   pads=plot.OnePad()
 pads[0].cd()
@@ -362,10 +364,14 @@ if args.ratio and not fractions:
   axish[1].GetYaxis().SetNdivisions(4)
   if not soverb_plot: axish[1].GetYaxis().SetTitle("Obs/Exp")
   else: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
+  #axish[1].GetYaxis().SetTitleSize(0.04)
+  #axish[1].GetYaxis().SetLabelSize(0.04)
+  #axish[1].GetYaxis().SetTitleOffset(1.3)
+  #axish[0].GetYaxis().SetTitleSize(0.04)
+  #axish[0].GetYaxis().SetLabelSize(0.04)
+  #axish[0].GetYaxis().SetTitleOffset(1.3)
   axish[0].GetXaxis().SetTitleSize(0)
   axish[0].GetXaxis().SetLabelSize(0)
-  axish[0].GetYaxis().SetTitleOffset(1.4)
-  axish[1].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
     axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
     axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
@@ -374,7 +380,7 @@ if args.ratio and not fractions:
     axish[1].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
 else:
   axish = createAxisHists(1,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
-  axish[0].GetYaxis().SetTitleOffset(1.4)
+#  axish[0].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
     axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
   if custom_y_range and not fractions:
@@ -429,11 +435,11 @@ legend.AddEntry(bkghist,"Background uncertainty","f")
 if not fractions:
   if not args.no_signal:
     if model_dep is True: 
-        legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
+        legend.AddEntry(sighist,"h,H,A#rightarrow#tau#tau"%vars(),"l")
     else: 
         legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
         legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
-  if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","P")
+  if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","PE")
   latex = ROOT.TLatex()
   latex.SetNDC()
   latex.SetTextAngle(0)
@@ -441,23 +447,23 @@ if not fractions:
   latex.SetTextSize(0.026)
   if not args.no_signal:
     if model_dep is True: 
-        latex.DrawLatex(0.61,0.53,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
+        latex.DrawLatex(0.70,0.56,"#splitline{m_{h}^{mod+}, }{m_{A}=%(mA)s GeV, tan#beta=%(tb)s}"%vars())
     else: 
-        latex.DrawLatex(0.63,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
-        latex.DrawLatex(0.63,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
+        latex.DrawLatex(0.65,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
+        latex.DrawLatex(0.65,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
 if not args.bkg_fractions: legend.Draw("same")
 latex2 = ROOT.TLatex()
 latex2.SetNDC()
 latex2.SetTextAngle(0)
 latex2.SetTextColor(ROOT.kBlack)
 latex2.SetTextSize(0.028)
-latex2.DrawLatex(0.125,0.96,channel_label)
+latex2.DrawLatex(0.145,0.955,channel_label)
 
 
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], "2.3 fb^{-1} (13 TeV)", 3);
+plot.DrawTitle(pads[0], "2.3 fb^{-1} (13 TeV)", 3)
 
 #Add ratio plot if required
 if args.ratio and not soverb_plot and not fractions:
