@@ -57,6 +57,9 @@ parser.add_argument(
     '--hist', default=None, help="""Draw this TGraph2D as a histogram with
     COLZ""")
 parser.add_argument(
+    '--model-hist', default=None, help="""Draw this TGraph2D from model file as a 
+    histogram with COLZ""")
+parser.add_argument(
     '--z-range', default=None, type=str, help="""z-axis range of the COLZ
     hist""")
 parser.add_argument(
@@ -79,7 +82,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-plot.ModTDRStyle(r=0.06 if args.hist is None else 0.17, l=0.12)
+plot.ModTDRStyle(r=0.06 if (args.hist or args.model_hist) is None else 0.17, l=0.12)
 ROOT.gStyle.SetNdivisions(510, 'XYZ')
 plot.SetBirdPalette()
 
@@ -98,9 +101,6 @@ h_proto = plot.TH2FromTGraph2D(graphs[types[0]], method=args.bin_method,
 h_axis = h_proto
 h_axis = plot.TH2FromTGraph2D(graphs[types[0]])
 
-graph_ntoys = file.Get("ntoys")
-h_ntoys = h_proto.Clone("h_ntoys")
-plot.fillTH2(h_ntoys, graph_ntoys)
 
 # Get histogram to plot m_h exclusion from the model file if provided
 if args.model_file is not None:
@@ -135,13 +135,6 @@ for c in types:
     print 'Filling histo for %s' % c
     hists[c] = h_proto.Clone(c)
     plot.fillTH2(hists[c], graphs[c])
-    #check for bins which have 0 toys run - these can have failed fits which
-    #gives a CLs value of 0 yielding an artificial exclusion
-    for i in range(1,hists[c].GetNbinsX()+1):
-        for j in range(1, hists[c].GetNbinsY()+1):
-            if h_ntoys.GetBinContent(i,j) == 0:
-                print "bin", i, " ", j, "has 0 toys contributing, setting CLs value to 1.0"
-                hists[c].SetBinContent(i,j,1.0)
     contours[c] = plot.contourFromTH2(hists[c], CL, 5, frameValue=1)
     if debug is not None:
         debug.WriteTObject(hists[c], 'hist_%s' % c)
@@ -185,6 +178,17 @@ if args.hist is not None:
     if args.z_title is not None:
         colzhist.GetZaxis().SetTitle(args.z_title)
 
+if args.model_hist is not None:
+    colzhist = modelfile.Get(args.model_hist)
+    colzhist.SetContour(255)
+    colzhist.Draw('COLZSAME')
+    colzhist.GetZaxis().SetLabelSize(0.03)
+    if args.z_range is not None:
+        colzhist.SetMinimum(float(args.z_range.split(',')[0]))
+        colzhist.SetMaximum(float(args.z_range.split(',')[1]))
+    if args.z_title is not None:
+        colzhist.GetZaxis().SetTitle(args.z_title)
+
 pads[1].SetLogy(args.logy)
 pads[1].SetLogx(args.logx)
 pads[1].SetTickx()
@@ -193,20 +197,20 @@ pads[1].SetTicky()
 # h_proto.GetYaxis().SetRangeUser(1,20)
 
 fillstyle = 'FSAME'
-if args.hist is not None:
+if (args.hist or args.model_hist) is not None:
     fillstyle = 'LSAME'
 
 # Now we draw the actual contours
 if 'exp-2' in contours and 'exp+2' in contours:
     for i, gr in enumerate(contours['exp-2']):
         plot.Set(gr, LineColor=0, FillColor=ROOT.kGray + 0, FillStyle=1001)
-        if args.hist is not None:
+        if (args.hist or args.model_hist) is not None:
             plot.Set(gr, LineColor=ROOT.kGray + 0, LineWidth=2)
         gr.Draw(fillstyle)
 if 'exp-1' in contours and 'exp+1' in contours:
     for i, gr in enumerate(contours['exp-1']):
         plot.Set(gr, LineColor=0, FillColor=ROOT.kGray + 1, FillStyle=1001)
-        if args.hist is not None:
+        if (args.hist or args.model_hist) is not None:
             plot.Set(gr, LineColor=ROOT.kGray + 1, LineWidth=2)
         gr.Draw(fillstyle)
     fill_col = ROOT.kGray+0
@@ -216,18 +220,18 @@ if 'exp-1' in contours and 'exp+1' in contours:
         fill_col = ROOT.kWhite
     for i, gr in enumerate(contours['exp+1']):
         plot.Set(gr, LineColor=0, FillColor=fill_col, FillStyle=1001)
-        if args.hist is not None:
+        if (args.hist or args.model_hist) is not None:
             plot.Set(gr, LineColor=ROOT.kGray + 1, LineWidth=2)
         gr.Draw(fillstyle)
 if 'exp-2' in contours and 'exp+2' in contours:
     for i, gr in enumerate(contours['exp+2']):
         plot.Set(gr, LineColor=0, FillColor=ROOT.kWhite, FillStyle=1001)
-        if args.hist is not None:
+        if (args.hist or args.model_hist) is not None:
             plot.Set(gr, LineColor=ROOT.kGray + 0, LineWidth=2)
         gr.Draw(fillstyle)
 if 'exp0' in contours:
     for i, gr in enumerate(contours['exp0']):
-        if args.hist is not None:
+        if (args.hist or args.model_hist) is not None:
             plot.Set(gr, LineWidth=2)
         if 'obs' in contours:
             plot.Set(gr, LineColor=ROOT.kBlack, LineStyle=2)
@@ -242,7 +246,7 @@ if 'obs' in contours:
     for i, gr in enumerate(contours['obs']):
         plot.Set(gr, FillStyle=1001, FillColor=plot.CreateTransparentColor(
             ROOT.kAzure + 6, 0.5))
-        if args.hist is not None:
+        if (args.hist or args.model_hist) is not None:
             plot.Set(gr, LineWidth=2)
         gr.Draw(fillstyle)
         gr.Draw('LSAME')

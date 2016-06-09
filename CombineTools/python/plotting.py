@@ -1772,3 +1772,20 @@ def higgsConstraint(model, higgstype):
         myfile.close()
     return higgsBand
 ##@}
+
+def getOverlayMarkerAndLegend(legend, entries, options, borderSize=2.0/3, markerStyle="P"):
+    borderLegend = legend.Clone()
+    borderLegend.Clear()
+    graphs = []
+    for i in range(legend.GetNRows()):
+        if i in entries:
+            graph = entries[i].Clone()
+            options[i]["MarkerSize"] = graph.GetMarkerSize()*borderSize
+            Set(graph,**options[i])
+            borderLegend.AddEntry(graph, " ", markerStyle)
+            graphs.append(graph)
+        else:
+            borderLegend.AddEntry("", " ", "")
+    borderLegend.SetFillStyle(0)
+    borderLegend.SetFillColor(0)
+    return (borderLegend,graphs)
