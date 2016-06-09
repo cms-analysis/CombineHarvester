@@ -11,6 +11,10 @@ parser.add_argument(
     '--output', '-o', default='limit', help="""Name of the output
     plot without file extension""")
 parser.add_argument(
+    '--sm-exp', default=[], nargs="+", help="""Input files for the SM expectation""")
+parser.add_argument(
+    '--bg-exp', default=[], nargs="+", help="""Input files for the backgroud only expectation""")
+parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
 parser.add_argument(
     '--mass', default='', help="""Mass label on the plot""")
@@ -47,6 +51,16 @@ best = plot.TGraphFromTree(
 plot.RemoveGraphXDuplicates(best)
 hists = plot.TH2FromTGraph2D(graph, method='BinCenterAligned')
 plot.fastFillTH2(hists, graph,interpolateMissing=True)
+if args.bg_exp:
+    limit_bg = plot.MakeTChain(args.bg_exp, 'limit')
+    best_bg = plot.TGraphFromTree(
+        limit_bg, "r_ggH", "r_bbH", 'deltaNLL == 0')
+    plot.RemoveGraphXDuplicates(best_bg)
+if args.sm_exp:
+    limit_sm = plot.MakeTChain(args.sm_exp, 'limit')
+    best_sm = plot.TGraphFromTree(
+        limit_sm, "r_ggH", "r_bbH", 'deltaNLL == 0')
+    plot.RemoveGraphXDuplicates(best_sm)
 hists.SetMaximum(6)
 hists.SetMinimum(0)
 hists.SetContour(255)
@@ -57,6 +71,8 @@ hists.SetContour(255)
 axis = ROOT.TH2D(hists.GetName(),hists.GetName(),hists.GetXaxis().GetNbins(),0,hists.GetXaxis().GetXmax(),hists.GetYaxis().GetNbins(),0,hists.GetYaxis().GetXmax())
 axis.Reset()
 axis.GetXaxis().SetTitle(args.x_title)
+axis.GetXaxis().SetLabelSize(0.025)
+axis.GetYaxis().SetLabelSize(0.025)
 axis.GetYaxis().SetTitle(args.y_title)
 
 cont_1sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.68, 2), 10, frameValue=20)
@@ -69,7 +85,10 @@ if debug is not None:
     for i, cont in enumerate(cont_2sigma):
         debug.WriteTObject(cont, 'cont_2sigma_%i' % i)
 
-legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
+if args.sm_exp or args.bg_exp:
+    legend = plot.PositionedLegend(0.5, 0.25, 3, 0.015)
+else:
+    legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
 
 pads[0].cd()
 axis.Draw()
@@ -97,15 +116,36 @@ best.SetMarkerStyle(34)
 best.SetMarkerSize(3)
 best.Draw("P SAME")
 legend.AddEntry(best, "Best fit", "P")
+if args.sm_exp:
+    best_sm.SetMarkerStyle(33)
+    best_sm.SetMarkerColor(1)
+    best_sm.SetMarkerSize(3.0)
+    best_sm.Draw("P SAME")
+    legend.AddEntry(best_sm, "Expected for 125 GeV SM Higgs", "P")
+if args.bg_exp:
+    best_bg.SetMarkerStyle(33)
+    best_bg.SetMarkerColor(46)
+    best_bg.SetMarkerSize(3)
+    best_bg.Draw("P SAME")
+    legend.AddEntry(best_bg, "Expected for background only", "P")
+
 
 if args.mass:
     legend.SetHeader("m_{#phi} = "+args.mass+" GeV")
-legend.Draw("same")
+legend.Draw("SAME")
+if args.sm_exp:
+    overlayLegend,overlayGraphs = plot.getOverlayMarkerAndLegend(legend, {legend.GetNRows()-1 : best_sm}, {legend.GetNRows()-1 : {"MarkerColor" : 2}}, markerStyle="P")
 
 plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.035, 1.2, '', 1.0)
 plot.DrawTitle(pads[0], args.title_right, 3)
 plot.DrawTitle(pads[0], args.title_left, 1)
 plot.FixOverlay()
+if args.sm_exp:
+    best_sm.Draw("P SAME")
+    for overlayGraph in overlayGraphs:
+        print "test"
+        overlayGraph.Draw("P SAME")
+    overlayLegend.Draw("SAME")
 canv.Print('.pdf')
 canv.Print('.png')
 canv.Close()
