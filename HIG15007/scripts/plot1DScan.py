@@ -23,7 +23,7 @@ def read(scan, param, files, chop, remove_near_min, rezero, remove_delta = None,
     limit = plot.MakeTChain(goodfiles, 'limit')
     # require quantileExpected > -0.5 to avoid the final point which is always committed twice
     # (even if the fit fails)
-    graph = plot.TGraphFromTree(limit, param, '2*deltaNLL', 'quantileExpected > -0.5')
+    graph = plot.TGraphFromTree(limit, param, '2*deltaNLL', 'quantileExpected > -1.5')
     graph.SetName(scan)
     graph.Sort()
     plot.RemoveGraphXDuplicates(graph)

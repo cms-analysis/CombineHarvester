@@ -60,12 +60,12 @@ dict(LAYOUTS['em'])['ZLL']['entries'] = ['ZLL']
 
 LAYOUTS['mm'] = deepcopy(LAYOUTS['generic'])
 dict(LAYOUTS['mm'])['ZLL']['entries'] = ['ZLL']
-dict(LAYOUTS['mm'])['EWK']['entries'] = ['VV']
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', '-i', help='Output of PostFitShapes or PostFitShapesFromWorkspace, specified as FILE:BIN')
 parser.add_argument('--output', '-o', default=None, help='Output name')
 parser.add_argument('--channel', '-c', default='mt', choices=['mt', 'et', 'em', 'tt', 'mm'], help='Channel')
+parser.add_argument('--x-title', default='m_{ll}', help='x-axis variable, without GeV')
 parser.add_argument('--logy', action='store_true')
 parser.add_argument('--y-min', type=float, default=1)
 
@@ -92,7 +92,7 @@ h_tot = file.Get('%s/TotalProcs' % folder)
 h_tot.SetFillColor(plot.CreateTransparentColor(12, 0.3))
 h_tot.SetMarkerSize(0)
 
-plot.StandardAxes(h_axes[0].GetXaxis(), h_axes[0].GetYaxis(), 'm_{ll}', 'GeV', fmt='.0f')
+plot.StandardAxes(h_axes[0].GetXaxis(), h_axes[0].GetYaxis(), args.x_title, 'GeV', fmt='.0f')
 h_axes[0].Draw()
 
 # A dict to keep track of the hists
@@ -128,6 +128,7 @@ if args.logy:
 
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), 0.30)
 legend.Draw()
+plot.FixBoxPadding(pads[0], legend, 0.05)
 
 # Do the ratio plot
 pads[1].cd()

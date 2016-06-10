@@ -21,6 +21,9 @@ parser.add_argument('--constrain-tau-eff', action='store_true', help="""
     The tau efficiency will be a constrained nuisance parameter""")
 parser.add_argument('--constrain-tau-scale', action='store_true', help="""
     The tau energy scale will be a constrained nuisance parameter""")
+parser.add_argument('--variable', choices=['svfit', 'mvis'],
+                    default='svfit', help="""
+    Choice of input variable shape files""")
 
 args = parser.parse_args()
 
@@ -38,7 +41,7 @@ bkg_procs = {
     'mt': ['W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
     'em': ['W', 'QCD', 'ZLL', 'TT', 'VV'],
     'tt': ['W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
-    'mm': ['QCD', 'ZLL', 'TT', 'VV']
+    'mm': ['W', 'QCD', 'ZLL', 'TT', 'VV']
 }
 
 bins = {
@@ -56,21 +59,46 @@ channels = ['et', 'mt', 'em', 'tt', 'mm']
 ##########################################################################
 files = {
     'et': {
-        'KIT': 'ztt_et.inputs-sm-13TeV-mvis_fall15.root'
+        'KIT': {
+            'mvis': 'ztt_et.inputs-sm-13TeV-mvis_fall15.root',
+            'svfit': 'ztt_et.inputs-sm-13TeV-svfit_fall15.root'
+        },
+        'DESY': {
+            'mvis': 'ztt_et.inputs-sm-13TeV-mvis_fall15.root',
+            'svfit': 'ztt_et.inputs-sm-13TeV-svfit_fall15.root'
+        }
     },
     'mt': {
-        'KIT': 'ztt_mt.inputs-sm-13TeV-mvis_fall15.root'
+        'KIT': {
+            'mvis': 'ztt_mt.inputs-sm-13TeV-mvis_fall15.root',
+            'svfit': 'ztt_mt.inputs-sm-13TeV-svfit_fall15.root'
+        },
+        'DESY': {
+            'mvis': 'ztt_mt.inputs-sm-13TeV-mvis_fall15.root',
+            'svfit': 'ztt_mt.inputs-sm-13TeV-svfit_fall15.root'
+        }
     },
     'em': {
-        'Wisconsin': 'htt_em.inputs-sm-13TeV.root',
-        'DESY': 'ztt_em.inputs-sm-13TeV_msv.root',
-        'KIT': 'ztt_em.inputs-sm-13TeV-svfit_pzeta_fall15.root'
+        'DESY': {
+            'mvis': 'ztt_em.inputs-sm-13TeV_mvis.root',
+            'svfit': 'ztt_em.inputs-sm-13TeV_msv.root'
+        },
+        'KIT': {
+            'mvis': 'ztt_em.inputs-sm-13TeV-mvis_pzeta_fall15.root',
+            'svfit': 'ztt_em.inputs-sm-13TeV-svfit_pzeta_fall15.root'
+        }
     },
     'tt': {
-        'Wisconsin': 'htt_tt.inputs-sm-13TeV.root'
+        'Wisconsin': {
+            'mvis': 'htt_tt.inputs-sm-13TeV.root',
+            'svfit': 'htt_tt.inputs-sm-13TeV_svFit.root'
+        }
     },
     'mm': {
-        'DESY': 'htt_mm.inputs-sm-13TeV_mvis.root'
+        'DESY': {
+            'mvis': 'ztt_mm.inputs-sm-13TeV_mvis.root',
+            'svfit': 'ztt_mm.inputs-sm-13TeV_msv.root'
+        }
     }
 }
 
@@ -81,6 +109,8 @@ inputs = {
     'tt': 'Wisconsin',
     'mm': 'DESY'
 }
+
+variable = args.variable
 
 ##########################################################################
 # Create CH entries and load shapes
@@ -103,7 +133,8 @@ cb.cp().AddSyst(
     cb, 'CMS_eff_m', 'lnN', ch.SystMap('channel', 'process')
         (['mt'], real_m,                    1.03)
         (['em'], ['ZTT', 'TT', 'W', 'VV'],  1.03)
-        (['mm'], ['ZTT', 'VV', 'ZLL'],      1.06))
+        (['mm'], ['ZTT', 'VV', 'ZLL'],      1.06)
+        (['mm'], ['W'],                     1.03))
 
 cb.cp().AddSyst(
     cb, 'CMS_eff_e', 'lnN', ch.SystMap('channel', 'process')
@@ -151,11 +182,11 @@ cb.cp().AddSyst(
     cb, 'CMS_scale_m_$CHANNEL_$ERA', 'shape', ch.SystMap('channel', 'process')
         (['em'], ['ZTT', 'TT', 'W', 'VV'],      1.0))
 cb.cp().AddSyst(
-    cb, 'CMS_scale_m', 'shape', ch.SystMap('channel', 'process')
-        (['mm'], ['ZTT', 'TT', 'VV', 'ZLL'],    1.0))
+    cb, 'CMS_scale_m_$CHANNEL_$ERA', 'shape', ch.SystMap('channel', 'process')
+        (['mm'], ['ZTT', 'TT', 'VV', 'ZLL', 'W'],    1.0))
 cb.cp().AddSyst(
     cb, 'CMS_htt_ttbarShape_$ERA', 'shape', ch.SystMap('channel', 'process')
-        (['em'], ['TT'], 1.0))
+        (['em', 'mm'], ['TT'], 1.0))
 cb.cp().AddSyst(
     cb, 'CMS_htt_em_qcdShape_$ERA', 'shape', ch.SystMap('channel', 'process')
         (['em'], ['QCD'], 1.0))
@@ -185,7 +216,7 @@ cb.cp().process(['TT']).AddSyst(
         (['et', 'mt', 'em', 'tt', 'mm'],  1.06))
 cb.cp().process(['TT']).AddSyst(
     cb, 'CMS_$ANALYSIS_ttjExtrapol_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
-        (['et', 'mt', 'em', 'tt'],  1.10))
+        (['et', 'mt', 'em', 'tt', 'mm'],  1.10))
 
 cb.cp().process(['VV']).AddSyst(
     cb, 'CMS_$ANALYSIS_vvXsec_$ERA', 'lnN', ch.SystMap('channel')
@@ -202,7 +233,7 @@ cb.cp().channel(['mm']).process(['ZTT', 'ZLL']).AddSyst(
 # W xsec uncertainty only applied to tt and em. et and mt use data-driven method
 cb.cp().process(['W']).AddSyst(
     cb, 'CMS_$ANALYSIS_wjXsec_$ERA', 'lnN', ch.SystMap('channel')
-        (['tt', 'em'],  1.04))
+        (['tt', 'em', 'mm'],  1.04))
 # Give each channel an independent extrap uncertainty
 cb.cp().process(['W']).AddSyst(
     cb, 'CMS_$ANALYSIS_wjExtrapol_$CHANNEL_$ERA', 'lnN', ch.SystMap('channel')
@@ -210,7 +241,7 @@ cb.cp().process(['W']).AddSyst(
 
 cb.cp().process(['ZJ', 'ZJ', 'ZLL']).AddSyst(
     cb, 'CMS_$ANALYSIS_zjXsec_$ERA', 'lnN', ch.SystMap('channel')
-        (['et', 'mt', 'tt', 'em'],  1.04))
+        (['et', 'mt', 'tt', 'em', 'mm'],  1.04))
 
 # KIT cards only have one zllFakeTau param, but need at least three:
 #  - e->tau fake rate
@@ -238,7 +269,7 @@ cb.cp().AddSyst(
         (['et', 'mt'],  ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'],        1.027)
         (['tt'],        ['ZTT', 'ZL', 'ZJ', 'TT', 'VV', 'W'],   1.027)
         (['em'],        ['ZTT', 'ZLL', 'TT', 'VV', 'W'],        1.027)
-        (['mm'],        ['ZTT', 'VV', 'ZLL'],                   1.027))
+        (['mm'],        ['ZTT', 'ZLL', 'TT', 'VV', 'W'],        1.027))
 
 # Signal acceptance
 cb.cp().process(['ZTT']).AddSyst(
@@ -253,16 +284,10 @@ cb.cp().process(['ZTT']).channel(['tt']).AddSyst(
 # Load the shapes
 ##########################################################################
 for chn in channels:
-    if chn == 'mm':
-        cb.cp().channel([chn]).ExtractShapes(
-            '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]),
-            '$PROCESS', '$PROCESS_$SYSTEMATIC')
-    else:
-        cb.cp().channel([chn]).ExtractShapes(
-            '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]),
-            '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    cb.cp().channel([chn]).ExtractShapes(
+        '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]][variable]),
+        '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
 
-cb.cp().bin(['emu_inclusive']).ForEachObj(lambda x: x.set_bin('em_inclusive'))
 ##########################################################################
 # Tau ES modifcations
 ##########################################################################
