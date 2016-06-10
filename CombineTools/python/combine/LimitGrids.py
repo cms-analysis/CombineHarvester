@@ -483,17 +483,16 @@ class HybridNewGrid(CombineToolBase):
             # First check if we use the status json
             all_files = val.values()
             status_files = []
+            files = [x for x in val.values() if plot.TFileIsGood(x)]
+
             if status_key in stats:
                 status_files = stats[status_key]['files']
-            if set(all_files) == set(status_files):
-                print 'For point %s, no files have been updated' % name
-                status_changed = False
-
-            files = [x for x in val.values() if plot.TFileIsGood(x)]
-            if set(files) == set(status_files) and len(files) < len(all_files):
-                print 'For point %s, new files exist but they are not declared good' % name
-                status_changed = False
-            # stats[status_key]['files'] = files
+                if set(all_files) == set(status_files):
+                    print 'For point %s, no files have been updated' % name
+                    status_changed = False
+                if set(files) == set(status_files) and len(files) < len(all_files):
+                    print 'For point %s, new files exist but they are not declared good' % name
+                    status_changed = False
 
             # Merge the HypoTestResult objects from each file into one
             res = None
@@ -516,12 +515,14 @@ class HybridNewGrid(CombineToolBase):
                 precomputed = precomputed)
 
             print '>> Point %s [%i toys, %s]' % (name, point_res['ntoys'], 'DONE' if ok else 'INCOMPLETE')
+
             stats[status_key] = {
                 'files': files,
                 'ntoys': point_res['ntoys']
             }
             for cont in contours:
-                stats[status_key][cont] = point_res[cont]
+                if cont in point_res:
+                    stats[status_key][cont] = point_res[cont]
 
             if ok:
                 complete_points += 1
@@ -534,7 +535,7 @@ class HybridNewGrid(CombineToolBase):
             # for the model points that passed the validation criteria, but if "output_incomplete"
             # has been set to true then we'll write all model points where at least one HypoTestResult
             # is present
-            if res is not None and (ok or incomplete) and self.args.output:
+            if (res is not None or precomputed is not None) and (ok or incomplete) and self.args.output:
                 output_x.append(float(key[0]))
                 output_y.append(float(key[1]))
                 output_ntoys.append(point_res['ntoys'])

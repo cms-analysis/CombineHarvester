@@ -214,6 +214,16 @@ class MSSMHiggsModel(PhysicsModel):
             for y in xrange(1, h2.GetNbinsY() +1):
                 val_h1 = h1.GetBinContent(x, y)
                 val_h2 = h2.GetBinContent(x, y)
+                # if val_h2 < 0.:
+                #     print ('Warning: denominator histogram %s has a negative value %g at bin (%i,%i)=(%g, %g)' % (
+                #         h2.GetName(), val_h2, x, y, h1.GetXaxis().GetBinCenter(x),
+                #                 h1.GetYaxis().GetBinCenter(y)))
+                # if val_h1 < 0.:
+                #     print ('Warning: numerator histogram %s has a negative value %g at bin (%i,%i)=(%g, %g)' % (
+                #         h1.GetName(), val_h2, x, y, h1.GetXaxis().GetBinCenter(x),
+                #                 h1.GetYaxis().GetBinCenter(y)))
+                #     val_h1 = val_h2 * 0.5
+                #     print ('>> Setting value to 0.5 * numerator: %g')
                 if val_h1 == 0. or val_h2 == 0.:
                     print ('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
                            'with values: %g/%g, will set the kappa to 1.0 here' % (
