@@ -1445,11 +1445,9 @@ def StyleLimitBand(graph_dict, overwrite_style_dict=None):
     for key in graph_dict:
         Set(graph_dict[key],**style_dict[key])
 
-def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
+def DrawLimitBand(pad, graph_dict, draw=['exp2', 'exp1', 'exp0', 'obs'], draw_legend=None,
                   legend=None, legend_overwrite=None):
     legend_dict = {
-        'DrawOrder' : ['exp2', 'exp1', 'exp0', 'obs'],
-        'LegendOrder' : ['obs', 'exp0', 'exp1', 'exp2'],
         'obs' : { 'Label' : 'Observed', 'LegendStyle' : 'LP', 'DrawStyle' : 'PLSAME'},
         'exp0' : { 'Label' : 'Expected', 'LegendStyle' : 'L', 'DrawStyle' : 'LSAME'},
         'exp1' : { 'Label' : '#pm1#sigma Expected', 'LegendStyle' : 'F', 'DrawStyle' : '3SAME'},
@@ -1462,10 +1460,12 @@ def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
             else:
                 legend_dict[key] = legend_overwrite[key]
     pad.cd()
-    for key in legend_dict["DrawOrder"]:
+    for key in draw:
         graph_dict[key].Draw(legend_dict[key]['DrawStyle'])
     if legend is not None:
-        for key in legend_dict["LegendOrder"]:
+        if draw_legend is None:
+            draw_legend = reversed(draw)
+        for key in draw_legend:
             legend.AddEntry(graph_dict[key],legend_dict[key]['Label'],legend_dict[key]['LegendStyle'])
 
 
