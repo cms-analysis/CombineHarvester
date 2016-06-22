@@ -18,4 +18,5 @@
 <use name="boost_regex"/>
 <use name="rootpy"/>
 <use name="CombineHarvester/CombineTools"/>
+<use name="CombineHarvester/HIG16006"/>
 <use name="CombineHarvester/CombinePdfs"/>
