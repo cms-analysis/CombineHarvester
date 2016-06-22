@@ -353,7 +353,6 @@ def MultiRatioSplit(split_points, gaps_low, gaps_high):
     pads = []
     for i in xrange(len(split_points)+1):
         pad = R.TPad('pad%i'%i, '', 0., 0., 1., 1.)
-        print i
         if i > 0:
             pad.SetBottomMargin(sum(split_points[0:i])+gaps_high[i-1])
         if i < len(split_points):
