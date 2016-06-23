@@ -219,6 +219,8 @@ int main(int argc, char** argv) {
               });
   }
 
+
+
   ch::AddMSSMRun2Systematics(cb,control_region);
   //! [part7]
   for (string chn:chns){
@@ -239,6 +241,21 @@ int main(int argc, char** argv) {
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
   }
+
+
+ //Now delete processes with 0 yield
+ cb.FilterProcs([&](ch::Process *p) {
+  bool null_yield = !(p->rate() > 0. || BinIsControlRegion(p));
+  if (null_yield){
+     std::cout << "[Null yield] Removing process with null yield: \n ";
+     std::cout << ch::Process::PrintHeader << *p << "\n"; 
+     cb.FilterSysts([&](ch::Systematic *s){
+       bool remove_syst = (MatchingProcess(*p,*s));
+       return remove_syst;
+    });
+  }
+  return null_yield;
+ });
 
      //Scaling QCD in em btag by 1.3/2.0 as agreed
      cb.cp().process({"QCD"}).channel({"em"}).bin_id({9}).ForEachProc([&](ch::Process *proc){
