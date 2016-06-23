@@ -170,6 +170,7 @@ parser.add_argument('--main', '-m', help='Main input file for the scan')
 parser.add_argument('--json', help='update this json file')
 parser.add_argument('--model', help='use this model identifier')
 parser.add_argument('--POI', help='use this parameter of interest')
+parser.add_argument('--json-POI', help='use this parameter of interest')
 parser.add_argument('--translate', default=None, help='json file with POI name translation')
 parser.add_argument('--main-label', default='Observed', type=str, help='legend label for the main scan')
 parser.add_argument('--main-color', default=1, type=int, help='line and marker color for main scan')
@@ -193,6 +194,9 @@ if args.translate is not None:
         name_translate = json.load(jsonfile)
     if args.POI in name_translate:
         fixed_name = name_translate[args.POI]
+
+if args.json_POI is None:
+    args.json_POI = args.POI
 
 yvals = [1., 4.]
 if args.upper_cl is not None:
@@ -407,7 +411,7 @@ if args.json is not None:
     else:
         js = {}
     if not args.model in js: js[args.model] = {}
-    js[args.model][args.POI] = {
+    js[args.model][args.json_POI] = {
         'Val' : val_nom[0],
         'ErrorHi' : val_nom[1],
         'ErrorLo' : val_nom[2],
@@ -419,13 +423,13 @@ if args.json is not None:
         '2sig_ValidErrorLo' : main_scan['cross_2sig']['valid_lo']
     }
     if signif is not None:
-      js[args.model][args.POI].update({
+      js[args.model][args.json_POI].update({
           'Signif' : signif,
           'Signif_x' : signif_x,
           'Signif_y' : signif_y
       })
     if args.breakdown is not None:
-        js[args.model][args.POI].update(breakdown_json)
+        js[args.model][args.json_POI].update(breakdown_json)
     if args.envelope is not None:
         print main_scan['other_1sig']
         print main_scan['other_2sig']
@@ -451,7 +455,7 @@ if args.json is not None:
             js_extra['2sig_OtherLimitHi'] = other['hi']
             js_extra['2sig_ValidOtherLimitLo'] = other['valid_lo']
             js_extra['2sig_ValidOtherLimitHi'] = other['valid_hi']
-        js[args.model][args.POI].update(js_extra)
+        js[args.model][args.json_POI].update(js_extra)
 
     with open(args.json, 'w') as outfile:
         json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))

@@ -38,10 +38,11 @@ done
 
 ### Max-lilelihood fit and pre-/post-fit plots
 ## Do the ML fit on the combined:
+for DIR in CONSTRAINED; do
 for VAR in mvis svfit; do
-    combineTool.py -M MaxLikelihoodFit -m 90 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad -d output/LIMITS-${VAR}/cmb/wsp.root -v 3 --skipBOnlyFit --setPhysicsModelParameterRanges r=0.5,1.5 --there
+    combineTool.py -M MaxLikelihoodFit -m 90 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad -d output/${DIR}-${VAR}/cmb/wsp.root --skipBOnlyFit --setPhysicsModelParameterRanges r=0.5,1.5 --there
     #### Create the pre- and post-fit output:
-    PostFitShapesFromWorkspace -w output/LIMITS-${VAR}/cmb/wsp.root -d output/LIMITS-${VAR}/cmb/datacard.txt -o ztt_shapes_${VAR}.root -f output/LIMITS-${VAR}/cmb/mlfit.Test.root:fit_s -m 90 --postfit --sampling --print
+    PostFitShapesFromWorkspace -w output/${DIR}-${VAR}/cmb/wsp.root -d output/${DIR}-${VAR}/cmb/datacard.txt -o ztt_shapes_${VAR}.root -f output/${DIR}-${VAR}/cmb/mlfit.Test.root:fit_s -m 90 --postfit --sampling --print
     ### Make the plots, using log scale for mm:
     declare -A XVAR
     XVAR=( [mvis]="m_{ll}" [svfit]='m_{#tau#tau}' )
@@ -58,9 +59,10 @@ for VAR in mvis svfit; do
     mkdir -p ztt_plots/postfit
     mv *fit.p* ztt_plots/postfit/
 done
+done
 
-#### Yield tables (all options currently hard-coded in the script)
-## Currently produces both pre-fit and post-fit tables directly to the screen
+### Yield tables (all options currently hard-coded in the script)
+# Currently produces both pre-fit and post-fit tables directly to the screen
 python scripts/yieldTable.py
 
 ### Nuisance parameter impacts
@@ -95,17 +97,24 @@ mv nominal_${VAR}.r.* ztt_plots/scans-1d-cmb-unconst/
 
 DIR=output/CONSTRAINED-${VAR}/cmb
 combineTool.py --there -M MultiDimFit -d ${DIR}/wsp.root -m 90 --algo none --setPhysicsModelParameterRanges r=0.5,1.5 --saveWorkspace -n .prefit
-combineTool.py --there -M MultiDimFit -d ${DIR}/higgsCombine.prefit.MultiDimFit.mH90.root -m 90 --snapshotName MultiDimFit --algo grid --setPhysicsModelParameterRanges r_${CHN}=0.5,1.5 --points 60 --minimizerStrategy 0 -n .nominal
-combineTool.py --there -M MultiDimFit -d ${DIR}/higgsCombine.prefit.MultiDimFit.mH90.root -m 90 --snapshotName MultiDimFit --algo grid --setPhysicsModelParameterRanges r_${CHN}=0.5,1.5 --points 60 --minimizerStrategy 0 -n .freeze.lumi --freezeNuisanceGroups lumi
-combineTool.py --there -M MultiDimFit -d ${DIR}/higgsCombine.prefit.MultiDimFit.mH90.root -m 90 --snapshotName MultiDimFit --algo grid --setPhysicsModelParameterRanges r_${CHN}=0.5,1.5 --points 60 --minimizerStrategy 0 -n .freeze.lumi.allsyst --freezeNuisanceGroups lumi,allsyst
+combineTool.py --there -M MultiDimFit -d ${DIR}/higgsCombine.prefit.MultiDimFit.mH90.root -m 90 --snapshotName MultiDimFit --algo grid --setPhysicsModelParameterRanges r=0.5,1.5 --points 60 --minimizerStrategy 0 -n .nominal
+combineTool.py --there -M MultiDimFit -d ${DIR}/higgsCombine.prefit.MultiDimFit.mH90.root -m 90 --snapshotName MultiDimFit --algo grid --setPhysicsModelParameterRanges r=0.5,1.5 --points 60 --minimizerStrategy 0 -n .freeze.lumi --freezeNuisanceGroups lumi
+combineTool.py --there -M MultiDimFit -d ${DIR}/higgsCombine.prefit.MultiDimFit.mH90.root -m 90 --snapshotName MultiDimFit --algo grid --setPhysicsModelParameterRanges r=0.5,1.5 --points 60 --minimizerStrategy 0 -n .freeze.lumi.allsyst --freezeNuisanceGroups lumi,allsyst
 python scripts/plot1DScan.py -m ${DIR}/higgsCombine.nominal.MultiDimFit.mH90.root \
     --POI r -o nominal_${VAR}.r --no-input-label --translate scripts/translate.json \
     --logo 'CMS' --logo-sub 'Internal' --others \
     "${DIR}/higgsCombine.freeze.lumi.MultiDimFit.mH90.root:Freeze Lumi:2" \
     "${DIR}/higgsCombine.freeze.lumi.allsyst.MultiDimFit.mH90.root:Freeze Lumi+Syst:4" \
     --breakdown "Lumi,Syst,Stat" --chop 20
+
+python scripts/plot1DScan.py -m ${DIR}/higgsCombine.nominal.MultiDimFit.mH90.root \
+    --POI 'r*2.0084' -o nominal_${VAR}.rscaled --no-input-label --translate scripts/translate.json \
+    --logo 'CMS' --logo-sub 'Internal' --others \
+    "${DIR}/higgsCombine.freeze.lumi.MultiDimFit.mH90.root:Freeze Lumi:2" \
+    "${DIR}/higgsCombine.freeze.lumi.allsyst.MultiDimFit.mH90.root:Freeze Lumi+Syst:4" \
+    --breakdown "Lumi,Syst,Stat" --chop 20 --model ztt_xsec --json xsec_res_${VAR}.json --json-POI r
 mkdir -p ztt_plots/scans-1d-cmb-const
-mv nominal_${VAR}.r.* ztt_plots/scans-1d-cmb-const/
+mv nominal_${VAR}.r*.* ztt_plots/scans-1d-cmb-const/
 #### or for the per-channel:
 DIR=output/CONSTRAINED-${VAR}/cmb
 combineTool.py --there -M MultiDimFit -d ${DIR}/wsp_per_chn.root -m 90 --algo none --saveWorkspace -n .chn.prefit
@@ -119,6 +128,12 @@ for CHN in et mt em tt mm; do
     "${DIR}/higgsCombine.chn.freeze.lumi.r_${CHN}.MultiDimFit.mH90.root:Freeze Lumi:2" \
     "${DIR}/higgsCombine.chn.freeze.lumi.allsyst.r_${CHN}.MultiDimFit.mH90.root:Freeze Lumi+Syst:4" \
     --breakdown "Lumi,Syst,Stat" --chop 20;
+    python scripts/plot1DScan.py -m ${DIR}/higgsCombine.chn.nominal.r_${CHN}.MultiDimFit.mH90.root \
+    --POI 'r_'${CHN}'*2.0084' -o chn_${VAR}.nominal.rscaled_${CHN} --no-input-label --translate scripts/translate.json \
+    --logo 'CMS' --logo-sub 'Internal' --others \
+    "${DIR}/higgsCombine.chn.freeze.lumi.r_${CHN}.MultiDimFit.mH90.root:Freeze Lumi:2" \
+    "${DIR}/higgsCombine.chn.freeze.lumi.allsyst.r_${CHN}.MultiDimFit.mH90.root:Freeze Lumi+Syst:4" \
+    --breakdown "Lumi,Syst,Stat" --chop 20 --model ztt_xsec --json xsec_res_${VAR}.json --json-POI r_${CHN};
 done
 mkdir -p ztt_plots/scans-1d-cmb-const
 mv chn_${VAR}.* ztt_plots/scans-1d-cmb-const/
