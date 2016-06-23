@@ -1406,9 +1406,15 @@ def DrawHorizontalLine(pad, line, yval):
 
 def DrawVerticalLine(pad, line, xval):
     axis = GetAxisHist(pad)
-    ymin = axis.GetMinimum()
-    ymax = axis.GetMaximum()
+    ymin = axis.GetYaxis().GetXmin()
+    ymax = axis.GetYaxis().GetXmax()
     line.DrawLine(xval, ymin, xval, ymax)
+
+def DrawVerticalBand(pad, box, x1, x2):
+    axis = GetAxisHist(pad)
+    ymin = axis.GetYaxis().GetXmin()
+    ymax = axis.GetYaxis().GetXmax()
+    box.DrawBox(x1, ymin, x2, ymax)
 
 
 def DrawTitle(pad, text, align):
