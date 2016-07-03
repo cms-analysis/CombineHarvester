@@ -190,7 +190,6 @@ class CollectGoodnessOfFit(CombineToolBase):
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
         group.add_argument('--input', nargs='+', default=[], help='The input files')
-        group.add_argument('--input-toys', nargs='+', default=[], help='The toy input files')
         group.add_argument(
             '-o', '--output', nargs='?', const='gof.json',
             default='gof.json', help="""The name of the output json file.
@@ -222,66 +221,44 @@ class CollectGoodnessOfFit(CombineToolBase):
                 if label not in limit_sets:
                     limit_sets[label] = ([],[])
                 limit_sets[label][0].append(filename)
-        for filename in self.args.input_toys:
-            if not plot.TFileIsGood(filename):
-                print '>> File %s is corrupt or incomplete, skipping' % filename
-            if not self.args.use_dirs:
-                limit_sets['default'][1].append(filename)
-            else:
-                label = 'default'
-                dirs = filename.split('/')
-                # The last dir could be the mass, if so we ignore it and check the next
-                if len(dirs) > 1:
-                    if not isfloat(dirs[-2]):
-                        label = dirs[-2]
-                    elif len(dirs) > 2:
-                        label = dirs[-3]
-                limit_sets[label][1].append(filename)
-        # print limit_sets
+
 
         for label, (filenames, toyfiles) in limit_sets.iteritems():
             js_out = {}
             for filename in filenames:
                 file = ROOT.TFile(filename)
                 tree = file.Get('limit')
+                adding_cat_branch = False
+                branches = []
+                for branch in tree.GetListOfBranches():
+                    # Current logic says any branch after quantileExpected is a special
+                    # GOF branch labelled according to category
+                    if adding_cat_branch:
+                        branches.append(branch.GetName())
+                    if branch.GetName() == 'quantileExpected':
+                        adding_cat_branch = True
+                # print branches
                 for evt in tree:
-                    branches = []
-                    for branch in list(tree.GetListOfBranches()):
-                        if all([sub in branch.GetName() for sub in ["htt","13TeV"]]) and any([sub in branch.GetName() for sub in ["et","mt","tt","em"]]):
-                            branches.append(branch.GetName())
                     mh = str(evt.mh)
                     if mh not in js_out:
                         js_out[mh] = {}
-                    if evt.quantileExpected == -1:
-                        if branches:
-                            for branch in branches:
-                                if branch not in js_out[mh]:
-                                    js_out[mh][branch] = {}
-                                js_out[mh][branch]['obs'] = [getattr(evt,branch)]
-                        else:
+                    if evt.quantileExpected != -1:
+                        continue
+                    if branches:
+                        for branch in branches:
+                            if branch not in js_out[mh]:
+                                js_out[mh][branch] = {}
+                                js_out[mh][branch]['toy'] = []
+                            if evt.iToy <= 0:
+                                js_out[mh][branch]['obs'] = [getattr(evt, branch)]
+                            else:
+                                js_out[mh][branch]['toy'].append(getattr(evt, branch))
+                    else:
+                        if 'toy' not in js_out[mh]:
+                            js_out[mh]['toy'] = []
+                        if evt.iToy <= 0:
                             js_out[mh]['obs'] = [evt.limit]
-            for filename in toyfiles:
-                file = ROOT.TFile(filename)
-                tree = file.Get('limit')
-                for evt in tree:
-                    branches = []
-                    for branch in list(tree.GetListOfBranches()):
-                        if all([sub in branch.GetName() for sub in ["htt","13TeV"]]) and any([sub in branch.GetName() for sub in ["et","mt","tt","em"]]):
-                            branches.append(branch.GetName())
-                    mh = str(evt.mh)
-                    if mh not in js_out:
-                        js_out[mh] = {}
-                    if evt.quantileExpected == -1:
-                        if branches:
-                            for branch in branches:
-                                if branch not in js_out[mh]:
-                                    js_out[mh][branch] = {}
-                                if 'toy' not in js_out[mh][branch]:
-                                    js_out[mh][branch]['toy'] = []
-                                js_out[mh][branch]['toy'].append(getattr(evt,branch))
                         else:
-                            if 'toy' not in js_out[mh]:
-                                js_out[mh]['toy'] = []
                             js_out[mh]['toy'].append(evt.limit)
             for mh in js_out:
                 if all([entry in js_out[mh] for entry in ['toy','obs']]):
