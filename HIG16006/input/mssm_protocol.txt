@@ -207,7 +207,7 @@ combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/htt
 For the AD and KS run
 
 ALGO=AD (or ALGO=KS)
-combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH160.root --input-toys output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH160.*.root -o cmb_$ALGO.json
+combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH160.root output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH160.*.root -o cmb_$ALGO.json
 
 8c) Plotting the GoF results
 
