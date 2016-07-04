@@ -355,7 +355,7 @@ void makePlot(double canvasSizeX, double canvasSizeY,
   delete canvas;
 }
 
-void makePostFitPlots()
+void makePostFitPlots_2lss_1tau()
 {
   gROOT->SetBatch(true);
 
@@ -406,7 +406,7 @@ void makePostFitPlots()
     TH1* histogramBgrSum = loadHistogram(inputFile, *category, "TotalBkg");
     TH1* histogramBgrUncertainty = (TH1*)histogramBgrSum->Clone("TotalBkgErr");
 
-    std::string outputFileName = Form("makePostFitPlots_%s.pdf", category->data());
+    std::string outputFileName = Form("plots/makePostFitPlots_%s.pdf", category->data());
     makePlot(800, 900,
 	     histogramTTH,
 	     histogramData, 
