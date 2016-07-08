@@ -437,6 +437,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
            py::return_internal_reference<>())
       .def("SetFixNorm", &BinByBinFactory::SetFixNorm,
            py::return_internal_reference<>())
+      .def("SetPoissonErrors", &BinByBinFactory::SetPoissonErrors,
+           py::return_internal_reference<>())
     ;
     
     py::class_<AutoRebin>("AutoRebin")

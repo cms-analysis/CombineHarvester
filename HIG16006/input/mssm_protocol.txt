@@ -108,8 +108,8 @@ combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,70
 
 Once all jobs are done the results can be collected into a single json file. For this the corresponding quantiles of the distribution of toys is evaluated.
 
-combineTool.py -M CollectToyLimits output/mssm_freezing_withSM/cmb/higgsCombine.ggH.*.root --obs-input output/mssm_freezing_310516/cmb/higgsCombine.ggH*.root --use-dirs -o "mssm_freezing_BlueBand_ggH.json"
-combineTool.py -M CollectToyLimits output/mssm_freezing_withSM/cmb/higgsCombine.bbH.*.root --obs-input output/mssm_freezing_310516/cmb/higgsCombine.bbH*.root --use-dirs -o "mssm_freezing_BlueBand_bbH.json"
+combineTool.py -M CollectLimits output/mssm_freezing_withSM/cmb/higgsCombine.ggH.*.root output/mssm_freezing_310516/cmb/higgsCombine.ggH*.root --use-dirs -o "mssm_freezing_BlueBand_ggH.json"
+combineTool.py -M CollectLimits output/mssm_freezing_withSM/cmb/higgsCombine.bbH.*.root output/mssm_freezing_310516/cmb/higgsCombine.bbH*.root --use-dirs -o "mssm_freezing_BlueBand_bbH.json"
 
 4a) Plotting model independent limits
 
@@ -207,7 +207,7 @@ combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/htt
 For the AD and KS run
 
 ALGO=AD (or ALGO=KS)
-combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH160.root --input-toys output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH160.*.root -o cmb_$ALGO.json
+combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH160.root output/mssm_120516_unblinding/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH160.*.root -o cmb_$ALGO.json
 
 8c) Plotting the GoF results
 
