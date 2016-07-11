@@ -137,7 +137,7 @@ The plotting takes the asymptotic_grid or HybridNewGridMSSM file as input, and p
 
 The plotting of the 2D limits takes as input the output from the previous combine calls. For each mass point $MASS you will need to run. The script also offers the --debug-output option to allow for saving the inital TGraph2 and contours to a root-file.
 
-python ../CombineTools/scripts/plotMultiDimFit.py --title-right="2.3 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass $MASS -o 2D_limit_mH${MASS} output/mssm_310516_freezing/cmb/higgsCombine.ggH-bbH.MultiDimFit.mH${MASS}.root
+python scripts/plotMultiDimFit.py --title-right="2.3 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass $MASS -o 2D_limit_mH${MASS} output/mssm_310516_freezing/cmb/higgsCombine.ggH-bbH.MultiDimFit.mH${MASS}.root
 
 4e) plotting model independent limits with signal injected (blue band)
 
