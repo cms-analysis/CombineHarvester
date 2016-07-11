@@ -6,6 +6,7 @@ import sys
 import re
 import zipfile
 import os
+import bisect
 from math import floor
 from array import array
 
@@ -14,7 +15,7 @@ from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBas
 import CombineHarvester.CombineTools.plotting as plot
 
 class AsymptoticGrid(CombineToolBase):
-  description = 'Calculate asymptotic limits on parameter grids' 
+  description = 'Calculate asymptotic limits on parameter grids'
   requires_root = True
 
   def __init__(self):
@@ -41,11 +42,11 @@ class AsymptoticGrid(CombineToolBase):
     #    - ok
     #  - If we have anything in the third category proceed to produce output files
     #  - Anything in the first two gets added to the queue only if --doFits is specified
-    #    so that the 
+    #    so that the
 
 
     # Step 1 - open the json config file
-    with open(self.args.config) as json_file:    
+    with open(self.args.config) as json_file:
         cfg = json.load(json_file)
     # to do - have to handle the case where it doesn't exist
     points = []; blacklisted_points = []
@@ -94,7 +95,7 @@ class AsymptoticGrid(CombineToolBase):
     bail_out = len(self.job_queue) > 0
     self.flush_queue()
 
-    if bail_out: 
+    if bail_out:
         print '>> New jobs were created / run in this cycle, run the script again to collect the output'
         sys.exit(0)
 
@@ -170,11 +171,13 @@ class HybridNewGrid(CombineToolBase):
         CombineToolBase.attach_intercept_args(self, group)
         group.add_argument('--setPhysicsModelParameters', default=None)
         group.add_argument('--freezeNuisances', default=None)
+
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
         group.add_argument('config', help='json config file')
         group.add_argument('--cycles', default=0, type=int, help='Number of job cycles to create per point')
         group.add_argument('--output', action='store_true', help='Write CLs grids into an output file')
+        group.add_argument('--from-asymptotic', default=None, help='JSON file which will be used to create a limit grid automatically')
 
     def GetCombinedHypoTest(self, files):
         if len(files) == 0: return None
@@ -293,7 +296,6 @@ class HybridNewGrid(CombineToolBase):
         results['ok'] = all_ok
         return (all_ok, results)
 
-
     def run_method(self):
         ROOT.PyConfig.IgnoreCommandLineOptions = True
         ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -320,6 +322,7 @@ class HybridNewGrid(CombineToolBase):
         # Write CLs values into the output even if current toys do not pass validation
         incomplete      = cfg.get('output_incomplete', False)
         outfile         = cfg.get('output','hybrid_grid.root')
+        from_asymptotic_settings = cfg.get('from_asymptotic_settings', dict())
         # NB: blacklisting not yet implemented for this method
 
         # Have to merge some arguments from both the command line and the "opts" in the json file
@@ -334,11 +337,54 @@ class HybridNewGrid(CombineToolBase):
         if hasattr(self.args, 'freezeNuisances') and self.args.freezeNuisances is not None:
             to_freeze.append(self.args.freezeNuisances)
 
-        points = []; blacklisted_points = []
+        points = []
+        blacklisted_points = []
+
+        # For the automatic grid for the "from_asymptotic option" we should fix the format specifier for
+        # the grid points, as the numerical precision of a given point may change once the grid spacing is
+        # modified. By default we let split_vals do it's thing however
+        fmt_spec = None
+
+        # In this mode we're doing a classic limit search vs MH instead of a 2D grid.
+        # Most of the same code can be used however. First we'll use the json file containing the
+        # asymptotic limits to create a new grid from scratch.
+        if self.args.from_asymptotic is not None:
+            grids = []
+            bound_vals = None
+            bound_pars = []
+            fmt_spec = '%.5g'
+            with open(self.args.from_asymptotic) as limit_json:
+                limits = json.load(limit_json)
+            for m in limits.keys():
+                limit_vals = [x for x in limits[m].values()]
+                max_limit = max(limit_vals)
+                min_limit = min(limit_vals)
+                # print (min_limit, max_limit)
+                width = max_limit - min_limit
+                max_limit += width * 0.3
+                min_limit = max(0.0, min_limit - width * 0.3)
+                nsteps = from_asymptotic_settings.get('points', 100)
+                step_width = (max_limit - min_limit) / nsteps
+                grids.append([m, '%g:%g|%g' % (min_limit, max_limit, step_width), ''])
+                boundlist_file = from_asymptotic_settings.get('boundlist', '')
+                if boundlist_file:
+                    with open(boundlist_file) as json_file:
+                        bnd = json.load(json_file)
+                    bound_pars = list(bnd.keys())
+                    print 'Found bounds for parameters %s' % ','.join(bound_pars)
+                    bound_vals = {}
+                    for par in bound_pars:
+                        bound_vals[par] = list()
+                        for mass, bounds in bnd[par].iteritems():
+                            bound_vals[par].append((float(mass), bounds[0], bounds[1]))
+                        bound_vals[par].sort(key=lambda x: x[0])
+                # print (min_limit, max_limit)
+            # sys.exit(0)
+
         for igrid in grids:
             assert(len(igrid) == 3)
             if igrid[2] == '':
-                points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1])))
+                points.extend(itertools.product(utils.split_vals(igrid[0], fmt_spec=fmt_spec), utils.split_vals(igrid[1], fmt_spec=fmt_spec)))
             else:
                 blacklisted_points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1]), utils.split_vals(igrid[2])))
 
@@ -416,7 +462,7 @@ class HybridNewGrid(CombineToolBase):
         output_ntoys = []
         output_clserr = {}
         output_signif = {}
-        # One list of Z-values per contour 
+        # One list of Z-values per contour
         for contour in contours:
             output_data[contour] = []
             output_clserr[contour] = []
@@ -457,7 +503,7 @@ class HybridNewGrid(CombineToolBase):
                 res = self.GetCombinedHypoTest(files)
 
             # Do the validation of this model point
-            # 
+            #
             ok, point_res = self.ValidateHypoTest(res,
                 min_toys = min_toys,
                 max_toys = max_toys,
@@ -480,7 +526,7 @@ class HybridNewGrid(CombineToolBase):
 
             if ok:
                 complete_points += 1
-            
+
             # Make plots of the test statistic distributions if requested
             if res is not None and make_plots:
                 self.PlotTestStat(res, 'plot_'+name, opts = cfg['plot_settings'], poi_vals = (float(key[0]), float(key[1])), point_info=point_res)
@@ -497,7 +543,7 @@ class HybridNewGrid(CombineToolBase):
                     output_data[contour].append(point_res[contour][0])
                     output_clserr[contour].append(point_res[contour][1])
                     output_signif[contour].append(point_res[contour][2])
-            
+
             # Do the job cycle generation if requested
             if not ok and self.args.cycles > 0:
                 print '>>> Going to generate %i job(s) for point %s' % (self.args.cycles, key)
@@ -506,15 +552,33 @@ class HybridNewGrid(CombineToolBase):
                 done_cycles = val.keys()
                 new_idx = max(done_cycles)+1 if len(done_cycles) > 0 else 1
                 new_cycles = range(new_idx, new_idx+self.args.cycles)
-                
+
                 print '>>> Done cycles: ' + ','.join(str(x) for x in done_cycles)
                 print '>>> New cycles: ' + ','.join(str(x) for x in new_cycles)
-                
+
                 # Build to combine command. Here we'll take responsibility for setting the name and the
                 # model parameters, making sure the latter are frozen
                 set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
                 freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
                 point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
+                if self.args.from_asymptotic:
+                    mval = key[0]
+                    command = []
+                    for par in bound_pars:
+                        # The (mass, None, None) is just a trick to make bisect_left do the comparison
+                        # with the list of tuples in bound_var[par]. The +1E-5 is to avoid float rounding
+                        # issues
+                        lower_bound = bisect.bisect_left(bound_vals[par], (float(mval)+1E-5, None, None))
+                        # If lower_bound == 0 this means we are at or below the lowest mass point,
+                        # in which case we should increase by one to take the bounds from this lowest
+                        # point
+                        if lower_bound == 0:
+                            lower_bound += 1
+                        command.append('%s=%g,%g' % (par, bound_vals[par][lower_bound-1][1], bound_vals[par][lower_bound-1][2]))
+                    point_args += (' --setPhysicsModelParameterRanges %s' % (':'.join(command)))
+                    # print per_mass_point_args
+                    point_args += ' --singlePoint %s' % key[1]
+                    point_args += ' -m %s' % mval
                 # Build a command for each job cycle setting the number of toys and random seed and passing through any other
                 # user options from the config file or the command line
                 for idx in new_cycles:
@@ -526,7 +590,7 @@ class HybridNewGrid(CombineToolBase):
 
         # Create and write output CLs TGraph2Ds here
         # TODO: add graphs with the CLs errors, the numbers of toys and whether or not the point passes
-        if self.args.output:
+        if self.args.output and not self.args.from_asymptotic:
             fout = ROOT.TFile(outfile, 'RECREATE')
             for c in contours:
                 graph = ROOT.TGraph2D(len(output_data[c]), array('d', output_x), array('d', output_y), array('d', output_data[c]))
@@ -537,13 +601,34 @@ class HybridNewGrid(CombineToolBase):
                 graph.SetName('clsErr_'+c)
                 fout.WriteTObject(graph, 'clsErr_'+c)
                 # And a Graph with the significance
-                graph = ROOT.TGraph2D(len(output_signif[c]), array('d', output_x), array('d', output_y), array('d', output_signif[c]))
+                graph = ROOT.TGraph2D(len(output_signif[c]), array('objectd', output_x), array('d', output_y), array('d', output_signif[c]))
                 graph.SetName('signif_'+c)
                 fout.WriteTObject(graph, 'signif_'+c)
             graph = ROOT.TGraph2D(len(output_ntoys), array('d', output_x), array('d', output_y), array('d', output_ntoys))
             graph.SetName('ntoys'+c)
             fout.WriteTObject(graph, 'ntoys')
             fout.Close()
+
+        if self.args.output and self.args.from_asymptotic:
+            # Need to collect all the files for each mass point and hadd them:
+            files_by_mass = {}
+            for key,val in file_dict.iteritems():
+                if key[0] not in files_by_mass:
+                    files_by_mass[key[0]] = list()
+                files_by_mass[key[0]].extend(val.values())
+            for m, files in files_by_mass.iteritems():
+                gridfile = 'higgsCombine.gridfile.%s.%s.%s.root' % (POIs[0], m, POIs[1])
+                self.job_queue.append('hadd -f %s %s' % (gridfile, ' '.join(files)))
+                for exp in ['', '0.025', '0.160', '0.500', '0.840', '0.975']:
+                    self.job_queue.append(' '.join([
+                            'combine -M HybridNew --rAbsAcc 0',
+                            opts,
+                            '--grid %s' % gridfile,
+                            '-n .final.%s.%s.%s' % (POIs[0], m, POIs[1]),
+                            '-m %s' % (m),
+                            ('--expectedFromGrid %s' % exp) if exp else '--noUpdateGrid'
+                        ] + self.passthru))
+                self.flush_queue()
 
         if statfile:
             with open(statfile, 'w') as stat_out:

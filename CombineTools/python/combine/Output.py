@@ -90,6 +90,9 @@ class CollectLimits(CombineToolBase):
         group.add_argument(
             '--toys', action='store_true',
             help="""Collect toy values""")
+        group.add_argument(
+            '--limit-err', action='store_true',
+            help="""Also store the uncertainties on the limit""")
 
     def run_method(self):
         limit_sets = defaultdict(list)
@@ -144,16 +147,28 @@ class CollectLimits(CombineToolBase):
                     else:
                         if evt.quantileExpected == -1:
                             js_out[mh]['obs'] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['obs_err'] = evt.limitErr
                         elif abs(evt.quantileExpected - 0.5) < 1E-4:
                             js_out[mh]["exp0"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp0_err'] = evt.limitErr
                         elif abs(evt.quantileExpected - 0.025) < 1E-4:
                             js_out[mh]["exp-2"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp-2_err'] = evt.limitErr
                         elif abs(evt.quantileExpected - 0.160) < 1E-4:
                             js_out[mh]["exp-1"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp-1_err'] = evt.limitErr
                         elif abs(evt.quantileExpected - 0.840) < 1E-4:
                             js_out[mh]["exp+1"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp+1_err'] = evt.limitErr
                         elif abs(evt.quantileExpected - 0.975) < 1E-4:
                             js_out[mh]["exp+2"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp+2_err'] = evt.limitErr
 
             if self.args.toys:
                 for mh in js_out.keys():
