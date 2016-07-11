@@ -109,8 +109,8 @@ c68, c95, sm = m6bandFromVEps(hist_nll, best_fit, float(args.x_range.split(',')[
 best_line = c68.Clone()
 
 
-plot.Set(sm, LineColor=ROOT.kRed, LineWidth=3, LineStyle=7)
-plot.Set(best_line, LineColor=ROOT.kBlue, LineWidth=3)
+plot.Set(sm, LineColor=ROOT.kBlue, LineWidth=3, LineStyle=2)
+plot.Set(best_line, LineColor=ROOT.kRed, LineWidth=3)
 
 with open(args.kappa_results.split(':')[0]) as jsonfile:
     k1_res = json.load(jsonfile)[args.kappa_results.split(':')[1]]
@@ -149,8 +149,8 @@ haxis.Draw()
 
 c95.Draw('SAME3')
 c68.Draw('SAME3')
-sm.Draw('LSAME')
 best_line.Draw('LXSAME')
+sm.Draw('LSAME')
 
 if split:
     haxis_lower = haxis.Clone()
@@ -176,8 +176,8 @@ if split:
         c95_lower.GetEYlow()[i] = c95.GetEYlow()[i] / sm.Eval(c95.GetX()[i])
     c95_lower.Draw('SAME3')
     c68_lower.Draw('SAME3')
-    sm_lower.Draw('LSAME')
     best_line_lower.Draw('LXSAME')
+    sm_lower.Draw('LSAME')
 
 
 pads[0].cd()
@@ -256,18 +256,21 @@ l_off = 0.03 if split else 0.
 legend = ROOT.TLegend(0.20, 0.68+l_off, 0.6, 0.78+l_off, '', 'NBNDC')
 legend.AddEntry(kappa_graph, 'Observed (68% CL)', 'EP')
 legend.AddEntry(sm, 'SM Higgs Boson', 'L')
-legend.Draw()
+# legend.Draw()
 
 l_off2 = 0.2 if split else 0.
-legend2 = ROOT.TLegend(0.68, 0.16+l_off2, 0.93, 0.37+l_off2, '', 'NBNDC')
-legend2.SetHeader('(M, #varepsilon) fit')
-legend2.AddEntry(best_line, 'Observed', 'L')
+legend2 = ROOT.TLegend(0.55, 0.16+l_off2, 0.93, 0.45+l_off2*0.7, '', 'NBNDC')
+legend2.AddEntry(kappa_graph, 'ATLAS+CMS', 'EP')
+legend2.AddEntry(sm, 'SM Higgs boson', 'L')
+legend2.AddEntry(best_line, '[M, #varepsilon] fit', 'L')
+# legend2.SetHeader('[M, #varepsilon] fit')
 legend2.AddEntry(c68, '68% CL', 'F')
 legend2.AddEntry(c95, '95% CL', 'F')
+
 legend2.Draw()
 
 plot.DrawTitle(pads[0], args.title_right, 3)
-plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Internal}', 11, 0.045, 0.035, 1.2)
+plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1}}', '', 11, 0.045, 0.035, 1.2)
 
 pads[0].RedrawAxis()
 

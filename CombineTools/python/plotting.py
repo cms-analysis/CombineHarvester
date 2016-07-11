@@ -270,6 +270,15 @@ def SetDeepSeaPalette():
     R.TColor.CreateGradientColorTable(nRGBs, stops, red, green, blue, 255, 1)
 
 
+def SetCorrMatrixPalette():
+    R.TColor.CreateGradientColorTable(3,
+                                      array ("d", [0.00, 0.50, 1.00]),
+                                      array ("d", [1.00, 1.00, 0.00]),
+                                      array ("d", [0.70, 1.00, 0.34]),
+                                      array ("d", [0.00, 1.00, 0.82]),
+                                      255,  1.0)
+
+
 def CreateTransparentColor(color, alpha):
     adapt = R.gROOT.GetColor(color)
     new_idx = R.gROOT.GetListOfColors().GetLast() + 1
@@ -345,7 +354,6 @@ def MultiRatioSplit(split_points, gaps_low, gaps_high):
     pads = []
     for i in xrange(len(split_points)+1):
         pad = R.TPad('pad%i'%i, '', 0., 0., 1., 1.)
-        print i
         if i > 0:
             pad.SetBottomMargin(sum(split_points[0:i])+gaps_high[i-1])
         if i < len(split_points):
@@ -1429,67 +1437,46 @@ def DrawTitle(pad, text, align):
 def isclose(a, b, rel_tol=1e-9, abs_tol=0.0):
     return abs(a-b) <= max(abs_tol, rel_tol * max(abs(a),abs(b)))
 
-def StyleLimitBand(graph_dict, higgs_bg=False, higgs_inj=False):
-    if 'obs' in graph_dict:
-        graph_dict['obs'].SetLineWidth(2)
-    if 'exp0' in graph_dict:
-        graph_dict['exp0'].SetLineWidth(2)
-        graph_dict['exp0'].SetLineColor(R.kRed)
-    if 'exp1' in graph_dict:
-        if higgs_bg:
-            graph_dict['exp1'].SetFillColor(R.kGreen+2)
-        elif higgs_inj:
-            graph_dict['exp1'].SetFillColor(R.kAzure-4)
-        else:
-            graph_dict['exp1'].SetFillColor(R.kGreen)
-    if 'exp2' in graph_dict:
-        if higgs_bg:
-            graph_dict['exp2'].SetFillColor(R.kSpring+5)
-        elif higgs_inj:
-            graph_dict['exp2'].SetFillColor(R.kAzure-9)
-        else:
-            graph_dict['exp2'].SetFillColor(R.kYellow)
+def StyleLimitBand(graph_dict, overwrite_style_dict=None):
+    style_dict = {
+            'obs' : { 'LineWidth' : 2},
+            'exp0' : { 'LineWidth' : 2, 'LineColor' : R.kRed},
+            'exp1' : { 'FillColor' : R.kGreen},
+            'exp2' : { 'FillColor' : R.kYellow}
+            }
+    if overwrite_style_dict is not None:
+        for key in overwrite_style_dict:
+            if key in style_dict:
+                style_dict[key].update(overwrite_style_dict[key])
+            else:
+                style_dict[key] = overwrite_style_dict[key]
+    for key in graph_dict:
+        Set(graph_dict[key],**style_dict[key])
 
-
-def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
-                  legend=None, higgs_bg=False, higgs_inj=False):
+def DrawLimitBand(pad, graph_dict, draw=['exp2', 'exp1', 'exp0', 'obs'], draw_legend=None,
+                  legend=None, legend_overwrite=None):
+    legend_dict = {
+        'obs' : { 'Label' : 'Observed', 'LegendStyle' : 'LP', 'DrawStyle' : 'PLSAME'},
+        'exp0' : { 'Label' : 'Expected', 'LegendStyle' : 'L', 'DrawStyle' : 'LSAME'},
+        'exp1' : { 'Label' : '#pm1#sigma Expected', 'LegendStyle' : 'F', 'DrawStyle' : '3SAME'},
+        'exp2' : { 'Label' : '#pm2#sigma Expected', 'LegendStyle' : 'F', 'DrawStyle' : '3SAME'}
+    }
+    if legend_overwrite is not None:
+        for key in legend_overwrite:
+            if key in legend_dict:
+                legend_dict[key].update(legend_overwrite[key])
+            else:
+                legend_dict[key] = legend_overwrite[key]
     pad.cd()
-    do_obs = False
-    do_exp0 = False
-    do_exp1 = False
-    do_exp2 = False
-    if 'exp2' in graph_dict and ('exp2' in draw or 'exp' in draw):
-        do_exp2 = True
-        graph_dict['exp2'].Draw('3SAME')
-    if 'exp1' in graph_dict and ('exp1' in draw or 'exp' in draw):
-        do_exp1 = True
-        graph_dict['exp1'].Draw('3SAME')
-    if 'exp0' in graph_dict and ('exp0' in draw or 'exp' in draw):
-        do_exp0 = True
-        graph_dict['exp0'].Draw('LSAME')
-    if 'obs' in graph_dict and 'obs' in draw:
-        do_obs = True
-        graph_dict['obs'].Draw('PLSAME')
+    for key in draw:
+        graph_dict[key].Draw(legend_dict[key]['DrawStyle'])
     if legend is not None:
-        if do_obs:
-            legend.AddEntry(graph_dict['obs'], 'Observed', 'LP')
-        if do_exp0:
-            if higgs_bg:
-                legend.AddEntry(graph_dict['exp0'], 'Expected for H(125 GeV) as BG', 'L')
-            elif higgs_inj:
-                legend.AddEntry(graph_dict['exp0'], 'Expected for H(125 GeV)', 'L')
-            else:
-                legend.AddEntry(graph_dict['exp0'], 'Expected', 'L')
-        if do_exp1:
-            if higgs_bg:
-                legend.AddEntry(graph_dict['exp1'], '#pm1#sigma H(125 GeV) as BG', 'F')
-            else:
-                legend.AddEntry(graph_dict['exp1'], '#pm1#sigma Expected', 'F')
-        if do_exp2:
-            if higgs_bg:
-                legend.AddEntry(graph_dict['exp2'], '#pm2#sigma H(125 GeV) as BG', 'F')
-            else:
-                legend.AddEntry(graph_dict['exp2'], '#pm2#sigma Expected', 'F')
+        if draw_legend is None:
+            draw_legend = reversed(draw)
+        for key in draw_legend:
+            legend.AddEntry(graph_dict[key],legend_dict[key]['Label'],legend_dict[key]['LegendStyle'])
+
+
 
 
 ##@}

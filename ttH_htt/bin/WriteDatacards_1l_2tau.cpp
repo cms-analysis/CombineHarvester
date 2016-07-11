@@ -20,7 +20,8 @@ int main() {
   // First define the location of the "auxiliaries" directory where we can
   // source the input files containing the datacard shapes
   //string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG15008/shapes/";
-  string aux_shapes = "/afs/cern.ch/user/v/veelken/public/HIG15008_datacards/";
+  //string aux_shapes = "/afs/cern.ch/user/v/veelken/public/HIG15008_datacards/";
+  string aux_shapes = "/home/veelken/public/HIG15008_datacards/";
 
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
@@ -31,7 +32,7 @@ int main() {
   // Here we will just define two categories for an 8TeV analysis. Each entry in
   // the vector below specifies a bin name and corresponding bin_id.
   ch::Categories cats = {
-      {1, "ttH_2lss_1tau"}
+      {1, "ttH_1l_2tau"}
     };
   // ch::Categories is just a typedef of vector<pair<int, string>>
   //! [part1]
@@ -46,7 +47,7 @@ int main() {
   //! [part3]
 
   //! [part4]
-  vector<string> bkg_procs = {"TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data"};
+  vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares"};
   cb.AddProcesses({"*"}, {"*"}, {"13TeV"}, {"*"}, bkg_procs, cats, false);
 
   vector<string> sig_procs = {"ttH_hww", "ttH_hzz", "ttH_htt"};
@@ -72,84 +73,74 @@ int main() {
       .AddSyst(cb, "pdf_Higgs", "lnN", SystMap<>::init(1.036));
   cb.cp().process(sig_procs)
     .AddSyst(cb, "QCDscale_ttH", "lnN", SystMapAsymm<>::init(0.915, 1.058));
-  cb.cp().process(sig_procs)
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_x1", "shape", SystMap<>::init(1.0));
-  cb.cp().process(sig_procs)
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_y1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process(sig_procs)
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_x1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process(sig_procs)
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_y1", "shape", SystMap<>::init(1.0));
+
+  // CV: PDF and scale uncertainties for tt+jets background taken from 
+  //      https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+  cb.cp().process({"TT"})
+      .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.03));
+  cb.cp().process({"TT"})
+      .AddSyst(cb, "QCDscale_ttJets", "lnN", SystMap<>::init(1.04));
 
   cb.cp().process({"TTW"})
       .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.04));
   cb.cp().process({"TTW"})
       .AddSyst(cb, "QCDscale_ttW", "lnN", SystMap<>::init(1.12));
-  cb.cp().process({"TTW"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_x1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"TTW"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_y1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTW"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_x1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTW"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_y1", "shape", SystMap<>::init(1.0));
 
   cb.cp().process({"TTZ"})
       .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(0.966));
   cb.cp().process({"TTZ"})
       .AddSyst(cb, "QCDscale_ttZ", "lnN", SystMap<>::init(1.11));
-  cb.cp().process({"TTZ"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_x1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"TTZ"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTZ"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_x1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTZ"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
 
-  cb.cp().process({"WZ"})
-      .AddSyst(cb, "CMS_ttHl_WZ_4j", "lnN", SystMap<>::init(2.0));
+  cb.cp().process({"EWK"})
+      .AddSyst(cb, "CMS_ttHl_EWK", "lnN", SystMap<>::init(1.5));
   
   cb.cp().process({"Rares"})
       .AddSyst(cb, "CMS_ttHl_Rares", "lnN", SystMap<>::init(1.5));
 
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRe_norm", "lnN", SystMap<>::init(1.2));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0));  
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_Clos_e_norm", "lnN", SystMap<>::init(0.96));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRm_norm", "lnN", SystMap<>::init(1.2));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0)); 
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_Clos_m_norm", "lnN", SystMap<>::init(1.04));
-
-  cb.cp().process({"flips_data"})
-      .AddSyst(cb, "CMS_ttHl_QF", "lnN", SystMap<>::init(1.3));
-  
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.01));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_elloose", "lnN", SystMap<>::init(1.02));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_muloose", "lnN", SystMap<>::init(1.015));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.06));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.06));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
-      .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
+  //cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
+  //    .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
 
-  cb.cp().process(ch::JoinStr({sig_procs, {"ZTT", "TT"}}))
+  //cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ"}}))
+  //    .AddSyst(cb, "CMS_ttHl_tauES", "shape", SystMap<>::init(1.0));
+
+  cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ"}}))
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
-  for (auto s : {"HF", "HFStats1", "HFStats2", "LF", "LFStats1", "LFStats2", "cErr1", "cErr2"}) {
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
-        .AddSyst(cb, Form("CMS_ttHl_btag_%s", s), "shape", SystMap<>::init(1.0));
-  }
+  //for (auto s : {"HF", "HFStats1", "HFStats2", "LF", "LFStats1", "LFStats2", "cErr1", "cErr2"}) {
+  //  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
+  //      .AddSyst(cb, Form("CMS_ttHl_btag_%s", s), "shape", SystMap<>::init(1.0));
+  //}
   //! [part6]
 
   //! [part7]
   cb.cp().backgrounds().ExtractShapes(
-      aux_shapes + "CERN/ttH_2lss_1tau.input.root",
+      aux_shapes + "Tallinn/ttH_1l_2tau.input.root",
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   cb.cp().signals().ExtractShapes(
-      aux_shapes + "CERN/ttH_2lss_1tau.input.root",
+      aux_shapes + "Tallinn/ttH_1l_2tau.input.root",
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   //! [part7]
@@ -175,7 +166,7 @@ int main() {
   // instance.
 
   // We create the output root file that will contain all the shapes.
-  TFile output("ttH_2lss_1tau.root", "RECREATE");
+  TFile output("ttH_1l_2tau.root", "RECREATE");
 
   // Finally we iterate through bins and write a
   // datacard.

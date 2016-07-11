@@ -323,6 +323,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("InsertObservation", &CombineHarvester::InsertObservation)
       .def("InsertProcess", &CombineHarvester::InsertProcess)
       .def("InsertSystematic", &CombineHarvester::InsertSystematic)
+      .def("AddWorkspace", &CombineHarvester::AddWorkspace)
+      .def("ExtractPdfs", &CombineHarvester::ExtractPdfs)
       ;
 
     py::class_<Object>("Object")
@@ -436,6 +438,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("SetPattern", &BinByBinFactory::SetPattern,
            py::return_internal_reference<>())
       .def("SetFixNorm", &BinByBinFactory::SetFixNorm,
+           py::return_internal_reference<>())
+      .def("SetPoissonErrors", &BinByBinFactory::SetPoissonErrors,
            py::return_internal_reference<>())
     ;
     

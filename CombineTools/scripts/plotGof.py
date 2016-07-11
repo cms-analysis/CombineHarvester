@@ -99,8 +99,10 @@ if args.statistic in ["AD","KS"]:
     with open(args.input) as jsfile:
         js = json.load(jsfile)
     for key  in js[args.mass]: ## these are the channels
-        if key not in titles:
-            continue
+        # title = key if key not in titles else titles[key]
+        title = titles.get(key, key)
+        # if key not in titles:
+        #     continue
         toy_graph = plot.ToyTGraphFromJSON(js, [args.mass,key,'toy'])
         toy_hist = plot.makeHist1D("toys", 100, toy_graph)
         for i in range(toy_graph.GetN()):
@@ -142,7 +144,7 @@ if args.statistic in ["AD","KS"]:
 
         plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.035, 1.2, '', 0.8)
         plot.DrawTitle(pads[0], args.title_right, 3)
-        plot.DrawTitle(pads[0], titles[key], 1)
+        plot.DrawTitle(pads[0], title, 1)
 
         textlabel = ROOT.TPaveText(0.68, 0.88, 0.80, 0.92, "NDC")
         textlabel.SetBorderSize(   0 )

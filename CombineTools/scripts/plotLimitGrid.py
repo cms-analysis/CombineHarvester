@@ -285,6 +285,8 @@ if 'obs' in contours:
     legend.AddEntry(contours['obs'][0], "Observed", "F")
 if 'exp-1' in contours and 'exp+1' in contours:
     legend.AddEntry(contours['exp-1'][0], "#pm 1#sigma Expected", "F")
+if mh122_contours is not None and len(mh122_contours)>0:
+    legend.AddEntry(mh122_contours[0], "m_{h}^{MSSM} #neq 125 #pm 3 GeV","F")
 if 'exp0' in contours:
     if 'obs' in contours:
         legend.AddEntry(contours['exp0'][0], "Expected", "L")
@@ -292,12 +294,10 @@ if 'exp0' in contours:
         legend.AddEntry(contours['exp0'][0], "Expected", "F")
 if 'exp-2' in contours and 'exp+2' in contours:
     legend.AddEntry(contours['exp-2'][0], "#pm 2#sigma Expected", "F")
-if mh122_contours is not None and len(mh122_contours)>0:
-    legend.AddEntry(mh122_contours[0], "m_{h}^{MSSM} #neq 125 #pm 3 GeV","F")
 if extra_contours is not None:
     if args.extra_contour_title is not None: 
         contour_title = args.extra_contour_title.split(',')
-    for i in range(0,len(extra_contours)): 
+    for i in range(0,len(contour_title)): 
         legend.AddEntry(extra_contours[i][0],contour_title[i],"L")
 legend.Draw()
 

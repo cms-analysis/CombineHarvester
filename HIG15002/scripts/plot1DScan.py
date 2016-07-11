@@ -16,6 +16,7 @@ ROOT.gStyle.SetNdivisions(510, "XYZ")
 ROOT.gStyle.SetMarkerSize(0.7)
 
 NAMECOUNTER = 0
+NPX = 200
 
 
 def read(scan, param, files, chop, remove_near_min, rezero,
@@ -42,6 +43,7 @@ def read(scan, param, files, chop, remove_near_min, rezero,
         spline = ROOT.TSpline3("spline3", graph)
         func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
                         graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
+        func.SetNpx(NPX)
         NAMECOUNTER += 1
         plot.ImproveMinimum(graph, func, True)
     # graph.Print()
@@ -87,9 +89,62 @@ def ProcessEnvelope(main, others, relax_safety=0):
     global NAMECOUNTER
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
                     gr.GetX()[0], gr.GetX()[gr.GetN() - 1], 1)
+    func.SetNpx(NPX)
     min_x, min_y = plot.ImproveMinimum(gr, func)
     gr.Set(len(vals) + 1)
     gr.SetPoint(len(vals), min_x, min_y)
+    gr.Sort()
+
+    for i in xrange(gr.GetN()):
+        gr.GetY()[i] -= min_y
+    for oth in others:
+        for i in xrange(oth['graph'].GetN()):
+            oth['graph'].GetY()[i] -= min_y
+        # print 'OTHER'
+        # oth['graph'].Print()
+
+    plot.RemoveGraphXDuplicates(gr)
+    return gr
+
+
+def ProcessEnvelopeNew(main, others, relax_safety=0):
+    print '[ProcessEnvelope] Will create envelope from %i other scans' % len(others)
+    min_x = min([oth['graph'].GetX()[0] for oth in others])
+    max_x = max([oth['graph'].GetX()[oth['graph'].GetN() - 1] for oth in others])
+    # print '(min_x,max_x) = (%f, %f)' % (min_x, max_x)
+    npoints = 200
+    step = (max_x - min_x) / float(npoints-1)
+    x = min_x
+    xvals = []
+    yvals = []
+    for i in xrange(npoints):
+        yset = []
+        for oth in others:
+            gr = oth['graph']
+            if x >= gr.GetX()[0] and x <= (gr.GetX()[gr.GetN() - 1] + 1E-6):
+                yset.append(oth['func'].Eval(x))
+        # print 'At x=%f, possible y vals are %s' % (x, yset)
+        if len(yset) > 0:
+            xvals.append(x)
+            yvals.append(min(yset)) 
+        x = x + step
+
+    gr = ROOT.TGraph()
+    gr.Set(len(xvals))  # will not contain the best fit
+    for i in xrange(gr.GetN()):
+        gr.SetPoint(i, xvals[i], yvals[i])
+
+    # print 'Envelope'
+    # gr.Print()
+
+    spline = ROOT.TSpline3("spline3", gr)
+    global NAMECOUNTER
+    func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
+                    gr.GetX()[0], gr.GetX()[gr.GetN() - 1], 1)
+    func.SetNpx(NPX)
+    min_x, min_y = plot.ImproveMinimum(gr, func)
+    gr.Set(len(xvals) + 1)
+    gr.SetPoint(len(xvals), min_x, min_y)
     gr.Sort()
 
     for i in xrange(gr.GetN()):
@@ -133,6 +188,7 @@ def BuildScan(scan, param, files, color, yvals, chop,
                     partial(Eval, spline),
                     graph.GetX()[0],
                     graph.GetX()[graph.GetN() - 1], 1)
+    func.SetNpx(NPX)
     NAMECOUNTER += 1
     func.SetLineColor(color)
     func.SetLineWidth(3)
@@ -199,6 +255,8 @@ parser.add_argument(
     '--pub', action='store_true', help='do not draw the input label')
 parser.add_argument('--signif', action='store_true', help='do significance plot')
 parser.add_argument('--envelope', action='store_true', help='do envelope plot')
+parser.add_argument('--old-envelope', action='store_true', help='do envelope plot (old method)')
+parser.add_argument('--hide-envelope', action='store_true', help='do not show envelope markers')
 parser.add_argument('--upper-cl', type=float, help='quote upper limit instead')
 parser.add_argument('--chop', type=float, default=7., help='remove vals above')
 parser.add_argument('--y-max', type=float, default=8., help='max y to draw')
@@ -227,11 +285,14 @@ parser.add_argument(
 parser.add_argument(
     '--meta', default='', help='Other metadata to save in format KEY:VAL,KEY:VAL')
 parser.add_argument('--legend-pos', default=1, type=int, help='Predefined legend area')
+parser.add_argument('--line-style', default=1, type=int, help='Line style')
 parser.add_argument('--box-frac', default=0.625, type=float, help='fraction of the pad occupied by box')
 parser.add_argument('--x-title', default=None)
 parser.add_argument('--x-range', default=None)
 parser.add_argument('--premade', action='store_true')
+parser.add_argument('--no-sort', action='store_true')
 parser.add_argument('--vertical-line', type=float, default=None)
+parser.add_argument('--legend-off', default=0.0, type=float, help='legend x-offset')
 
 args = parser.parse_args()
 if args.pub:
@@ -311,11 +372,22 @@ if args.envelope and args.breakdown:
         y_off = other_scans[i]['func'].Eval(bf)
         print'>> Evaluating for offset at best-fit of %f gives %f' % (bf, y_off)
         for j in xrange(1, n_brk):
+            oth = other_scans[i+j*n_env]
             print '>> Applying shift of %f to graph %s' % (y_off, other_scans_opts[i+j*n_env][0])
-            plot.ApplyGraphYOffset(other_scans[i+j*n_env]['graph'], y_off)
+            plot.ApplyGraphYOffset(oth['graph'], y_off)
+            color = oth['func'].GetLineColor()
+            oth['spline'] = ROOT.TSpline3("spline3", oth['graph'])
+            oth['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, oth['spline']), oth[
+                                     'graph'].GetX()[0], oth['graph'].GetX()[oth['graph'].GetN() - 1], 1)
+            func.SetNpx(NPX)
+            oth['func'].SetLineColor(color)
+            NAMECOUNTER += 1
     new_others = []
     for j in xrange(n_brk):
-        new_gr = ProcessEnvelope(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)
+        if args.old_envelope:
+            new_gr = ProcessEnvelope(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)
+        else:
+            new_gr = ProcessEnvelopeNew(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)     
         if j == 0:
             main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
@@ -328,12 +400,16 @@ if args.envelope and args.breakdown:
         other['spline'] = ROOT.TSpline3("spline3", other['graph'])
         other['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, other['spline']), other[
                                  'graph'].GetX()[0], other['graph'].GetX()[other['graph'].GetN() - 1], 1)
+        func.SetNpx(NPX)
         NAMECOUNTER += 1
         other['func'].SetLineColor(color)
         other['func'].SetLineWidth(2)
         other['graph'].SetMarkerSize(0.4)
 elif args.envelope:
-    new_gr = ProcessEnvelope(main_scan, other_scans, args.relax_safety)
+    if args.old_envelope:
+        new_gr = ProcessEnvelope(main_scan, other_scans, args.relax_safety)
+    else:
+        new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety)
     main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
     for other in other_scans:
@@ -341,6 +417,7 @@ elif args.envelope:
         other['spline'] = ROOT.TSpline3("spline3", other['graph'])
         other['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, other['spline']), other[
                                  'graph'].GetX()[0], other['graph'].GetX()[other['graph'].GetN() - 1], 1)
+        other['func'].SetNpx(NPX)
         NAMECOUNTER += 1
         other['func'].SetLineColor(color)
         other['func'].SetLineWidth(2)
@@ -352,6 +429,8 @@ if args.pub:
     main_scan['graph'].SetMarkerSize(0)
     pads[0].SetTickx(True)
     pads[0].SetTicky(True)
+if args.hide_envelope:
+    main_scan['graph'].SetMarkerSize(0)
 main_scan['graph'].SetMarkerColor(1)
 main_scan['graph'].Draw('AP')
 
@@ -364,7 +443,8 @@ axishist = plot.GetAxisHist(pads[0])
 # axishist.SetMinimum(1E-5)
 # pads[0].SetLogy(True)
 axishist.SetMaximum(args.y_max)
-axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
+# axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
+axishist.GetYaxis().SetTitle("#minus2 ln #Lambda")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
 if args.x_title is not None:
     axishist.GetXaxis().SetTitle(args.x_title)
@@ -419,7 +499,9 @@ for i, yval in enumerate(yvals):
             if cr['valid_hi']:
                 line.DrawLine(cr['hi'], 0, cr['hi'], yval)
 
-
+# main_scan['func'].SetNpx(200)
+if args.pub:
+    main_scan['func'].SetLineStyle(args.line_style)
 main_scan['func'].Draw('same')
 for other in other_scans:
     if args.breakdown is not None:
@@ -427,7 +509,16 @@ for other in other_scans:
         other['func'].SetLineWidth(2)
     if args.pub:
         other['func'].SetLineStyle(2)
+    if args.hide_envelope:
+        other['func'].SetLineWidth(1)
+        if args.pub:
+            other['func'].SetLineWidth(2)
+            # other['func'].SetLineStyle(9)
+        other['graph'].Draw('PSAME') # redraw this
+        # other['func'].SetLineWidth(3)
     other['func'].Draw('SAME')
+
+# main_scan['func'].Draw('same')
 
 if args.breakdown and args.envelope:
     for other in new_others:
@@ -554,7 +645,9 @@ if args.signif:
             txt_signif = '[Significance = %.2f#sigma]' % (signif)
             pt.AddText(txt_cross)
             pt.AddText(txt_signif)
-            print '-2#DeltalnL @ %s = %.1f is %.3f]' % (fixed_name, 1., main_scan['func'].Eval(1.0))
+    signif = ROOT.Math.normal_quantile_c(
+                ROOT.Math.chisquared_cdf_c(main_scan['func'].Eval(1.0), 1) / 2., 1)
+    print '-2#DeltalnL @ %s = %.1f is %.3f, signif = %.2fsigma' % (fixed_name, 1., main_scan['func'].Eval(1.0), signif)
 
 
 # pt.AddText(textfit)
@@ -632,21 +725,33 @@ if 'cms_' in args.output:
 if 'atlas_' in args.output:
     collab = 'ATLAS'
 
-subtext = '#it{LHC Run 1 Internal}'
-if args.pub: subtext = '#it{#splitline{LHC Run 1}{Internal}}'
-plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS',
-                 subtext, 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
+subtext = '{#it{LHC} #bf{Run 1 Internal}}'
+if args.pub:
+    subtext = '{#it{LHC} #bf{Run 1}}'
+    # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
+plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}'+subtext,
+                 '', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS',
 #                  '#it{LHC Run 1 Internal}', 11, 0.045, 0.035, 1.2)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1
 # Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
 
 if args.POI_line is not None:
-    POIs = sorted(args.POI_line.split())
+    if args.legend_pos == 5:
+        POIs = args.POI_line.split()
+    elif not args.no_sort:
+        POIs = sorted(args.POI_line.split())
+    else:
+        POIs = args.POI_line.split()
     for i,P in enumerate(POIs):
         if P in name_translate:
             POIs[i] = name_translate[P]
-    POI_line = '['+ ','.join(POIs) + ']'
+    POI_line = '['+ ', '.join(POIs) + ']'
+    if args.legend_pos == 5:
+        POI_line = '#scale[0.7]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
+    if args.legend_pos == 8:
+        POI_line = '#scale[1.0]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
+
 
 if not args.no_input_label:
     plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
@@ -661,26 +766,48 @@ latex.SetTextSize(0.04)
 legend_l = 0.73
 if len(other_scans) > 0:
     legend_l = legend_l - len(other_scans) * 0.04
-print args.legend_pos
-if args.legend_pos == 1:
+    if args.legend_pos == 6:
+        legend_l = legend_l - len(other_scans) * 0.015
+if args.legend_pos in [1,6]:
     legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
 elif args.legend_pos == 2:
-    legend = ROOT.TLegend(0.55, legend_l+0.075, 0.85, 0.78+0.075, '', 'NBNDC')
+    legend = ROOT.TLegend(0.56+args.legend_off, legend_l+0.075, 0.9+args.legend_off, 0.78+0.075, '', 'NBNDC')
     if args.POI_line is not None:
-        latex.DrawLatex(0.55, 0.875, POI_line)
+        latex.DrawLatex(0.56+args.legend_off, 0.875, POI_line)
 elif args.legend_pos == 3:
     legend = ROOT.TLegend(0.15, legend_l-0.04, 0.45, 0.78-0.04, '', 'NBNDC')
+    if args.POI_line is not None:
+        latex.DrawLatex(0.53, 0.875, POI_line)
 elif args.legend_pos == 4:
     legend = ROOT.TLegend(0.50, legend_l+0.075, 0.80, 0.78+0.075, '', 'NBNDC')
     if args.POI_line is not None:
         latex.SetTextSize(0.035)
         latex.DrawLatex(0.50, 0.875, POI_line)
-if len(other_scans) >= 3:
+elif args.legend_pos in [5]:
+    legend = ROOT.TLegend(0.15, legend_l+0.02, 0.45, 0.78+0.02, '', 'NBNDC')
+    if args.POI_line is not None:
+        latex.DrawLatex(0.52, 0.855, POI_line)
+elif args.legend_pos in [8]:
+    legend = ROOT.TLegend(0.56, legend_l+0.02, 0.92, 0.78+0.02, '', 'NBNDC')
+    if args.POI_line is not None:
+        latex.DrawLatex(0.56, 0.855, POI_line)
+elif args.legend_pos == 7:
+    y_sub = 0. if args.POI_line is None else 0.07
+    legend = ROOT.TLegend(0.65, 0.68 - y_sub, 0.93, 0.91 - y_sub, '', 'NBNDC')
+    legend.SetNColumns(1)
+    if args.POI_line is not None:
+        latex.DrawLatex(0.58, 0.875, POI_line)
+
+
+if len(other_scans) >= 3 and args.legend_pos == 1:
+    y_sub = 0. if args.POI_line is None else 0.07
     if args.envelope:
-        legend = ROOT.TLegend(0.58, 0.79, 0.95, 0.93, '', 'NBNDC')
+        legend = ROOT.TLegend(0.54, 0.78 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
         legend.SetNColumns(2)
+        if args.POI_line is not None:
+            latex.DrawLatex(0.58, 0.875, POI_line)
     else:
-        legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
+        legend = ROOT.TLegend(0.46, 0.83 - y_sub, 0.95, 0.93 - y_sub, '', 'NBNDC')
         legend.SetNColumns(2)
 
 legend.AddEntry(main_scan['func'], args.main_label, 'L')

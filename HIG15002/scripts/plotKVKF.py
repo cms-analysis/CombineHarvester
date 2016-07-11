@@ -167,7 +167,8 @@ SETTINGSA = {
     'cms': {
         'xvar': 'kappa_V',
         'yvar': 'kappa_F',
-        'fill_color': ROOT.TColor.GetColor(250, 226, 235),
+        # 'fill_color': ROOT.TColor.GetColor(250, 226, 235),
+        'fill_color': ROOT.TColor.GetColor(255, 249, 255),
         'line_color': ROOT.kRed,
         'legend': 'CMS',
         'multi': 2
@@ -201,7 +202,9 @@ parser.add_argument('--files', '-f', help='named input scans')
 parser.add_argument('--multi', type=int, default=1, help='scale number of bins')
 parser.add_argument('--thin', type=int, default=1, help='thin graph points')
 parser.add_argument('--order', default='b,tau,Z,gam,W,comb')
+parser.add_argument('--legend-order', default='b,tau,Z,gam,W,comb')
 parser.add_argument('--x-range', default=None)
+parser.add_argument('--pub', action='store_true')
 parser.add_argument('--x-axis', default='#kappa_{V}')
 parser.add_argument('--y-axis', default='#kappa_{F}')
 parser.add_argument('--axis-hist', default=None)
@@ -213,6 +216,9 @@ infiles = {key: value for (
 print infiles
 
 order = args.order.split(',')
+if 'cms' in order and 'atlas' in order and 'comb' in order:
+    SETTINGS["comb"]["legend"] = 'ATLAS+CMS'
+legend_order = args.legend_order.split(',')
 
 graph_test = read('test', SETTINGS[order[0]]['xvar'], SETTINGS[
                   order[0]]['yvar'], infiles[order[0]])[0]
@@ -244,6 +250,9 @@ if args.layout == 1:
 if args.layout == 2:
     legend = ROOT.TLegend(0.15, 0.11, 0.46, 0.27, '', 'NBNDC')
     legend.SetNColumns(2)
+if args.layout == 3:
+    legend = ROOT.TLegend(0.15, 0.53, 0.45, 0.74, '', 'NBNDC')
+    legend.SetFillStyle(0)
 
 
 graphs = {}
@@ -275,6 +284,7 @@ for scan in order:
         conts95[scan] = plot.contourFromTH2(
             hists[scan], ROOT.Math.chisquared_quantile_c(1 - 0.95, 2))
     for i, c in enumerate(conts68[scan]):
+        c.SetName('graph68_%s_%i' % (scan, i))
         if args.thin > 1:
             newgr = ROOT.TGraph(c.GetN() / args.thin)
             needLast = True
@@ -294,12 +304,14 @@ for scan in order:
         c.Draw('F SAME')
         outfile.WriteTObject(c, 'graph68_%s_%i' % (scan, i))
     if scan in conts95:
+        c.SetName('graph95_%s_%i' % (scan, i))
         for i, c in enumerate(conts95[scan]):
             c.SetLineColor(SETTINGS[scan]['line_color'])
             c.SetLineWidth(3)
-            c.SetLineStyle(9)
+            c.SetLineStyle(3)
             pads[0].cd()
             outfile.WriteTObject(c, 'graph95_%s_%i' % (scan, i))
+for scan in legend_order:
     legend.AddEntry(conts68[scan][0], SETTINGS[scan]['legend'], 'F')
 for scan in order:
     for i, c in enumerate(conts68[scan]):
@@ -327,7 +339,7 @@ sm_point.Draw('PSAME')
 
 legend.Draw()
 
-if args.layout == 1:
+if args.layout in [1,3]:
     legend2 = ROOT.TLegend(0.15, 0.11, 0.94, 0.15, '', 'NBNDC')
     legend2.SetNColumns(4)
 if args.layout == 2:
@@ -343,10 +355,15 @@ legend2.Draw()
 
 box = ROOT.TPave(0.15, 0.82, 0.41, 0.92, 0, 'NBNDC')
 box.Draw()
-plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1}',
-                 11, 0.025, 0.035, 1.1, extraText2='#it{Internal}')
+if args.pub:
+    plot.DrawCMSLogo(pads[0], '#splitline{#it{ATLAS}#bf{ and }#it{CMS}}{#it{LHC} #bf{Run 1}}', '',
+                     11, 0.025, 0.035, 1.1)
+else:
+    plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }#it{CMS}', '#it{LHC Run 1}',
+                     11, 0.025, 0.035, 1.1, extraText2='#it{Internal}')
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{+}CMS', '#it{LHC Run 1}', 11, 0.02, 0.035, 1.1, extraText2='#it{Internal}')
 pads[0].RedrawAxis()
 canv.Print('.pdf')
 canv.Print('.png')
+canv.Print('.C')
 outfile.Close()
