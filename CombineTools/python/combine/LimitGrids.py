@@ -198,11 +198,20 @@ class HybridNewGrid(CombineToolBase):
             print '>> Warning, HypoTestResult from file(s) %s does not contain any toy results, did something go wrong in your fits?' % '+'.join(files)
         return results[0]
 
-    def ValidateHypoTest(self, hyp_res, min_toys, max_toys, contours, signif, cl, output=False, verbose=False):
+    def ValidateHypoTest(self, hyp_res, min_toys, max_toys, contours, signif, cl, output=False, verbose=False, precomputed=None):
         results = {}
 
-        # We will take the number of toys thrown as the minimum of the number of b-only or s+b toys
-        ntoys = min(hyp_res.GetNullDistribution().GetSize(), hyp_res.GetAltDistribution().GetSize())
+        if hyp_res is None and precomputed is None:
+            return (False, {"ntoys" : 0})
+
+        ntoys = None
+
+        if hyp_res is not None:
+            # We will take the number of toys thrown as the minimum of the number of b-only or s+b toys
+            ntoys = min(hyp_res.GetNullDistribution().GetSize(), hyp_res.GetAltDistribution().GetSize())
+        if precomputed is not None:
+            ntoys = precomputed['ntoys']
+
         results['ntoys'] = ntoys
 
         if verbose:
@@ -217,15 +226,16 @@ class HybridNewGrid(CombineToolBase):
         if ntoys >= max_toys and not output:
             return (True, results)
 
-        # 3rd test - are we > X sigma away from the exclusion CLs? This must be true for all the
-        # contours we're interested in
-        btoys = sorted([x for x in hyp_res.GetNullDistribution().GetSamplingDistribution()])
+        if hyp_res is not None:
+            # 3rd test - are we > X sigma away from the exclusion CLs? This must be true for all the
+            # contours we're interested in
+            btoys = sorted([x for x in hyp_res.GetNullDistribution().GetSamplingDistribution()])
+            # save the real observed test stat, we'll change it in this
+            # loop to get the expected but we'll want to restore it at the end
+            q_obs = hyp_res.GetTestStatisticData()
+         
         crossing = 1 - cl
         signif_results = {}
-
-        # save the real observed test stat, we'll change it in this
-        # loop to get the expected but we'll want to restore it at the end
-        q_obs = hyp_res.GetTestStatisticData()
 
         if verbose:
             print '>>> CLs target is a significance of %.1f standard deviations from %.3f' % (signif, crossing)
@@ -239,18 +249,25 @@ class HybridNewGrid(CombineToolBase):
                 quantile = ROOT.Math.normal_cdf(float(contour.replace('exp', '')))
                 if verbose:
                     print '>>> Checking the %s contour at quantile=%f' % (contour, quantile)
-                # Get the stat statistic value at this quantile by rounding to the nearest b-only toy
-                testStat = btoys[int(min(floor(quantile * len(btoys) +0.5), len(btoys)))]
-                hyp_res.SetTestStatisticData(testStat)
+                if hyp_res is not None:
+                    # Get the stat statistic value at this quantile by rounding to the nearest b-only toy
+                    testStat = btoys[int(min(floor(quantile * len(btoys) +0.5), len(btoys)-1))]
+                    hyp_res.SetTestStatisticData(testStat)
             elif contour == 'obs':
                 if verbose: print '>>> Checking the %s contour' % contour
             else:
                 raise RuntimeError('Contour %s not recognised' % contour)
 
-            # Currently assume we always want to use CLs, should provide option
-            # for CLs+b at some point
-            CLs = hyp_res.CLs()
-            CLsErr = hyp_res.CLsError()
+            if hyp_res is not None:
+                # Currently assume we always want to use CLs, should provide option
+                # for CLs+b at some point
+                CLs = hyp_res.CLs()
+                CLsErr = hyp_res.CLsError()
+                testStatObs = hyp_res.GetTestStatisticData()
+            if precomputed is not None:
+                CLs = precomputed[contour][0]
+                CLsErr = precomputed[contour][1]
+                testStatObs = precomputed[contour][3]
             if ntoys == 0: CLsErr = 0 # If there were no toys then ClsError() will return inf
             dist = 0.
             if CLsErr == 0.:
@@ -263,9 +280,10 @@ class HybridNewGrid(CombineToolBase):
                     print '>>>> CLs = %g +/- %g, reached %.1f sigma signifance' % (CLs, CLsErr, dist)
                 if dist < signif:
                     signif_results[contour] = False
-            results[contour] = (CLs, CLsErr, dist)
-            # Set the observed test statistic back to the real data value
-            hyp_res.SetTestStatisticData(q_obs)
+            results[contour] = (CLs, CLsErr, dist, testStatObs)
+            if hyp_res is not None:
+                # Set the observed test statistic back to the real data value
+                hyp_res.SetTestStatisticData(q_obs)
 
         # Now do the full logic of the validation and return
         all_ok = (ntoys >= min_toys) # OK if min toys passes
@@ -286,10 +304,12 @@ class HybridNewGrid(CombineToolBase):
 
         # Set all the parameter values locally using defaults if necessary
         grids           = cfg['grids']
+        grids_to_remove = cfg.get('grids_to_remove', None)
         POIs            = cfg['POIs']
         opts            = cfg['opts']
         toys_per_cycle  = cfg['toys_per_cycle']
         zipname         = cfg.get('zipfile',    None)
+        statfile        = cfg.get('statusfile', None)
         contours        = cfg.get('contours',   ['obs', 'exp-2', 'exp-1', 'exp0', 'exp+1', 'exp+2'])
         min_toys        = cfg.get('min_toys',   500)
         max_toys        = cfg.get('max_toys',   5000)
@@ -322,6 +342,16 @@ class HybridNewGrid(CombineToolBase):
             else:
                 blacklisted_points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1]), utils.split_vals(igrid[2])))
 
+        #In between cycles of toys we may find there's something wrong with some of the points in the grid and therefore want to remove them:
+        points_to_remove = [];
+        if grids_to_remove is not None :
+            for igrid in grids_to_remove:
+                assert(len(igrid) == 2)
+                points_to_remove.extend(itertools.product(utils.split_vals(igrid[0]),utils.split_vals(igrid[1])))
+
+        for p in points_to_remove:
+            points.remove(p)
+
         # This dictionary will keep track of the combine output files for each model point
         file_dict = { }
         for p in points:
@@ -329,6 +359,11 @@ class HybridNewGrid(CombineToolBase):
 
         # The regex we will use to identify output files and extract POI values
         rgx = re.compile('higgsCombine\.%s\.(?P<p1>.*)\.%s\.(?P<p2>.*)\.HybridNew\.mH.*\.(?P<toy>.*)\.root' % (POIs[0], POIs[1]))
+
+        stats = {}
+        if statfile and os.path.isfile(statfile):
+            with open(statfile) as stat_json:
+                stats = json.load(stat_json)
 
         # Can optionally copy output root files into a zip archive
         # If the user has specified a zipfile we will first
@@ -394,11 +429,32 @@ class HybridNewGrid(CombineToolBase):
         complete_points = 0
 
         for key,val in file_dict.iteritems():
+            status_changed = True
             total_points += 1
+            status_key = ':'.join(key)
             name = '%s.%s.%s.%s' % (POIs[0], key[0], POIs[1], key[1])
+            
+            # First check if we use the status json
+            all_files = val.values()
+            status_files = []
             files = [x for x in val.values() if plot.TFileIsGood(x)]
+
+            if status_key in stats:
+                status_files = stats[status_key]['files']
+                if set(all_files) == set(status_files):
+                    print 'For point %s, no files have been updated' % name
+                    status_changed = False
+                if set(files) == set(status_files) and len(files) < len(all_files):
+                    print 'For point %s, new files exist but they are not declared good' % name
+                    status_changed = False
+
             # Merge the HypoTestResult objects from each file into one
-            res = self.GetCombinedHypoTest(files)
+            res = None
+            precomputed = None
+            if status_key in stats and not status_changed:
+                precomputed = stats[status_key]
+            else:
+                res = self.GetCombinedHypoTest(files)
 
             # Do the validation of this model point
             # 
@@ -409,22 +465,31 @@ class HybridNewGrid(CombineToolBase):
                 signif   = signif,
                 cl       = cl,
                 output   = self.args.output,
-                verbose  = verbose) if res is not None else (False, {"ntoys" : 0})
+                verbose  = verbose,
+                precomputed = precomputed)
 
             print '>> Point %s [%i toys, %s]' % (name, point_res['ntoys'], 'DONE' if ok else 'INCOMPLETE')
-            
+
+            stats[status_key] = {
+                'files': files,
+                'ntoys': point_res['ntoys']
+            }
+            for cont in contours:
+                if cont in point_res:
+                    stats[status_key][cont] = point_res[cont]
+
             if ok:
                 complete_points += 1
             
             # Make plots of the test statistic distributions if requested
             if res is not None and make_plots:
-                self.PlotTestStat(res, 'plot_'+name, opts = cfg['plot_settings'], poi_vals = (float(key[0]), float(key[1])))
-  
+                self.PlotTestStat(res, 'plot_'+name, opts = cfg['plot_settings'], poi_vals = (float(key[0]), float(key[1])), point_info=point_res)
+
             # Add the resulting CLs values to the output arrays. Normally just
             # for the model points that passed the validation criteria, but if "output_incomplete"
             # has been set to true then we'll write all model points where at least one HypoTestResult
             # is present
-            if res is not None and (ok or incomplete) and self.args.output:
+            if (res is not None or precomputed is not None) and (ok or incomplete) and self.args.output:
                 output_x.append(float(key[0]))
                 output_y.append(float(key[1]))
                 output_ntoys.append(point_res['ntoys'])
@@ -480,63 +545,85 @@ class HybridNewGrid(CombineToolBase):
             fout.WriteTObject(graph, 'ntoys')
             fout.Close()
 
-    def PlotTestStat(self, result, name, opts, poi_vals):
-      null_vals = [x * -2. for x in result.GetNullDistribution().GetSamplingDistribution()]
-      alt_vals = [x * -2. for x in result.GetAltDistribution().GetSamplingDistribution()]
-      if len(null_vals) == 0 or len(alt_vals) == 0:
-        print '>> Errror in PlotTestStat for %s, null and/or alt distributions are empty'
-        return
-      plot.ModTDRStyle()
-      canv = ROOT.TCanvas(name, name)
-      pad = plot.OnePad()[0]
-      min_val = min(min(alt_vals), min(null_vals))
-      max_val = max(max(alt_vals), max(null_vals))
-      min_plot_range = min_val - 0.05 * (max_val - min_val)
-      if opts['one_sided']:
-        min_plot_range = 0.
-        pad.SetLogy(True)
-      max_plot_range = max_val + 0.05 * (max_val - min_val)
-      hist_null = ROOT.TH1F('null', 'null', 40, min_plot_range, max_plot_range)
-      hist_alt = ROOT.TH1F('alt', 'alt', 40, min_plot_range, max_plot_range)
-      for val in null_vals: hist_null.Fill(val)
-      for val in alt_vals: hist_alt.Fill(val)
-      hist_alt.SetLineColor(ROOT.TColor.GetColor(4, 4, 255))
-      hist_alt.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(4, 4, 255), 0.4))
-      hist_alt.GetXaxis().SetTitle('-2 #times ln(^{}L_{%s}/^{}L_{%s})' % (opts['alt_label'], opts['null_label']))
-      hist_alt.GetYaxis().SetTitle('Pseudo-experiments')
-      hist_alt.Draw()
-      hist_null.SetLineColor(ROOT.TColor.GetColor(252, 86, 11))
-      hist_null.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(254, 195, 40), 0.4))
-      hist_null.Draw('SAME')
-      val_obs = result.GetTestStatisticData() * -2.
-      obs = ROOT.TArrow(val_obs, 0, val_obs, hist_alt.GetMaximum() * 0.3, 0.05 , '<-|')
-      obs.SetLineColor(ROOT.kRed)
-      obs.SetLineWidth(3)
-      obs.Draw()
-      plot.FixTopRange(pad, plot.GetPadYMax(pad), 0.25)
-      leg = plot.PositionedLegend(0.22, 0.2, 3, 0.02)
-      leg.AddEntry(hist_alt, opts['alt_label'], 'F')
-      leg.AddEntry(hist_null, opts['null_label'], 'F')
-      leg.AddEntry(obs, 'Observed', 'L')
-      leg.Draw()
-      plot.DrawCMSLogo(pad, 'CMS', opts['cms_subtitle'], 0, 0.15, 0.035, 1.2)
-      pt_l = ROOT.TPaveText(0.23, 0.75, 0.33, 0.9, 'NDCNB')
-      pt_l.AddText('Model:')
-      pt_l.AddText('Toys:')
-      pt_l.AddText('CLs+b:')
-      pt_l.AddText('CLb:')
-      pt_l.AddText('CLs:')
-      plot.Set(pt_l, TextAlign=11, TextFont=62, BorderSize=0)
-      pt_l.Draw()
-      pt_r = ROOT.TPaveText(0.33, 0.75, 0.63, 0.9, 'NDCNB')
-      pt_r.AddText('%s [%s = %.1f, %s = %.1f]' % (opts['model_label'], opts['poi_labels'][0], poi_vals[0], opts['poi_labels'][1], poi_vals[1]))
-      pt_r.AddText('%i (%s) + %i (%s)' % (result.GetNullDistribution().GetSize(), opts['null_label'], result.GetAltDistribution().GetSize(), opts['alt_label']))
-      pt_r.AddText('%.3f #pm %.3f' % (result.CLsplusb(), result.CLsplusbError()))
-      pt_r.AddText('%.3f #pm %.3f' % (result.CLb(), result.CLbError()))
-      pt_r.AddText('%.3f #pm %.3f' % (result.CLs(), result.CLsError()))
-      plot.Set(pt_r, TextAlign=11, TextFont=42, BorderSize=0)
-      pt_r.Draw()
-      pad.GetFrame().Draw()
-      pad.RedrawAxis()
-      for fmt in opts['formats']:
-          canv.SaveAs(fmt)
+        if statfile:
+            with open(statfile, 'w') as stat_out:
+                stat_json = json.dumps(
+                    stats, sort_keys=True, indent=2, separators=(',', ': '))
+                stat_out.write(stat_json)
+
+
+    def PlotTestStat(self, result, name, opts, poi_vals, point_info=None):
+        sign = -1.
+        if opts['one_sided']:
+            sign = 1.
+        null_vals = [x * sign * 2. for x in result.GetNullDistribution().GetSamplingDistribution()]
+        alt_vals = [x * sign * 2. for x in result.GetAltDistribution().GetSamplingDistribution()]
+        if len(null_vals) == 0 or len(alt_vals) == 0:
+            print '>> Errror in PlotTestStat for %s, null and/or alt distributions are empty'
+            return
+        plot.ModTDRStyle()
+        canv = ROOT.TCanvas(name, name)
+        pad = plot.OnePad()[0]
+        min_val = min(min(alt_vals), min(null_vals))
+        max_val = max(max(alt_vals), max(null_vals))
+        min_plot_range = min_val - 0.05 * (max_val - min_val)
+        if opts['one_sided']:
+            min_plot_range = 0.
+            pad.SetLogy(True)
+        max_plot_range = max_val + 0.05 * (max_val - min_val)
+        hist_null = ROOT.TH1F('null', 'null', 40, min_plot_range, max_plot_range)
+        hist_alt = ROOT.TH1F('alt', 'alt', 40, min_plot_range, max_plot_range)
+        for val in null_vals: hist_null.Fill(val)
+        for val in alt_vals: hist_alt.Fill(val)
+        hist_alt.SetLineColor(ROOT.TColor.GetColor(4, 4, 255))
+        hist_alt.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(4, 4, 255), 0.4))
+        hist_alt.GetXaxis().SetTitle('-2 #times ln(^{}L_{%s}/^{}L_{%s})' % (opts['alt_label'], opts['null_label']))
+        hist_alt.GetYaxis().SetTitle('Pseudo-experiments')
+        hist_alt.Draw()
+        hist_null.SetLineColor(ROOT.TColor.GetColor(252, 86, 11))
+        hist_null.SetFillColor(plot.CreateTransparentColor(ROOT.TColor.GetColor(254, 195, 40), 0.4))
+        hist_null.Draw('SAME')
+        val_obs = result.GetTestStatisticData() * sign * 2.
+        obs = ROOT.TArrow(val_obs, 0, val_obs, hist_alt.GetMaximum() * 0.3, 0.05, '<-|')
+        obs.SetLineColor(ROOT.kRed)
+        obs.SetLineWidth(3)
+        obs.Draw()
+        # exp_line = ROOT.TLine()
+        # plot.Set(exp_line, LineStyle=2, LineColor=ROOT.kRed, LineWidth=1)
+        # if point_info is not None:
+        #     for exp in ['exp-2', 'exp-1', 'exp0', 'exp+1', 'exp+2']:
+        #         if exp in point_info:
+        #             exp_line.DrawLine(2*sign*point_info[exp][3], 0, 2*sign*point_info[exp][3], hist_alt.GetMaximum() * 0.3)
+        plot.FixTopRange(pad, plot.GetPadYMax(pad), 0.25)
+        leg = plot.PositionedLegend(0.22, 0.2, 3, 0.02)
+        leg.AddEntry(hist_alt, opts['alt_label'], 'F')
+        leg.AddEntry(hist_null, opts['null_label'], 'F')
+        leg.AddEntry(obs, 'Observed', 'L')
+        leg.Draw()
+        plot.DrawCMSLogo(pad, 'CMS', opts['cms_subtitle'], 0, 0.15, 0.035, 1.2)
+        pt_l = ROOT.TPaveText(0.23, 0.75, 0.33, 0.9, 'NDCNB')
+        pt_l.AddText('Model:')
+        pt_l.AddText('Toys:')
+        pt_l.AddText('CLs+b:')
+        pt_l.AddText('CLb:')
+        pt_l.AddText('CLs:')
+        # if point_info is not None:
+        #     for exp in ['exp-2', 'exp-1', 'exp0', 'exp+1', 'exp+2']:
+        #         pt_l.AddText(exp)
+        plot.Set(pt_l, TextAlign=11, TextFont=62, BorderSize=0)
+        pt_l.Draw()
+        pt_r = ROOT.TPaveText(0.33, 0.75, 0.63, 0.9, 'NDCNB')
+        pt_r.AddText('%s [%s = %.1f, %s = %.1f]' % (opts['model_label'], opts['poi_labels'][0], poi_vals[0], opts['poi_labels'][1], poi_vals[1]))
+        pt_r.AddText('%i (%s) + %i (%s)' % (result.GetNullDistribution().GetSize(), opts['null_label'], result.GetAltDistribution().GetSize(), opts['alt_label']))
+        pt_r.AddText('%.3f #pm %.3f' % (result.CLsplusb(), result.CLsplusbError()))
+        pt_r.AddText('%.3f #pm %.3f' % (result.CLb(), result.CLbError()))
+        pt_r.AddText('%.3f #pm %.3f' % (result.CLs(), result.CLsError()))
+        # if point_info is not None:
+        #     for exp in ['exp-2', 'exp-1', 'exp0', 'exp+1', 'exp+2']:
+        #         pt_r.AddText('%.3f #pm %.3f' % (point_info[exp][0], point_info[exp][1]))
+        plot.Set(pt_r, TextAlign=11, TextFont=42, BorderSize=0)
+        pt_r.Draw()
+        pad.GetFrame().Draw()
+        pad.RedrawAxis()
+        for fmt in opts['formats']:
+            canv.SaveAs(fmt)

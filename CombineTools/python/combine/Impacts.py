@@ -27,6 +27,8 @@ class Impacts(CombineToolBase):
         group.add_argument('--named', metavar='PARAM1,PARAM2,...', help=""" By
             default the list of nuisance parameters will be loaded from the
             input workspace. Use this option to specify a different list""")
+        group.add_argument('--exclude', metavar='PARAM1,PARAM2,...', help=""" Skip
+            these nuisances""")
         group.add_argument('--doInitialFit', action='store_true', help="""Find
             the crossings of all the POIs. Must have the output from this
             before running with --doFits""")
@@ -80,6 +82,10 @@ class Impacts(CombineToolBase):
         else:
             paramList = utils.list_from_workspace(
                 ws, 'w', 'ModelConfig_NuisParams')
+        if self.args.exclude is not None:
+            exclude = self.args.exclude.split(',')
+            paramList = [x for x in paramList if x not in exclude]
+
         print 'Have nuisance parameters: ' + str(len(paramList))
         prefit = utils.prefit_from_workspace(ws, 'w', paramList)
         res = {}

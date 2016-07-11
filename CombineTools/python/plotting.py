@@ -3,6 +3,7 @@ import math
 from array import array
 import re
 import json
+import types
 
 COL_STORE = []
 
@@ -692,6 +693,32 @@ def LimitTGraphFromJSONFile(jsfile, label):
         js = json.load(jsonfile)
     return LimitTGraphFromJSON(js, label)
 
+def ToyTGraphFromJSON(js, label):
+    xvals = []
+    yvals = []
+    if isinstance(label,types.StringTypes):
+        for entry in js[label]:
+            xvals.append(float(entry))
+            yvals.append(1.0)
+    else:
+        if len(label) == 1:
+            return ToyTGraphFromJSON(js,label[0])
+        else:
+            return ToyTGraphFromJSON(js[label[0]],label[1:])
+    graph = R.TGraph(len(xvals), array('d', xvals), array('d', yvals))
+    graph.Sort()
+    return graph
+    # hist = R.TH1F("toy", "toy", 100, min(xvals), max(xvals))
+    # for xval in xvals:
+        # hist.AddBinContent(hist.GetXaxis().FindBin(xval))
+    # return hist
+
+
+
+def ToyTGraphFromJSONFile(jsfile, label):
+    with open(jsfile) as jsonfile:
+        js = json.load(jsonfile)
+    return ToyTGraphFromJSON(js, label)
 
 def LimitBandTGraphFromJSON(js, central, lo, hi):
     xvals = []
@@ -1140,7 +1167,7 @@ def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
     for obj in pad_obs:
         if obj.InheritsFrom(R.TH1.Class()):
             hobj = obj
-            for j in xrange(1, hobj.GetNbinsX()):
+            for j in xrange(1, hobj.GetNbinsX()+1):
                 if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
                         hobj.GetBinLowEdge(j) > x_max):
                         continue
@@ -1407,46 +1434,49 @@ def DrawTitle(pad, text, align):
 #      TGraphs in the correct order
 ##@{
 
-def StyleLimitBand(graph_dict):
-    if 'obs' in graph_dict:
-        graph_dict['obs'].SetLineWidth(2)
-    if 'exp0' in graph_dict:
-        graph_dict['exp0'].SetLineWidth(2)
-        graph_dict['exp0'].SetLineColor(R.kRed)
-    if 'exp1' in graph_dict:
-        graph_dict['exp1'].SetFillColor(R.kGreen)
-    if 'exp2' in graph_dict:
-        graph_dict['exp2'].SetFillColor(R.kYellow)
+def isclose(a, b, rel_tol=1e-9, abs_tol=0.0):
+    return abs(a-b) <= max(abs_tol, rel_tol * max(abs(a),abs(b)))
 
+def StyleLimitBand(graph_dict, overwrite_style_dict=None):
+    style_dict = {
+            'obs' : { 'LineWidth' : 2},
+            'exp0' : { 'LineWidth' : 2, 'LineColor' : R.kRed},
+            'exp1' : { 'FillColor' : R.kGreen},
+            'exp2' : { 'FillColor' : R.kYellow}
+            }
+    if overwrite_style_dict is not None:
+        for key in overwrite_style_dict:
+            if key in style_dict:
+                style_dict[key].update(overwrite_style_dict[key])
+            else:
+                style_dict[key] = overwrite_style_dict[key]
+    for key in graph_dict:
+        Set(graph_dict[key],**style_dict[key])
 
-def DrawLimitBand(pad, graph_dict, draw=['obs', 'exp0', 'exp1', 'exp2'],
-                  legend=None):
+def DrawLimitBand(pad, graph_dict, draw=['exp2', 'exp1', 'exp0', 'obs'], draw_legend=None,
+                  legend=None, legend_overwrite=None):
+    legend_dict = {
+        'obs' : { 'Label' : 'Observed', 'LegendStyle' : 'LP', 'DrawStyle' : 'PLSAME'},
+        'exp0' : { 'Label' : 'Expected', 'LegendStyle' : 'L', 'DrawStyle' : 'LSAME'},
+        'exp1' : { 'Label' : '#pm1#sigma Expected', 'LegendStyle' : 'F', 'DrawStyle' : '3SAME'},
+        'exp2' : { 'Label' : '#pm2#sigma Expected', 'LegendStyle' : 'F', 'DrawStyle' : '3SAME'}
+    }
+    if legend_overwrite is not None:
+        for key in legend_overwrite:
+            if key in legend_dict:
+                legend_dict[key].update(legend_overwrite[key])
+            else:
+                legend_dict[key] = legend_overwrite[key]
     pad.cd()
-    do_obs = False
-    do_exp0 = False
-    do_exp1 = False
-    do_exp2 = False
-    if 'exp2' in graph_dict and ('exp2' in draw or 'exp' in draw):
-        do_exp2 = True
-        graph_dict['exp2'].Draw('3SAME')
-    if 'exp1' in graph_dict and ('exp1' in draw or 'exp' in draw):
-        do_exp1 = True
-        graph_dict['exp1'].Draw('3SAME')
-    if 'exp0' in graph_dict and ('exp0' in draw or 'exp' in draw):
-        do_exp0 = True
-        graph_dict['exp0'].Draw('LSAME')
-    if 'obs' in graph_dict and 'obs' in draw:
-        do_obs = True
-        graph_dict['obs'].Draw('PLSAME')
+    for key in draw:
+        graph_dict[key].Draw(legend_dict[key]['DrawStyle'])
     if legend is not None:
-        if do_obs:
-            legend.AddEntry(graph_dict['obs'], 'Observed', 'LP')
-        if do_exp0:
-            legend.AddEntry(graph_dict['exp0'], 'Expected', 'L')
-        if do_exp1:
-            legend.AddEntry(graph_dict['exp1'], '#pm1#sigma Expected', 'F')
-        if do_exp2:
-            legend.AddEntry(graph_dict['exp2'], '#pm2#sigma Expected', 'F')
+        if draw_legend is None:
+            draw_legend = reversed(draw)
+        for key in draw_legend:
+            legend.AddEntry(graph_dict[key],legend_dict[key]['Label'],legend_dict[key]['LegendStyle'])
+
+
 
 
 ##@}
@@ -1561,6 +1591,24 @@ def frameTH2D(hist, threshold, frameValue=1000):
                 framed.SetBinContent(x, y, hist.GetBinContent(ux - 2, uy - 2))
     return framed
 
+def fastFillTH2(hist2d, graph, initalValue=99999, interpolateMissing=False):
+    for x in xrange(1,hist2d.GetNbinsX()+1):
+        for y in xrange(1,hist2d.GetNbinsY()+1):
+            hist2d.SetBinContent(x,y,initalValue)
+    # for i in xrange(graph.GetN()):
+        # hist2d.Fill(graph.GetX()[i],graph.GetY()[i],graph.GetZ()[i])
+    for i in xrange(graph.GetN()):
+        xbin = hist2d.GetXaxis().FindBin(graph.GetX()[i])
+        ybin = hist2d.GetYaxis().FindBin(graph.GetY()[i])
+        if isclose(hist2d.GetXaxis().GetBinCenter(xbin), graph.GetX()[i], rel_tol=1e-2) and isclose(hist2d.GetYaxis().GetBinCenter(ybin), graph.GetY()[i], rel_tol=1e-2):
+            hist2d.SetBinContent(xbin, ybin, graph.GetZ()[i])
+    interpolated = 0
+    if interpolateMissing:
+        for x in xrange(1,hist2d.GetNbinsX()+1):
+            for y in xrange(1,hist2d.GetNbinsY()+1):
+                if hist2d.GetBinContent(x,y) == initalValue:
+                    interpolated += 1
+                    hist2d.SetBinContent(x, y, graph.Interpolate(hist2d.GetXaxis().GetBinCenter(x),hist2d.GetYaxis().GetBinCenter(y)))
 
 def fillTH2(hist2d, graph):
     for x in xrange(1, hist2d.GetNbinsX() + 1):
@@ -1711,3 +1759,20 @@ def higgsConstraint(model, higgstype):
         myfile.close()
     return higgsBand
 ##@}
+
+def getOverlayMarkerAndLegend(legend, entries, options, borderSize=2.0/3, markerStyle="P"):
+    borderLegend = legend.Clone()
+    borderLegend.Clear()
+    graphs = []
+    for i in range(legend.GetNRows()):
+        if i in entries:
+            graph = entries[i].Clone()
+            options[i]["MarkerSize"] = graph.GetMarkerSize()*borderSize
+            Set(graph,**options[i])
+            borderLegend.AddEntry(graph, " ", markerStyle)
+            graphs.append(graph)
+        else:
+            borderLegend.AddEntry("", " ", "")
+    borderLegend.SetFillStyle(0)
+    borderLegend.SetFillColor(0)
+    return (borderLegend,graphs)
