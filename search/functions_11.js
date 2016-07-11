@@ -8,6 +8,8 @@ var searchData=
   ['th1f2data',['TH1F2Data',['../namespacech.html#a1347e48be022e182e17dfc421bf12680',1,'ch']]],
   ['th2fromtgraph2d',['TH2FromTGraph2D',['../namespaceplotting.html#a4629e34106e844ae6de90272eb64157f',1,'plotting']]],
   ['token',['Token',['../classch_1_1_fn_timer_1_1_token.html#a1c853c1c56a90922270aeaa2727b1fab',1,'ch::FnTimer::Token']]],
+  ['toytgraphfromjson',['ToyTGraphFromJSON',['../namespaceplotting.html#ac44b2ee69c7d11ed806abd783ce3c255',1,'plotting']]],
+  ['toytgraphfromjsonfile',['ToyTGraphFromJSONFile',['../namespaceplotting.html#a79ff334e787da215ff3d7b06d76fa382',1,'plotting']]],
   ['treetohist2d',['treeToHist2D',['../_plotting___contours_8h.html#aeb22bd9ab52fd5c4e6939a896eb971f7',1,'treeToHist2D():&#160;Plotting_Contours.h'],['../namespaceplotting.html#a31cc5a85a43006e524eb86b263ed810b',1,'plotting.treeToHist2D()']]],
   ['tuple2string',['Tuple2String',['../namespacech.html#a8240c3e729fa2ebaaaf1082ce6a15dd5',1,'ch']]],
   ['twopadsplit',['TwoPadSplit',['../_plotting_8h.html#aec780e8b3dd08b4a37dd94abc30f42c0',1,'TwoPadSplit():&#160;Plotting.h'],['../namespaceplotting.html#ab6321021dd06e0c934dfd689e1bd2ac2',1,'plotting.TwoPadSplit()']]],

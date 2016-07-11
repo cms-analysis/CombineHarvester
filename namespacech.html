@@ -160,6 +160,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a961ef6b98124198d1648868011bc0153"><td class="memTemplParams" colspan="2">template&lt;typename Range , typename T &gt; </td></tr>
 <tr class="memitem:a961ef6b98124198d1648868011bc0153"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacech.html#a961ef6b98124198d1648868011bc0153">contains</a> (const Range &amp;r, T p)</td></tr>
 <tr class="separator:a961ef6b98124198d1648868011bc0153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d0976239046f20281fb0bd2bd2c3625"><td class="memTemplParams" colspan="2">template&lt;typename R , typename T &gt; </td></tr>
+<tr class="memitem:a7d0976239046f20281fb0bd2bd2c3625"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacech.html#a7d0976239046f20281fb0bd2bd2c3625">contains</a> (const std::initializer_list&lt; R &gt; &amp;r, T p)</td></tr>
+<tr class="separator:a7d0976239046f20281fb0bd2bd2c3625"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7778c42ab19640ea360293c20bfa24f5"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a7778c42ab19640ea360293c20bfa24f5"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacech.html#a7778c42ab19640ea360293c20bfa24f5">contains_rgx</a> (const std::vector&lt; boost::regex &gt; &amp;r, T p)</td></tr>
 <tr class="separator:a7778c42ab19640ea360293c20bfa24f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -216,8 +219,6 @@ Functions</h2></td></tr>
 <tr class="separator:acc4147799e297d63fa1a9ca08559a111"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca0068af8fbaa611e502aa5647ed2121"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html#aca0068af8fbaa611e502aa5647ed2121">AddMSSMUpdateSystematics_tt</a> (<a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;cb)</td></tr>
 <tr class="separator:aca0068af8fbaa611e502aa5647ed2121"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c78bebc7fa07aaa824ec1d9abccf8bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html#a5c78bebc7fa07aaa824ec1d9abccf8bf">AddMSSMRun2Systematics</a> (<a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;cb)</td></tr>
-<tr class="separator:a5c78bebc7fa07aaa824ec1d9abccf8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e05f5018289301287533bc288e576bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html#a5e05f5018289301287533bc288e576bb">AddSystematics_hhh_et_mt</a> (<a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;cb, <a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> src)</td></tr>
 <tr class="separator:a5e05f5018289301287533bc288e576bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adab895bcbcec0006d4def02d2e909206"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html#adab895bcbcec0006d4def02d2e909206">AddSystematics_hhh_et_mt</a> (<a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;cb)</td></tr>
@@ -471,6 +472,36 @@ template&lt;typename Range , typename T &gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="a7d0976239046f20281fb0bd2bd2c3625"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R , typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ch::contains </td>
+          <td>(</td>
+          <td class="paramtype">const std::initializer_list&lt; R &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00029">29</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a7778c42ab19640ea360293c20bfa24f5"></a>
 <div class="memitem">
 <div class="memproto">
@@ -497,7 +528,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00027">27</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
+<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00034">34</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
 
 </div>
 </div>
@@ -539,7 +570,7 @@ template&lt;typename Input , typename Filter , typename Converter &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00034">34</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
+<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00041">41</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
 
 </div>
 </div>
@@ -581,7 +612,7 @@ template&lt;typename Input , typename Filter , typename Converter &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00042">42</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
+<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00049">49</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
 
 </div>
 </div>
@@ -1115,24 +1146,6 @@ template&lt;typename Function &gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_htt_systematics___m_s_s_m_update_8cc_source.html#l00729">729</a> of file <a class="el" href="_htt_systematics___m_s_s_m_update_8cc_source.html">HttSystematics_MSSMUpdate.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a5c78bebc7fa07aaa824ec1d9abccf8bf"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ch::AddMSSMRun2Systematics </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;&#160;</td>
-          <td class="paramname"><em>cb</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="_htt_systematics___m_s_s_m_run2_8cc_source.html#l00019">19</a> of file <a class="el" href="_htt_systematics___m_s_s_m_run2_8cc_source.html">HttSystematics_MSSMRun2.cc</a>.</p>
 
 </div>
 </div>
@@ -2862,7 +2875,7 @@ template&lt;class... Args&gt; </div>
 <p>[part6]</p>
 <p>[part6] </p>
 
-<p>Definition at line <a class="el" href="_morph_functions_8cc_source.html#l00019">19</a> of file <a class="el" href="_morph_functions_8cc_source.html">MorphFunctions.cc</a>.</p>
+<p>Definition at line <a class="el" href="_morph_functions_8cc_source.html#l00020">20</a> of file <a class="el" href="_morph_functions_8cc_source.html">MorphFunctions.cc</a>.</p>
 
 </div>
 </div>
@@ -2924,7 +2937,7 @@ template&lt;class... Args&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_morph_functions_8cc_source.html#l00620">620</a> of file <a class="el" href="_morph_functions_8cc_source.html">MorphFunctions.cc</a>.</p>
+<p>Definition at line <a class="el" href="_morph_functions_8cc_source.html#l00626">626</a> of file <a class="el" href="_morph_functions_8cc_source.html">MorphFunctions.cc</a>.</p>
 
 </div>
 </div>

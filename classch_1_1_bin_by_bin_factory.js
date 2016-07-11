@@ -8,5 +8,7 @@ var classch_1_1_bin_by_bin_factory =
     [ "SetAddThreshold", "classch_1_1_bin_by_bin_factory.html#a022063406869d59a03e7aef47ce53e34", null ],
     [ "SetMergeThreshold", "classch_1_1_bin_by_bin_factory.html#aa983d4e391adbf5a7af40458a3ffc062", null ],
     [ "SetPattern", "classch_1_1_bin_by_bin_factory.html#a4f8c2b763538030dcab6cd3566b27568", null ],
-    [ "SetFixNorm", "classch_1_1_bin_by_bin_factory.html#a05d997b69c619df3c2f7d20e4e7106b7", null ]
+    [ "SetFixNorm", "classch_1_1_bin_by_bin_factory.html#a05d997b69c619df3c2f7d20e4e7106b7", null ],
+    [ "SetPoissonErrors", "classch_1_1_bin_by_bin_factory.html#a76d34782e2b31e762f07093e7d3748ab", null ],
+    [ "SetMergeZeroBins", "classch_1_1_bin_by_bin_factory.html#a57a7a111d2b683912cb70e5e9786432c", null ]
 ];

@@ -79,6 +79,8 @@ var classch_1_1_combine_harvester =
     [ "GetShapeWithUncertainty", "classch_1_1_combine_harvester.html#afeae4c75ae1a122fdcf0a7f28b15a9d8", null ],
     [ "GetShapeWithUncertainty", "classch_1_1_combine_harvester.html#a4601ceaf29711b11611545a3ee4a8fbb", null ],
     [ "GetObservedShape", "classch_1_1_combine_harvester.html#a0d3eca727963c0c14a3c04bbdce2ca5e", null ],
+    [ "GetRateCovariance", "classch_1_1_combine_harvester.html#a01d2c826aba1891b7a1a5ce2dba395e4", null ],
+    [ "GetRateCorrelation", "classch_1_1_combine_harvester.html#a2fde08ec87e285cd05be2227a1b2a5b0", null ],
     [ "AddObservations", "classch_1_1_combine_harvester.html#a8d7ccde30bda35ec084f4e38b923ef23", null ],
     [ "AddProcesses", "classch_1_1_combine_harvester.html#a1ecb940a59ea7a2039956a07882e9ccc", null ],
     [ "AddSystFromProc", "classch_1_1_combine_harvester.html#a00bd4490f33ab0ae404fb46a8cbd9dfe", null ],

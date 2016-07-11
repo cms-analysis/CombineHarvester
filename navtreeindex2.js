@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"classch_1_1_fn_timer.html#aa6e36b42f8bfa11abc0223da0ff485cc":[16,0,0,6,1],
 "classch_1_1_fn_timer.html#ad250e7cf97d91e1fe83d1d861a2fc7ab":[16,0,0,6,2],
 "classch_1_1_fn_timer_1_1_token.html":[16,0,0,6,0],
 "classch_1_1_fn_timer_1_1_token.html#a1c853c1c56a90922270aeaa2727b1fab":[16,0,0,6,0,0],
@@ -216,8 +217,8 @@ var NAVTREEINDEX2 =
 "globals_func.html":[17,1,1],
 "globals_vars.html":[17,1,2],
 "hierarchy.html":[16,1],
-"index.html":[0],
 "index.html":[],
+"index.html":[0],
 "index.html#getting-started":[0,0],
 "index.html#high-level-tools":[0,1],
 "index.html#note":[0,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "limits.html#limits-calculating-limits":[6,0,2],
 "limits.html#limits-collecting":[6,0,3],
 "limits.html#limits-creating-the-datacards":[6,0,0],
-"limits.html#limits-more-POIs":[6,1],
-"limits.html#limits-morphing-cards":[6,0,5]
+"limits.html#limits-more-POIs":[6,1]
 };
