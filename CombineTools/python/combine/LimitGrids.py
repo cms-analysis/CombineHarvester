@@ -42,8 +42,6 @@ class AsymptoticGrid(CombineToolBase):
     #    - ok
     #  - If we have anything in the third category proceed to produce output files
     #  - Anything in the first two gets added to the queue only if --doFits is specified
-    #    so that the
-
 
     # Step 1 - open the json config file
     with open(self.args.config) as json_file:
@@ -601,7 +599,7 @@ class HybridNewGrid(CombineToolBase):
                 graph.SetName('clsErr_'+c)
                 fout.WriteTObject(graph, 'clsErr_'+c)
                 # And a Graph with the significance
-                graph = ROOT.TGraph2D(len(output_signif[c]), array('objectd', output_x), array('d', output_y), array('d', output_signif[c]))
+                graph = ROOT.TGraph2D(len(output_signif[c]), array('d', output_x), array('d', output_y), array('d', output_signif[c]))
                 graph.SetName('signif_'+c)
                 fout.WriteTObject(graph, 'signif_'+c)
             graph = ROOT.TGraph2D(len(output_ntoys), array('d', output_x), array('d', output_y), array('d', output_ntoys))
