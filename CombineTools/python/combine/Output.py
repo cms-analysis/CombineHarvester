@@ -195,7 +195,7 @@ class CollectLimits(CombineToolBase):
                 outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
                 with open(outname, 'w') as out_file:
                     print '>> Writing output %s from files:' % outname
-                    # pprint.pprint(filenames, indent=2)
+                    pprint.pprint(filenames, indent=2)
                     out_file.write(jsondata)
 
 class CollectGoodnessOfFit(CombineToolBase):

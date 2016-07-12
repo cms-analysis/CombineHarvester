@@ -573,7 +573,8 @@ class HybridNewGrid(CombineToolBase):
                         if lower_bound == 0:
                             lower_bound += 1
                         command.append('%s=%g,%g' % (par, bound_vals[par][lower_bound-1][1], bound_vals[par][lower_bound-1][2]))
-                    point_args += (' --setPhysicsModelParameterRanges %s' % (':'.join(command)))
+                    if len(command) > 0:
+                        point_args += (' --setPhysicsModelParameterRanges %s' % (':'.join(command)))
                     # print per_mass_point_args
                     point_args += ' --singlePoint %s' % key[1]
                     point_args += ' -m %s' % mval
