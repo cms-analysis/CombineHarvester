@@ -105,6 +105,7 @@ parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in forma
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--x_title', default='m_{T,#tau#tau} (GeV)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='dN/dM_{T,#tau#tau} (1/GeV)',help='Title for the y-axis')
+parser.add_argument('--lumi', default='2.3 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
@@ -170,7 +171,8 @@ if (args.auto_blind or args.auto_blind_check_only) and not args.postfitshapes:
   sys.exit(1)
 
 #If call to PostFitWithShapes is requested, this is performed here
-if args.postfitshapes or soverb_plot:
+#if args.postfitshapes or soverb_plot:
+if args.postfitshapes:
   print "Internally calling PostFitShapesFromWorkspace on directory ", args.dir
   for root,dirnames,filenames in os.walk(args.dir):
     for filename in fnmatch.filter(filenames, '*.txt.cmb'):
@@ -463,7 +465,7 @@ latex2.DrawLatex(0.145,0.955,channel_label)
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], "2.3 fb^{-1} (13 TeV)", 3)
+plot.DrawTitle(pads[0], args.lumi, 3)
 
 #Add ratio plot if required
 if args.ratio and not soverb_plot and not fractions:
@@ -485,7 +487,7 @@ if soverb_plot:
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
   axish[1].SetMinimum(0)
-  axish[1].SetMaximum(2)
+  axish[1].SetMaximum(10)
   if model_dep:
     sighist_forratio.SetLineColor(2)
     sighist_forratio.Draw("same")
