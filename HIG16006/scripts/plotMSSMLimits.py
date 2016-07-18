@@ -149,7 +149,7 @@ for src in args.input:
             plot.DrawLimitBand(pads[0], graph_sets[-1], legend=legend,legend_overwrite=style_dict["legend"])
         else:
             plot.StyleLimitBand(graph_sets[-1])
-            plot.DrawLimitBand(pads[0], graph_sets[-1])
+            plot.DrawLimitBand(pads[0], graph_sets[-1],legend=legend)
         pads[0].RedrawAxis()
         pads[0].RedrawAxis('g')
         pads[0].GetFrame().Draw()

@@ -1469,12 +1469,14 @@ def DrawLimitBand(pad, graph_dict, draw=['exp2', 'exp1', 'exp0', 'obs'], draw_le
                 legend_dict[key] = legend_overwrite[key]
     pad.cd()
     for key in draw:
-        graph_dict[key].Draw(legend_dict[key]['DrawStyle'])
+        if key in graph_dict:
+            graph_dict[key].Draw(legend_dict[key]['DrawStyle'])
     if legend is not None:
         if draw_legend is None:
             draw_legend = reversed(draw)
         for key in draw_legend:
-            legend.AddEntry(graph_dict[key],legend_dict[key]['Label'],legend_dict[key]['LegendStyle'])
+            if key in graph_dict: 
+                legend.AddEntry(graph_dict[key],legend_dict[key]['Label'],legend_dict[key]['LegendStyle'])
 
 
 
