@@ -54,6 +54,7 @@ var plotting_8py =
     [ "GetPadYMax", "plotting_8py.html#a5c3cf34b6b50614b3eaca2c8af760731", null ],
     [ "GetPadYMin", "plotting_8py.html#a2859ac07831f692838afd628bf9abb21", null ],
     [ "FixOverlay", "plotting_8py.html#a923135db9a7c26ccf9ebb3098f779377", null ],
+    [ "StandardAxes", "plotting_8py.html#ad9dc489efad414ea5c21dc4c3ae6de79", null ],
     [ "DrawCMSLogo", "plotting_8py.html#a618c4283dd81de09c35d79ca2c297511", null ],
     [ "PositionedLegend", "plotting_8py.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33", null ],
     [ "DrawHorizontalLine", "plotting_8py.html#a1102590a510e7c4921fba16694201a5b", null ],

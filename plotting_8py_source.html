@@ -1342,544 +1342,556 @@ $(document).ready(function(){initNavTree('plotting_8py_source.html','');});
 <div class="line"><a name="l01240"></a><span class="lineno"> 1240</span>&#160;<span class="comment">#  @details Functions for drawing legends, logos, title, lines and boxes</span></div>
 <div class="line"><a name="l01241"></a><span class="lineno"> 1241</span>&#160;<span class="comment">##@{</span></div>
 <div class="line"><a name="l01242"></a><span class="lineno"> 1242</span>&#160;</div>
-<div class="line"><a name="l01243"></a><span class="lineno"> 1243</span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511">DrawCMSLogo</a>(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, extraText2=&#39;&#39;, cmsTextSize=0.8):</div>
-<div class="line"><a name="l01244"></a><span class="lineno"> 1244</span>&#160;    <span class="stringliteral">&quot;&quot;&quot;Blah</span></div>
-<div class="line"><a name="l01245"></a><span class="lineno"> 1245</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l01246"></a><span class="lineno"> 1246</span>&#160;<span class="stringliteral">    Args:</span></div>
-<div class="line"><a name="l01247"></a><span class="lineno"> 1247</span>&#160;<span class="stringliteral">        pad (TYPE): Description</span></div>
-<div class="line"><a name="l01248"></a><span class="lineno"> 1248</span>&#160;<span class="stringliteral">        cmsText (TYPE): Description</span></div>
-<div class="line"><a name="l01249"></a><span class="lineno"> 1249</span>&#160;<span class="stringliteral">        extraText (TYPE): Description</span></div>
-<div class="line"><a name="l01250"></a><span class="lineno"> 1250</span>&#160;<span class="stringliteral">        iPosX (TYPE): Description</span></div>
-<div class="line"><a name="l01251"></a><span class="lineno"> 1251</span>&#160;<span class="stringliteral">        relPosX (TYPE): Description</span></div>
-<div class="line"><a name="l01252"></a><span class="lineno"> 1252</span>&#160;<span class="stringliteral">        relPosY (TYPE): Description</span></div>
-<div class="line"><a name="l01253"></a><span class="lineno"> 1253</span>&#160;<span class="stringliteral">        relExtraDY (TYPE): Description</span></div>
-<div class="line"><a name="l01254"></a><span class="lineno"> 1254</span>&#160;<span class="stringliteral">        extraText2 (str): Description</span></div>
-<div class="line"><a name="l01255"></a><span class="lineno"> 1255</span>&#160;<span class="stringliteral">        cmsTextSize (float): Description</span></div>
-<div class="line"><a name="l01256"></a><span class="lineno"> 1256</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l01257"></a><span class="lineno"> 1257</span>&#160;<span class="stringliteral">    Returns:</span></div>
-<div class="line"><a name="l01258"></a><span class="lineno"> 1258</span>&#160;<span class="stringliteral">        TYPE: Description</span></div>
-<div class="line"><a name="l01259"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511"> 1259</a></span>&#160;<span class="stringliteral">    &quot;&quot;&quot;</span></div>
-<div class="line"><a name="l01260"></a><span class="lineno"> 1260</span>&#160;    pad.cd()</div>
-<div class="line"><a name="l01261"></a><span class="lineno"> 1261</span>&#160;    cmsTextFont = 62  <span class="comment"># default is helvetic-bold</span></div>
-<div class="line"><a name="l01262"></a><span class="lineno"> 1262</span>&#160;</div>
-<div class="line"><a name="l01263"></a><span class="lineno"> 1263</span>&#160;    writeExtraText = len(extraText) &gt; 0</div>
-<div class="line"><a name="l01264"></a><span class="lineno"> 1264</span>&#160;    writeExtraText2 = len(extraText2) &gt; 0</div>
-<div class="line"><a name="l01265"></a><span class="lineno"> 1265</span>&#160;    extraTextFont = 52</div>
-<div class="line"><a name="l01266"></a><span class="lineno"> 1266</span>&#160;</div>
-<div class="line"><a name="l01267"></a><span class="lineno"> 1267</span>&#160;    <span class="comment"># text sizes and text offsets with respect to the top frame</span></div>
-<div class="line"><a name="l01268"></a><span class="lineno"> 1268</span>&#160;    <span class="comment"># in unit of the top margin size</span></div>
-<div class="line"><a name="l01269"></a><span class="lineno"> 1269</span>&#160;    lumiTextOffset = 0.2</div>
-<div class="line"><a name="l01270"></a><span class="lineno"> 1270</span>&#160;    <span class="comment"># cmsTextSize = 0.8</span></div>
-<div class="line"><a name="l01271"></a><span class="lineno"> 1271</span>&#160;    <span class="comment"># float cmsTextOffset    = 0.1;  // only used in outOfFrame version</span></div>
-<div class="line"><a name="l01272"></a><span class="lineno"> 1272</span>&#160;</div>
-<div class="line"><a name="l01273"></a><span class="lineno"> 1273</span>&#160;    <span class="comment"># ratio of &#39;CMS&#39; and extra text size</span></div>
-<div class="line"><a name="l01274"></a><span class="lineno"> 1274</span>&#160;    extraOverCmsTextSize = 0.76</div>
-<div class="line"><a name="l01275"></a><span class="lineno"> 1275</span>&#160;</div>
-<div class="line"><a name="l01276"></a><span class="lineno"> 1276</span>&#160;    outOfFrame = <span class="keyword">False</span></div>
-<div class="line"><a name="l01277"></a><span class="lineno"> 1277</span>&#160;    <span class="keywordflow">if</span> iPosX / 10 == 0:</div>
-<div class="line"><a name="l01278"></a><span class="lineno"> 1278</span>&#160;        outOfFrame = <span class="keyword">True</span></div>
-<div class="line"><a name="l01279"></a><span class="lineno"> 1279</span>&#160;</div>
-<div class="line"><a name="l01280"></a><span class="lineno"> 1280</span>&#160;    alignY_ = 3</div>
-<div class="line"><a name="l01281"></a><span class="lineno"> 1281</span>&#160;    alignX_ = 2</div>
-<div class="line"><a name="l01282"></a><span class="lineno"> 1282</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 0):</div>
-<div class="line"><a name="l01283"></a><span class="lineno"> 1283</span>&#160;        alignX_ = 1</div>
-<div class="line"><a name="l01284"></a><span class="lineno"> 1284</span>&#160;    <span class="keywordflow">if</span> (iPosX == 0):</div>
-<div class="line"><a name="l01285"></a><span class="lineno"> 1285</span>&#160;        alignX_ = 1</div>
-<div class="line"><a name="l01286"></a><span class="lineno"> 1286</span>&#160;    <span class="keywordflow">if</span> (iPosX == 0):</div>
-<div class="line"><a name="l01287"></a><span class="lineno"> 1287</span>&#160;        alignY_ = 1</div>
-<div class="line"><a name="l01288"></a><span class="lineno"> 1288</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 1):</div>
-<div class="line"><a name="l01289"></a><span class="lineno"> 1289</span>&#160;        alignX_ = 1</div>
-<div class="line"><a name="l01290"></a><span class="lineno"> 1290</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 2):</div>
-<div class="line"><a name="l01291"></a><span class="lineno"> 1291</span>&#160;        alignX_ = 2</div>
-<div class="line"><a name="l01292"></a><span class="lineno"> 1292</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 3):</div>
-<div class="line"><a name="l01293"></a><span class="lineno"> 1293</span>&#160;        alignX_ = 3</div>
-<div class="line"><a name="l01294"></a><span class="lineno"> 1294</span>&#160;    <span class="comment"># if (iPosX == 0): relPosX = 0.14</span></div>
-<div class="line"><a name="l01295"></a><span class="lineno"> 1295</span>&#160;    align_ = 10 * alignX_ + alignY_</div>
-<div class="line"><a name="l01296"></a><span class="lineno"> 1296</span>&#160;</div>
-<div class="line"><a name="l01297"></a><span class="lineno"> 1297</span>&#160;    l = pad.GetLeftMargin()</div>
-<div class="line"><a name="l01298"></a><span class="lineno"> 1298</span>&#160;    t = pad.GetTopMargin()</div>
-<div class="line"><a name="l01299"></a><span class="lineno"> 1299</span>&#160;    r = pad.GetRightMargin()</div>
-<div class="line"><a name="l01300"></a><span class="lineno"> 1300</span>&#160;    b = pad.GetBottomMargin()</div>
-<div class="line"><a name="l01301"></a><span class="lineno"> 1301</span>&#160;</div>
-<div class="line"><a name="l01302"></a><span class="lineno"> 1302</span>&#160;    latex = R.TLatex()</div>
-<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;    latex.SetNDC()</div>
-<div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;    latex.SetTextAngle(0)</div>
-<div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;    latex.SetTextColor(R.kBlack)</div>
-<div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;</div>
-<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;    extraTextSize = extraOverCmsTextSize * cmsTextSize</div>
-<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;    pad_ratio = (float(pad.GetWh()) * pad.GetAbsHNDC()) / \</div>
-<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;        (float(pad.GetWw()) * pad.GetAbsWNDC())</div>
-<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;    <span class="keywordflow">if</span> (pad_ratio &lt; 1.):</div>
-<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;        pad_ratio = 1.</div>
-<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;</div>
-<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;    <span class="keywordflow">if</span> outOfFrame:</div>
-<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;        latex.SetTextFont(cmsTextFont)</div>
-<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;        latex.SetTextAlign(11)</div>
-<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;        latex.SetTextSize(cmsTextSize * t * pad_ratio)</div>
-<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;        latex.DrawLatex(l, 1 - t + lumiTextOffset * t, cmsText)</div>
+<div class="line"><a name="l01243"></a><span class="lineno"> 1243</span>&#160;</div>
+<div class="line"><a name="l01244"></a><span class="lineno"><a class="line" href="namespaceplotting.html#ad9dc489efad414ea5c21dc4c3ae6de79"> 1244</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#ad9dc489efad414ea5c21dc4c3ae6de79">StandardAxes</a>(xaxis, yaxis, var, units):</div>
+<div class="line"><a name="l01245"></a><span class="lineno"> 1245</span>&#160;    width = xaxis.GetBinWidth(1)</div>
+<div class="line"><a name="l01246"></a><span class="lineno"> 1246</span>&#160;    w_label = <span class="stringliteral">&quot;%.1f&quot;</span> % width</div>
+<div class="line"><a name="l01247"></a><span class="lineno"> 1247</span>&#160;    <span class="keywordflow">if</span> units == <span class="stringliteral">&quot;&quot;</span>:</div>
+<div class="line"><a name="l01248"></a><span class="lineno"> 1248</span>&#160;        xaxis.SetTitle(var)</div>
+<div class="line"><a name="l01249"></a><span class="lineno"> 1249</span>&#160;        yaxis.SetTitle(<span class="stringliteral">&quot;Events / &quot;</span> + w_label)</div>
+<div class="line"><a name="l01250"></a><span class="lineno"> 1250</span>&#160;    <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l01251"></a><span class="lineno"> 1251</span>&#160;        xaxis.SetTitle(var + <span class="stringliteral">&quot; (&quot;</span> + units + <span class="stringliteral">&quot;)&quot;</span>)</div>
+<div class="line"><a name="l01252"></a><span class="lineno"> 1252</span>&#160;        yaxis.SetTitle(<span class="stringliteral">&quot;Events / &quot;</span> + w_label + <span class="stringliteral">&quot; &quot;</span> + units)</div>
+<div class="line"><a name="l01253"></a><span class="lineno"> 1253</span>&#160;</div>
+<div class="line"><a name="l01254"></a><span class="lineno"> 1254</span>&#160;</div>
+<div class="line"><a name="l01255"></a><span class="lineno"> 1255</span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511">DrawCMSLogo</a>(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, extraText2=&#39;&#39;, cmsTextSize=0.8):</div>
+<div class="line"><a name="l01256"></a><span class="lineno"> 1256</span>&#160;    <span class="stringliteral">&quot;&quot;&quot;Blah</span></div>
+<div class="line"><a name="l01257"></a><span class="lineno"> 1257</span>&#160;<span class="stringliteral">    </span></div>
+<div class="line"><a name="l01258"></a><span class="lineno"> 1258</span>&#160;<span class="stringliteral">    Args:</span></div>
+<div class="line"><a name="l01259"></a><span class="lineno"> 1259</span>&#160;<span class="stringliteral">        pad (TYPE): Description</span></div>
+<div class="line"><a name="l01260"></a><span class="lineno"> 1260</span>&#160;<span class="stringliteral">        cmsText (TYPE): Description</span></div>
+<div class="line"><a name="l01261"></a><span class="lineno"> 1261</span>&#160;<span class="stringliteral">        extraText (TYPE): Description</span></div>
+<div class="line"><a name="l01262"></a><span class="lineno"> 1262</span>&#160;<span class="stringliteral">        iPosX (TYPE): Description</span></div>
+<div class="line"><a name="l01263"></a><span class="lineno"> 1263</span>&#160;<span class="stringliteral">        relPosX (TYPE): Description</span></div>
+<div class="line"><a name="l01264"></a><span class="lineno"> 1264</span>&#160;<span class="stringliteral">        relPosY (TYPE): Description</span></div>
+<div class="line"><a name="l01265"></a><span class="lineno"> 1265</span>&#160;<span class="stringliteral">        relExtraDY (TYPE): Description</span></div>
+<div class="line"><a name="l01266"></a><span class="lineno"> 1266</span>&#160;<span class="stringliteral">        extraText2 (str): Description</span></div>
+<div class="line"><a name="l01267"></a><span class="lineno"> 1267</span>&#160;<span class="stringliteral">        cmsTextSize (float): Description</span></div>
+<div class="line"><a name="l01268"></a><span class="lineno"> 1268</span>&#160;<span class="stringliteral">    </span></div>
+<div class="line"><a name="l01269"></a><span class="lineno"> 1269</span>&#160;<span class="stringliteral">    Returns:</span></div>
+<div class="line"><a name="l01270"></a><span class="lineno"> 1270</span>&#160;<span class="stringliteral">        TYPE: Description</span></div>
+<div class="line"><a name="l01271"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511"> 1271</a></span>&#160;<span class="stringliteral">    &quot;&quot;&quot;</span></div>
+<div class="line"><a name="l01272"></a><span class="lineno"> 1272</span>&#160;    pad.cd()</div>
+<div class="line"><a name="l01273"></a><span class="lineno"> 1273</span>&#160;    cmsTextFont = 62  <span class="comment"># default is helvetic-bold</span></div>
+<div class="line"><a name="l01274"></a><span class="lineno"> 1274</span>&#160;</div>
+<div class="line"><a name="l01275"></a><span class="lineno"> 1275</span>&#160;    writeExtraText = len(extraText) &gt; 0</div>
+<div class="line"><a name="l01276"></a><span class="lineno"> 1276</span>&#160;    writeExtraText2 = len(extraText2) &gt; 0</div>
+<div class="line"><a name="l01277"></a><span class="lineno"> 1277</span>&#160;    extraTextFont = 52</div>
+<div class="line"><a name="l01278"></a><span class="lineno"> 1278</span>&#160;</div>
+<div class="line"><a name="l01279"></a><span class="lineno"> 1279</span>&#160;    <span class="comment"># text sizes and text offsets with respect to the top frame</span></div>
+<div class="line"><a name="l01280"></a><span class="lineno"> 1280</span>&#160;    <span class="comment"># in unit of the top margin size</span></div>
+<div class="line"><a name="l01281"></a><span class="lineno"> 1281</span>&#160;    lumiTextOffset = 0.2</div>
+<div class="line"><a name="l01282"></a><span class="lineno"> 1282</span>&#160;    <span class="comment"># cmsTextSize = 0.8</span></div>
+<div class="line"><a name="l01283"></a><span class="lineno"> 1283</span>&#160;    <span class="comment"># float cmsTextOffset    = 0.1;  // only used in outOfFrame version</span></div>
+<div class="line"><a name="l01284"></a><span class="lineno"> 1284</span>&#160;</div>
+<div class="line"><a name="l01285"></a><span class="lineno"> 1285</span>&#160;    <span class="comment"># ratio of &#39;CMS&#39; and extra text size</span></div>
+<div class="line"><a name="l01286"></a><span class="lineno"> 1286</span>&#160;    extraOverCmsTextSize = 0.76</div>
+<div class="line"><a name="l01287"></a><span class="lineno"> 1287</span>&#160;</div>
+<div class="line"><a name="l01288"></a><span class="lineno"> 1288</span>&#160;    outOfFrame = <span class="keyword">False</span></div>
+<div class="line"><a name="l01289"></a><span class="lineno"> 1289</span>&#160;    <span class="keywordflow">if</span> iPosX / 10 == 0:</div>
+<div class="line"><a name="l01290"></a><span class="lineno"> 1290</span>&#160;        outOfFrame = <span class="keyword">True</span></div>
+<div class="line"><a name="l01291"></a><span class="lineno"> 1291</span>&#160;</div>
+<div class="line"><a name="l01292"></a><span class="lineno"> 1292</span>&#160;    alignY_ = 3</div>
+<div class="line"><a name="l01293"></a><span class="lineno"> 1293</span>&#160;    alignX_ = 2</div>
+<div class="line"><a name="l01294"></a><span class="lineno"> 1294</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 0):</div>
+<div class="line"><a name="l01295"></a><span class="lineno"> 1295</span>&#160;        alignX_ = 1</div>
+<div class="line"><a name="l01296"></a><span class="lineno"> 1296</span>&#160;    <span class="keywordflow">if</span> (iPosX == 0):</div>
+<div class="line"><a name="l01297"></a><span class="lineno"> 1297</span>&#160;        alignX_ = 1</div>
+<div class="line"><a name="l01298"></a><span class="lineno"> 1298</span>&#160;    <span class="keywordflow">if</span> (iPosX == 0):</div>
+<div class="line"><a name="l01299"></a><span class="lineno"> 1299</span>&#160;        alignY_ = 1</div>
+<div class="line"><a name="l01300"></a><span class="lineno"> 1300</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 1):</div>
+<div class="line"><a name="l01301"></a><span class="lineno"> 1301</span>&#160;        alignX_ = 1</div>
+<div class="line"><a name="l01302"></a><span class="lineno"> 1302</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 2):</div>
+<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;        alignX_ = 2</div>
+<div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;    <span class="keywordflow">if</span> (iPosX / 10 == 3):</div>
+<div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;        alignX_ = 3</div>
+<div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;    <span class="comment"># if (iPosX == 0): relPosX = 0.14</span></div>
+<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;    align_ = 10 * alignX_ + alignY_</div>
+<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;</div>
+<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;    l = pad.GetLeftMargin()</div>
+<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;    t = pad.GetTopMargin()</div>
+<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;    r = pad.GetRightMargin()</div>
+<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;    b = pad.GetBottomMargin()</div>
+<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;</div>
+<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;    latex = R.TLatex()</div>
+<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;    latex.SetNDC()</div>
+<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;    latex.SetTextAngle(0)</div>
+<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;    latex.SetTextColor(R.kBlack)</div>
 <div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160;</div>
-<div class="line"><a name="l01319"></a><span class="lineno"> 1319</span>&#160;    posX_ = 0</div>
-<div class="line"><a name="l01320"></a><span class="lineno"> 1320</span>&#160;    <span class="keywordflow">if</span> iPosX % 10 &lt;= 1:</div>
-<div class="line"><a name="l01321"></a><span class="lineno"> 1321</span>&#160;        posX_ = l + relPosX * (1 - l - r)</div>
-<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160;    <span class="keywordflow">elif</span> (iPosX % 10 == 2):</div>
-<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160;        posX_ = l + 0.5 * (1 - l - r)</div>
-<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160;    <span class="keywordflow">elif</span> (iPosX % 10 == 3):</div>
-<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160;        posX_ = 1 - r - relPosX * (1 - l - r)</div>
-<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;</div>
-<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;    posY_ = 1 - t - relPosY * (1 - t - b)</div>
-<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;    <span class="keywordflow">if</span> <span class="keywordflow">not</span> outOfFrame:</div>
-<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;        latex.SetTextFont(cmsTextFont)</div>
-<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;        latex.SetTextSize(cmsTextSize * t * pad_ratio)</div>
-<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;        latex.SetTextAlign(align_)</div>
-<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160;        latex.DrawLatex(posX_, posY_, cmsText)</div>
-<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160;        <span class="keywordflow">if</span> writeExtraText:</div>
-<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;            latex.SetTextFont(extraTextFont)</div>
-<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;            latex.SetTextAlign(align_)</div>
-<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160;            latex.SetTextSize(extraTextSize * t * pad_ratio)</div>
-<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160;            latex.DrawLatex(</div>
-<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160;                posX_, posY_ - relExtraDY * cmsTextSize * t, extraText)</div>
-<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;            <span class="keywordflow">if</span> writeExtraText2:</div>
-<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160;                latex.DrawLatex(</div>
-<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160;                    posX_, posY_ - 1.8 * relExtraDY * cmsTextSize * t, extraText2)</div>
-<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;    <span class="keywordflow">elif</span> writeExtraText:</div>
-<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;        <span class="keywordflow">if</span> iPosX == 0:</div>
-<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160;            posX_ = l + relPosX * (1 - l - r)</div>
-<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;            posY_ = 1 - t + lumiTextOffset * t</div>
-<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;        latex.SetTextFont(extraTextFont)</div>
-<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;        latex.SetTextSize(extraTextSize * t * pad_ratio)</div>
-<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;        latex.SetTextAlign(align_)</div>
-<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;        latex.DrawLatex(posX_, posY_, extraText)</div>
-<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;</div>
-<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;</div>
-<div class="line"><a name="l01352"></a><span class="lineno"><a class="line" href="namespaceplotting.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33"> 1352</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33">PositionedLegend</a>(width, height, pos, offset):</div>
-<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160;    o = offset</div>
-<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160;    w = width</div>
-<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160;    h = height</div>
-<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160;    l = R.gPad.GetLeftMargin()</div>
-<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;    t = R.gPad.GetTopMargin()</div>
-<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160;    b = R.gPad.GetBottomMargin()</div>
-<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160;    r = R.gPad.GetRightMargin()</div>
-<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;    <span class="keywordflow">if</span> pos == 1:</div>
-<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;        <span class="keywordflow">return</span> R.TLegend(l + o, 1 - t - o - h, l + o + w, 1 - t - o, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
-<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;    <span class="keywordflow">if</span> pos == 2:</div>
-<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;        c = l + 0.5 * (1 - l - r)</div>
-<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;        <span class="keywordflow">return</span> R.TLegend(c - 0.5 * w, 1 - t - o - h, c + 0.5 * w, 1 - t - o, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
-<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;    <span class="keywordflow">if</span> pos == 3:</div>
-<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;        <span class="keywordflow">return</span> R.TLegend(1 - r - o - w, 1 - t - o - h, 1 - r - o, 1 - t - o, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
-<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160;    <span class="keywordflow">if</span> pos == 4:</div>
-<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;        <span class="keywordflow">return</span> R.TLegend(l + o, b + o, l + o + w, b + o + h, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
-<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;    <span class="keywordflow">if</span> pos == 5:</div>
-<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;        c = l + 0.5 * (1 - l - r)</div>
-<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;        <span class="keywordflow">return</span> R.TLegend(c - 0.5 * w, b + o, c + 0.5 * w, b + o + h, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
-<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;    <span class="keywordflow">if</span> pos == 6:</div>
-<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;        <span class="keywordflow">return</span> R.TLegend(1 - r - o - w, b + o, 1 - r - o, b + o + h, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
-<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;</div>
-<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;</div>
-<div class="line"><a name="l01376"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a1102590a510e7c4921fba16694201a5b"> 1376</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a1102590a510e7c4921fba16694201a5b">DrawHorizontalLine</a>(pad, line, yval):</div>
-<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;    axis = <a class="code" href="namespaceplotting.html#a3f11bc70e3e0278d0b4cf33ab8c383d3">GetAxisHist</a>(pad)</div>
-<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;    xmin = axis.GetXaxis().GetXmin()</div>
-<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;    xmax = axis.GetXaxis().GetXmax()</div>
-<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;    line.DrawLine(xmin, yval, xmax, yval)</div>
-<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;</div>
-<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;</div>
-<div class="line"><a name="l01383"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70"> 1383</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70">DrawVerticalLine</a>(pad, line, xval):</div>
-<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;    axis = <a class="code" href="namespaceplotting.html#a3f11bc70e3e0278d0b4cf33ab8c383d3">GetAxisHist</a>(pad)</div>
-<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;    ymin = axis.GetMinimum()</div>
-<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;    ymax = axis.GetMaximum()</div>
-<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;    line.DrawLine(xval, ymin, xval, ymax)</div>
-<div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;</div>
-<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;</div>
-<div class="line"><a name="l01390"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff"> 1390</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff">DrawTitle</a>(pad, text, align):</div>
-<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;    pad_backup = R.gPad</div>
-<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;    pad.cd()</div>
-<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;    t = pad.GetTopMargin()</div>
-<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;    l = pad.GetLeftMargin()</div>
-<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;    r = pad.GetRightMargin()</div>
-<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;</div>
-<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;    pad_ratio = (float(pad.GetWh()) * pad.GetAbsHNDC()) / \</div>
-<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;        (float(pad.GetWw()) * pad.GetAbsWNDC())</div>
-<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;    <span class="keywordflow">if</span> pad_ratio &lt; 1.:</div>
-<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;        pad_ratio = 1.</div>
+<div class="line"><a name="l01319"></a><span class="lineno"> 1319</span>&#160;    extraTextSize = extraOverCmsTextSize * cmsTextSize</div>
+<div class="line"><a name="l01320"></a><span class="lineno"> 1320</span>&#160;    pad_ratio = (float(pad.GetWh()) * pad.GetAbsHNDC()) / \</div>
+<div class="line"><a name="l01321"></a><span class="lineno"> 1321</span>&#160;        (float(pad.GetWw()) * pad.GetAbsWNDC())</div>
+<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160;    <span class="keywordflow">if</span> (pad_ratio &lt; 1.):</div>
+<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160;        pad_ratio = 1.</div>
+<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160;</div>
+<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160;    <span class="keywordflow">if</span> outOfFrame:</div>
+<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;        latex.SetTextFont(cmsTextFont)</div>
+<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;        latex.SetTextAlign(11)</div>
+<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;        latex.SetTextSize(cmsTextSize * t * pad_ratio)</div>
+<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;        latex.DrawLatex(l, 1 - t + lumiTextOffset * t, cmsText)</div>
+<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;</div>
+<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;    posX_ = 0</div>
+<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160;    <span class="keywordflow">if</span> iPosX % 10 &lt;= 1:</div>
+<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160;        posX_ = l + relPosX * (1 - l - r)</div>
+<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;    <span class="keywordflow">elif</span> (iPosX % 10 == 2):</div>
+<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;        posX_ = l + 0.5 * (1 - l - r)</div>
+<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160;    <span class="keywordflow">elif</span> (iPosX % 10 == 3):</div>
+<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160;        posX_ = 1 - r - relPosX * (1 - l - r)</div>
+<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160;</div>
+<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;    posY_ = 1 - t - relPosY * (1 - t - b)</div>
+<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160;    <span class="keywordflow">if</span> <span class="keywordflow">not</span> outOfFrame:</div>
+<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160;        latex.SetTextFont(cmsTextFont)</div>
+<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;        latex.SetTextSize(cmsTextSize * t * pad_ratio)</div>
+<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;        latex.SetTextAlign(align_)</div>
+<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160;        latex.DrawLatex(posX_, posY_, cmsText)</div>
+<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;        <span class="keywordflow">if</span> writeExtraText:</div>
+<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;            latex.SetTextFont(extraTextFont)</div>
+<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;            latex.SetTextAlign(align_)</div>
+<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;            latex.SetTextSize(extraTextSize * t * pad_ratio)</div>
+<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;            latex.DrawLatex(</div>
+<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;                posX_, posY_ - relExtraDY * cmsTextSize * t, extraText)</div>
+<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;            <span class="keywordflow">if</span> writeExtraText2:</div>
+<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;                latex.DrawLatex(</div>
+<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160;                    posX_, posY_ - 1.8 * relExtraDY * cmsTextSize * t, extraText2)</div>
+<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160;    <span class="keywordflow">elif</span> writeExtraText:</div>
+<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160;        <span class="keywordflow">if</span> iPosX == 0:</div>
+<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160;            posX_ = l + relPosX * (1 - l - r)</div>
+<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;            posY_ = 1 - t + lumiTextOffset * t</div>
+<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160;        latex.SetTextFont(extraTextFont)</div>
+<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160;        latex.SetTextSize(extraTextSize * t * pad_ratio)</div>
+<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;        latex.SetTextAlign(align_)</div>
+<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;        latex.DrawLatex(posX_, posY_, extraText)</div>
+<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;</div>
+<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;</div>
+<div class="line"><a name="l01364"></a><span class="lineno"><a class="line" href="namespaceplotting.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33"> 1364</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33">PositionedLegend</a>(width, height, pos, offset):</div>
+<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;    o = offset</div>
+<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;    w = width</div>
+<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160;    h = height</div>
+<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;    l = R.gPad.GetLeftMargin()</div>
+<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;    t = R.gPad.GetTopMargin()</div>
+<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;    b = R.gPad.GetBottomMargin()</div>
+<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;    r = R.gPad.GetRightMargin()</div>
+<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;    <span class="keywordflow">if</span> pos == 1:</div>
+<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;        <span class="keywordflow">return</span> R.TLegend(l + o, 1 - t - o - h, l + o + w, 1 - t - o, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
+<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;    <span class="keywordflow">if</span> pos == 2:</div>
+<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;        c = l + 0.5 * (1 - l - r)</div>
+<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;        <span class="keywordflow">return</span> R.TLegend(c - 0.5 * w, 1 - t - o - h, c + 0.5 * w, 1 - t - o, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
+<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;    <span class="keywordflow">if</span> pos == 3:</div>
+<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;        <span class="keywordflow">return</span> R.TLegend(1 - r - o - w, 1 - t - o - h, 1 - r - o, 1 - t - o, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
+<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;    <span class="keywordflow">if</span> pos == 4:</div>
+<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;        <span class="keywordflow">return</span> R.TLegend(l + o, b + o, l + o + w, b + o + h, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
+<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;    <span class="keywordflow">if</span> pos == 5:</div>
+<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;        c = l + 0.5 * (1 - l - r)</div>
+<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;        <span class="keywordflow">return</span> R.TLegend(c - 0.5 * w, b + o, c + 0.5 * w, b + o + h, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
+<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;    <span class="keywordflow">if</span> pos == 6:</div>
+<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;        <span class="keywordflow">return</span> R.TLegend(1 - r - o - w, b + o, 1 - r - o, b + o + h, <span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;NBNDC&#39;</span>)</div>
+<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;</div>
+<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;</div>
+<div class="line"><a name="l01388"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a1102590a510e7c4921fba16694201a5b"> 1388</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a1102590a510e7c4921fba16694201a5b">DrawHorizontalLine</a>(pad, line, yval):</div>
+<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;    axis = <a class="code" href="namespaceplotting.html#a3f11bc70e3e0278d0b4cf33ab8c383d3">GetAxisHist</a>(pad)</div>
+<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;    xmin = axis.GetXaxis().GetXmin()</div>
+<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;    xmax = axis.GetXaxis().GetXmax()</div>
+<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;    line.DrawLine(xmin, yval, xmax, yval)</div>
+<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;</div>
+<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;</div>
+<div class="line"><a name="l01395"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70"> 1395</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70">DrawVerticalLine</a>(pad, line, xval):</div>
+<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;    axis = <a class="code" href="namespaceplotting.html#a3f11bc70e3e0278d0b4cf33ab8c383d3">GetAxisHist</a>(pad)</div>
+<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;    ymin = axis.GetMinimum()</div>
+<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;    ymax = axis.GetMaximum()</div>
+<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;    line.DrawLine(xval, ymin, xval, ymax)</div>
+<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;</div>
 <div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;</div>
-<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;    textSize = 0.6</div>
-<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;    textOffset = 0.2</div>
-<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;</div>
-<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;    latex = R.TLatex()</div>
-<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;    latex.SetNDC()</div>
-<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;    latex.SetTextAngle(0)</div>
-<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;    latex.SetTextColor(R.kBlack)</div>
-<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;    latex.SetTextFont(42)</div>
-<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160;    latex.SetTextSize(textSize * t * pad_ratio)</div>
-<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160;</div>
-<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160;    y_off = 1 - t + textOffset * t</div>
-<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160;    <span class="keywordflow">if</span> align == 1:</div>
-<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160;        latex.SetTextAlign(11)</div>
-<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160;    <span class="keywordflow">if</span> align == 1:</div>
-<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160;        latex.DrawLatex(l, y_off, text)</div>
-<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160;    <span class="keywordflow">if</span> align == 2:</div>
-<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;        latex.SetTextAlign(21)</div>
-<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;    <span class="keywordflow">if</span> align == 2:</div>
-<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;        latex.DrawLatex(l + (1 - l - r) * 0.5, y_off, text)</div>
-<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;    <span class="keywordflow">if</span> align == 3:</div>
-<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;        latex.SetTextAlign(31)</div>
-<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;    <span class="keywordflow">if</span> align == 3:</div>
-<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;        latex.DrawLatex(1 - r, y_off, text)</div>
-<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160;    pad_backup.cd()</div>
-<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160;</div>
-<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;<span class="comment">##@}</span></div>
-<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;</div>
-<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;</div>
-<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;<span class="comment">## @name Limit plotting</span></div>
-<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;<span class="comment">#</span></div>
-<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;<span class="comment">#  @details Common limit-plotting tasks, for example setting the Brazilian</span></div>
-<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;<span class="comment">#      colour scheme for expected limit bands and drawing the associated</span></div>
-<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;<span class="comment">#      TGraphs in the correct order</span></div>
-<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;<span class="comment">##@{</span></div>
-<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;</div>
-<div class="line"><a name="l01437"></a><span class="lineno"><a class="line" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48"> 1437</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">isclose</a>(a, b, rel_tol=1e-9, abs_tol=0.0):</div>
-<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;    <span class="keywordflow">return</span> abs(a-b) &lt;= max(abs_tol, rel_tol * max(abs(a),abs(b)))</div>
-<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;</div>
-<div class="line"><a name="l01440"></a><span class="lineno"><a class="line" href="namespaceplotting.html#ab21cffc955f20d08f9b38b4dd144da5e"> 1440</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#ab21cffc955f20d08f9b38b4dd144da5e">StyleLimitBand</a>(graph_dict, overwrite_style_dict=None):</div>
-<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;    style_dict = {</div>
-<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;            <span class="stringliteral">&#39;obs&#39;</span> : { <span class="stringliteral">&#39;LineWidth&#39;</span> : 2},</div>
-<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;            <span class="stringliteral">&#39;exp0&#39;</span> : { <span class="stringliteral">&#39;LineWidth&#39;</span> : 2, <span class="stringliteral">&#39;LineColor&#39;</span> : R.kRed},</div>
-<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;            <span class="stringliteral">&#39;exp1&#39;</span> : { <span class="stringliteral">&#39;FillColor&#39;</span> : R.kGreen},</div>
-<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;            <span class="stringliteral">&#39;exp2&#39;</span> : { <span class="stringliteral">&#39;FillColor&#39;</span> : R.kYellow}</div>
-<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;            }</div>
-<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;    <span class="keywordflow">if</span> overwrite_style_dict <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;        <span class="keywordflow">for</span> key <span class="keywordflow">in</span> overwrite_style_dict:</div>
-<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;            <span class="keywordflow">if</span> key <span class="keywordflow">in</span> style_dict:</div>
-<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;                style_dict[key].update(overwrite_style_dict[key])</div>
-<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;            <span class="keywordflow">else</span>:</div>
-<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;                style_dict[key] = overwrite_style_dict[key]</div>
-<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;    <span class="keywordflow">for</span> key <span class="keywordflow">in</span> graph_dict:</div>
-<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;        <a class="code" href="namespaceplotting.html#a30511a379335c5e5c295f88dc146e448">Set</a>(graph_dict[key],**style_dict[key])</div>
-<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;</div>
-<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a46caef3f43ba70de6364c881776167d0">DrawLimitBand</a>(pad, graph_dict, draw=[&#39;exp2&#39;, &#39;exp1&#39;, &#39;exp0&#39;, &#39;obs&#39;], draw_legend=None,</div>
-<div class="line"><a name="l01457"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a46caef3f43ba70de6364c881776167d0"> 1457</a></span>&#160;                  legend=<span class="keywordtype">None</span>, legend_overwrite=<span class="keywordtype">None</span>):</div>
-<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160;    legend_dict = {</div>
-<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160;        <span class="stringliteral">&#39;obs&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;Observed&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;LP&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;PLSAME&#39;</span>},</div>
-<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;        <span class="stringliteral">&#39;exp0&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;Expected&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;L&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;LSAME&#39;</span>},</div>
-<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;        <span class="stringliteral">&#39;exp1&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;#pm1#sigma Expected&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;F&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;3SAME&#39;</span>},</div>
-<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160;        <span class="stringliteral">&#39;exp2&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;#pm2#sigma Expected&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;F&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;3SAME&#39;</span>}</div>
-<div class="line"><a name="l01463"></a><span class="lineno"> 1463</span>&#160;    }</div>
-<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;    <span class="keywordflow">if</span> legend_overwrite <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;        <span class="keywordflow">for</span> key <span class="keywordflow">in</span> legend_overwrite:</div>
-<div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160;            <span class="keywordflow">if</span> key <span class="keywordflow">in</span> legend_dict:</div>
-<div class="line"><a name="l01467"></a><span class="lineno"> 1467</span>&#160;                legend_dict[key].update(legend_overwrite[key])</div>
-<div class="line"><a name="l01468"></a><span class="lineno"> 1468</span>&#160;            <span class="keywordflow">else</span>:</div>
-<div class="line"><a name="l01469"></a><span class="lineno"> 1469</span>&#160;                legend_dict[key] = legend_overwrite[key]</div>
-<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;    pad.cd()</div>
-<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160;    <span class="keywordflow">for</span> key <span class="keywordflow">in</span> draw:</div>
-<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160;        <span class="keywordflow">if</span> key <span class="keywordflow">in</span> graph_dict:</div>
-<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;            graph_dict[key].Draw(legend_dict[key][<span class="stringliteral">&#39;DrawStyle&#39;</span>])</div>
-<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160;    <span class="keywordflow">if</span> legend <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160;        <span class="keywordflow">if</span> draw_legend <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160;            draw_legend = reversed(draw)</div>
-<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160;        <span class="keywordflow">for</span> key <span class="keywordflow">in</span> draw_legend:</div>
-<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160;            <span class="keywordflow">if</span> key <span class="keywordflow">in</span> graph_dict: </div>
-<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160;                legend.AddEntry(graph_dict[key],legend_dict[key][<span class="stringliteral">&#39;Label&#39;</span>],legend_dict[key][<span class="stringliteral">&#39;LegendStyle&#39;</span>])</div>
-<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160;</div>
-<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160;</div>
-<div class="line"><a name="l01482"></a><span class="lineno"> 1482</span>&#160;</div>
-<div class="line"><a name="l01483"></a><span class="lineno"> 1483</span>&#160;</div>
-<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160;<span class="comment">##@}</span></div>
-<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160;</div>
-<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;<span class="comment">## @name Contour plotting</span></div>
-<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;<span class="comment">#</span></div>
-<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;<span class="comment">#  @details Creating contour TGraphs using TH2s and TGraph2Ds</span></div>
-<div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160;<span class="comment">##@{</span></div>
-<div class="line"><a name="l01490"></a><span class="lineno"><a class="line" href="namespaceplotting.html#aedc15635a683264dc7f0444709e0549e"> 1490</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#aedc15635a683264dc7f0444709e0549e">contourFromTH2</a>(h2in, threshold, minPoints=10, frameValue=1000.):</div>
-<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;    <span class="comment"># // http://root.cern.ch/root/html/tutorials/hist/ContourList.C.html</span></div>
-<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;    contoursList = [threshold]</div>
-<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160;    contours = array(<span class="stringliteral">&#39;d&#39;</span>, contoursList)</div>
-<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;    <span class="comment"># if (h2in.GetNbinsX() * h2in.GetNbinsY()) &gt; 10000: minPoints = 50</span></div>
-<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160;    <span class="comment"># if (h2in.GetNbinsX() * h2in.GetNbinsY()) &lt;= 100: minPoints = 10</span></div>
-<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;</div>
-<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160;    h2 = <a class="code" href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b">frameTH2D</a>(h2in, threshold, frameValue)</div>
-<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160;</div>
-<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;    h2.SetContour(1, contours)</div>
-<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;</div>
-<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;    <span class="comment"># Draw contours as filled regions, and Save points</span></div>
-<div class="line"><a name="l01502"></a><span class="lineno"> 1502</span>&#160;    <span class="comment"># backup = R.gPad # doesn&#39;t work in pyroot, backup behaves like a ref to gPad</span></div>
-<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160;    canv = R.TCanvas(<span class="stringliteral">&#39;tmp&#39;</span>, <span class="stringliteral">&#39;tmp&#39;</span>)</div>
-<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;    canv.cd()</div>
-<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160;    h2.Draw(<span class="stringliteral">&#39;CONT Z LIST&#39;</span>)</div>
-<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160;    R.gPad.Update()  <span class="comment"># Needed to force the plotting and retrieve the contours in</span></div>
-<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160;</div>
-<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160;    conts = R.gROOT.GetListOfSpecials().FindObject(<span class="stringliteral">&#39;contours&#39;</span>)</div>
-<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160;    contLevel = <span class="keywordtype">None</span></div>
+<div class="line"><a name="l01402"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff"> 1402</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff">DrawTitle</a>(pad, text, align):</div>
+<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;    pad_backup = R.gPad</div>
+<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;    pad.cd()</div>
+<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;    t = pad.GetTopMargin()</div>
+<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;    l = pad.GetLeftMargin()</div>
+<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;    r = pad.GetRightMargin()</div>
+<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;</div>
+<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;    pad_ratio = (float(pad.GetWh()) * pad.GetAbsHNDC()) / \</div>
+<div class="line"><a name="l01410"></a><span class="lineno"> 1410</span>&#160;        (float(pad.GetWw()) * pad.GetAbsWNDC())</div>
+<div class="line"><a name="l01411"></a><span class="lineno"> 1411</span>&#160;    <span class="keywordflow">if</span> pad_ratio &lt; 1.:</div>
+<div class="line"><a name="l01412"></a><span class="lineno"> 1412</span>&#160;        pad_ratio = 1.</div>
+<div class="line"><a name="l01413"></a><span class="lineno"> 1413</span>&#160;</div>
+<div class="line"><a name="l01414"></a><span class="lineno"> 1414</span>&#160;    textSize = 0.6</div>
+<div class="line"><a name="l01415"></a><span class="lineno"> 1415</span>&#160;    textOffset = 0.2</div>
+<div class="line"><a name="l01416"></a><span class="lineno"> 1416</span>&#160;</div>
+<div class="line"><a name="l01417"></a><span class="lineno"> 1417</span>&#160;    latex = R.TLatex()</div>
+<div class="line"><a name="l01418"></a><span class="lineno"> 1418</span>&#160;    latex.SetNDC()</div>
+<div class="line"><a name="l01419"></a><span class="lineno"> 1419</span>&#160;    latex.SetTextAngle(0)</div>
+<div class="line"><a name="l01420"></a><span class="lineno"> 1420</span>&#160;    latex.SetTextColor(R.kBlack)</div>
+<div class="line"><a name="l01421"></a><span class="lineno"> 1421</span>&#160;    latex.SetTextFont(42)</div>
+<div class="line"><a name="l01422"></a><span class="lineno"> 1422</span>&#160;    latex.SetTextSize(textSize * t * pad_ratio)</div>
+<div class="line"><a name="l01423"></a><span class="lineno"> 1423</span>&#160;</div>
+<div class="line"><a name="l01424"></a><span class="lineno"> 1424</span>&#160;    y_off = 1 - t + textOffset * t</div>
+<div class="line"><a name="l01425"></a><span class="lineno"> 1425</span>&#160;    <span class="keywordflow">if</span> align == 1:</div>
+<div class="line"><a name="l01426"></a><span class="lineno"> 1426</span>&#160;        latex.SetTextAlign(11)</div>
+<div class="line"><a name="l01427"></a><span class="lineno"> 1427</span>&#160;    <span class="keywordflow">if</span> align == 1:</div>
+<div class="line"><a name="l01428"></a><span class="lineno"> 1428</span>&#160;        latex.DrawLatex(l, y_off, text)</div>
+<div class="line"><a name="l01429"></a><span class="lineno"> 1429</span>&#160;    <span class="keywordflow">if</span> align == 2:</div>
+<div class="line"><a name="l01430"></a><span class="lineno"> 1430</span>&#160;        latex.SetTextAlign(21)</div>
+<div class="line"><a name="l01431"></a><span class="lineno"> 1431</span>&#160;    <span class="keywordflow">if</span> align == 2:</div>
+<div class="line"><a name="l01432"></a><span class="lineno"> 1432</span>&#160;        latex.DrawLatex(l + (1 - l - r) * 0.5, y_off, text)</div>
+<div class="line"><a name="l01433"></a><span class="lineno"> 1433</span>&#160;    <span class="keywordflow">if</span> align == 3:</div>
+<div class="line"><a name="l01434"></a><span class="lineno"> 1434</span>&#160;        latex.SetTextAlign(31)</div>
+<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;    <span class="keywordflow">if</span> align == 3:</div>
+<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160;        latex.DrawLatex(1 - r, y_off, text)</div>
+<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;    pad_backup.cd()</div>
+<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;</div>
+<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;<span class="comment">##@}</span></div>
+<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;</div>
+<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;</div>
+<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;<span class="comment">## @name Limit plotting</span></div>
+<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;<span class="comment">#</span></div>
+<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;<span class="comment">#  @details Common limit-plotting tasks, for example setting the Brazilian</span></div>
+<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;<span class="comment">#      colour scheme for expected limit bands and drawing the associated</span></div>
+<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;<span class="comment">#      TGraphs in the correct order</span></div>
+<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;<span class="comment">##@{</span></div>
+<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;</div>
+<div class="line"><a name="l01449"></a><span class="lineno"><a class="line" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48"> 1449</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">isclose</a>(a, b, rel_tol=1e-9, abs_tol=0.0):</div>
+<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;    <span class="keywordflow">return</span> abs(a-b) &lt;= max(abs_tol, rel_tol * max(abs(a),abs(b)))</div>
+<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;</div>
+<div class="line"><a name="l01452"></a><span class="lineno"><a class="line" href="namespaceplotting.html#ab21cffc955f20d08f9b38b4dd144da5e"> 1452</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#ab21cffc955f20d08f9b38b4dd144da5e">StyleLimitBand</a>(graph_dict, overwrite_style_dict=None):</div>
+<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;    style_dict = {</div>
+<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;            <span class="stringliteral">&#39;obs&#39;</span> : { <span class="stringliteral">&#39;LineWidth&#39;</span> : 2},</div>
+<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;            <span class="stringliteral">&#39;exp0&#39;</span> : { <span class="stringliteral">&#39;LineWidth&#39;</span> : 2, <span class="stringliteral">&#39;LineColor&#39;</span> : R.kRed},</div>
+<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;            <span class="stringliteral">&#39;exp1&#39;</span> : { <span class="stringliteral">&#39;FillColor&#39;</span> : R.kGreen},</div>
+<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160;            <span class="stringliteral">&#39;exp2&#39;</span> : { <span class="stringliteral">&#39;FillColor&#39;</span> : R.kYellow}</div>
+<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160;            }</div>
+<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160;    <span class="keywordflow">if</span> overwrite_style_dict <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;        <span class="keywordflow">for</span> key <span class="keywordflow">in</span> overwrite_style_dict:</div>
+<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;            <span class="keywordflow">if</span> key <span class="keywordflow">in</span> style_dict:</div>
+<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160;                style_dict[key].update(overwrite_style_dict[key])</div>
+<div class="line"><a name="l01463"></a><span class="lineno"> 1463</span>&#160;            <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;                style_dict[key] = overwrite_style_dict[key]</div>
+<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;    <span class="keywordflow">for</span> key <span class="keywordflow">in</span> graph_dict:</div>
+<div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160;        <a class="code" href="namespaceplotting.html#a30511a379335c5e5c295f88dc146e448">Set</a>(graph_dict[key],**style_dict[key])</div>
+<div class="line"><a name="l01467"></a><span class="lineno"> 1467</span>&#160;</div>
+<div class="line"><a name="l01468"></a><span class="lineno"> 1468</span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a46caef3f43ba70de6364c881776167d0">DrawLimitBand</a>(pad, graph_dict, draw=[&#39;exp2&#39;, &#39;exp1&#39;, &#39;exp0&#39;, &#39;obs&#39;], draw_legend=None,</div>
+<div class="line"><a name="l01469"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a46caef3f43ba70de6364c881776167d0"> 1469</a></span>&#160;                  legend=<span class="keywordtype">None</span>, legend_overwrite=<span class="keywordtype">None</span>):</div>
+<div class="line"><a name="l01470"></a><span class="lineno"> 1470</span>&#160;    legend_dict = {</div>
+<div class="line"><a name="l01471"></a><span class="lineno"> 1471</span>&#160;        <span class="stringliteral">&#39;obs&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;Observed&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;LP&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;PLSAME&#39;</span>},</div>
+<div class="line"><a name="l01472"></a><span class="lineno"> 1472</span>&#160;        <span class="stringliteral">&#39;exp0&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;Expected&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;L&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;LSAME&#39;</span>},</div>
+<div class="line"><a name="l01473"></a><span class="lineno"> 1473</span>&#160;        <span class="stringliteral">&#39;exp1&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;#pm1#sigma Expected&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;F&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;3SAME&#39;</span>},</div>
+<div class="line"><a name="l01474"></a><span class="lineno"> 1474</span>&#160;        <span class="stringliteral">&#39;exp2&#39;</span> : { <span class="stringliteral">&#39;Label&#39;</span> : <span class="stringliteral">&#39;#pm2#sigma Expected&#39;</span>, <span class="stringliteral">&#39;LegendStyle&#39;</span> : <span class="stringliteral">&#39;F&#39;</span>, <span class="stringliteral">&#39;DrawStyle&#39;</span> : <span class="stringliteral">&#39;3SAME&#39;</span>}</div>
+<div class="line"><a name="l01475"></a><span class="lineno"> 1475</span>&#160;    }</div>
+<div class="line"><a name="l01476"></a><span class="lineno"> 1476</span>&#160;    <span class="keywordflow">if</span> legend_overwrite <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a name="l01477"></a><span class="lineno"> 1477</span>&#160;        <span class="keywordflow">for</span> key <span class="keywordflow">in</span> legend_overwrite:</div>
+<div class="line"><a name="l01478"></a><span class="lineno"> 1478</span>&#160;            <span class="keywordflow">if</span> key <span class="keywordflow">in</span> legend_dict:</div>
+<div class="line"><a name="l01479"></a><span class="lineno"> 1479</span>&#160;                legend_dict[key].update(legend_overwrite[key])</div>
+<div class="line"><a name="l01480"></a><span class="lineno"> 1480</span>&#160;            <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l01481"></a><span class="lineno"> 1481</span>&#160;                legend_dict[key] = legend_overwrite[key]</div>
+<div class="line"><a name="l01482"></a><span class="lineno"> 1482</span>&#160;    pad.cd()</div>
+<div class="line"><a name="l01483"></a><span class="lineno"> 1483</span>&#160;    <span class="keywordflow">for</span> key <span class="keywordflow">in</span> draw:</div>
+<div class="line"><a name="l01484"></a><span class="lineno"> 1484</span>&#160;        <span class="keywordflow">if</span> key <span class="keywordflow">in</span> graph_dict:</div>
+<div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160;            graph_dict[key].Draw(legend_dict[key][<span class="stringliteral">&#39;DrawStyle&#39;</span>])</div>
+<div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;    <span class="keywordflow">if</span> legend <span class="keywordflow">is</span> <span class="keywordflow">not</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;        <span class="keywordflow">if</span> draw_legend <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;            draw_legend = reversed(draw)</div>
+<div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160;        <span class="keywordflow">for</span> key <span class="keywordflow">in</span> draw_legend:</div>
+<div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160;            <span class="keywordflow">if</span> key <span class="keywordflow">in</span> graph_dict: </div>
+<div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;                legend.AddEntry(graph_dict[key],legend_dict[key][<span class="stringliteral">&#39;Label&#39;</span>],legend_dict[key][<span class="stringliteral">&#39;LegendStyle&#39;</span>])</div>
+<div class="line"><a name="l01492"></a><span class="lineno"> 1492</span>&#160;</div>
+<div class="line"><a name="l01493"></a><span class="lineno"> 1493</span>&#160;</div>
+<div class="line"><a name="l01494"></a><span class="lineno"> 1494</span>&#160;</div>
+<div class="line"><a name="l01495"></a><span class="lineno"> 1495</span>&#160;</div>
+<div class="line"><a name="l01496"></a><span class="lineno"> 1496</span>&#160;<span class="comment">##@}</span></div>
+<div class="line"><a name="l01497"></a><span class="lineno"> 1497</span>&#160;</div>
+<div class="line"><a name="l01498"></a><span class="lineno"> 1498</span>&#160;<span class="comment">## @name Contour plotting</span></div>
+<div class="line"><a name="l01499"></a><span class="lineno"> 1499</span>&#160;<span class="comment">#</span></div>
+<div class="line"><a name="l01500"></a><span class="lineno"> 1500</span>&#160;<span class="comment">#  @details Creating contour TGraphs using TH2s and TGraph2Ds</span></div>
+<div class="line"><a name="l01501"></a><span class="lineno"> 1501</span>&#160;<span class="comment">##@{</span></div>
+<div class="line"><a name="l01502"></a><span class="lineno"><a class="line" href="namespaceplotting.html#aedc15635a683264dc7f0444709e0549e"> 1502</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#aedc15635a683264dc7f0444709e0549e">contourFromTH2</a>(h2in, threshold, minPoints=10, frameValue=1000.):</div>
+<div class="line"><a name="l01503"></a><span class="lineno"> 1503</span>&#160;    <span class="comment"># // http://root.cern.ch/root/html/tutorials/hist/ContourList.C.html</span></div>
+<div class="line"><a name="l01504"></a><span class="lineno"> 1504</span>&#160;    contoursList = [threshold]</div>
+<div class="line"><a name="l01505"></a><span class="lineno"> 1505</span>&#160;    contours = array(<span class="stringliteral">&#39;d&#39;</span>, contoursList)</div>
+<div class="line"><a name="l01506"></a><span class="lineno"> 1506</span>&#160;    <span class="comment"># if (h2in.GetNbinsX() * h2in.GetNbinsY()) &gt; 10000: minPoints = 50</span></div>
+<div class="line"><a name="l01507"></a><span class="lineno"> 1507</span>&#160;    <span class="comment"># if (h2in.GetNbinsX() * h2in.GetNbinsY()) &lt;= 100: minPoints = 10</span></div>
+<div class="line"><a name="l01508"></a><span class="lineno"> 1508</span>&#160;</div>
+<div class="line"><a name="l01509"></a><span class="lineno"> 1509</span>&#160;    h2 = <a class="code" href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b">frameTH2D</a>(h2in, threshold, frameValue)</div>
 <div class="line"><a name="l01510"></a><span class="lineno"> 1510</span>&#160;</div>
-<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160;    <span class="keywordflow">if</span> conts <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> conts.GetSize() == 0:</div>
-<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160;        <span class="keywordflow">print</span> <span class="stringliteral">&#39;*** No Contours Were Extracted!&#39;</span></div>
-<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;        <span class="keywordflow">return</span> <span class="keywordtype">None</span></div>
-<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160;    ret = R.TList()</div>
-<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(conts.GetSize()):</div>
-<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;        contLevel = conts.At(i)</div>
-<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;        <span class="keywordflow">print</span> <span class="stringliteral">&#39;&gt;&gt; Contour %d has %d Graphs&#39;</span> % (i, contLevel.GetSize())</div>
-<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;        <span class="keywordflow">for</span> j <span class="keywordflow">in</span> xrange(contLevel.GetSize()):</div>
-<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;            gr1 = contLevel.At(j)</div>
-<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;            <span class="keywordflow">print</span><span class="stringliteral">&#39;\t Graph %d has %d points&#39;</span> % (j, gr1.GetN())</div>
-<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;            <span class="keywordflow">if</span> gr1.GetN() &gt; minPoints:</div>
-<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;                ret.Add(gr1.Clone())</div>
-<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;            <span class="comment"># // break;</span></div>
-<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160;    <span class="comment"># backup.cd()</span></div>
-<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160;    canv.Close()</div>
-<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;    <span class="keywordflow">return</span> ret</div>
-<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160;</div>
-<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160;</div>
-<div class="line"><a name="l01529"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b"> 1529</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b">frameTH2D</a>(hist, threshold, frameValue=1000):</div>
-<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;    <span class="comment"># Now supports variable-binned histograms First adds a narrow frame (1% of</span></div>
-<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;    <span class="comment"># of bin widths) around the outside with same values as the real edge. Then</span></div>
-<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160;    <span class="comment"># adds another frame another frame around this one filled with some chosen</span></div>
-<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160;    <span class="comment"># value that will make the contours close</span></div>
-<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;</div>
-<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;    <span class="comment"># Get lists of the bin edges</span></div>
-<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;    x_bins = [hist.GetXaxis().GetBinLowEdge(x)</div>
-<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160;              <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1, hist.GetNbinsX() + 2)]</div>
-<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160;    y_bins = [hist.GetYaxis().GetBinLowEdge(y)</div>
-<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;              <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1, hist.GetNbinsY() + 2)]</div>
+<div class="line"><a name="l01511"></a><span class="lineno"> 1511</span>&#160;    h2.SetContour(1, contours)</div>
+<div class="line"><a name="l01512"></a><span class="lineno"> 1512</span>&#160;</div>
+<div class="line"><a name="l01513"></a><span class="lineno"> 1513</span>&#160;    <span class="comment"># Draw contours as filled regions, and Save points</span></div>
+<div class="line"><a name="l01514"></a><span class="lineno"> 1514</span>&#160;    <span class="comment"># backup = R.gPad # doesn&#39;t work in pyroot, backup behaves like a ref to gPad</span></div>
+<div class="line"><a name="l01515"></a><span class="lineno"> 1515</span>&#160;    canv = R.TCanvas(<span class="stringliteral">&#39;tmp&#39;</span>, <span class="stringliteral">&#39;tmp&#39;</span>)</div>
+<div class="line"><a name="l01516"></a><span class="lineno"> 1516</span>&#160;    canv.cd()</div>
+<div class="line"><a name="l01517"></a><span class="lineno"> 1517</span>&#160;    h2.Draw(<span class="stringliteral">&#39;CONT Z LIST&#39;</span>)</div>
+<div class="line"><a name="l01518"></a><span class="lineno"> 1518</span>&#160;    R.gPad.Update()  <span class="comment"># Needed to force the plotting and retrieve the contours in</span></div>
+<div class="line"><a name="l01519"></a><span class="lineno"> 1519</span>&#160;</div>
+<div class="line"><a name="l01520"></a><span class="lineno"> 1520</span>&#160;    conts = R.gROOT.GetListOfSpecials().FindObject(<span class="stringliteral">&#39;contours&#39;</span>)</div>
+<div class="line"><a name="l01521"></a><span class="lineno"> 1521</span>&#160;    contLevel = <span class="keywordtype">None</span></div>
+<div class="line"><a name="l01522"></a><span class="lineno"> 1522</span>&#160;</div>
+<div class="line"><a name="l01523"></a><span class="lineno"> 1523</span>&#160;    <span class="keywordflow">if</span> conts <span class="keywordflow">is</span> <span class="keywordtype">None</span> <span class="keywordflow">or</span> conts.GetSize() == 0:</div>
+<div class="line"><a name="l01524"></a><span class="lineno"> 1524</span>&#160;        <span class="keywordflow">print</span> <span class="stringliteral">&#39;*** No Contours Were Extracted!&#39;</span></div>
+<div class="line"><a name="l01525"></a><span class="lineno"> 1525</span>&#160;        <span class="keywordflow">return</span> <span class="keywordtype">None</span></div>
+<div class="line"><a name="l01526"></a><span class="lineno"> 1526</span>&#160;    ret = R.TList()</div>
+<div class="line"><a name="l01527"></a><span class="lineno"> 1527</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(conts.GetSize()):</div>
+<div class="line"><a name="l01528"></a><span class="lineno"> 1528</span>&#160;        contLevel = conts.At(i)</div>
+<div class="line"><a name="l01529"></a><span class="lineno"> 1529</span>&#160;        <span class="keywordflow">print</span> <span class="stringliteral">&#39;&gt;&gt; Contour %d has %d Graphs&#39;</span> % (i, contLevel.GetSize())</div>
+<div class="line"><a name="l01530"></a><span class="lineno"> 1530</span>&#160;        <span class="keywordflow">for</span> j <span class="keywordflow">in</span> xrange(contLevel.GetSize()):</div>
+<div class="line"><a name="l01531"></a><span class="lineno"> 1531</span>&#160;            gr1 = contLevel.At(j)</div>
+<div class="line"><a name="l01532"></a><span class="lineno"> 1532</span>&#160;            <span class="keywordflow">print</span><span class="stringliteral">&#39;\t Graph %d has %d points&#39;</span> % (j, gr1.GetN())</div>
+<div class="line"><a name="l01533"></a><span class="lineno"> 1533</span>&#160;            <span class="keywordflow">if</span> gr1.GetN() &gt; minPoints:</div>
+<div class="line"><a name="l01534"></a><span class="lineno"> 1534</span>&#160;                ret.Add(gr1.Clone())</div>
+<div class="line"><a name="l01535"></a><span class="lineno"> 1535</span>&#160;            <span class="comment"># // break;</span></div>
+<div class="line"><a name="l01536"></a><span class="lineno"> 1536</span>&#160;    <span class="comment"># backup.cd()</span></div>
+<div class="line"><a name="l01537"></a><span class="lineno"> 1537</span>&#160;    canv.Close()</div>
+<div class="line"><a name="l01538"></a><span class="lineno"> 1538</span>&#160;    <span class="keywordflow">return</span> ret</div>
+<div class="line"><a name="l01539"></a><span class="lineno"> 1539</span>&#160;</div>
 <div class="line"><a name="l01540"></a><span class="lineno"> 1540</span>&#160;</div>
-<div class="line"><a name="l01541"></a><span class="lineno"> 1541</span>&#160;    <span class="comment"># New bin edge arrays will need an extra four values</span></div>
-<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;    x_new = [0.] * (len(x_bins) + 4)</div>
-<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;    y_new = [0.] * (len(y_bins) + 4)</div>
-<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;</div>
-<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;    <span class="comment"># Calculate bin widths at the edges</span></div>
-<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;    xw1 = x_bins[1] - x_bins[0]</div>
-<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;    xw2 = x_bins[-1] - x_bins[-2]</div>
-<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;    yw1 = y_bins[1] - y_bins[0]</div>
-<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;    yw2 = y_bins[-1] - y_bins[-2]</div>
-<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;</div>
-<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;    <span class="comment"># Set the edges of the outer framing bins and the adjusted</span></div>
-<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;    <span class="comment"># edge of the real edge bins</span></div>
-<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;    x_new[0] = x_bins[0] - 2 * xw1 * 0.02</div>
-<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;    x_new[1] = x_bins[0] - 1 * xw1 * 0.02</div>
-<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;    x_new[-1] = x_bins[-1] + 2 * xw2 * 0.02</div>
-<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;    x_new[-2] = x_bins[-1] + 1 * xw2 * 0.02</div>
-<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;    y_new[0] = y_bins[0] - 2 * yw1 * 0.02</div>
-<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;    y_new[1] = y_bins[0] - 1 * yw1 * 0.02</div>
-<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;    y_new[-1] = y_bins[-1] + 2 * yw2 * 0.02</div>
-<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;    y_new[-2] = y_bins[-1] + 1 * yw2 * 0.02</div>
-<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160;</div>
-<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160;    <span class="comment"># Copy the remaining bin edges from the hist</span></div>
-<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(0, len(x_bins)):</div>
-<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;        x_new[i + 2] = x_bins[i]</div>
-<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(0, len(y_bins)):</div>
-<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;        y_new[i + 2] = y_bins[i]</div>
-<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;</div>
-<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160;    <span class="comment"># print x_new</span></div>
-<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160;    <span class="comment"># print y_new</span></div>
-<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;</div>
-<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;    framed = R.TH2D(<span class="stringliteral">&#39;%s framed&#39;</span> % hist.GetName(), <span class="stringliteral">&#39;%s framed&#39;</span> % hist.GetTitle(), len(</div>
-<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;        x_new) - 1, array(<span class="stringliteral">&#39;d&#39;</span>, x_new), len(y_new) - 1, array(<span class="stringliteral">&#39;d&#39;</span>, y_new))</div>
-<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;    framed.SetDirectory(0)</div>
-<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;</div>
-<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160;    <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1, framed.GetNbinsX() + 1):</div>
-<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;        <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1, framed.GetNbinsY() + 1):</div>
-<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160;            <span class="keywordflow">if</span> x == 1 <span class="keywordflow">or</span> x == framed.GetNbinsX() <span class="keywordflow">or</span> y == 1 <span class="keywordflow">or</span> y == framed.GetNbinsY():</div>
-<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;        <span class="comment"># This is a a frame bin</span></div>
-<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;                framed.SetBinContent(x, y, frameValue)</div>
-<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;            <span class="keywordflow">else</span>:</div>
-<div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;                <span class="comment"># adjust x and y if we&#39;re in the first frame so as to copy the output</span></div>
-<div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;                <span class="comment"># values from the real TH2</span></div>
-<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;                ux = x</div>
-<div class="line"><a name="l01584"></a><span class="lineno"> 1584</span>&#160;                uy = y</div>
-<div class="line"><a name="l01585"></a><span class="lineno"> 1585</span>&#160;                <span class="keywordflow">if</span> x == 2:</div>
-<div class="line"><a name="l01586"></a><span class="lineno"> 1586</span>&#160;                    ux += 1</div>
-<div class="line"><a name="l01587"></a><span class="lineno"> 1587</span>&#160;                <span class="keywordflow">elif</span> x == (len(x_new) - 2):</div>
-<div class="line"><a name="l01588"></a><span class="lineno"> 1588</span>&#160;                    ux -= 1</div>
-<div class="line"><a name="l01589"></a><span class="lineno"> 1589</span>&#160;                <span class="keywordflow">if</span> y == 2:</div>
-<div class="line"><a name="l01590"></a><span class="lineno"> 1590</span>&#160;                    uy += 1</div>
-<div class="line"><a name="l01591"></a><span class="lineno"> 1591</span>&#160;                <span class="keywordflow">elif</span> y == (len(y_new) - 2):</div>
-<div class="line"><a name="l01592"></a><span class="lineno"> 1592</span>&#160;                    uy -= 1</div>
-<div class="line"><a name="l01593"></a><span class="lineno"> 1593</span>&#160;                framed.SetBinContent(x, y, hist.GetBinContent(ux - 2, uy - 2))</div>
-<div class="line"><a name="l01594"></a><span class="lineno"> 1594</span>&#160;    <span class="keywordflow">return</span> framed</div>
-<div class="line"><a name="l01595"></a><span class="lineno"> 1595</span>&#160;</div>
-<div class="line"><a name="l01596"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a943400bb9bba32dfd5c768784d317644"> 1596</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a943400bb9bba32dfd5c768784d317644">fastFillTH2</a>(hist2d, graph, initalValue=99999, interpolateMissing=False):</div>
-<div class="line"><a name="l01597"></a><span class="lineno"> 1597</span>&#160;    <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsX()+1):</div>
-<div class="line"><a name="l01598"></a><span class="lineno"> 1598</span>&#160;        <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsY()+1):</div>
-<div class="line"><a name="l01599"></a><span class="lineno"> 1599</span>&#160;            hist2d.SetBinContent(x,y,initalValue)</div>
-<div class="line"><a name="l01600"></a><span class="lineno"> 1600</span>&#160;    <span class="comment"># for i in xrange(graph.GetN()):</span></div>
-<div class="line"><a name="l01601"></a><span class="lineno"> 1601</span>&#160;        <span class="comment"># hist2d.Fill(graph.GetX()[i],graph.GetY()[i],graph.GetZ()[i])</span></div>
-<div class="line"><a name="l01602"></a><span class="lineno"> 1602</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(graph.GetN()):</div>
-<div class="line"><a name="l01603"></a><span class="lineno"> 1603</span>&#160;        xbin = hist2d.GetXaxis().FindBin(graph.GetX()[i])</div>
-<div class="line"><a name="l01604"></a><span class="lineno"> 1604</span>&#160;        ybin = hist2d.GetYaxis().FindBin(graph.GetY()[i])</div>
-<div class="line"><a name="l01605"></a><span class="lineno"> 1605</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">isclose</a>(hist2d.GetXaxis().GetBinCenter(xbin), graph.GetX()[i], rel_tol=1e-2) <span class="keywordflow">and</span> <a class="code" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">isclose</a>(hist2d.GetYaxis().GetBinCenter(ybin), graph.GetY()[i], rel_tol=1e-2):</div>
-<div class="line"><a name="l01606"></a><span class="lineno"> 1606</span>&#160;            hist2d.SetBinContent(xbin, ybin, graph.GetZ()[i])</div>
-<div class="line"><a name="l01607"></a><span class="lineno"> 1607</span>&#160;    interpolated = 0</div>
-<div class="line"><a name="l01608"></a><span class="lineno"> 1608</span>&#160;    <span class="keywordflow">if</span> interpolateMissing:</div>
-<div class="line"><a name="l01609"></a><span class="lineno"> 1609</span>&#160;        <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsX()+1):</div>
-<div class="line"><a name="l01610"></a><span class="lineno"> 1610</span>&#160;            <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsY()+1):</div>
-<div class="line"><a name="l01611"></a><span class="lineno"> 1611</span>&#160;                <span class="keywordflow">if</span> hist2d.GetBinContent(x,y) == initalValue:</div>
-<div class="line"><a name="l01612"></a><span class="lineno"> 1612</span>&#160;                    interpolated += 1</div>
-<div class="line"><a name="l01613"></a><span class="lineno"> 1613</span>&#160;                    hist2d.SetBinContent(x, y, graph.Interpolate(hist2d.GetXaxis().GetBinCenter(x),hist2d.GetYaxis().GetBinCenter(y)))</div>
-<div class="line"><a name="l01614"></a><span class="lineno"> 1614</span>&#160;</div>
-<div class="line"><a name="l01615"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a55dbe65aea3580a7e9c3dba8f4c7dd2e"> 1615</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a55dbe65aea3580a7e9c3dba8f4c7dd2e">fillTH2</a>(hist2d, graph):</div>
-<div class="line"><a name="l01616"></a><span class="lineno"> 1616</span>&#160;    <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1, hist2d.GetNbinsX() + 1):</div>
-<div class="line"><a name="l01617"></a><span class="lineno"> 1617</span>&#160;        <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1, hist2d.GetNbinsY() + 1):</div>
-<div class="line"><a name="l01618"></a><span class="lineno"> 1618</span>&#160;            xc = hist2d.GetXaxis().GetBinCenter(x)</div>
-<div class="line"><a name="l01619"></a><span class="lineno"> 1619</span>&#160;            yc = hist2d.GetYaxis().GetBinCenter(y)</div>
-<div class="line"><a name="l01620"></a><span class="lineno"> 1620</span>&#160;            val = graph.Interpolate(xc, yc)</div>
-<div class="line"><a name="l01621"></a><span class="lineno"> 1621</span>&#160;            hist2d.SetBinContent(x, y, val)</div>
-<div class="line"><a name="l01622"></a><span class="lineno"> 1622</span>&#160;</div>
-<div class="line"><a name="l01623"></a><span class="lineno"> 1623</span>&#160;</div>
-<div class="line"><a name="l01624"></a><span class="lineno"> 1624</span>&#160;<span class="comment"># Functions &#39;NewInterpolate&#39; and &#39;rebin&#39; are taken, translated and modified into python from:</span></div>
-<div class="line"><a name="l01625"></a><span class="lineno"> 1625</span>&#160;<span class="comment"># https://indico.cern.ch/event/256523/contribution/2/attachments/450198/624259/07JUN2013_cawest.pdf</span></div>
-<div class="line"><a name="l01626"></a><span class="lineno"> 1626</span>&#160;<span class="comment"># http://hep.ucsb.edu/people/cawest/interpolation/interpolate.h</span></div>
-<div class="line"><a name="l01627"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee"> 1627</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee">NewInterpolate</a>(hist):</div>
-<div class="line"><a name="l01628"></a><span class="lineno"> 1628</span>&#160;    histCopy = hist.Clone()</div>
-<div class="line"><a name="l01629"></a><span class="lineno"> 1629</span>&#160;</div>
-<div class="line"><a name="l01630"></a><span class="lineno"> 1630</span>&#160;    <span class="comment"># make temporary histograms to store the results of both steps</span></div>
-<div class="line"><a name="l01631"></a><span class="lineno"> 1631</span>&#160;    hist_step1 = histCopy.Clone()</div>
-<div class="line"><a name="l01632"></a><span class="lineno"> 1632</span>&#160;    hist_step1.Reset()</div>
-<div class="line"><a name="l01633"></a><span class="lineno"> 1633</span>&#160;    hist_step2 = histCopy.Clone()</div>
-<div class="line"><a name="l01634"></a><span class="lineno"> 1634</span>&#160;    hist_step2.Reset()</div>
+<div class="line"><a name="l01541"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b"> 1541</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b">frameTH2D</a>(hist, threshold, frameValue=1000):</div>
+<div class="line"><a name="l01542"></a><span class="lineno"> 1542</span>&#160;    <span class="comment"># Now supports variable-binned histograms First adds a narrow frame (1% of</span></div>
+<div class="line"><a name="l01543"></a><span class="lineno"> 1543</span>&#160;    <span class="comment"># of bin widths) around the outside with same values as the real edge. Then</span></div>
+<div class="line"><a name="l01544"></a><span class="lineno"> 1544</span>&#160;    <span class="comment"># adds another frame another frame around this one filled with some chosen</span></div>
+<div class="line"><a name="l01545"></a><span class="lineno"> 1545</span>&#160;    <span class="comment"># value that will make the contours close</span></div>
+<div class="line"><a name="l01546"></a><span class="lineno"> 1546</span>&#160;</div>
+<div class="line"><a name="l01547"></a><span class="lineno"> 1547</span>&#160;    <span class="comment"># Get lists of the bin edges</span></div>
+<div class="line"><a name="l01548"></a><span class="lineno"> 1548</span>&#160;    x_bins = [hist.GetXaxis().GetBinLowEdge(x)</div>
+<div class="line"><a name="l01549"></a><span class="lineno"> 1549</span>&#160;              <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1, hist.GetNbinsX() + 2)]</div>
+<div class="line"><a name="l01550"></a><span class="lineno"> 1550</span>&#160;    y_bins = [hist.GetYaxis().GetBinLowEdge(y)</div>
+<div class="line"><a name="l01551"></a><span class="lineno"> 1551</span>&#160;              <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1, hist.GetNbinsY() + 2)]</div>
+<div class="line"><a name="l01552"></a><span class="lineno"> 1552</span>&#160;</div>
+<div class="line"><a name="l01553"></a><span class="lineno"> 1553</span>&#160;    <span class="comment"># New bin edge arrays will need an extra four values</span></div>
+<div class="line"><a name="l01554"></a><span class="lineno"> 1554</span>&#160;    x_new = [0.] * (len(x_bins) + 4)</div>
+<div class="line"><a name="l01555"></a><span class="lineno"> 1555</span>&#160;    y_new = [0.] * (len(y_bins) + 4)</div>
+<div class="line"><a name="l01556"></a><span class="lineno"> 1556</span>&#160;</div>
+<div class="line"><a name="l01557"></a><span class="lineno"> 1557</span>&#160;    <span class="comment"># Calculate bin widths at the edges</span></div>
+<div class="line"><a name="l01558"></a><span class="lineno"> 1558</span>&#160;    xw1 = x_bins[1] - x_bins[0]</div>
+<div class="line"><a name="l01559"></a><span class="lineno"> 1559</span>&#160;    xw2 = x_bins[-1] - x_bins[-2]</div>
+<div class="line"><a name="l01560"></a><span class="lineno"> 1560</span>&#160;    yw1 = y_bins[1] - y_bins[0]</div>
+<div class="line"><a name="l01561"></a><span class="lineno"> 1561</span>&#160;    yw2 = y_bins[-1] - y_bins[-2]</div>
+<div class="line"><a name="l01562"></a><span class="lineno"> 1562</span>&#160;</div>
+<div class="line"><a name="l01563"></a><span class="lineno"> 1563</span>&#160;    <span class="comment"># Set the edges of the outer framing bins and the adjusted</span></div>
+<div class="line"><a name="l01564"></a><span class="lineno"> 1564</span>&#160;    <span class="comment"># edge of the real edge bins</span></div>
+<div class="line"><a name="l01565"></a><span class="lineno"> 1565</span>&#160;    x_new[0] = x_bins[0] - 2 * xw1 * 0.02</div>
+<div class="line"><a name="l01566"></a><span class="lineno"> 1566</span>&#160;    x_new[1] = x_bins[0] - 1 * xw1 * 0.02</div>
+<div class="line"><a name="l01567"></a><span class="lineno"> 1567</span>&#160;    x_new[-1] = x_bins[-1] + 2 * xw2 * 0.02</div>
+<div class="line"><a name="l01568"></a><span class="lineno"> 1568</span>&#160;    x_new[-2] = x_bins[-1] + 1 * xw2 * 0.02</div>
+<div class="line"><a name="l01569"></a><span class="lineno"> 1569</span>&#160;    y_new[0] = y_bins[0] - 2 * yw1 * 0.02</div>
+<div class="line"><a name="l01570"></a><span class="lineno"> 1570</span>&#160;    y_new[1] = y_bins[0] - 1 * yw1 * 0.02</div>
+<div class="line"><a name="l01571"></a><span class="lineno"> 1571</span>&#160;    y_new[-1] = y_bins[-1] + 2 * yw2 * 0.02</div>
+<div class="line"><a name="l01572"></a><span class="lineno"> 1572</span>&#160;    y_new[-2] = y_bins[-1] + 1 * yw2 * 0.02</div>
+<div class="line"><a name="l01573"></a><span class="lineno"> 1573</span>&#160;</div>
+<div class="line"><a name="l01574"></a><span class="lineno"> 1574</span>&#160;    <span class="comment"># Copy the remaining bin edges from the hist</span></div>
+<div class="line"><a name="l01575"></a><span class="lineno"> 1575</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(0, len(x_bins)):</div>
+<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;        x_new[i + 2] = x_bins[i]</div>
+<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(0, len(y_bins)):</div>
+<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;        y_new[i + 2] = y_bins[i]</div>
+<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;</div>
+<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;    <span class="comment"># print x_new</span></div>
+<div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;    <span class="comment"># print y_new</span></div>
+<div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;</div>
+<div class="line"><a name="l01583"></a><span class="lineno"> 1583</span>&#160;    framed = R.TH2D(<span class="stringliteral">&#39;%s framed&#39;</span> % hist.GetName(), <span class="stringliteral">&#39;%s framed&#39;</span> % hist.GetTitle(), len(</div>
+<div class="line"><a name="l01584"></a><span class="lineno"> 1584</span>&#160;        x_new) - 1, array(<span class="stringliteral">&#39;d&#39;</span>, x_new), len(y_new) - 1, array(<span class="stringliteral">&#39;d&#39;</span>, y_new))</div>
+<div class="line"><a name="l01585"></a><span class="lineno"> 1585</span>&#160;    framed.SetDirectory(0)</div>
+<div class="line"><a name="l01586"></a><span class="lineno"> 1586</span>&#160;</div>
+<div class="line"><a name="l01587"></a><span class="lineno"> 1587</span>&#160;    <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1, framed.GetNbinsX() + 1):</div>
+<div class="line"><a name="l01588"></a><span class="lineno"> 1588</span>&#160;        <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1, framed.GetNbinsY() + 1):</div>
+<div class="line"><a name="l01589"></a><span class="lineno"> 1589</span>&#160;            <span class="keywordflow">if</span> x == 1 <span class="keywordflow">or</span> x == framed.GetNbinsX() <span class="keywordflow">or</span> y == 1 <span class="keywordflow">or</span> y == framed.GetNbinsY():</div>
+<div class="line"><a name="l01590"></a><span class="lineno"> 1590</span>&#160;        <span class="comment"># This is a a frame bin</span></div>
+<div class="line"><a name="l01591"></a><span class="lineno"> 1591</span>&#160;                framed.SetBinContent(x, y, frameValue)</div>
+<div class="line"><a name="l01592"></a><span class="lineno"> 1592</span>&#160;            <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l01593"></a><span class="lineno"> 1593</span>&#160;                <span class="comment"># adjust x and y if we&#39;re in the first frame so as to copy the output</span></div>
+<div class="line"><a name="l01594"></a><span class="lineno"> 1594</span>&#160;                <span class="comment"># values from the real TH2</span></div>
+<div class="line"><a name="l01595"></a><span class="lineno"> 1595</span>&#160;                ux = x</div>
+<div class="line"><a name="l01596"></a><span class="lineno"> 1596</span>&#160;                uy = y</div>
+<div class="line"><a name="l01597"></a><span class="lineno"> 1597</span>&#160;                <span class="keywordflow">if</span> x == 2:</div>
+<div class="line"><a name="l01598"></a><span class="lineno"> 1598</span>&#160;                    ux += 1</div>
+<div class="line"><a name="l01599"></a><span class="lineno"> 1599</span>&#160;                <span class="keywordflow">elif</span> x == (len(x_new) - 2):</div>
+<div class="line"><a name="l01600"></a><span class="lineno"> 1600</span>&#160;                    ux -= 1</div>
+<div class="line"><a name="l01601"></a><span class="lineno"> 1601</span>&#160;                <span class="keywordflow">if</span> y == 2:</div>
+<div class="line"><a name="l01602"></a><span class="lineno"> 1602</span>&#160;                    uy += 1</div>
+<div class="line"><a name="l01603"></a><span class="lineno"> 1603</span>&#160;                <span class="keywordflow">elif</span> y == (len(y_new) - 2):</div>
+<div class="line"><a name="l01604"></a><span class="lineno"> 1604</span>&#160;                    uy -= 1</div>
+<div class="line"><a name="l01605"></a><span class="lineno"> 1605</span>&#160;                framed.SetBinContent(x, y, hist.GetBinContent(ux - 2, uy - 2))</div>
+<div class="line"><a name="l01606"></a><span class="lineno"> 1606</span>&#160;    <span class="keywordflow">return</span> framed</div>
+<div class="line"><a name="l01607"></a><span class="lineno"> 1607</span>&#160;</div>
+<div class="line"><a name="l01608"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a943400bb9bba32dfd5c768784d317644"> 1608</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a943400bb9bba32dfd5c768784d317644">fastFillTH2</a>(hist2d, graph, initalValue=99999, interpolateMissing=False):</div>
+<div class="line"><a name="l01609"></a><span class="lineno"> 1609</span>&#160;    <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsX()+1):</div>
+<div class="line"><a name="l01610"></a><span class="lineno"> 1610</span>&#160;        <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsY()+1):</div>
+<div class="line"><a name="l01611"></a><span class="lineno"> 1611</span>&#160;            hist2d.SetBinContent(x,y,initalValue)</div>
+<div class="line"><a name="l01612"></a><span class="lineno"> 1612</span>&#160;    <span class="comment"># for i in xrange(graph.GetN()):</span></div>
+<div class="line"><a name="l01613"></a><span class="lineno"> 1613</span>&#160;        <span class="comment"># hist2d.Fill(graph.GetX()[i],graph.GetY()[i],graph.GetZ()[i])</span></div>
+<div class="line"><a name="l01614"></a><span class="lineno"> 1614</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(graph.GetN()):</div>
+<div class="line"><a name="l01615"></a><span class="lineno"> 1615</span>&#160;        xbin = hist2d.GetXaxis().FindBin(graph.GetX()[i])</div>
+<div class="line"><a name="l01616"></a><span class="lineno"> 1616</span>&#160;        ybin = hist2d.GetYaxis().FindBin(graph.GetY()[i])</div>
+<div class="line"><a name="l01617"></a><span class="lineno"> 1617</span>&#160;        <span class="keywordflow">if</span> <a class="code" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">isclose</a>(hist2d.GetXaxis().GetBinCenter(xbin), graph.GetX()[i], rel_tol=1e-2) <span class="keywordflow">and</span> <a class="code" href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">isclose</a>(hist2d.GetYaxis().GetBinCenter(ybin), graph.GetY()[i], rel_tol=1e-2):</div>
+<div class="line"><a name="l01618"></a><span class="lineno"> 1618</span>&#160;            hist2d.SetBinContent(xbin, ybin, graph.GetZ()[i])</div>
+<div class="line"><a name="l01619"></a><span class="lineno"> 1619</span>&#160;    interpolated = 0</div>
+<div class="line"><a name="l01620"></a><span class="lineno"> 1620</span>&#160;    <span class="keywordflow">if</span> interpolateMissing:</div>
+<div class="line"><a name="l01621"></a><span class="lineno"> 1621</span>&#160;        <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsX()+1):</div>
+<div class="line"><a name="l01622"></a><span class="lineno"> 1622</span>&#160;            <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1,hist2d.GetNbinsY()+1):</div>
+<div class="line"><a name="l01623"></a><span class="lineno"> 1623</span>&#160;                <span class="keywordflow">if</span> hist2d.GetBinContent(x,y) == initalValue:</div>
+<div class="line"><a name="l01624"></a><span class="lineno"> 1624</span>&#160;                    interpolated += 1</div>
+<div class="line"><a name="l01625"></a><span class="lineno"> 1625</span>&#160;                    hist2d.SetBinContent(x, y, graph.Interpolate(hist2d.GetXaxis().GetBinCenter(x),hist2d.GetYaxis().GetBinCenter(y)))</div>
+<div class="line"><a name="l01626"></a><span class="lineno"> 1626</span>&#160;</div>
+<div class="line"><a name="l01627"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a55dbe65aea3580a7e9c3dba8f4c7dd2e"> 1627</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a55dbe65aea3580a7e9c3dba8f4c7dd2e">fillTH2</a>(hist2d, graph):</div>
+<div class="line"><a name="l01628"></a><span class="lineno"> 1628</span>&#160;    <span class="keywordflow">for</span> x <span class="keywordflow">in</span> xrange(1, hist2d.GetNbinsX() + 1):</div>
+<div class="line"><a name="l01629"></a><span class="lineno"> 1629</span>&#160;        <span class="keywordflow">for</span> y <span class="keywordflow">in</span> xrange(1, hist2d.GetNbinsY() + 1):</div>
+<div class="line"><a name="l01630"></a><span class="lineno"> 1630</span>&#160;            xc = hist2d.GetXaxis().GetBinCenter(x)</div>
+<div class="line"><a name="l01631"></a><span class="lineno"> 1631</span>&#160;            yc = hist2d.GetYaxis().GetBinCenter(y)</div>
+<div class="line"><a name="l01632"></a><span class="lineno"> 1632</span>&#160;            val = graph.Interpolate(xc, yc)</div>
+<div class="line"><a name="l01633"></a><span class="lineno"> 1633</span>&#160;            hist2d.SetBinContent(x, y, val)</div>
+<div class="line"><a name="l01634"></a><span class="lineno"> 1634</span>&#160;</div>
 <div class="line"><a name="l01635"></a><span class="lineno"> 1635</span>&#160;</div>
-<div class="line"><a name="l01636"></a><span class="lineno"> 1636</span>&#160;    nBinsX = histCopy.GetNbinsX()</div>
-<div class="line"><a name="l01637"></a><span class="lineno"> 1637</span>&#160;    nBinsY = histCopy.GetNbinsY()</div>
-<div class="line"><a name="l01638"></a><span class="lineno"> 1638</span>&#160;</div>
-<div class="line"><a name="l01639"></a><span class="lineno"> 1639</span>&#160;    xMin = 1</div>
-<div class="line"><a name="l01640"></a><span class="lineno"> 1640</span>&#160;    yMin = 1</div>
-<div class="line"><a name="l01641"></a><span class="lineno"> 1641</span>&#160;    xMax = histCopy.GetNbinsX() + 1</div>
-<div class="line"><a name="l01642"></a><span class="lineno"> 1642</span>&#160;    yMax = histCopy.GetNbinsY() + 1</div>
-<div class="line"><a name="l01643"></a><span class="lineno"> 1643</span>&#160;</div>
-<div class="line"><a name="l01644"></a><span class="lineno"> 1644</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(1, nBinsX + 1):</div>
-<div class="line"><a name="l01645"></a><span class="lineno"> 1645</span>&#160;        <span class="keywordflow">for</span> j <span class="keywordflow">in</span> xrange(1, nBinsY + 1):</div>
-<div class="line"><a name="l01646"></a><span class="lineno"> 1646</span>&#160;            <span class="comment"># do not extrapolate outside the scan</span></div>
-<div class="line"><a name="l01647"></a><span class="lineno"> 1647</span>&#160;            <span class="keywordflow">if</span> (i &lt; xMin) <span class="keywordflow">or</span> (i &gt; xMax) <span class="keywordflow">or</span> (j &lt; yMin) <span class="keywordflow">or</span> (j &gt; yMax):</div>
-<div class="line"><a name="l01648"></a><span class="lineno"> 1648</span>&#160;                <span class="keywordflow">continue</span></div>
-<div class="line"><a name="l01649"></a><span class="lineno"> 1649</span>&#160;            binContent = histCopy.GetBinContent(i, j)</div>
-<div class="line"><a name="l01650"></a><span class="lineno"> 1650</span>&#160;            binContentNW = histCopy.GetBinContent(i + 1, j + 1)</div>
-<div class="line"><a name="l01651"></a><span class="lineno"> 1651</span>&#160;            binContentSE = histCopy.GetBinContent(i - 1, j - 1)</div>
-<div class="line"><a name="l01652"></a><span class="lineno"> 1652</span>&#160;            binContentNE = histCopy.GetBinContent(i + 1, j - 1)</div>
-<div class="line"><a name="l01653"></a><span class="lineno"> 1653</span>&#160;            binContentSW = histCopy.GetBinContent(i - 1, j + 1)</div>
-<div class="line"><a name="l01654"></a><span class="lineno"> 1654</span>&#160;            binContentUp = histCopy.GetBinContent(i, j + 1)</div>
-<div class="line"><a name="l01655"></a><span class="lineno"> 1655</span>&#160;            binContentDown = histCopy.GetBinContent(i, j - 1)</div>
-<div class="line"><a name="l01656"></a><span class="lineno"> 1656</span>&#160;            binContentLeft = histCopy.GetBinContent(i - 1, j)</div>
-<div class="line"><a name="l01657"></a><span class="lineno"> 1657</span>&#160;            binContentRight = histCopy.GetBinContent(i + 1, j)</div>
-<div class="line"><a name="l01658"></a><span class="lineno"> 1658</span>&#160;            nFilled = 0</div>
-<div class="line"><a name="l01659"></a><span class="lineno"> 1659</span>&#160;            if(binContentNW &gt; 0):</div>
-<div class="line"><a name="l01660"></a><span class="lineno"> 1660</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01661"></a><span class="lineno"> 1661</span>&#160;            if(binContentSE &gt; 0):</div>
-<div class="line"><a name="l01662"></a><span class="lineno"> 1662</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01663"></a><span class="lineno"> 1663</span>&#160;            if(binContentNE &gt; 0):</div>
-<div class="line"><a name="l01664"></a><span class="lineno"> 1664</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01665"></a><span class="lineno"> 1665</span>&#160;            if(binContentSW &gt; 0):</div>
-<div class="line"><a name="l01666"></a><span class="lineno"> 1666</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01667"></a><span class="lineno"> 1667</span>&#160;            if(binContentUp &gt; 0):</div>
-<div class="line"><a name="l01668"></a><span class="lineno"> 1668</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01669"></a><span class="lineno"> 1669</span>&#160;            if(binContentDown &gt; 0):</div>
-<div class="line"><a name="l01670"></a><span class="lineno"> 1670</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01671"></a><span class="lineno"> 1671</span>&#160;            if(binContentRight &gt; 0):</div>
+<div class="line"><a name="l01636"></a><span class="lineno"> 1636</span>&#160;<span class="comment"># Functions &#39;NewInterpolate&#39; and &#39;rebin&#39; are taken, translated and modified into python from:</span></div>
+<div class="line"><a name="l01637"></a><span class="lineno"> 1637</span>&#160;<span class="comment"># https://indico.cern.ch/event/256523/contribution/2/attachments/450198/624259/07JUN2013_cawest.pdf</span></div>
+<div class="line"><a name="l01638"></a><span class="lineno"> 1638</span>&#160;<span class="comment"># http://hep.ucsb.edu/people/cawest/interpolation/interpolate.h</span></div>
+<div class="line"><a name="l01639"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee"> 1639</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee">NewInterpolate</a>(hist):</div>
+<div class="line"><a name="l01640"></a><span class="lineno"> 1640</span>&#160;    histCopy = hist.Clone()</div>
+<div class="line"><a name="l01641"></a><span class="lineno"> 1641</span>&#160;</div>
+<div class="line"><a name="l01642"></a><span class="lineno"> 1642</span>&#160;    <span class="comment"># make temporary histograms to store the results of both steps</span></div>
+<div class="line"><a name="l01643"></a><span class="lineno"> 1643</span>&#160;    hist_step1 = histCopy.Clone()</div>
+<div class="line"><a name="l01644"></a><span class="lineno"> 1644</span>&#160;    hist_step1.Reset()</div>
+<div class="line"><a name="l01645"></a><span class="lineno"> 1645</span>&#160;    hist_step2 = histCopy.Clone()</div>
+<div class="line"><a name="l01646"></a><span class="lineno"> 1646</span>&#160;    hist_step2.Reset()</div>
+<div class="line"><a name="l01647"></a><span class="lineno"> 1647</span>&#160;</div>
+<div class="line"><a name="l01648"></a><span class="lineno"> 1648</span>&#160;    nBinsX = histCopy.GetNbinsX()</div>
+<div class="line"><a name="l01649"></a><span class="lineno"> 1649</span>&#160;    nBinsY = histCopy.GetNbinsY()</div>
+<div class="line"><a name="l01650"></a><span class="lineno"> 1650</span>&#160;</div>
+<div class="line"><a name="l01651"></a><span class="lineno"> 1651</span>&#160;    xMin = 1</div>
+<div class="line"><a name="l01652"></a><span class="lineno"> 1652</span>&#160;    yMin = 1</div>
+<div class="line"><a name="l01653"></a><span class="lineno"> 1653</span>&#160;    xMax = histCopy.GetNbinsX() + 1</div>
+<div class="line"><a name="l01654"></a><span class="lineno"> 1654</span>&#160;    yMax = histCopy.GetNbinsY() + 1</div>
+<div class="line"><a name="l01655"></a><span class="lineno"> 1655</span>&#160;</div>
+<div class="line"><a name="l01656"></a><span class="lineno"> 1656</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(1, nBinsX + 1):</div>
+<div class="line"><a name="l01657"></a><span class="lineno"> 1657</span>&#160;        <span class="keywordflow">for</span> j <span class="keywordflow">in</span> xrange(1, nBinsY + 1):</div>
+<div class="line"><a name="l01658"></a><span class="lineno"> 1658</span>&#160;            <span class="comment"># do not extrapolate outside the scan</span></div>
+<div class="line"><a name="l01659"></a><span class="lineno"> 1659</span>&#160;            <span class="keywordflow">if</span> (i &lt; xMin) <span class="keywordflow">or</span> (i &gt; xMax) <span class="keywordflow">or</span> (j &lt; yMin) <span class="keywordflow">or</span> (j &gt; yMax):</div>
+<div class="line"><a name="l01660"></a><span class="lineno"> 1660</span>&#160;                <span class="keywordflow">continue</span></div>
+<div class="line"><a name="l01661"></a><span class="lineno"> 1661</span>&#160;            binContent = histCopy.GetBinContent(i, j)</div>
+<div class="line"><a name="l01662"></a><span class="lineno"> 1662</span>&#160;            binContentNW = histCopy.GetBinContent(i + 1, j + 1)</div>
+<div class="line"><a name="l01663"></a><span class="lineno"> 1663</span>&#160;            binContentSE = histCopy.GetBinContent(i - 1, j - 1)</div>
+<div class="line"><a name="l01664"></a><span class="lineno"> 1664</span>&#160;            binContentNE = histCopy.GetBinContent(i + 1, j - 1)</div>
+<div class="line"><a name="l01665"></a><span class="lineno"> 1665</span>&#160;            binContentSW = histCopy.GetBinContent(i - 1, j + 1)</div>
+<div class="line"><a name="l01666"></a><span class="lineno"> 1666</span>&#160;            binContentUp = histCopy.GetBinContent(i, j + 1)</div>
+<div class="line"><a name="l01667"></a><span class="lineno"> 1667</span>&#160;            binContentDown = histCopy.GetBinContent(i, j - 1)</div>
+<div class="line"><a name="l01668"></a><span class="lineno"> 1668</span>&#160;            binContentLeft = histCopy.GetBinContent(i - 1, j)</div>
+<div class="line"><a name="l01669"></a><span class="lineno"> 1669</span>&#160;            binContentRight = histCopy.GetBinContent(i + 1, j)</div>
+<div class="line"><a name="l01670"></a><span class="lineno"> 1670</span>&#160;            nFilled = 0</div>
+<div class="line"><a name="l01671"></a><span class="lineno"> 1671</span>&#160;            if(binContentNW &gt; 0):</div>
 <div class="line"><a name="l01672"></a><span class="lineno"> 1672</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01673"></a><span class="lineno"> 1673</span>&#160;            if(binContentLeft &gt; 0):</div>
+<div class="line"><a name="l01673"></a><span class="lineno"> 1673</span>&#160;            if(binContentSE &gt; 0):</div>
 <div class="line"><a name="l01674"></a><span class="lineno"> 1674</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01675"></a><span class="lineno"> 1675</span>&#160;            <span class="comment"># if we are at an empty bin and there are neighbors</span></div>
-<div class="line"><a name="l01676"></a><span class="lineno"> 1676</span>&#160;            <span class="comment"># in specified direction with non-zero entries</span></div>
-<div class="line"><a name="l01677"></a><span class="lineno"> 1677</span>&#160;            if(binContent == 0) <span class="keywordflow">and</span> (nFilled &gt; 1):</div>
-<div class="line"><a name="l01678"></a><span class="lineno"> 1678</span>&#160;        <span class="comment"># average over non-zero entries</span></div>
-<div class="line"><a name="l01679"></a><span class="lineno"> 1679</span>&#160;                binContent = (binContentNW + binContentSE + binContentNE + binContentSW +</div>
-<div class="line"><a name="l01680"></a><span class="lineno"> 1680</span>&#160;                              binContentUp + binContentDown + binContentRight + binContentLeft) / nFilled</div>
-<div class="line"><a name="l01681"></a><span class="lineno"> 1681</span>&#160;                hist_step1.SetBinContent(i, j, binContent)</div>
-<div class="line"><a name="l01682"></a><span class="lineno"> 1682</span>&#160;</div>
-<div class="line"><a name="l01683"></a><span class="lineno"> 1683</span>&#160;           <span class="comment"># add result of interpolation</span></div>
-<div class="line"><a name="l01684"></a><span class="lineno"> 1684</span>&#160;    histCopy.Add(hist_step1)</div>
-<div class="line"><a name="l01685"></a><span class="lineno"> 1685</span>&#160;</div>
-<div class="line"><a name="l01686"></a><span class="lineno"> 1686</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(1, nBinsX):</div>
-<div class="line"><a name="l01687"></a><span class="lineno"> 1687</span>&#160;        <span class="keywordflow">for</span> j <span class="keywordflow">in</span> xrange(1, nBinsY):</div>
-<div class="line"><a name="l01688"></a><span class="lineno"> 1688</span>&#160;            if(i &lt; xMin) <span class="keywordflow">or</span> (i &gt; xMax) <span class="keywordflow">or</span> (j &lt; yMin) <span class="keywordflow">or</span> (j &gt; yMax):</div>
-<div class="line"><a name="l01689"></a><span class="lineno"> 1689</span>&#160;                <span class="keywordflow">continue</span></div>
-<div class="line"><a name="l01690"></a><span class="lineno"> 1690</span>&#160;            binContent = histCopy.GetBinContent(i, j)</div>
-<div class="line"><a name="l01691"></a><span class="lineno"> 1691</span>&#160;            <span class="comment"># get entries for &quot;Swiss Cross&quot; average</span></div>
-<div class="line"><a name="l01692"></a><span class="lineno"> 1692</span>&#160;            binContentUp = histCopy.GetBinContent(i, j + 1)</div>
-<div class="line"><a name="l01693"></a><span class="lineno"> 1693</span>&#160;            binContentDown = histCopy.GetBinContent(i, j - 1)</div>
-<div class="line"><a name="l01694"></a><span class="lineno"> 1694</span>&#160;            binContentLeft = histCopy.GetBinContent(i - 1, j)</div>
-<div class="line"><a name="l01695"></a><span class="lineno"> 1695</span>&#160;            binContentRight = histCopy.GetBinContent(i + 1, j)</div>
-<div class="line"><a name="l01696"></a><span class="lineno"> 1696</span>&#160;            nFilled = 0</div>
-<div class="line"><a name="l01697"></a><span class="lineno"> 1697</span>&#160;            if(binContentUp &gt; 0):</div>
-<div class="line"><a name="l01698"></a><span class="lineno"> 1698</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01699"></a><span class="lineno"> 1699</span>&#160;            if(binContentDown &gt; 0):</div>
-<div class="line"><a name="l01700"></a><span class="lineno"> 1700</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01701"></a><span class="lineno"> 1701</span>&#160;            if(binContentRight &gt; 0):</div>
-<div class="line"><a name="l01702"></a><span class="lineno"> 1702</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01703"></a><span class="lineno"> 1703</span>&#160;            if(binContentLeft &gt; 0):</div>
-<div class="line"><a name="l01704"></a><span class="lineno"> 1704</span>&#160;                nFilled += 1</div>
-<div class="line"><a name="l01705"></a><span class="lineno"> 1705</span>&#160;            if(binContent == 0) <span class="keywordflow">and</span> (nFilled &gt; 0):</div>
-<div class="line"><a name="l01706"></a><span class="lineno"> 1706</span>&#160;                <span class="comment"># only average over non-zero entries</span></div>
-<div class="line"><a name="l01707"></a><span class="lineno"> 1707</span>&#160;                binContent = (</div>
-<div class="line"><a name="l01708"></a><span class="lineno"> 1708</span>&#160;                    binContentUp + binContentDown + binContentRight + binContentLeft) / nFilled</div>
-<div class="line"><a name="l01709"></a><span class="lineno"> 1709</span>&#160;                hist_step2.SetBinContent(i, j, binContent)</div>
-<div class="line"><a name="l01710"></a><span class="lineno"> 1710</span>&#160;    <span class="comment"># add &quot;Swiss Cross&quot; average</span></div>
-<div class="line"><a name="l01711"></a><span class="lineno"> 1711</span>&#160;    histCopy.Add(hist_step2)</div>
-<div class="line"><a name="l01712"></a><span class="lineno"> 1712</span>&#160;</div>
-<div class="line"><a name="l01713"></a><span class="lineno"> 1713</span>&#160;    <span class="keywordflow">return</span> histCopy</div>
-<div class="line"><a name="l01714"></a><span class="lineno"> 1714</span>&#160;</div>
-<div class="line"><a name="l01715"></a><span class="lineno"> 1715</span>&#160;</div>
-<div class="line"><a name="l01716"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360"> 1716</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360">rebin</a>(hist):</div>
-<div class="line"><a name="l01717"></a><span class="lineno"> 1717</span>&#160;    histName = hist.GetName()</div>
-<div class="line"><a name="l01718"></a><span class="lineno"> 1718</span>&#160;    histName += <span class="stringliteral">&quot;_rebin&quot;</span></div>
-<div class="line"><a name="l01719"></a><span class="lineno"> 1719</span>&#160;</div>
-<div class="line"><a name="l01720"></a><span class="lineno"> 1720</span>&#160;    <span class="comment"># bin widths are needed so as to not shift histogram by half a bin with each rebinning</span></div>
-<div class="line"><a name="l01721"></a><span class="lineno"> 1721</span>&#160;    <span class="comment"># assume constant binning</span></div>
-<div class="line"><a name="l01722"></a><span class="lineno"> 1722</span>&#160;    <span class="comment">#  binWidthX = hist.GetXaxis().GetBinWidth(1)</span></div>
-<div class="line"><a name="l01723"></a><span class="lineno"> 1723</span>&#160;    <span class="comment">#  binWidthY = hist.GetYaxis().GetBinWidth(1)</span></div>
-<div class="line"><a name="l01724"></a><span class="lineno"> 1724</span>&#160;    </div>
-<div class="line"><a name="l01725"></a><span class="lineno"> 1725</span>&#160;    <span class="comment">#  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX(), hist.GetXaxis().GetXmin()+binWidthX/4, hist.GetXaxis().GetXmax()+binWidthX/4, 2*hist.GetNbinsY(), hist.GetYaxis().GetXmin()+binWidthY/4, hist.GetYaxis().GetXmax()+binWidthY/4)</span></div>
-<div class="line"><a name="l01726"></a><span class="lineno"> 1726</span>&#160;    histRebinned = R.TH2F(histName, histName, 2 * hist.GetNbinsX() - 1, hist.GetXaxis().GetXmin(),</div>
-<div class="line"><a name="l01727"></a><span class="lineno"> 1727</span>&#160;                          hist.GetXaxis().GetXmax(), 2 * hist.GetNbinsY() - 1, hist.GetYaxis().GetXmin(), hist.GetYaxis().GetXmax())</div>
-<div class="line"><a name="l01728"></a><span class="lineno"> 1728</span>&#160;</div>
-<div class="line"><a name="l01729"></a><span class="lineno"> 1729</span>&#160;    <span class="comment"># copy results from previous histogram</span></div>
-<div class="line"><a name="l01730"></a><span class="lineno"> 1730</span>&#160;    <span class="keywordflow">for</span> iX <span class="keywordflow">in</span> xrange(1, hist.GetNbinsX() + 1):</div>
-<div class="line"><a name="l01731"></a><span class="lineno"> 1731</span>&#160;        <span class="keywordflow">for</span> iY <span class="keywordflow">in</span> xrange(1, hist.GetNbinsY() + 1):</div>
-<div class="line"><a name="l01732"></a><span class="lineno"> 1732</span>&#160;            binContent = hist.GetBinContent(iX, iY)</div>
-<div class="line"><a name="l01733"></a><span class="lineno"> 1733</span>&#160;            histRebinned.SetBinContent(2 * iX - 1, 2 * iY - 1, binContent)</div>
-<div class="line"><a name="l01734"></a><span class="lineno"> 1734</span>&#160;    histRebinned.SetMaximum(hist.GetMaximum())</div>
-<div class="line"><a name="l01735"></a><span class="lineno"> 1735</span>&#160;    histRebinned.SetMinimum(hist.GetMinimum())</div>
-<div class="line"><a name="l01736"></a><span class="lineno"> 1736</span>&#160;</div>
-<div class="line"><a name="l01737"></a><span class="lineno"> 1737</span>&#160;    <span class="comment"># use interpolation to re-fill histogram</span></div>
-<div class="line"><a name="l01738"></a><span class="lineno"> 1738</span>&#160;    histRebinnedInterpolated = <a class="code" href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee">NewInterpolate</a>(histRebinned)</div>
-<div class="line"><a name="l01739"></a><span class="lineno"> 1739</span>&#160;</div>
-<div class="line"><a name="l01740"></a><span class="lineno"> 1740</span>&#160;    <span class="keywordflow">return</span> histRebinnedInterpolated</div>
-<div class="line"><a name="l01741"></a><span class="lineno"> 1741</span>&#160;</div>
-<div class="line"><a name="l01742"></a><span class="lineno"> 1742</span>&#160;</div>
-<div class="line"><a name="l01743"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a3fc876b1a3a28fc5450fd18686f7eb53"> 1743</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a3fc876b1a3a28fc5450fd18686f7eb53">higgsConstraint</a>(model, higgstype):</div>
-<div class="line"><a name="l01744"></a><span class="lineno"> 1744</span>&#160;    higgsBand = R.TGraph2D()</div>
-<div class="line"><a name="l01745"></a><span class="lineno"> 1745</span>&#160;    masslow = 150</div>
-<div class="line"><a name="l01746"></a><span class="lineno"> 1746</span>&#160;    masshigh = 500</div>
-<div class="line"><a name="l01747"></a><span class="lineno"> 1747</span>&#160;    massstep = 10</div>
-<div class="line"><a name="l01748"></a><span class="lineno"> 1748</span>&#160;    n = 0</div>
-<div class="line"><a name="l01749"></a><span class="lineno"> 1749</span>&#160;    <span class="keywordflow">for</span> mass <span class="keywordflow">in</span> range(masslow, masshigh, massstep):</div>
-<div class="line"><a name="l01750"></a><span class="lineno"> 1750</span>&#160;        myfile = open(<span class="stringliteral">&quot;../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/&quot;</span> +</div>
-<div class="line"><a name="l01751"></a><span class="lineno"> 1751</span>&#160;                      model + <span class="stringliteral">&quot;/higgs_&quot;</span> + str(mass) + <span class="stringliteral">&quot;.dat&quot;</span>, <span class="stringliteral">&#39;</span><span class="stringliteral">r&#39;)</span></div>
-<div class="line"><a name="l01752"></a><span class="lineno"> 1752</span>&#160;<span class="stringliteral">        </span><span class="keywordflow">for</span> line <span class="keywordflow">in</span> myfile:</div>
-<div class="line"><a name="l01753"></a><span class="lineno"> 1753</span>&#160;            tanb = (line.split())[0]</div>
-<div class="line"><a name="l01754"></a><span class="lineno"> 1754</span>&#160;            mh = float((line.split())[1])</div>
-<div class="line"><a name="l01755"></a><span class="lineno"> 1755</span>&#160;            mH = float((line.split())[3])</div>
-<div class="line"><a name="l01756"></a><span class="lineno"> 1756</span>&#160;            <span class="keywordflow">if</span> higgstype == <span class="stringliteral">&quot;h&quot;</span>:</div>
-<div class="line"><a name="l01757"></a><span class="lineno"> 1757</span>&#160;                higgsBand.SetPoint(n, mass, float(tanb), mh)</div>
-<div class="line"><a name="l01758"></a><span class="lineno"> 1758</span>&#160;            <span class="keywordflow">elif</span> higgstype == <span class="stringliteral">&quot;H&quot;</span>:</div>
-<div class="line"><a name="l01759"></a><span class="lineno"> 1759</span>&#160;                higgsBand.SetPoint(n, mass, float(tanb), mH)</div>
-<div class="line"><a name="l01760"></a><span class="lineno"> 1760</span>&#160;            n = n + 1</div>
-<div class="line"><a name="l01761"></a><span class="lineno"> 1761</span>&#160;        myfile.close()</div>
-<div class="line"><a name="l01762"></a><span class="lineno"> 1762</span>&#160;    <span class="keywordflow">return</span> higgsBand</div>
-<div class="line"><a name="l01763"></a><span class="lineno"> 1763</span>&#160;<span class="comment">##@}</span></div>
-<div class="line"><a name="l01764"></a><span class="lineno"> 1764</span>&#160;</div>
-<div class="line"><a name="l01765"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a0fbea239e24abec57f613915d0b58ccd"> 1765</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a0fbea239e24abec57f613915d0b58ccd">getOverlayMarkerAndLegend</a>(legend, entries, options, borderSize=2.0/3, markerStyle=&quot;P&quot;):</div>
-<div class="line"><a name="l01766"></a><span class="lineno"> 1766</span>&#160;    borderLegend = legend.Clone()</div>
-<div class="line"><a name="l01767"></a><span class="lineno"> 1767</span>&#160;    borderLegend.Clear()</div>
-<div class="line"><a name="l01768"></a><span class="lineno"> 1768</span>&#160;    graphs = []</div>
-<div class="line"><a name="l01769"></a><span class="lineno"> 1769</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(legend.GetNRows()):</div>
-<div class="line"><a name="l01770"></a><span class="lineno"> 1770</span>&#160;        <span class="keywordflow">if</span> i <span class="keywordflow">in</span> entries:</div>
-<div class="line"><a name="l01771"></a><span class="lineno"> 1771</span>&#160;            graph = entries[i].Clone()</div>
-<div class="line"><a name="l01772"></a><span class="lineno"> 1772</span>&#160;            options[i][<span class="stringliteral">&quot;MarkerSize&quot;</span>] = graph.GetMarkerSize()*borderSize</div>
-<div class="line"><a name="l01773"></a><span class="lineno"> 1773</span>&#160;            <a class="code" href="namespaceplotting.html#a30511a379335c5e5c295f88dc146e448">Set</a>(graph,**options[i])</div>
-<div class="line"><a name="l01774"></a><span class="lineno"> 1774</span>&#160;            borderLegend.AddEntry(graph, <span class="stringliteral">&quot; &quot;</span>, markerStyle)</div>
-<div class="line"><a name="l01775"></a><span class="lineno"> 1775</span>&#160;            graphs.append(graph)</div>
-<div class="line"><a name="l01776"></a><span class="lineno"> 1776</span>&#160;        <span class="keywordflow">else</span>:</div>
-<div class="line"><a name="l01777"></a><span class="lineno"> 1777</span>&#160;            borderLegend.AddEntry(<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot; &quot;</span>, <span class="stringliteral">&quot;&quot;</span>)</div>
-<div class="line"><a name="l01778"></a><span class="lineno"> 1778</span>&#160;    borderLegend.SetFillStyle(0)</div>
-<div class="line"><a name="l01779"></a><span class="lineno"> 1779</span>&#160;    borderLegend.SetFillColor(0)</div>
-<div class="line"><a name="l01780"></a><span class="lineno"> 1780</span>&#160;    <span class="keywordflow">return</span> (borderLegend,graphs)</div>
+<div class="line"><a name="l01675"></a><span class="lineno"> 1675</span>&#160;            if(binContentNE &gt; 0):</div>
+<div class="line"><a name="l01676"></a><span class="lineno"> 1676</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01677"></a><span class="lineno"> 1677</span>&#160;            if(binContentSW &gt; 0):</div>
+<div class="line"><a name="l01678"></a><span class="lineno"> 1678</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01679"></a><span class="lineno"> 1679</span>&#160;            if(binContentUp &gt; 0):</div>
+<div class="line"><a name="l01680"></a><span class="lineno"> 1680</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01681"></a><span class="lineno"> 1681</span>&#160;            if(binContentDown &gt; 0):</div>
+<div class="line"><a name="l01682"></a><span class="lineno"> 1682</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01683"></a><span class="lineno"> 1683</span>&#160;            if(binContentRight &gt; 0):</div>
+<div class="line"><a name="l01684"></a><span class="lineno"> 1684</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01685"></a><span class="lineno"> 1685</span>&#160;            if(binContentLeft &gt; 0):</div>
+<div class="line"><a name="l01686"></a><span class="lineno"> 1686</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01687"></a><span class="lineno"> 1687</span>&#160;            <span class="comment"># if we are at an empty bin and there are neighbors</span></div>
+<div class="line"><a name="l01688"></a><span class="lineno"> 1688</span>&#160;            <span class="comment"># in specified direction with non-zero entries</span></div>
+<div class="line"><a name="l01689"></a><span class="lineno"> 1689</span>&#160;            if(binContent == 0) <span class="keywordflow">and</span> (nFilled &gt; 1):</div>
+<div class="line"><a name="l01690"></a><span class="lineno"> 1690</span>&#160;        <span class="comment"># average over non-zero entries</span></div>
+<div class="line"><a name="l01691"></a><span class="lineno"> 1691</span>&#160;                binContent = (binContentNW + binContentSE + binContentNE + binContentSW +</div>
+<div class="line"><a name="l01692"></a><span class="lineno"> 1692</span>&#160;                              binContentUp + binContentDown + binContentRight + binContentLeft) / nFilled</div>
+<div class="line"><a name="l01693"></a><span class="lineno"> 1693</span>&#160;                hist_step1.SetBinContent(i, j, binContent)</div>
+<div class="line"><a name="l01694"></a><span class="lineno"> 1694</span>&#160;</div>
+<div class="line"><a name="l01695"></a><span class="lineno"> 1695</span>&#160;           <span class="comment"># add result of interpolation</span></div>
+<div class="line"><a name="l01696"></a><span class="lineno"> 1696</span>&#160;    histCopy.Add(hist_step1)</div>
+<div class="line"><a name="l01697"></a><span class="lineno"> 1697</span>&#160;</div>
+<div class="line"><a name="l01698"></a><span class="lineno"> 1698</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> xrange(1, nBinsX):</div>
+<div class="line"><a name="l01699"></a><span class="lineno"> 1699</span>&#160;        <span class="keywordflow">for</span> j <span class="keywordflow">in</span> xrange(1, nBinsY):</div>
+<div class="line"><a name="l01700"></a><span class="lineno"> 1700</span>&#160;            if(i &lt; xMin) <span class="keywordflow">or</span> (i &gt; xMax) <span class="keywordflow">or</span> (j &lt; yMin) <span class="keywordflow">or</span> (j &gt; yMax):</div>
+<div class="line"><a name="l01701"></a><span class="lineno"> 1701</span>&#160;                <span class="keywordflow">continue</span></div>
+<div class="line"><a name="l01702"></a><span class="lineno"> 1702</span>&#160;            binContent = histCopy.GetBinContent(i, j)</div>
+<div class="line"><a name="l01703"></a><span class="lineno"> 1703</span>&#160;            <span class="comment"># get entries for &quot;Swiss Cross&quot; average</span></div>
+<div class="line"><a name="l01704"></a><span class="lineno"> 1704</span>&#160;            binContentUp = histCopy.GetBinContent(i, j + 1)</div>
+<div class="line"><a name="l01705"></a><span class="lineno"> 1705</span>&#160;            binContentDown = histCopy.GetBinContent(i, j - 1)</div>
+<div class="line"><a name="l01706"></a><span class="lineno"> 1706</span>&#160;            binContentLeft = histCopy.GetBinContent(i - 1, j)</div>
+<div class="line"><a name="l01707"></a><span class="lineno"> 1707</span>&#160;            binContentRight = histCopy.GetBinContent(i + 1, j)</div>
+<div class="line"><a name="l01708"></a><span class="lineno"> 1708</span>&#160;            nFilled = 0</div>
+<div class="line"><a name="l01709"></a><span class="lineno"> 1709</span>&#160;            if(binContentUp &gt; 0):</div>
+<div class="line"><a name="l01710"></a><span class="lineno"> 1710</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01711"></a><span class="lineno"> 1711</span>&#160;            if(binContentDown &gt; 0):</div>
+<div class="line"><a name="l01712"></a><span class="lineno"> 1712</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01713"></a><span class="lineno"> 1713</span>&#160;            if(binContentRight &gt; 0):</div>
+<div class="line"><a name="l01714"></a><span class="lineno"> 1714</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01715"></a><span class="lineno"> 1715</span>&#160;            if(binContentLeft &gt; 0):</div>
+<div class="line"><a name="l01716"></a><span class="lineno"> 1716</span>&#160;                nFilled += 1</div>
+<div class="line"><a name="l01717"></a><span class="lineno"> 1717</span>&#160;            if(binContent == 0) <span class="keywordflow">and</span> (nFilled &gt; 0):</div>
+<div class="line"><a name="l01718"></a><span class="lineno"> 1718</span>&#160;                <span class="comment"># only average over non-zero entries</span></div>
+<div class="line"><a name="l01719"></a><span class="lineno"> 1719</span>&#160;                binContent = (</div>
+<div class="line"><a name="l01720"></a><span class="lineno"> 1720</span>&#160;                    binContentUp + binContentDown + binContentRight + binContentLeft) / nFilled</div>
+<div class="line"><a name="l01721"></a><span class="lineno"> 1721</span>&#160;                hist_step2.SetBinContent(i, j, binContent)</div>
+<div class="line"><a name="l01722"></a><span class="lineno"> 1722</span>&#160;    <span class="comment"># add &quot;Swiss Cross&quot; average</span></div>
+<div class="line"><a name="l01723"></a><span class="lineno"> 1723</span>&#160;    histCopy.Add(hist_step2)</div>
+<div class="line"><a name="l01724"></a><span class="lineno"> 1724</span>&#160;</div>
+<div class="line"><a name="l01725"></a><span class="lineno"> 1725</span>&#160;    <span class="keywordflow">return</span> histCopy</div>
+<div class="line"><a name="l01726"></a><span class="lineno"> 1726</span>&#160;</div>
+<div class="line"><a name="l01727"></a><span class="lineno"> 1727</span>&#160;</div>
+<div class="line"><a name="l01728"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360"> 1728</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360">rebin</a>(hist):</div>
+<div class="line"><a name="l01729"></a><span class="lineno"> 1729</span>&#160;    histName = hist.GetName()</div>
+<div class="line"><a name="l01730"></a><span class="lineno"> 1730</span>&#160;    histName += <span class="stringliteral">&quot;_rebin&quot;</span></div>
+<div class="line"><a name="l01731"></a><span class="lineno"> 1731</span>&#160;</div>
+<div class="line"><a name="l01732"></a><span class="lineno"> 1732</span>&#160;    <span class="comment"># bin widths are needed so as to not shift histogram by half a bin with each rebinning</span></div>
+<div class="line"><a name="l01733"></a><span class="lineno"> 1733</span>&#160;    <span class="comment"># assume constant binning</span></div>
+<div class="line"><a name="l01734"></a><span class="lineno"> 1734</span>&#160;    <span class="comment">#  binWidthX = hist.GetXaxis().GetBinWidth(1)</span></div>
+<div class="line"><a name="l01735"></a><span class="lineno"> 1735</span>&#160;    <span class="comment">#  binWidthY = hist.GetYaxis().GetBinWidth(1)</span></div>
+<div class="line"><a name="l01736"></a><span class="lineno"> 1736</span>&#160;    </div>
+<div class="line"><a name="l01737"></a><span class="lineno"> 1737</span>&#160;    <span class="comment">#  histRebinned = R.TH2F(histName, histName, 2*hist.GetNbinsX(), hist.GetXaxis().GetXmin()+binWidthX/4, hist.GetXaxis().GetXmax()+binWidthX/4, 2*hist.GetNbinsY(), hist.GetYaxis().GetXmin()+binWidthY/4, hist.GetYaxis().GetXmax()+binWidthY/4)</span></div>
+<div class="line"><a name="l01738"></a><span class="lineno"> 1738</span>&#160;    histRebinned = R.TH2F(histName, histName, 2 * hist.GetNbinsX() - 1, hist.GetXaxis().GetXmin(),</div>
+<div class="line"><a name="l01739"></a><span class="lineno"> 1739</span>&#160;                          hist.GetXaxis().GetXmax(), 2 * hist.GetNbinsY() - 1, hist.GetYaxis().GetXmin(), hist.GetYaxis().GetXmax())</div>
+<div class="line"><a name="l01740"></a><span class="lineno"> 1740</span>&#160;</div>
+<div class="line"><a name="l01741"></a><span class="lineno"> 1741</span>&#160;    <span class="comment"># copy results from previous histogram</span></div>
+<div class="line"><a name="l01742"></a><span class="lineno"> 1742</span>&#160;    <span class="keywordflow">for</span> iX <span class="keywordflow">in</span> xrange(1, hist.GetNbinsX() + 1):</div>
+<div class="line"><a name="l01743"></a><span class="lineno"> 1743</span>&#160;        <span class="keywordflow">for</span> iY <span class="keywordflow">in</span> xrange(1, hist.GetNbinsY() + 1):</div>
+<div class="line"><a name="l01744"></a><span class="lineno"> 1744</span>&#160;            binContent = hist.GetBinContent(iX, iY)</div>
+<div class="line"><a name="l01745"></a><span class="lineno"> 1745</span>&#160;            histRebinned.SetBinContent(2 * iX - 1, 2 * iY - 1, binContent)</div>
+<div class="line"><a name="l01746"></a><span class="lineno"> 1746</span>&#160;    histRebinned.SetMaximum(hist.GetMaximum())</div>
+<div class="line"><a name="l01747"></a><span class="lineno"> 1747</span>&#160;    histRebinned.SetMinimum(hist.GetMinimum())</div>
+<div class="line"><a name="l01748"></a><span class="lineno"> 1748</span>&#160;</div>
+<div class="line"><a name="l01749"></a><span class="lineno"> 1749</span>&#160;    <span class="comment"># use interpolation to re-fill histogram</span></div>
+<div class="line"><a name="l01750"></a><span class="lineno"> 1750</span>&#160;    histRebinnedInterpolated = <a class="code" href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee">NewInterpolate</a>(histRebinned)</div>
+<div class="line"><a name="l01751"></a><span class="lineno"> 1751</span>&#160;</div>
+<div class="line"><a name="l01752"></a><span class="lineno"> 1752</span>&#160;    <span class="keywordflow">return</span> histRebinnedInterpolated</div>
+<div class="line"><a name="l01753"></a><span class="lineno"> 1753</span>&#160;</div>
+<div class="line"><a name="l01754"></a><span class="lineno"> 1754</span>&#160;</div>
+<div class="line"><a name="l01755"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a3fc876b1a3a28fc5450fd18686f7eb53"> 1755</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a3fc876b1a3a28fc5450fd18686f7eb53">higgsConstraint</a>(model, higgstype):</div>
+<div class="line"><a name="l01756"></a><span class="lineno"> 1756</span>&#160;    higgsBand = R.TGraph2D()</div>
+<div class="line"><a name="l01757"></a><span class="lineno"> 1757</span>&#160;    masslow = 150</div>
+<div class="line"><a name="l01758"></a><span class="lineno"> 1758</span>&#160;    masshigh = 500</div>
+<div class="line"><a name="l01759"></a><span class="lineno"> 1759</span>&#160;    massstep = 10</div>
+<div class="line"><a name="l01760"></a><span class="lineno"> 1760</span>&#160;    n = 0</div>
+<div class="line"><a name="l01761"></a><span class="lineno"> 1761</span>&#160;    <span class="keywordflow">for</span> mass <span class="keywordflow">in</span> range(masslow, masshigh, massstep):</div>
+<div class="line"><a name="l01762"></a><span class="lineno"> 1762</span>&#160;        myfile = open(<span class="stringliteral">&quot;../../HiggsAnalysis/HiggsToTauTau/data/Higgs125/&quot;</span> +</div>
+<div class="line"><a name="l01763"></a><span class="lineno"> 1763</span>&#160;                      model + <span class="stringliteral">&quot;/higgs_&quot;</span> + str(mass) + <span class="stringliteral">&quot;.dat&quot;</span>, <span class="stringliteral">&#39;</span><span class="stringliteral">r&#39;)</span></div>
+<div class="line"><a name="l01764"></a><span class="lineno"> 1764</span>&#160;<span class="stringliteral">        </span><span class="keywordflow">for</span> line <span class="keywordflow">in</span> myfile:</div>
+<div class="line"><a name="l01765"></a><span class="lineno"> 1765</span>&#160;            tanb = (line.split())[0]</div>
+<div class="line"><a name="l01766"></a><span class="lineno"> 1766</span>&#160;            mh = float((line.split())[1])</div>
+<div class="line"><a name="l01767"></a><span class="lineno"> 1767</span>&#160;            mH = float((line.split())[3])</div>
+<div class="line"><a name="l01768"></a><span class="lineno"> 1768</span>&#160;            <span class="keywordflow">if</span> higgstype == <span class="stringliteral">&quot;h&quot;</span>:</div>
+<div class="line"><a name="l01769"></a><span class="lineno"> 1769</span>&#160;                higgsBand.SetPoint(n, mass, float(tanb), mh)</div>
+<div class="line"><a name="l01770"></a><span class="lineno"> 1770</span>&#160;            <span class="keywordflow">elif</span> higgstype == <span class="stringliteral">&quot;H&quot;</span>:</div>
+<div class="line"><a name="l01771"></a><span class="lineno"> 1771</span>&#160;                higgsBand.SetPoint(n, mass, float(tanb), mH)</div>
+<div class="line"><a name="l01772"></a><span class="lineno"> 1772</span>&#160;            n = n + 1</div>
+<div class="line"><a name="l01773"></a><span class="lineno"> 1773</span>&#160;        myfile.close()</div>
+<div class="line"><a name="l01774"></a><span class="lineno"> 1774</span>&#160;    <span class="keywordflow">return</span> higgsBand</div>
+<div class="line"><a name="l01775"></a><span class="lineno"> 1775</span>&#160;<span class="comment">##@}</span></div>
+<div class="line"><a name="l01776"></a><span class="lineno"> 1776</span>&#160;</div>
+<div class="line"><a name="l01777"></a><span class="lineno"><a class="line" href="namespaceplotting.html#a0fbea239e24abec57f613915d0b58ccd"> 1777</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespaceplotting.html#a0fbea239e24abec57f613915d0b58ccd">getOverlayMarkerAndLegend</a>(legend, entries, options, borderSize=2.0/3, markerStyle=&quot;P&quot;):</div>
+<div class="line"><a name="l01778"></a><span class="lineno"> 1778</span>&#160;    borderLegend = legend.Clone()</div>
+<div class="line"><a name="l01779"></a><span class="lineno"> 1779</span>&#160;    borderLegend.Clear()</div>
+<div class="line"><a name="l01780"></a><span class="lineno"> 1780</span>&#160;    graphs = []</div>
+<div class="line"><a name="l01781"></a><span class="lineno"> 1781</span>&#160;    <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(legend.GetNRows()):</div>
+<div class="line"><a name="l01782"></a><span class="lineno"> 1782</span>&#160;        <span class="keywordflow">if</span> i <span class="keywordflow">in</span> entries:</div>
+<div class="line"><a name="l01783"></a><span class="lineno"> 1783</span>&#160;            graph = entries[i].Clone()</div>
+<div class="line"><a name="l01784"></a><span class="lineno"> 1784</span>&#160;            options[i][<span class="stringliteral">&quot;MarkerSize&quot;</span>] = graph.GetMarkerSize()*borderSize</div>
+<div class="line"><a name="l01785"></a><span class="lineno"> 1785</span>&#160;            <a class="code" href="namespaceplotting.html#a30511a379335c5e5c295f88dc146e448">Set</a>(graph,**options[i])</div>
+<div class="line"><a name="l01786"></a><span class="lineno"> 1786</span>&#160;            borderLegend.AddEntry(graph, <span class="stringliteral">&quot; &quot;</span>, markerStyle)</div>
+<div class="line"><a name="l01787"></a><span class="lineno"> 1787</span>&#160;            graphs.append(graph)</div>
+<div class="line"><a name="l01788"></a><span class="lineno"> 1788</span>&#160;        <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l01789"></a><span class="lineno"> 1789</span>&#160;            borderLegend.AddEntry(<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot; &quot;</span>, <span class="stringliteral">&quot;&quot;</span>)</div>
+<div class="line"><a name="l01790"></a><span class="lineno"> 1790</span>&#160;    borderLegend.SetFillStyle(0)</div>
+<div class="line"><a name="l01791"></a><span class="lineno"> 1791</span>&#160;    borderLegend.SetFillColor(0)</div>
+<div class="line"><a name="l01792"></a><span class="lineno"> 1792</span>&#160;    <span class="keywordflow">return</span> (borderLegend,graphs)</div>
 <div class="ttc" id="namespaceplotting_html_a54515e51dabf8327c983dc428c2999df"><div class="ttname"><a href="namespaceplotting.html#a54515e51dabf8327c983dc428c2999df">plotting.ModTDRStyle</a></div><div class="ttdeci">def ModTDRStyle</div><div class="ttdoc">Modified version of the tdrStyle. </div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00173">plotting.py:173</a></div></div>
 <div class="ttc" id="namespaceplotting_html_ad70a7d83def97f3741f314a806148ed6"><div class="ttname"><a href="namespaceplotting.html#ad70a7d83def97f3741f314a806148ed6">plotting.ParamFromFilename</a></div><div class="ttdeci">def ParamFromFilename(filename, param)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00510">plotting.py:510</a></div></div>
 <div class="ttc" id="namespaceplotting_html_aa6101bd81695471d594e8394a9322b15"><div class="ttname"><a href="namespaceplotting.html#aa6101bd81695471d594e8394a9322b15">plotting.TGraphFromTree</a></div><div class="ttdeci">def TGraphFromTree(tree, xvar, yvar, selection)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00531">plotting.py:531</a></div></div>
@@ -1895,6 +1907,7 @@ $(document).ready(function(){initNavTree('plotting_8py_source.html','');});
 <div class="ttc" id="namespaceplotting_html_a13952cefd0e2d1c402b079b1d1ab3c50"><div class="ttname"><a href="namespaceplotting.html#a13952cefd0e2d1c402b079b1d1ab3c50">plotting.RemoveGraphXDuplicates</a></div><div class="ttdeci">def RemoveGraphXDuplicates(graph)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00894">plotting.py:894</a></div></div>
 <div class="ttc" id="namespaceplotting_html_ac9523d7013393a5c2af56b1592f6ccd7"><div class="ttname"><a href="namespaceplotting.html#ac9523d7013393a5c2af56b1592f6ccd7">plotting.MakeErrorBand</a></div><div class="ttdeci">def MakeErrorBand(LowerGraph, UpperGraph)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00662">plotting.py:662</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a42e39542c15b6f4a8c6065aaa642aca3"><div class="ttname"><a href="namespaceplotting.html#a42e39542c15b6f4a8c6065aaa642aca3">plotting.TGraph2DFromTree</a></div><div class="ttdeci">def TGraph2DFromTree(tree, xvar, yvar, zvar, selection)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00537">plotting.py:537</a></div></div>
+<div class="ttc" id="namespaceplotting_html_ad9dc489efad414ea5c21dc4c3ae6de79"><div class="ttname"><a href="namespaceplotting.html#ad9dc489efad414ea5c21dc4c3ae6de79">plotting.StandardAxes</a></div><div class="ttdeci">def StandardAxes(xaxis, yaxis, var, units)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01244">plotting.py:1244</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a1126597eb4f60cba5a5b87ab05dcc46b"><div class="ttname"><a href="namespaceplotting.html#a1126597eb4f60cba5a5b87ab05dcc46b">plotting.OnePad</a></div><div class="ttdeci">def OnePad()</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00310">plotting.py:310</a></div></div>
 <div class="ttc" id="namespaceplotting_html_aaf27eaea89f48b9daeabb0120a56f10b"><div class="ttname"><a href="namespaceplotting.html#aaf27eaea89f48b9daeabb0120a56f10b">plotting.LimitBandTGraphFromJSON</a></div><div class="ttdeci">def LimitBandTGraphFromJSON(js, central, lo, hi)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00723">plotting.py:723</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a352c801d8b36f5e37b3a7e61bd3cee47"><div class="ttname"><a href="namespaceplotting.html#a352c801d8b36f5e37b3a7e61bd3cee47">plotting.SetBirdPalette</a></div><div class="ttdeci">def SetBirdPalette()</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00247">plotting.py:247</a></div></div>
@@ -1902,17 +1915,17 @@ $(document).ready(function(){initNavTree('plotting_8py_source.html','');});
 <div class="ttc" id="namespaceplotting_html_a3f11bc70e3e0278d0b4cf33ab8c383d3"><div class="ttname"><a href="namespaceplotting.html#a3f11bc70e3e0278d0b4cf33ab8c383d3">plotting.GetAxisHist</a></div><div class="ttdeci">def GetAxisHist(pad)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00443">plotting.py:443</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a474b8687854cc031562f967ff2ccaf02"><div class="ttname"><a href="namespaceplotting.html#a474b8687854cc031562f967ff2ccaf02">plotting.GraphDivide</a></div><div class="ttdeci">def GraphDivide(num, den)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00851">plotting.py:851</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a3e69cc55cda57a61149bf2b329fe1203"><div class="ttname"><a href="namespaceplotting.html#a3e69cc55cda57a61149bf2b329fe1203">plotting.RemoveSmallDelta</a></div><div class="ttdeci">def RemoveSmallDelta(graph, val)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00917">plotting.py:917</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a5f7c581fe448c97d4d49564c01b8729b"><div class="ttname"><a href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b">plotting.frameTH2D</a></div><div class="ttdeci">def frameTH2D</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01529">plotting.py:1529</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a5f7c581fe448c97d4d49564c01b8729b"><div class="ttname"><a href="namespaceplotting.html#a5f7c581fe448c97d4d49564c01b8729b">plotting.frameTH2D</a></div><div class="ttdeci">def frameTH2D</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01541">plotting.py:1541</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a2311004466e2af2924940d19b76f6174"><div class="ttname"><a href="namespaceplotting.html#a2311004466e2af2924940d19b76f6174">plotting.GetPadYMaxInRange</a></div><div class="ttdeci">def GetPadYMaxInRange</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01161">plotting.py:1161</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a30511a379335c5e5c295f88dc146e448"><div class="ttname"><a href="namespaceplotting.html#a30511a379335c5e5c295f88dc146e448">plotting.Set</a></div><div class="ttdeci">def Set(obj, kwargs)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00292">plotting.py:292</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a1102590a510e7c4921fba16694201a5b"><div class="ttname"><a href="namespaceplotting.html#a1102590a510e7c4921fba16694201a5b">plotting.DrawHorizontalLine</a></div><div class="ttdeci">def DrawHorizontalLine(pad, line, yval)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01376">plotting.py:1376</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a55dbe65aea3580a7e9c3dba8f4c7dd2e"><div class="ttname"><a href="namespaceplotting.html#a55dbe65aea3580a7e9c3dba8f4c7dd2e">plotting.fillTH2</a></div><div class="ttdeci">def fillTH2(hist2d, graph)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01615">plotting.py:1615</a></div></div>
-<div class="ttc" id="namespaceplotting_html_ab21cffc955f20d08f9b38b4dd144da5e"><div class="ttname"><a href="namespaceplotting.html#ab21cffc955f20d08f9b38b4dd144da5e">plotting.StyleLimitBand</a></div><div class="ttdeci">def StyleLimitBand</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01440">plotting.py:1440</a></div></div>
-<div class="ttc" id="namespaceplotting_html_afb5d5a7e73f1b2b143d2e5d8b5e53f33"><div class="ttname"><a href="namespaceplotting.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33">plotting.PositionedLegend</a></div><div class="ttdeci">def PositionedLegend(width, height, pos, offset)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01352">plotting.py:1352</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a1102590a510e7c4921fba16694201a5b"><div class="ttname"><a href="namespaceplotting.html#a1102590a510e7c4921fba16694201a5b">plotting.DrawHorizontalLine</a></div><div class="ttdeci">def DrawHorizontalLine(pad, line, yval)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01388">plotting.py:1388</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a55dbe65aea3580a7e9c3dba8f4c7dd2e"><div class="ttname"><a href="namespaceplotting.html#a55dbe65aea3580a7e9c3dba8f4c7dd2e">plotting.fillTH2</a></div><div class="ttdeci">def fillTH2(hist2d, graph)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01627">plotting.py:1627</a></div></div>
+<div class="ttc" id="namespaceplotting_html_ab21cffc955f20d08f9b38b4dd144da5e"><div class="ttname"><a href="namespaceplotting.html#ab21cffc955f20d08f9b38b4dd144da5e">plotting.StyleLimitBand</a></div><div class="ttdeci">def StyleLimitBand</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01452">plotting.py:1452</a></div></div>
+<div class="ttc" id="namespaceplotting_html_afb5d5a7e73f1b2b143d2e5d8b5e53f33"><div class="ttname"><a href="namespaceplotting.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33">plotting.PositionedLegend</a></div><div class="ttdeci">def PositionedLegend(width, height, pos, offset)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01364">plotting.py:1364</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a273bab5cfe205a69a469a86828ab3f3b"><div class="ttname"><a href="namespaceplotting.html#a273bab5cfe205a69a469a86828ab3f3b">plotting.ReZeroTGraph</a></div><div class="ttdeci">def ReZeroTGraph</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01021">plotting.py:1021</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a618c4283dd81de09c35d79ca2c297511"><div class="ttname"><a href="namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511">plotting.DrawCMSLogo</a></div><div class="ttdeci">def DrawCMSLogo</div><div class="ttdoc">Blah. </div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01259">plotting.py:1259</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a618c4283dd81de09c35d79ca2c297511"><div class="ttname"><a href="namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511">plotting.DrawCMSLogo</a></div><div class="ttdeci">def DrawCMSLogo</div><div class="ttdoc">Blah. </div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01271">plotting.py:1271</a></div></div>
 <div class="ttc" id="namespaceplotting_html_ace775a1f04211b54e089d44d3d28b1c4"><div class="ttname"><a href="namespaceplotting.html#ace775a1f04211b54e089d44d3d28b1c4">plotting.FixTopRange</a></div><div class="ttdeci">def FixTopRange(pad, fix_y, fraction)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01095">plotting.py:1095</a></div></div>
-<div class="ttc" id="namespaceplotting_html_af35fce48cfb36e786ee33c01f7c47f48"><div class="ttname"><a href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">plotting.isclose</a></div><div class="ttdeci">def isclose</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01437">plotting.py:1437</a></div></div>
+<div class="ttc" id="namespaceplotting_html_af35fce48cfb36e786ee33c01f7c47f48"><div class="ttname"><a href="namespaceplotting.html#af35fce48cfb36e786ee33c01f7c47f48">plotting.isclose</a></div><div class="ttdeci">def isclose</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01449">plotting.py:1449</a></div></div>
 <div class="ttc" id="namespaceplotting_html_aebc53978ed049ee45a140e7ccfccd39c"><div class="ttname"><a href="namespaceplotting.html#aebc53978ed049ee45a140e7ccfccd39c">plotting.LimitTGraphFromJSON</a></div><div class="ttdeci">def LimitTGraphFromJSON(js, label)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00680">plotting.py:680</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a9d163491d97931e00a423e5eb740f033"><div class="ttname"><a href="namespaceplotting.html#a9d163491d97931e00a423e5eb740f033">plotting.RemoveGraphYAbove</a></div><div class="ttdeci">def RemoveGraphYAbove(graph, val)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00927">plotting.py:927</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a449fed69f4a89594efca25dd9782fb04"><div class="ttname"><a href="namespaceplotting.html#a449fed69f4a89594efca25dd9782fb04">plotting.RemoveGraphYAll</a></div><div class="ttdeci">def RemoveGraphYAll(graph, val)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00908">plotting.py:908</a></div></div>
@@ -1925,16 +1938,16 @@ $(document).ready(function(){initNavTree('plotting_8py_source.html','');});
 <div class="ttc" id="namespaceplotting_html_ae9921ec8c4b6b4eabfe4603431231a12"><div class="ttname"><a href="namespaceplotting.html#ae9921ec8c4b6b4eabfe4603431231a12">plotting.SetTDRStyle</a></div><div class="ttdeci">def SetTDRStyle()</div><div class="ttdoc">Sets the PubComm recommended style. </div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00022">plotting.py:22</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a436e05154225b06e1a13a22dbffd2096"><div class="ttname"><a href="namespaceplotting.html#a436e05154225b06e1a13a22dbffd2096">plotting.FixBothRanges</a></div><div class="ttdeci">def FixBothRanges(pad, fix_y_lo, frac_lo, fix_y_hi, frac_hi)</div><div class="ttdoc">Adjusts y-axis range such that a lower and a higher value are located a fixed fraction of the frame h...</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01135">plotting.py:1135</a></div></div>
 <div class="ttc" id="namespaceplotting_html_aa5d59d461f911ba92f497a8b83f9cf9e"><div class="ttname"><a href="namespaceplotting.html#aa5d59d461f911ba92f497a8b83f9cf9e">plotting.SetupTwoPadSplitAsRatio</a></div><div class="ttdeci">def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered, y_min, y_max)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00383">plotting.py:383</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a943400bb9bba32dfd5c768784d317644"><div class="ttname"><a href="namespaceplotting.html#a943400bb9bba32dfd5c768784d317644">plotting.fastFillTH2</a></div><div class="ttdeci">def fastFillTH2</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01596">plotting.py:1596</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a943400bb9bba32dfd5c768784d317644"><div class="ttname"><a href="namespaceplotting.html#a943400bb9bba32dfd5c768784d317644">plotting.fastFillTH2</a></div><div class="ttdeci">def fastFillTH2</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01608">plotting.py:1608</a></div></div>
 <div class="ttc" id="namespaceplotting_html_affe8f293686abdb2bf4cec1f17d7bbb6"><div class="ttname"><a href="namespaceplotting.html#affe8f293686abdb2bf4cec1f17d7bbb6">plotting.makeHist1D</a></div><div class="ttdeci">def makeHist1D(name, xbins, graph)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00788">plotting.py:788</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a8a26c6256734bb53864e5d6da2bd2e8a"><div class="ttname"><a href="namespaceplotting.html#a8a26c6256734bb53864e5d6da2bd2e8a">plotting.StandardLimitsFromJSONFile</a></div><div class="ttdeci">def StandardLimitsFromJSONFile(json_file, draw=['obs', exp0, exp1, exp2)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00739">plotting.py:739</a></div></div>
 <div class="ttc" id="namespaceplotting_html_aca3ba03eb5d94f302886c35b710cf03a"><div class="ttname"><a href="namespaceplotting.html#aca3ba03eb5d94f302886c35b710cf03a">plotting.makeVarBinHist2D</a></div><div class="ttdeci">def makeVarBinHist2D(name, xbins, ybins)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00806">plotting.py:806</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a8f48b8660349a246bb0bd71f354a722e"><div class="ttname"><a href="namespaceplotting.html#a8f48b8660349a246bb0bd71f354a722e">plotting.CreateAxisHists</a></div><div class="ttdeci">def CreateAxisHists(n, src, at_limits)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00435">plotting.py:435</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a0fbea239e24abec57f613915d0b58ccd"><div class="ttname"><a href="namespaceplotting.html#a0fbea239e24abec57f613915d0b58ccd">plotting.getOverlayMarkerAndLegend</a></div><div class="ttdeci">def getOverlayMarkerAndLegend</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01765">plotting.py:1765</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a46caef3f43ba70de6364c881776167d0"><div class="ttname"><a href="namespaceplotting.html#a46caef3f43ba70de6364c881776167d0">plotting.DrawLimitBand</a></div><div class="ttdeci">def DrawLimitBand</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01457">plotting.py:1457</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a55c01267919e194bd1be83c273fb3a70"><div class="ttname"><a href="namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70">plotting.DrawVerticalLine</a></div><div class="ttdeci">def DrawVerticalLine(pad, line, xval)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01383">plotting.py:1383</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a0fbea239e24abec57f613915d0b58ccd"><div class="ttname"><a href="namespaceplotting.html#a0fbea239e24abec57f613915d0b58ccd">plotting.getOverlayMarkerAndLegend</a></div><div class="ttdeci">def getOverlayMarkerAndLegend</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01777">plotting.py:1777</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a46caef3f43ba70de6364c881776167d0"><div class="ttname"><a href="namespaceplotting.html#a46caef3f43ba70de6364c881776167d0">plotting.DrawLimitBand</a></div><div class="ttdeci">def DrawLimitBand</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01469">plotting.py:1469</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a55c01267919e194bd1be83c273fb3a70"><div class="ttname"><a href="namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70">plotting.DrawVerticalLine</a></div><div class="ttdeci">def DrawVerticalLine(pad, line, xval)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01395">plotting.py:1395</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a0d8bc74b28155809f534df954fe60355"><div class="ttname"><a href="namespaceplotting.html#a0d8bc74b28155809f534df954fe60355">plotting.RocCurveFrom1DHists</a></div><div class="ttdeci">def RocCurveFrom1DHists(h_x, h_y, cut_is_greater_than)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00544">plotting.py:544</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a3fc876b1a3a28fc5450fd18686f7eb53"><div class="ttname"><a href="namespaceplotting.html#a3fc876b1a3a28fc5450fd18686f7eb53">plotting.higgsConstraint</a></div><div class="ttdeci">def higgsConstraint(model, higgstype)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01743">plotting.py:1743</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a3fc876b1a3a28fc5450fd18686f7eb53"><div class="ttname"><a href="namespaceplotting.html#a3fc876b1a3a28fc5450fd18686f7eb53">plotting.higgsConstraint</a></div><div class="ttdeci">def higgsConstraint(model, higgstype)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01755">plotting.py:1755</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a4f61949fc798fa640e44b71b4c456ad6"><div class="ttname"><a href="namespaceplotting.html#a4f61949fc798fa640e44b71b4c456ad6">plotting.TwoPadSplitColumns</a></div><div class="ttdeci">def TwoPadSplitColumns(split_point, gap_left, gap_right)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00368">plotting.py:368</a></div></div>
 <div class="ttc" id="namespaceplotting_html_aeff720afd7d0ca9416ced3d72540addf"><div class="ttname"><a href="namespaceplotting.html#aeff720afd7d0ca9416ced3d72540addf">plotting.MultiRatioSplit</a></div><div class="ttdeci">def MultiRatioSplit(split_points, gaps_low, gaps_high)</div><div class="ttdoc">Create a set of TPads split vertically on the TCanvas. </div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00353">plotting.py:353</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a930ca7cb0408b290b0db1c79f5911105"><div class="ttname"><a href="namespaceplotting.html#a930ca7cb0408b290b0db1c79f5911105">plotting.FindCrossingsWithSpline</a></div><div class="ttdeci">def FindCrossingsWithSpline(graph, func, yval)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00974">plotting.py:974</a></div></div>
@@ -1944,12 +1957,12 @@ $(document).ready(function(){initNavTree('plotting_8py_source.html','');});
 <div class="ttc" id="namespaceplotting_html_a539285267924c7a796760e6fdefc68c6"><div class="ttname"><a href="namespaceplotting.html#a539285267924c7a796760e6fdefc68c6">plotting.CreateAxisHist</a></div><div class="ttdeci">def CreateAxisHist</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00410">plotting.py:410</a></div></div>
 <div class="ttc" id="namespaceplotting_html_ae2fbb5d58e5c6bf0d9b82d1522888221"><div class="ttname"><a href="namespaceplotting.html#ae2fbb5d58e5c6bf0d9b82d1522888221">plotting.bestFit</a></div><div class="ttdeci">def bestFit(tree, x, y, cut)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00755">plotting.py:755</a></div></div>
 <div class="ttc" id="namespaceplotting_html_aed1c39d2a59ed2ffe536dbda4a6628b3"><div class="ttname"><a href="namespaceplotting.html#aed1c39d2a59ed2ffe536dbda4a6628b3">plotting.MakeTChain</a></div><div class="ttdeci">def MakeTChain(files, tree)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00495">plotting.py:495</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a75a4405c808f2d73ecd8c059bc59d7ff"><div class="ttname"><a href="namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff">plotting.DrawTitle</a></div><div class="ttdeci">def DrawTitle(pad, text, align)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01390">plotting.py:1390</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a75a4405c808f2d73ecd8c059bc59d7ff"><div class="ttname"><a href="namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff">plotting.DrawTitle</a></div><div class="ttdeci">def DrawTitle(pad, text, align)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01402">plotting.py:1402</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a2859ac07831f692838afd628bf9abb21"><div class="ttname"><a href="namespaceplotting.html#a2859ac07831f692838afd628bf9abb21">plotting.GetPadYMin</a></div><div class="ttdeci">def GetPadYMin(pad)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01228">plotting.py:1228</a></div></div>
 <div class="ttc" id="namespaceplotting_html_a8e9aa50e693ba0dc50f85235f4194f35"><div class="ttname"><a href="namespaceplotting.html#a8e9aa50e693ba0dc50f85235f4194f35">plotting.MakeRatioHist</a></div><div class="ttdeci">def MakeRatioHist(num, den, num_err, den_err)</div><div class="ttdoc">Make a new ratio TH1 from numerator and denominator TH1s with optional error propagation. </div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l00875">plotting.py:875</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a8b60842ec4350907244901ef9a1e6dee"><div class="ttname"><a href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee">plotting.NewInterpolate</a></div><div class="ttdeci">def NewInterpolate(hist)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01627">plotting.py:1627</a></div></div>
-<div class="ttc" id="namespaceplotting_html_aedc15635a683264dc7f0444709e0549e"><div class="ttname"><a href="namespaceplotting.html#aedc15635a683264dc7f0444709e0549e">plotting.contourFromTH2</a></div><div class="ttdeci">def contourFromTH2</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01490">plotting.py:1490</a></div></div>
-<div class="ttc" id="namespaceplotting_html_a9b433bea8c3590697478e3f7a846d360"><div class="ttname"><a href="namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360">plotting.rebin</a></div><div class="ttdeci">def rebin(hist)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01716">plotting.py:1716</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a8b60842ec4350907244901ef9a1e6dee"><div class="ttname"><a href="namespaceplotting.html#a8b60842ec4350907244901ef9a1e6dee">plotting.NewInterpolate</a></div><div class="ttdeci">def NewInterpolate(hist)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01639">plotting.py:1639</a></div></div>
+<div class="ttc" id="namespaceplotting_html_aedc15635a683264dc7f0444709e0549e"><div class="ttname"><a href="namespaceplotting.html#aedc15635a683264dc7f0444709e0549e">plotting.contourFromTH2</a></div><div class="ttdeci">def contourFromTH2</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01502">plotting.py:1502</a></div></div>
+<div class="ttc" id="namespaceplotting_html_a9b433bea8c3590697478e3f7a846d360"><div class="ttname"><a href="namespaceplotting.html#a9b433bea8c3590697478e3f7a846d360">plotting.rebin</a></div><div class="ttdeci">def rebin(hist)</div><div class="ttdef"><b>Definition:</b> <a href="plotting_8py_source.html#l01728">plotting.py:1728</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.6-->

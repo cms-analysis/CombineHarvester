@@ -72,7 +72,7 @@ var searchData=
   ['soverbtools_2ecc',['SOverBTools.cc',['../_s_over_b_tools_8cc.html',1,'']]],
   ['soverbtools_2eh',['SOverBTools.h',['../_s_over_b_tools_8h.html',1,'']]],
   ['splitsyst',['SplitSyst',['../namespacech.html#a0f62630d67d75c1b6143c0519da2a720',1,'ch']]],
-  ['standardaxes',['StandardAxes',['../_plotting_8h.html#a976a4920cd03f97ded8454279c895a32',1,'Plotting.h']]],
+  ['standardaxes',['StandardAxes',['../_plotting_8h.html#a976a4920cd03f97ded8454279c895a32',1,'StandardAxes():&#160;Plotting.h'],['../namespaceplotting.html#ad9dc489efad414ea5c21dc4c3ae6de79',1,'plotting.StandardAxes()']]],
   ['standardlimitsfromjsonfile',['StandardLimitsFromJSONFile',['../namespaceplotting.html#a8a26c6256734bb53864e5d6da2bd2e8a',1,'plotting']]],
   ['starttimer',['StartTimer',['../classch_1_1_fn_timer.html#aa6368e35ad1520773275baf7ad1bbcb6',1,'ch::FnTimer']]],
   ['stoptimer',['StopTimer',['../classch_1_1_fn_timer.html#a4dc02384a997b93294cd083b107a673e',1,'ch::FnTimer']]],
