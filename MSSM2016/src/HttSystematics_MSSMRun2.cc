@@ -212,11 +212,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"et", "mt"}, 1.03)
     ({"tt"},       1.092));
 
-  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
-    "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+  /*cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+    "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));*/
 
-  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
-    "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+/*  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+    "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));*/
 
 /*  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
     "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));*/
@@ -250,8 +250,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
   // top-quark pT reweighting
   // ------------------------
-  cb.cp().process({"TTT","TTJ","TT"}).AddSyst(cb,
-    "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
+/*  cb.cp().process({"TTT","TTJ","TT"}).AddSyst(cb,
+    "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));*/
 
   // Cross-sections and lumi
   // -----------------------
