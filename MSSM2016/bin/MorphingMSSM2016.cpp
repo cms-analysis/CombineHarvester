@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
 
   VString chns =
   //    {"tt"};
- //     {"mt"};
+//      {"mt"};
       {"mt","et","tt","em"};
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
 
   map<string, VString> bkg_procs;
   bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
-  bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ" "VVT","VVJ","ZTT"};
+  bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
 
@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
       }
   }
 
-  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "300", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1500","1600","1800","2000","2300","2600","2900","3200"};
+  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "350", "400", "450", "500", "700", "800", "900","1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -393,7 +393,7 @@ int main(int argc, char** argv) {
 
   auto rebin = ch::AutoRebin()
     .SetBinThreshold(0.)
-    // .SetBinUncertFraction(0.5)
+    .SetBinUncertFraction(0.9)
     .SetRebinMode(1)
     .SetPerformRebin(true)
     .SetVerbosity(1);
