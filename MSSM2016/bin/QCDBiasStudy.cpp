@@ -116,8 +116,12 @@ int main(int argc, char** argv) {
   //Example - could fill this map with hardcoded binning for different
   //categories if manual_rebin is turned on
   map<string, vector<double> > binning;
-  binning["tt_nobtag_tight_med"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,400,500,700,900,1100,3900};
-  binning["tt_btag_tight_med"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,3900};
+  binning["tt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,1100,3900};
+  //binning["tt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,3900};
+  binning["tt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,3900};// rebinning away next to last populated bin
+/*  binning["tt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,3900};
+  binning["tt_btag"] = {0,20,60,80,100,120,160,180,200,250,350,3900}; For error fraction 0.9*/
+
 
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
@@ -131,8 +135,8 @@ int main(int argc, char** argv) {
   map<string,Categories> cats;
 
   cats["tt_13TeV"] = {
-    {8, "tt_nobtag_tight_med"},
-    {9, "tt_btag_tight_med"}
+    {8, "tt_nobtag"},
+    {9, "tt_btag"}
     };
 
   if (control_region > 0){
@@ -157,7 +161,8 @@ int main(int argc, char** argv) {
       }
   }
 
-  vector<string> masses = {"90","160", "500", "1000","1200"};
+  vector<string> bbhmasses = {"80","90","110","120","130","140","160", "180","250","400","450","500","600","700","900", "1000","1200","2900"};
+  vector<string> gghmasses = {"90","100","120","130","160","180","350","450", "500","700", "1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -175,8 +180,8 @@ int main(int argc, char** argv) {
 
     cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn+"_13TeV"], false);
 
-    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
-    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
+    cb.AddProcesses(gghmasses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
+    cb.AddProcesses(bbhmasses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
     if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
     if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
     }
@@ -357,7 +362,7 @@ int main(int argc, char** argv) {
 
   auto rebin = ch::AutoRebin()
     .SetBinThreshold(0.)
-    // .SetBinUncertFraction(0.5)
+    .SetBinUncertFraction(0.9)
     .SetRebinMode(1)
     .SetPerformRebin(true)
     .SetVerbosity(1);
