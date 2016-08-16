@@ -234,45 +234,42 @@ int main() {
   //   p->set_mass("*");
   // });
 
-  string folder = "output/sm_cards/LIMITS";
-  boost::filesystem::create_directories(folder);
-  boost::filesystem::create_directories(folder + "/common");
-  for (auto m : masses) {
-    boost::filesystem::create_directories(folder + "/" + m);
-  }
 
-  for (string chn : chns) {
-    TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
-                 "RECREATE");
-    auto bins = cb.cp().channel({chn}).bin_set();
-    for (auto b : bins) {
-      for (auto m : masses) {
-        cout << ">> Writing datacard for bin: " << b << " and mass: " << m
-                  << "\r" << flush;
-        cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
-            folder + "/" + m + "/" + b + ".txt", output);
-      }
-    }
-    output.Close();
-  }
+  // Writing datacards manually - easier with CardWriter below:
 
-  /*
-  Alternatively use the ch::CardWriter class to automate the datacard writing.
-  This makes it simple to re-produce the LIMITS directory format employed during
-  the Run I analyses.
-  Uncomment the code below to test:
-  */
+  // string folder = "output/sm_cards/LIMITS";
+  // boost::filesystem::create_directories(folder);
+  // boost::filesystem::create_directories(folder + "/common");
+  // for (auto m : masses) {
+  //   boost::filesystem::create_directories(folder + "/" + m);
+  // }
 
-  /*
+  // for (string chn : chns) {
+  //   TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
+  //                "RECREATE");
+  //   auto bins = cb.cp().channel({chn}).bin_set();
+  //   for (auto b : bins) {
+  //     for (auto m : masses) {
+  //       cout << ">> Writing datacard for bin: " << b << " and mass: " << m
+  //                 << "\r" << flush;
+  //       cb.cp().channel({chn}).bin({b}).mass({m, "*"}).WriteDatacard(
+  //           folder + "/" + m + "/" + b + ".txt", output);
+  //     }
+  //   }
+  //   output.Close();
+  // }
+
+
+
   // Here we define a CardWriter with a template for how the text datacard
   // and the root files should be named.
   ch::CardWriter writer("$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt",
                         "$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root");
-  writer.SetVerbosity(1);
-  writer.WriteCards("output/sm_cards/LIMITS/cmb", cb);
+  // writer.SetVerbosity(1);
+  writer.WriteCards("output/sm_cards/cmb", cb);
   for (auto chn : cb.channel_set()) {
-    writer.WriteCards("output/sm_cards/LIMITS/" + chn, cb.cp().channel({chn}));
+    writer.WriteCards("output/sm_cards/" + chn, cb.cp().channel({chn}));
   }
-  */
+
   cout << "\n>> Done!\n";
 }

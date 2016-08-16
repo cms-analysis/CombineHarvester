@@ -1240,6 +1240,18 @@ def FixOverlay():
 #  @details Functions for drawing legends, logos, title, lines and boxes
 ##@{
 
+
+def StandardAxes(xaxis, yaxis, var, units):
+    width = xaxis.GetBinWidth(1)
+    w_label = "%.1f" % width
+    if units == "":
+        xaxis.SetTitle(var)
+        yaxis.SetTitle("Events / " + w_label)
+    else:
+        xaxis.SetTitle(var + " (" + units + ")")
+        yaxis.SetTitle("Events / " + w_label + " " + units)
+
+
 def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, extraText2='', cmsTextSize=0.8):
     """Blah
     
