@@ -73,7 +73,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
   
   cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
-    ({"et"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ" "ZL", "ZJ"}}),  1.02)
+    ({"et"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
 
   /*src.cp().process(ch::JoinStr({signal, {"TT","VV","ZL","ZJ","ZTT","W"}}))

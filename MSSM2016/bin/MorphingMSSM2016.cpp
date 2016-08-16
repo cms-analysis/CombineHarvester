@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
 
   map<string, VString> bkg_procs;
   bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
-  bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ" "VVT","VVJ","ZTT"};
+  bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
 
