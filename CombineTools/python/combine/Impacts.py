@@ -20,6 +20,7 @@ class Impacts(CombineToolBase):
         group.add_argument('-m', '--mass', required=True)
         group.add_argument('-d', '--datacard', required=True)
         group.add_argument('--redefineSignalPOIs')
+        group.add_argument('--setPhysicsModelParameters')
         group.add_argument('--name', '-n', default='Test')
 
     def attach_args(self, group):
@@ -54,6 +55,8 @@ class Impacts(CombineToolBase):
         # Put intercepted args back
         passthru.extend(['-m', mh])
         passthru.extend(['-d', ws])
+        if self.args.setPhysicsModelParameters is not None:
+            passthru.extend(['--setPhysicsModelParameters', self.args.setPhysicsModelParameters])
         pass_str = ' '.join(passthru)
         paramList = []
         if self.args.redefineSignalPOIs is not None:
@@ -87,7 +90,7 @@ class Impacts(CombineToolBase):
             paramList = [x for x in paramList if x not in exclude]
 
         print 'Have nuisance parameters: ' + str(len(paramList))
-        prefit = utils.prefit_from_workspace(ws, 'w', paramList)
+        prefit = utils.prefit_from_workspace(ws, 'w', paramList, self.args.setPhysicsModelParameters)
         res = {}
         res["POIs"] = []
         res["params"] = []

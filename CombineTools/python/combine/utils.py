@@ -38,12 +38,17 @@ def list_from_workspace(file, workspace, set):
     return res
 
 
-def prefit_from_workspace(file, workspace, params):
+def prefit_from_workspace(file, workspace, params, setPars=None):
     """Given a list of params, return a dictionary of [-1sig, nominal, +1sig]"""
     res = {}
     wsFile = ROOT.TFile(file)
     ws = wsFile.Get(workspace)
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.WARNING)
+    if setPars is not None:
+      parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]
+      for par,val in parsToSet:
+        print 'Setting paramter %s to %g' % (par, float(val))
+        ws.var(par).setVal(float(val))
 
     for p in params:
         res[p] = {}
