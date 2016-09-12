@@ -76,8 +76,16 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"et"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
 
-  /*src.cp().process(ch::JoinStr({signal, {"TT","VV","ZL","ZJ","ZTT","W"}}))
-      .AddSyst(cb, "CMS_scale_j_13TeV", "shape", SystMap<>::init(1.00));*/
+/*  cb.cp().process(ch::JoinStr({signal, {"TTT","TTJ","VVT","VVJ","ZL","ZJ","ZTT","W"}}))
+      .AddSyst(cb, "CMS_scale_b_13TeV", "shape", SystMap<>::init(1.00));
+
+  cb.cp().process(ch::JoinStr({signal, {"TTT","TTJ","VVT","VVJ","ZL","ZJ","ZTT","W"}}))
+      .AddSyst(cb, "CMS_scale_j_13TeV", "shape", SystMap<>::init(1.00));
+
+
+  cb.cp().process(ch::JoinStr({signal, {"TTT","TTJ","VVT","VVJ","ZL","ZJ","ZTT","W"}}))
+      .AddSyst(cb, "CMS_fake_b_13TeV", "shape", SystMap<>::init(1.00));*/
+
 
   // Jet energy scale
   // ----------------
@@ -212,11 +220,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"et", "mt"}, 1.03)
     ({"tt"},       1.092));
 
-  /*cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
-    "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));*/
+  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+    "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
-/*  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
-    "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));*/
+  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+    "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
 /*  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
     "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));*/
@@ -384,12 +392,13 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
     // OS/SS QCD factor syst. uncertainty
     // Based on variation in fitted factor from different anti-iso sidebands
+    // Updated for 2016
     cb.cp().process({"QCD"}).AddSyst(cb,
       "CMS_htt_QCD_OS_SS_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
-      ({"mt"}, {8}, 1.100)
-      ({"mt"}, {9}, 1.400)
-      ({"et"}, {8}, 1.100)
-      ({"et"}, {9}, 1.400));
+      ({"mt"}, {8}, 1.040)
+      ({"mt"}, {9}, 1.600)
+      ({"et"}, {8}, 1.120)
+      ({"et"}, {9}, 1.600));
     }
     if (control_region == 1) {
       // Create rateParams for control regions:
@@ -466,12 +475,13 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
         // OS/SS QCD factor syst. uncertainty
         // Based on variation in fitted factor from different anti-iso sidebands
+        // Updated for 2016
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"QCD"}).AddSyst(cb,
           "CMS_htt_QCD_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 10}, 1.100)
-          ({"mt"}, {9, 13}, 1.400)
-          ({"et"}, {8, 10}, 1.100)
-          ({"et"}, {9, 13}, 1.400));
+          ({"mt"}, {8, 10}, 1.040)
+          ({"mt"}, {9, 13}, 1.600)
+          ({"et"}, {8, 10}, 1.120)
+          ({"et"}, {9, 13}, 1.600));
 
         cb.cp().AddSyst(cb,
           "CMS_scale_j_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
