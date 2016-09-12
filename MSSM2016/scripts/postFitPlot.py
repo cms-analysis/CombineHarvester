@@ -85,7 +85,7 @@ parser.add_argument('--manual_blind', action='store_true',default=False,help='Bl
 parser.add_argument('--auto_blind',action='store_true',default=False,help='Blind data automatically based on s/root b')
 parser.add_argument('--auto_blind_check_only',action='store_true',default=False,help='Only print blinding recommendation but still blind data using manual blinding')
 parser.add_argument('--soverb_plot', action='store_true',default=False,help='Make plot with s/root b instead of ratio plot to test what it would blind')
-parser.add_argument('--x_blind_min',default=200,help='Minimum x for manual blinding')
+parser.add_argument('--x_blind_min',default=100,help='Minimum x for manual blinding')
 parser.add_argument('--x_blind_max',default=4000,help='Maximum x for manual blinding')
 #General plotting options
 parser.add_argument('--channel_label',default='#mu#tau_{h} no b-tag',help='Channel - category label')
