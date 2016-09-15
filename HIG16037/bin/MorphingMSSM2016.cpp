@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
   bool check_neg_bins = false;
   bool poisson_bbb = false;
   bool do_w_weighting = true;
+  bool zmm_fit = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -92,6 +93,7 @@ int main(int argc, char** argv) {
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
+    ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(false))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
@@ -101,15 +103,20 @@ int main(int argc, char** argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   std::map<string, string> input_dir;
-  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_em+"/";
-  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_mt+"/";
-  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_et+"/";
-  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_tt+"/";
+  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_em+"/";
+  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_mt+"/";
+  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_et+"/";
+  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_tt+"/";
+  input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/KIT/";
 
+  if (zmm_fit) VString chns = {"mt","et","tt","em","zmm"};
+  else {
   VString chns =
-  //    {"tt"};
-//      {"mt"};
-      {"tt","mt","et","em"};
+      //{"tt"};
+      //{"mt"};
+      //{"mt","et"};
+      {"mt","et","tt","em"};
+  }
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
   mA.setConstant(true);
@@ -121,6 +128,7 @@ int main(int argc, char** argv) {
   bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
+  bkg_procs["zmm"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
 
   VString SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
@@ -135,6 +143,8 @@ int main(int argc, char** argv) {
   binning["tt_btag"] = {500,3900};
   binning["em_nobtag"] = {500,3900};
   binning["em_btag"] = {500,3900};
+  binning["zmm_nobtag"] = {60,70,80,90,100,110,120};
+  binning["zmm_btag"] = {60,70,80,90,100,110,120};
 
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
@@ -166,12 +176,17 @@ int main(int argc, char** argv) {
     {9, "mt_btag"}
     };
 
+  cats["zmm_13TeV"] = {
+    {8, "zmm_nobtag"},
+    {9, "zmm_btag"}
+    };
+
   if (control_region > 0){
       // for each channel use the categories >= 10 for the control regions
       // the control regions are ordered in triples (10,11,12),(13,14,15)...
       for (auto chn : chns){
         // for em or tt do nothing
-        if (ch::contains({"em", "tt"}, chn)) {
+        if (ch::contains({"em", "tt", "zmm"}, chn)) {
           std::cout << " - Skipping extra control regions for channel " << chn << "\n";
           continue;
         }
@@ -219,9 +234,14 @@ int main(int argc, char** argv) {
               });
   }
 
+  // we do need to filter signal in the zmm region
+  cb.FilterAll([](ch::Object const* obj) {
+      return (obj->channel() == std::string("zmm") && obj->signal());
+  });
 
 
-  ch::AddMSSMRun2Systematics(cb,control_region);
+
+  ch::AddMSSMRun2Systematics(cb,control_region,zmm_fit);
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(

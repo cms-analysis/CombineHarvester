@@ -16,7 +16,7 @@ using ch::syst::process;
 using ch::syst::bin;
 using ch::JoinStr;
 
-void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
+void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0, bool zmm_fit = false) {
   // Create a CombineHarvester clone that only contains the signal
   // categories
   CombineHarvester cb_sig = cb.cp();
@@ -69,6 +69,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // Electron and muon efficiencies
   // ------------------------------
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
+    ({"zmm"}, JoinStr({signal, {"ZTT", "ZLL", "TT", "VV", "ZL", "ZJ"}}),  1.04)
     ({"mt"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
   
@@ -169,6 +170,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"et"}, {9}, {"TTJ"},   0.99,   1.01)
     ({"et"}, {9}, {ggH},  0.98, 1.02) 
     ({"et"}, {9}, {bbH},  0.98, 1.02) 
+    ({"zmm"}, {8}, {"VV"},   1.01,   0.99) 
+    ({"zmm"}, {8}, {"TT"},   1.03,   0.97) 
+    ({"zmm"}, {8}, {"bbH"},  1.01,   0.99) 
+    ({"zmm"}, {9}, {"W"},  0.99, 1.03  ) 
+    ({"zmm"}, {9}, {"QCD"},  1.01, 0.88  ) 
+    ({"zmm"}, {9}, {"ZTT"},  0.99,   1.02)
+    ({"zmm"}, {9}, {"VV"},   0.98,   1.01)
+    ({"zmm"}, {9}, {"TT"},   0.99,   1.01)
     ({"em"}, {8}, {"VV"},   1.01,   0.99) 
     ({"em"}, {8}, {"TT"},   1.03,   0.97) 
     ({"em"}, {8}, {"bbH"},  1.01,   0.99) 
@@ -200,6 +209,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"et"}, {9}, {"ZL"},   0.99,   1.01)
     ({"et"}, {9}, {"ZJ"},   0.98,   1.00)
     ({"et"}, {9}, {"ZTT"},  0.97,   1.03)
+    ({"zmm"}, {9}, {"ZTT"},  0.98,   1.02)
+    ({"zmm"}, {9}, {"ZLL"},  0.90,   1.05)
+    ({"zmm"}, {9}, {"W"},  0.94,   1.04)
     ({"em"}, {9}, {"ZTT"},  0.98,   1.02)
     ({"em"}, {9}, {"ZLL"},  0.90,   1.05)
     ({"em"}, {9}, {"W"},  0.94,   1.04)
@@ -233,8 +245,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
   // Electron energy scale
   // ---------------------
-  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,
-    "CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+  //cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,
+    //"CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
 
   // Recoil corrections
@@ -294,7 +306,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // on Z->mumu calibration. Also only apply this to signal-region
   // categories for now, using cb_sig instead of cb
   // THIS IS TO BE CHECKED
-  cb_sig.cp().process({"ZTT"}).AddSyst(cb,
+  cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
     "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
     ({8}, 1.03)
     ({9}, 1.05));
@@ -445,6 +457,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
         // Regex that matches, e.g. mt_nobtag_wjets_cr or mt_nobtag_wjets_ss_cr
         cb.cp().bin({bin+"_wjets(|_ss)_cr$"}).process({"QCD"}).AddSyst(cb,
           "rate_QCD_highmT_"+bin, "rateParam", SystMap<>::init(1.0));
+
 
         /////////////////
         // Systematics //
@@ -602,6 +615,17 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
         cb.GetParameter(sys)->set_range(0.0, 5.0);
       }
       cb.SetFlag("filters-use-regex", false);
+    }
+    if (zmm_fit) {
+        cb.SetFlag("filters-use-regex", true);
+        cb.cp().bin({"mt_nobtag","et_nobtag"}).process({"ZTT"}).AddSyst(cb, "rate_ZLL_nobtag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"zmm_nobtag"}).process({"ZLL"}).AddSyst(cb, "rate_ZLL_nobtag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_btag","et_btag"}).process({"ZTT"}).AddSyst(cb, "rate_ZLL_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZLL_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_btag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
+        cb.cp().bin({"mt_nobtag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
+        cb.cp().channel({"zmm"}).process({"ZLL","ZTT"}).AddSyst(cb, "CMS_htt_muscale_13TeV", "shape", SystMap<>::init(1.00));
+        cb.SetFlag("filters-use-regex", false);
     }
   }
 }
