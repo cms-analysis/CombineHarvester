@@ -95,11 +95,17 @@ cb.cp().process(['W']).bin_id([1]).AddSyst(
 cb.cp().process(['ZTT', 'ZL', 'ZJ']).AddSyst(
     cb, 'DY_XS', 'rateParam', ch.SystMap()(1.0))
 
+cb.cp().process(['ZL']).AddSyst(
+    cb, 'muon_fr', 'rateParam', ch.SystMap()(1.0))
+
 cb.GetParameter('effsf').set_val(1.0)
 cb.GetParameter('effsf').set_range(0.5, 1.5)
 
 cb.GetParameter('fakesf').set_val(1.0)
 cb.GetParameter('fakesf').set_range(0.5, 2.5)
+
+cb.GetParameter('muon_fr').set_val(1.5)
+cb.GetParameter('muon_fr').set_range(0.5, 2.5)
 
 cb.cp().process(['ZTT']).bin_id([1]).AddSyst(
     cb, 'pass', 'rateParam', ch.SystMap()(('(%g)' % eff_initial, 'effsf')))
@@ -112,8 +118,6 @@ cb.cp().process(['W']).bin_id([1]).AddSyst(
 
 cb.cp().process(['W']).bin_id([0]).AddSyst(
     cb, 'failW', 'rateParam', ch.SystMap()(('(1-@0*%g)' % eff_W_initial, 'fakesf')))
-
-
 
 
 # print '>> Setting standardised bin names...'
