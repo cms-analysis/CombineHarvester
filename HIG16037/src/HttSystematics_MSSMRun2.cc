@@ -211,20 +211,20 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
   // Tau-related systematics
   // -----------------------
-  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+  cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_$ERA", "lnN", SystMap<channel>::init
     ({"et", "mt"}, 1.05)
     ({"tt"},       1.10));
 
-  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+  cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
     ({"et", "mt"}, 1.03)
     ({"tt"},       1.092));
 
-  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+  cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
-  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+  cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
@@ -242,6 +242,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // treat it as an uncertainty on the low/high mT factor.
   // For now we also avoid applying this to any of the high-mT control regions
   // as the exact (anti-)correlation with low mT needs to be established
+  // CHECK THIS
   cb.cp().AddSyst(cb,
     "CMS_htt_boson_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
     ({"et", "mt", "em", "tt"}, {8, 9, 11, 14}, JoinStr({signal, {"ZTT", "W"}}), 1.02));
@@ -276,7 +277,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
   // Diboson and ttbar Normalisation - fully correlated
-  cb.cp().process({"VV"}).AddSyst(cb,
+  cb.cp().process({"VV","VVT","VVJ"}).AddSyst(cb,
     "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
 
   cb.cp().process({"TT","TTJ","TTT"}).AddSyst(cb,
@@ -291,6 +292,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // For ZTT use 5% run 1 value for now, should be replaced based
   // on Z->mumu calibration. Also only apply this to signal-region
   // categories for now, using cb_sig instead of cb
+  // THIS IS TO BE CHECKED
   cb_sig.cp().process({"ZTT"}).AddSyst(cb,
     "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
     ({8}, 1.03)
@@ -308,17 +310,22 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   cb.cp().channel({"et", "mt", "tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
     ({8,9,10,11,12,13,14,15}, {"ZJ"},1.20)
-    ({8,10,11,12},            {"TTJ"},1.20)
-    ({9,13,14,15},            {"TTJ"},1.20));
+    ({8,9,10,11,12,13,14,15}, {"TTJ"},1.20));
   
   cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
 
   cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
-    "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(2.00));
+    "CMS_htt_mFakeTau_tight_13TeV", "lnN", SystMap<>::init(1.30)); //Uncertainty ranges from 7-35% depending on eta bin
+
+  cb.cp().process({"ZL"}).channel({"tt"}).AddSyst(cb,
+    "CMS_htt_mFakeTau_loose_13TeV", "lnN", SystMap<>::init(1.20)); //Uncertainty ranges from 5-23% depending on eta bin
+
+
 
   // QCD extrap.
   // -----------
+  // emu QCD extrapolation 
   cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
     "CMS_htt_QCD_OS_SS_syst_$BIN", "lnN", SystMap<bin_id>::init
     ({8}, 1.16)
@@ -326,8 +333,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
   cb.cp().process({"QCD"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_QCD_norm_syst_$BIN", "lnN", SystMap<bin_id>::init
-    ({8}, 1.06)
-    ({9}, 1.21));
+    ({8}, 1.03)
+    ({9}, 1.20));
 
   if (control_region == 0) {
     // the uncertainty model in the signal region is the classical one
@@ -342,6 +349,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
       ({"et"}, {9}, {"W"},    0.93,  1.03)
       ({"et"}, {9}, {"QCD"},  1.013,  0.986)); //To be checked still!
 
+    //Need to put these back in in case we did want to fit without the control region for some reason
     cb.cp().AddSyst(cb,
       "CMS_eff_b_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
       ({"mt"}, {8}, {"W"},    0.99, 1.01)
@@ -355,6 +363,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
     // OS/SS W factor stat. uncertainty
     // Take same numbers as below, but this is probably conservative
+    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.015)
@@ -365,6 +374,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     // OS/SS W factor syst. uncertainty
     // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
     // Decorrelate between categories for now - but this should be studied
+    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.060)
@@ -374,6 +384,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
     // low/high mT W factor stat. uncertainty
     // Should affect signal region and SS low mT
+    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.020)
@@ -385,6 +396,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     // Currently to be determined, could be motivated by low vs high mT jet->tau FR,
     // where we see a 10-15% variation from low to high mT. Go with 20% for now which
     // is comparable to what was used in Run 1 0-jet (20%) and the MSSM update (30%)
+    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.20)
@@ -442,14 +454,15 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
         // Should affect signal region and OS high mT
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 10}, 1.015)
-          ({"mt"}, {9, 13}, 1.100)
-          ({"et"}, {8, 10}, 1.015)
-          ({"et"}, {9, 13}, 1.110));
+          ({"mt"}, {8, 10}, 1.02)
+          ({"mt"}, {9, 13}, 1.03)
+          ({"et"}, {8, 10}, 1.02)
+          ({"et"}, {9, 13}, 1.03));
 
         // OS/SS W factor syst. uncertainty
         // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
         // Decorrelate between categories for now - but this should be studied
+        // NEED TO REVISIT
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10}, 1.060)
@@ -461,13 +474,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
         // Should affect signal region and SS low mT
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 11}, 1.020)
-          ({"mt"}, {9, 14}, 1.130)
-          ({"et"}, {8, 11}, 1.020)
-          ({"et"}, {9, 14}, 1.150));
+          ({"mt"}, {8, 11}, 1.02)
+          ({"mt"}, {9, 14}, 1.03)
+          ({"et"}, {8, 11}, 1.02)
+          ({"et"}, {9, 14}, 1.03));
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
+        // NEED TO REVISIT
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 11}, 1.20)
