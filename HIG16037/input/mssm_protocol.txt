@@ -121,7 +121,10 @@ python scripts/plotMSSMLimits.py --logy --logx mssm_freezing_BlueBand_bbH_cmb.js
 
 Prefit plots can be made and either the model dependent (3 Higgs) or signal resonance signal can be added for a benchmark point. The usage:
  
-PostFitShapesFromWorkspace -d output/mssm_310516_freezing//htt_mt_8_13TeV/htt_mt_8_13TeV.txt -w output/mssm_310516_freezing/htt_mt_8_13TeV/ws.root -o htt_mt_8_13TeV_shapes_080416.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700
+PostFitShapesFromWorkspace -d output/mssm_160916_freezing/cmb/combined.text.cmb -w output/mssm_160916_freezing/cmb/ws.root -o shapes_160916.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700
+To make the plots in the docs:
+python scripts/makeMassPlotsPrefit.py
+
 python scripts/postFitPlot.py --file=htt_mt_8_13TeV_shapes_080416.root --ratio --extra_pad=0.3 --custom_x_range --x_axis_max=999.9 --x_axis_min=0.0 --r_ggH=0.1 --r_bbH=0.1 --mPhi=700 --file_dir="htt_mt_8_13TeV"
 
 First is a call to PostFitShapesFromWorkspace, which will generate the signal and background templates for the benchmark point of mPhi = 700 GeV and for cross-section values for the 2 signal processes of 0.1pb. The script will then make a stacked plot. The option --model_dep can be used with choices for --mA and --tanb to instead plot the 3 Higgs signal from a model dependent workspace. 
