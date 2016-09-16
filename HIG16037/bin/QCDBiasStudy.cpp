@@ -19,7 +19,7 @@
 #include "CombineHarvester/CombineTools/interface/Algorithm.h"
 #include "CombineHarvester/CombineTools/interface/AutoRebin.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
-#include "CombineHarvester/MSSM2016/interface/HttSystematics_MSSMRun2.h"
+#include "CombineHarvester/HIG16037/interface/HttSystematics_MSSMRun2.h"
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
 #include "TH2.h"

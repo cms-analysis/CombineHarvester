@@ -1,4 +1,4 @@
-#include "CombineHarvester/MSSM2016/interface/HttSystematics_MSSMRun2.h"
+#include "CombineHarvester/HIG16037/interface/HttSystematics_MSSMRun2.h"
 #include <vector>
 #include <string>
 #include "CombineHarvester/CombineTools/interface/Systematics.h"
