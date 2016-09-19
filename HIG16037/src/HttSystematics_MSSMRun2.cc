@@ -363,40 +363,35 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
     // OS/SS W factor stat. uncertainty
     // Take same numbers as below, but this is probably conservative
-    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
-      ({"mt"}, {8}, 1.015)
-      ({"mt"}, {9}, 1.100)
-      ({"et"}, {8}, 1.015)
-      ({"et"}, {9}, 1.110));
+      ({"mt"}, {8}, 1.02)
+      ({"mt"}, {9}, 1.03)
+      ({"et"}, {8}, 1.02)
+      ({"et"}, {9}, 1.03));
 
     // OS/SS W factor syst. uncertainty
     // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
-    // Decorrelate between categories for now - but this should be studied
-    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
-      ({"mt"}, {8}, 1.060)
-      ({"mt"}, {9}, 1.110)
-      ({"et"}, {8}, 1.100)
-      ({"et"}, {9}, 1.140));
+      ({"mt"}, {8}, 1.080)
+      ({"mt"}, {9}, 1.100)
+      ({"et"}, {8}, 1.080)
+      ({"et"}, {9}, 1.100));
 
     // low/high mT W factor stat. uncertainty
     // Should affect signal region and SS low mT
-    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.020)
-      ({"mt"}, {9}, 1.130)
+      ({"mt"}, {9}, 1.030)
       ({"et"}, {8}, 1.020)
-      ({"et"}, {9}, 1.150));
+      ({"et"}, {9}, 1.030));
 
     // low/high mT W factor syst. uncertainty
     // Currently to be determined, could be motivated by low vs high mT jet->tau FR,
     // where we see a 10-15% variation from low to high mT. Go with 20% for now which
     // is comparable to what was used in Run 1 0-jet (20%) and the MSSM update (30%)
-    // NEED TO REVISIT
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.20)
@@ -406,7 +401,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
     // OS/SS QCD factor syst. uncertainty
     // Based on variation in fitted factor from different anti-iso sidebands
-    // Updated for 2016
     cb.cp().process({"QCD"}).AddSyst(cb,
       "CMS_htt_QCD_OS_SS_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.040)
@@ -461,14 +455,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
         // OS/SS W factor syst. uncertainty
         // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
-        // Decorrelate between categories for now - but this should be studied
-        // NEED TO REVISIT
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 10}, 1.060)
-          ({"mt"}, {9, 13}, 1.110)
-          ({"et"}, {8, 10}, 1.100)
-          ({"et"}, {9, 13}, 1.140));
+          ({"mt"}, {8, 10}, 1.08)
+          ({"mt"}, {9, 13}, 1.10)
+          ({"et"}, {8, 10}, 1.08)
+          ({"et"}, {9, 13}, 1.10));
 
         // low/high mT W factor stat. uncertainty
         // Should affect signal region and SS low mT
@@ -481,7 +473,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
-        // NEED TO REVISIT
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 11}, 1.20)
@@ -491,7 +482,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
 
         // OS/SS QCD factor syst. uncertainty
         // Based on variation in fitted factor from different anti-iso sidebands
-        // Updated for 2016
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"QCD"}).AddSyst(cb,
           "CMS_htt_QCD_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10}, 1.040)
