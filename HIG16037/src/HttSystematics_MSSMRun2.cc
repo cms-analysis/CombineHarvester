@@ -76,6 +76,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({"et"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
 
+
 /*  cb.cp().process(ch::JoinStr({signal, {"TTT","TTJ","VVT","VVJ","ZL","ZJ","ZTT","W","VV","TT","ZLL","QCD"}}))
       .AddSyst(cb, "CMS_scale_b_13TeV", "shape", SystMap<>::init(1.00));
 
@@ -479,6 +480,30 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
           ({"mt"}, {9, 14}, 1.20)
           ({"et"}, {8, 11}, 1.20)
           ({"et"}, {9, 14}, 1.20));
+
+        //W b-tag extrapolation factor stat. uncertainty
+        cb.cp().bin({bin+"(|_qcd_cr)$",bin+"(|_wjets_cr)$",bin+"(|_wjets_ss_cr)$"}).process({"W"}).AddSyst(cb,
+         "CMS_htt_W_extrap_stat_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
+         ({"et"},{9},1.11)
+         ({"et"},{13},1.14)
+         ({"et"},{14},1.16)
+         ({"et"},{15},1.21)
+         ({"mt"},{9},1.12)
+         ({"mt"},{13},1.08)
+         ({"mt"},{14},1.14)
+         ({"mt"},{15},1.22));
+    
+        //W b-tag extrapolation factor syst uncertainty is just the b-tag efficiency uncertainty
+        cb.cp().process({"W"}).AddSyst(cb,
+         "CMS_eff_b_13TeV","lnN", SystMapAsymm<channel, bin_id>::init
+         ({"mt"},{9},0.96,1.01)
+         ({"mt"},{13},0.98,1.04)
+         ({"mt"},{14},1.0,1.06)
+         ({"mt"},{15},0.96,1.01)
+         ({"et"},{9},0.95,1.02)
+         ({"et"},{13},0.99,1.02)
+         ({"et"},{14},0.90,1.00)
+         ({"et"},{15},0.97,1.00));
 
         // OS/SS QCD factor syst. uncertainty
         // Based on variation in fitted factor from different anti-iso sidebands
