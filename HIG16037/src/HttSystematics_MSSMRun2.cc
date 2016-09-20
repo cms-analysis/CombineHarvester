@@ -332,11 +332,15 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
     ({8}, 1.16)
     ({9}, 1.40));
 
- //tt QCD extrapolation: stat uncertainty + 2% systematic uncertainty in no b-tag and 20% in b-tag from difference between OS and SS extrapolation factors into tau1 medium-not tight and tau2 tight 
+ //tt QCD extrapolation: 
+ //No b-tag: 2% stat uncertainty + 12% systematic uncertainty (from difference between OS/SS extrapolation factors from tau1 loose-not tight and tau2 medium-not tight
+ //into tau1 loose-not tight and tau2 tight)
+ //B-tag: 20% stat uncertainty + 14% systematic uncertainty (from difference between OS and SS extrapolation factors from tau1 loose-not tight and tau2 loose-not tight 
+ //into tau1 loose-not tight and tau2 tight)
   cb.cp().process({"QCD"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_QCD_norm_syst_$BIN", "lnN", SystMap<bin_id>::init
-    ({8}, 1.04)
-    ({9}, 1.28));
+    ({8}, 1.12)
+    ({9}, 1.24));
 
   if (control_region == 0) {
     // the uncertainty model in the signal region is the classical one
