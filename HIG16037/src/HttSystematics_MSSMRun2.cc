@@ -487,28 +487,33 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
           ({"et"}, {9, 14}, 1.20));
 
         //W b-tag extrapolation factor stat. uncertainty
-        cb.cp().bin({bin+"(|_qcd_cr)$",bin+"(|_wjets_cr)$",bin+"(|_wjets_ss_cr)$"}).process({"W"}).AddSyst(cb,
+        cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
          "CMS_htt_W_extrap_stat_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
          ({"et"},{9},1.11)
-         ({"et"},{13},1.14)
-         ({"et"},{14},1.16)
-         ({"et"},{15},1.21)
+         ({"et"},{14},1.21)
          ({"mt"},{9},1.12)
-         ({"mt"},{13},1.08)
-         ({"mt"},{14},1.14)
-         ({"mt"},{15},1.22));
+         ({"mt"},{14},1.22));
     
-        //W b-tag extrapolation factor syst uncertainty is just the b-tag efficiency uncertainty
+        //W b-tag extrapolation factor syst uncertainty
+        //1) b-tag efficiency uncertainty
         cb.cp().process({"W"}).AddSyst(cb,
          "CMS_eff_b_13TeV","lnN", SystMapAsymm<channel, bin_id>::init
          ({"mt"},{9},0.96,1.01)
-         ({"mt"},{13},0.98,1.04)
          ({"mt"},{14},1.0,1.06)
-         ({"mt"},{15},0.96,1.01)
          ({"et"},{9},0.95,1.02)
-         ({"et"},{13},0.99,1.02)
-         ({"et"},{14},0.90,1.00)
-         ({"et"},{15},0.97,1.00));
+         ({"et"},{14},0.90,1.00));
+ 
+        //W b-tag extrapolation factor syst uncertainty
+        //2) From difference between MC and data-bkg 'W+'tau'+jet -> W+'tau'+b
+        //extrapolation factor in a high mT tau anti-iso region. Uses 
+        //number for mt for et too as there is a lot more QCD in this
+        //region for et than for mt
+        cb.cp().bn({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
+         "CMS_htt_W_extrap_syst_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
+         ({"et"},{9,14},1.10)
+         ({"mt"},{9,14},1.10));
+    
+
 
         // OS/SS QCD factor syst. uncertainty
         // Based on variation in fitted factor from different anti-iso sidebands
@@ -557,6 +562,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
           ({"et"},  {15}, {"VVJ"}, 1.07, 0.94)
           ({"et"},  {15}, {"TTJ"}, 1.15, 0.91));
 
+        //With 1-jet selection in high mT control regions, categories 15 and 16
+        //are no longer affected by b-tag efficiency uncertainty
         cb.cp().AddSyst(cb,
           "CMS_eff_b_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
           ({"mt"},  {10}, {"TTT"}, 1.03, 0.97)
@@ -566,14 +573,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
           ({"mt"},  {11}, {"TTJ"}, 1.02, 0.98)
           ({"mt"},  {12}, {"TTT","TTJ"}, 1.02, 0.97)
           ({"mt"},  {12}, {"VVJ"}, 1.01, 0.99)
-          ({"mt"},  {13}, {"TTT","TTJ"}, 0.99, 1.02)
-          ({"mt"},  {13}, {"VVT","VVJ"}, 0.99, 1.03)
+          /*({"mt"},  {13}, {"TTT","TTJ"}, 0.99, 1.02)
+          ({"mt"},  {13}, {"VVT","VVJ"}, 0.99, 1.03)*/
           ({"mt"},  {14}, {"TTT","TTJ"}, 0.98, 1.03)
           ({"mt"},  {14}, {"VVT"}, 1.01, 1.00)
-          ({"mt"},  {15}, {"TTT"}, 0.99, 1.01)
+          /*({"mt"},  {15}, {"TTT"}, 0.99, 1.01)
           ({"mt"},  {15}, {"TTJ"}, 0.98, 1.02)
           ({"mt"},  {15}, {"VVT"}, 1.03, 1.00)
-          ({"mt"},  {15}, {"VVJ"}, 0.98, 1.02)
+          ({"mt"},  {15}, {"VVJ"}, 0.98, 1.02)*/ 
           ({"et"},  {10}, {"TTT"}, 1.03, 0.97)
           ({"et"},  {10}, {"TTJ"}, 1.02, 0.97)
           ({"et"},  {10}, {"VVT"}, 1.01, 0.99)
@@ -584,11 +591,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
           ({"et"},  {12}, {"TTT"}, 1.04, 0.97)
           ({"et"},  {12}, {"TTJ"}, 1.02, 0.98)
           ({"et"},  {12}, {"VVJ"}, 1.01, 0.998)
-          ({"et"},  {13}, {"TTT","TTJ"}, 0.99, 1.02)
-          ({"et"},  {13}, {"VVT","VVJ"}, 0.99, 1.02)
-          ({"et"},  {14}, {"TTJ"}, 0.99, 1.022)
-          ({"et"},  {15}, {"TTJ"}, 0.98, 1.02)
-          ({"et"},  {15}, {"VVJ"}, 0.96, 1.01));
+          /*({"et"},  {13}, {"TTT","TTJ"}, 0.99, 1.02)
+          ({"et"},  {13}, {"VVT","VVJ"}, 0.99, 1.02)*/
+          ({"et"},  {14}, {"TTJ"}, 0.99, 1.022));
+          /*({"et"},  {15}, {"TTJ"}, 0.98, 1.02)
+          ({"et"},  {15}, {"VVJ"}, 0.96, 1.01))*/
       }
       // Should set a sensible range for our rateParams
       for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
