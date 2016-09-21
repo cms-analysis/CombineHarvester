@@ -5,11 +5,21 @@ from array import array
 # import CombineHarvester.CombineTools.ch as ch
 
 
-for m in ['mva_t',
-          'mva_t_pt20_30',
-          'mva_t_pt30_40',
-          'mva_t_pt40_60',
-          'mva_t_pt60_100']:
+def PrintTopCorrs(fitres, parname):
+    arglist = fitres.correlation(parname)
+    vals = []
+    for i in xrange(arglist.getSize()):
+        vals.append((arglist.at(i).GetName(), arglist.at(i).getVal()))
+    vals.sort(key=lambda x: abs(x[1]), reverse=True)
+    vals = vals[:10]
+    print vals
+    # arglist.Print('v')
+
+
+
+for m in ['mva_m_dm0_pt30',
+          'mva_m_dm1_pt30',
+          'mva_m_dm10_pt30']:
     print m
     f_in = ROOT.TFile('mlfit.%s.root' % m)
     rfr = f_in.Get('fit_s')
@@ -17,7 +27,8 @@ for m in ['mva_t',
     effsf = pars.find('effsf')
     effsf.Print()
     val, err = (effsf.getVal(), (effsf.getErrorHi() - effsf.getErrorLo()) / 2.)
-    print val,err
+    print val, err
+    PrintTopCorrs(rfr, 'effsf')
     # h = ROOT.TH2F(m, m, 1, 40, 200, 1, -2.1, 2.1)
     # h.SetBinContent(1, 1, val)
     # h.SetBinError(1, 1, err)
