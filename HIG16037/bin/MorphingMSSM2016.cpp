@@ -109,14 +109,8 @@ int main(int argc, char** argv) {
   input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_tt+"/";
   input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/KIT/";
 
-  if (zmm_fit) VString chns = {"mt","et","tt","em","zmm"};
-  else {
-  VString chns =
-      //{"tt"};
-      //{"mt"};
-      //{"mt","et"};
-      {"mt","et","tt","em"};
-  }
+  VString chns = {"mt","et","tt","em"};
+  if (zmm_fit) chns.push_back("zmm");
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
   mA.setConstant(true);
@@ -241,7 +235,7 @@ int main(int argc, char** argv) {
 
 
 
-  ch::AddMSSMRun2Systematics(cb,control_region,zmm_fit);
+  ch::AddMSSMRun2Systematics(cb, control_region, zmm_fit);
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(

@@ -16,7 +16,7 @@ using ch::syst::process;
 using ch::syst::bin;
 using ch::JoinStr;
 
-void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0, bool zmm_fit = false) {
+void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fit) {
   // Create a CombineHarvester clone that only contains the signal
   // categories
   CombineHarvester cb_sig = cb.cp();
@@ -521,7 +521,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0, bool 
         //extrapolation factor in a high mT tau anti-iso region. Uses 
         //number for mt for et too as there is a lot more QCD in this
         //region for et than for mt
-        cb.cp().bn({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
+        cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
          "CMS_htt_W_extrap_syst_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
          ({"et"},{9,14},1.10)
          ({"mt"},{9,14},1.10));
