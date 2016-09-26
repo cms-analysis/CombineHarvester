@@ -257,10 +257,12 @@ int main(int argc, char** argv) {
   return null_yield;
  });
 
-     //Scaling QCD in em btag by 1.3/2.0 as agreed
-     cb.cp().process({"QCD"}).channel({"em"}).bin_id({9}).ForEachProc([&](ch::Process *proc){
-       proc->set_rate(proc->rate()*(1.3/2.0));
-     });
+     //Scaling QCD in em btag by 1.3/2.0 as agreed - not necessary for DESY cards
+     if(input_folder_em=="Imperial/") {
+         cb.cp().process({"QCD"}).channel({"em"}).bin_id({9}).ForEachProc([&](ch::Process *proc){
+           proc->set_rate(proc->rate()*(1.3/2.0));
+         });
+     }
 
   if(SM125!=string("")) {
      cb.cp().process(SM_procs).ForEachProc([&](ch::Process * proc) {
