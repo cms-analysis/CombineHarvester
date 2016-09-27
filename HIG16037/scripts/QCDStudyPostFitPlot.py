@@ -177,7 +177,7 @@ legend.SetFillColor(0)
 for legi,hists in enumerate(bkg_histos):
   legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
 legend.AddEntry(bkghist,"Background uncertainty","f")
-legend.AddEntry(blind_datahist,"Observation","P")
+legend.AddEntry(total_datahist,"Observation","P")
 legend.Draw("same")
 latex = ROOT.TLatex()
 latex.SetNDC()

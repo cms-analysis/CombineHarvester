@@ -428,7 +428,7 @@ legend = plot.PositionedLegend(0.30,0.30,3,0.03)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
 legend.SetFillColor(0)
-if not soverb_plot and not fractions: legend.AddEntry(blind_datahist,"Observation","PE")
+if not soverb_plot and not fractions: legend.AddEntry(total_datahist,"Observation","PE")
 #Drawn on legend in reverse order looks better
 bkg_histos.reverse()
 background_schemes[channel].reverse()
