@@ -515,7 +515,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
          ({"et"},{9},0.95,1.02)
          ({"et"},{13},0.99,1.02)
          ({"et"},{14},0.90,1.00)
-         ({"et"},{14},0.97,1.00));
+         ({"et"},{15},0.97,1.00));
  
         //W b-tag extrapolation factor syst uncertainty
         //Only needed if fitting 1-jet selection at high mT which we're not doing now
