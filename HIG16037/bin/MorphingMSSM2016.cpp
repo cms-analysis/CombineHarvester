@@ -69,6 +69,7 @@ int main(int argc, char** argv) {
   string input_folder_et="Imperial/";
   string input_folder_mt="Imperial/";
   string input_folder_tt="Imperial/";
+  string input_folder_zmm="KIT/";
   string postfix="";
   bool auto_rebin = false;
   bool manual_rebin = false;
@@ -86,6 +87,7 @@ int main(int argc, char** argv) {
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial"))
+    ("input_folder_zmm", po::value<string>(&input_folder_zmm)->default_value("KIT"))
     ("postfix", po::value<string>(&postfix)->default_value(""))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("real_data", po::value<bool>(&real_data)->default_value(false))
@@ -103,11 +105,11 @@ int main(int argc, char** argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   std::map<string, string> input_dir;
-  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_em+"/";
-  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_mt+"/";
-  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_et+"/";
-  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/"+input_folder_tt+"/";
-  input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSM2016/shapes/KIT/";
+  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_em+"/";
+  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_mt+"/";
+  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_et+"/";
+  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_tt+"/";
+  input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_zmm+"/";
 
   VString chns = {"mt","et","tt","em"};
   if (zmm_fit) chns.push_back("zmm");

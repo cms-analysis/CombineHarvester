@@ -245,8 +245,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // Electron energy scale
   // ---------------------
-  //cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,
-    //"CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,
+    "CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
 
   // Recoil corrections
