@@ -493,7 +493,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
           ({"et"}, {9, 14}, 1.20));
 
         //W b-tag extrapolation factor stat. uncertainty
-        cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
+        cb.cp().bin({bin+"(|_qcd_cr)$",bin+"(|_wjets_cr)$",bin+"(|_wjets_ss_cr)$"}).process({"W"}).AddSyst(cb,
          "CMS_htt_W_extrap_stat_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
          ({"et"},{9},1.11)
          ({"et"},{13},1.14)
