@@ -46,7 +46,7 @@ void To1Bin(T* proc)
 
 bool BinIsControlRegion(ch::Object const* obj)
 {
-    return boost::regex_search(obj->bin(),boost::regex{"_cr$"});
+    return (boost::regex_search(obj->bin(),boost::regex{"_cr$"}) || (obj->channel() == std::string("zmm")));
 }
 
 // Useful to have the inverse sometimes too
@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
   bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
-  bkg_procs["zmm"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
+  bkg_procs["zmm"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV", "ZTT"};
 
   VString SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
@@ -222,7 +222,7 @@ int main(int argc, char** argv) {
     if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
     if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
     }
-  if (control_region > 0){
+  if ((control_region > 0) || zmm_fit){
       // Since we now account for QCD in the high mT region we only
       // need to filter signal processes
       cb.FilterAll([](ch::Object const* obj) {
@@ -230,10 +230,6 @@ int main(int argc, char** argv) {
               });
   }
 
-  // we do need to filter signal in the zmm region
-  cb.FilterAll([](ch::Object const* obj) {
-      return (obj->channel() == std::string("zmm") && obj->signal());
-  });
 
 
 

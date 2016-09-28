@@ -69,7 +69,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // Electron and muon efficiencies
   // ------------------------------
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-    ({"zmm"}, JoinStr({signal, {"ZTT", "ZLL", "TT", "VV", "ZL", "ZJ"}}),  1.04)
+    ({"zmm"}, {"ZTT", "ZLL", "TT", "VV", "ZL"},  1.04)
+    ({"zmm"}, {"ZJ"},  1.02)
     ({"mt"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
   
@@ -178,6 +179,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"zmm"}, {9}, {"ZTT"},  0.99,   1.02)
     ({"zmm"}, {9}, {"VV"},   0.98,   1.01)
     ({"zmm"}, {9}, {"TT"},   0.99,   1.01)
+    ({"zmm"}, {9}, {"ZL"},   0.97,   1.03)
+    ({"zmm"}, {9}, {"ZJ"},   0.98,   1.02)
     ({"em"}, {8}, {"VV"},   1.01,   0.99) 
     ({"em"}, {8}, {"TT"},   1.03,   0.97) 
     ({"em"}, {8}, {"bbH"},  1.01,   0.99) 
@@ -211,6 +214,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"et"}, {9}, {"ZTT"},  0.97,   1.03)
     ({"zmm"}, {9}, {"ZTT"},  0.98,   1.02)
     ({"zmm"}, {9}, {"ZLL"},  0.90,   1.05)
+    ({"zmm"}, {9}, {"ZL"},  0.95,   1.02)
+    ({"zmm"}, {9}, {"ZJ"},  0.92,   1.04)
     ({"zmm"}, {9}, {"W"},  0.94,   1.04)
     ({"em"}, {9}, {"ZTT"},  0.98,   1.02)
     ({"em"}, {9}, {"ZLL"},  0.90,   1.05)
@@ -282,8 +287,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process(JoinStr({signal, {"TTT","TTJ","TT","VV","VVT","VVJ", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
-  //Add luminosity uncertainty for W in em and tt as norm is from MC
-  cb.cp().process({"W"}).channel({"tt","em"}).AddSyst(cb,
+  //Add luminosity uncertainty for W in em, tt and the zmm region as norm is from MC
+  cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
   cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL"}).AddSyst(cb,
@@ -296,8 +301,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process({"TT","TTJ","TTT"}).AddSyst(cb,
     "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
   
-  // W norm, just for em and tt where MC norm is from MC
-  cb.cp().process({"W"}).channel({"tt","em"}).AddSyst(cb,
+  // W norm, just for em, tt and the zmm region where MC norm is from MC
+  cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
     "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
   // Category-acceptance
@@ -305,11 +310,15 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // For ZTT use 5% run 1 value for now, should be replaced based
   // on Z->mumu calibration. Also only apply this to signal-region
   // categories for now, using cb_sig instead of cb
+  // In case we use the zmm region in the fit drop this uncertainty
   // THIS IS TO BE CHECKED
-  cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
-    "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
-    ({8}, 1.03)
-    ({9}, 1.05));
+  if (!zmm_fit)
+  {
+    cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
+      "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
+      ({8}, 1.03)
+      ({9}, 1.05));
+  }
   // Should also add something for ttbar
 
   // Fake-rates
@@ -624,7 +633,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZLL_btag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"mt_btag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
         cb.cp().bin({"mt_nobtag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
-        cb.cp().channel({"zmm"}).process({"ZLL","ZTT"}).AddSyst(cb, "CMS_htt_muscale_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().channel({"zmm"}).process({"ZLL","ZTT"}).AddSyst(cb, "CMS_htt_scale_m_13TeV", "shape", SystMap<>::init(1.00));
         cb.SetFlag("filters-use-regex", false);
     }
   }
