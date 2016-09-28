@@ -410,7 +410,7 @@ if not fractions:
   #Add signal, either model dependent or independent
   if not args.no_signal:
     if model_dep is True: 
-      sighist.SetLineColor(ROOT.kRed)
+      sighist.SetLineColor(ROOT.kGreen+3)
       sighist.SetLineWidth(3)
       sighist.Draw("histsame")
     else: 
@@ -428,6 +428,7 @@ legend = plot.PositionedLegend(0.30,0.30,3,0.03)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
 legend.SetFillColor(0)
+if not soverb_plot and not fractions: legend.AddEntry(blind_datahist,"Observation","PE")
 #Drawn on legend in reverse order looks better
 bkg_histos.reverse()
 background_schemes[channel].reverse()
@@ -441,7 +442,6 @@ if not fractions:
     else: 
         legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
         legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
-  if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","PE")
   latex = ROOT.TLatex()
   latex.SetNDC()
   latex.SetTextAngle(0)
