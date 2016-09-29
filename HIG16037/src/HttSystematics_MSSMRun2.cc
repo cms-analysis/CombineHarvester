@@ -291,8 +291,18 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
-  cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL"}).AddSyst(cb,
-    "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+  if(zmm_fit)
+  {
+    // Add Z crosssection uncertainty on ZL, ZJ and ZLL (not ZTT due to taking into account the zmm control region).
+    // Also don't add it for the zmm control region
+    cb.cp().channel({"zmm"},false).process({"ZL", "ZJ", "ZLL"}).AddSyst(cb,
+        "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+  }
+  else
+  {
+    cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL"}).AddSyst(cb,
+        "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+  }
 
   // Diboson and ttbar Normalisation - fully correlated
   cb.cp().process({"VV","VVT","VVJ"}).AddSyst(cb,
@@ -639,7 +649,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         cb.cp().bin({"zmm_btag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
         cb.cp().bin({"mt_nobtag","et_nobtag","em_nobtag","tt_nobtag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
-        cb.cp().channel({"zmm"}).process({"ZL","ZJ","ZTT","VV","TT","W","QCD"}).AddSyst(cb, "CMS_htt_scale_m_13TeV", "shape", SystMap<>::init(1.00));
+        //cb.cp().channel({"zmm"}).process({"ZL","ZJ","ZTT","VV","TT","W","QCD"}).AddSyst(cb, "CMS_htt_scale_m_13TeV", "shape", SystMap<>::init(1.00));
         cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.7, 1.3);
         cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.7, 1.3);
         cb.SetFlag("filters-use-regex", false);
