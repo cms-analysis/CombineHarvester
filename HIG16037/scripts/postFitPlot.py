@@ -428,7 +428,7 @@ legend = plot.PositionedLegend(0.30,0.30,3,0.03)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
 legend.SetFillColor(0)
-if not soverb_plot and not fractions: legend.AddEntry(blind_datahist,"Observation","PE")
+if not soverb_plot and not fractions: legend.AddEntry(total_datahist,"Observation","PE")
 #Drawn on legend in reverse order looks better
 bkg_histos.reverse()
 background_schemes[channel].reverse()
@@ -469,9 +469,8 @@ plot.DrawTitle(pads[0], args.lumi, 3)
 
 #Add ratio plot if required
 if args.ratio and not soverb_plot and not fractions:
-  ratio_bkghist = bkghist.Clone()
-  ratio_bkghist.Divide(bkghist)
-  blind_datahist.Divide(bkghist)
+  ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
+  blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
   pads[1].cd()
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")

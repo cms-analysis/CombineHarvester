@@ -177,7 +177,7 @@ legend.SetFillColor(0)
 for legi,hists in enumerate(bkg_histos):
   legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
 legend.AddEntry(bkghist,"Background uncertainty","f")
-legend.AddEntry(blind_datahist,"Observation","P")
+legend.AddEntry(total_datahist,"Observation","P")
 legend.Draw("same")
 latex = ROOT.TLatex()
 latex.SetNDC()
@@ -193,9 +193,8 @@ plot.DrawTitle(pads[0], "12.9 fb^{-1} (13 TeV)", 3);
 
 #Add ratio plot if required
 if args.ratio:
-  ratio_bkghist = bkghist.Clone()
-  ratio_bkghist.Divide(bkghist)
-  blind_datahist.Divide(bkghist)
+  ratio_bkghist = plot.MakeRatioPlot(bkghist,bkghist,True,False)
+  blind_datahist = plot.MakeRatioPlot(blind_datahist,bkghist,True,False)
   pads[1].cd()
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
