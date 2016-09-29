@@ -279,7 +279,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // top-quark pT reweighting
   // ------------------------
-  cb.cp().process({"TTT","TTJ","TT"}).AddSyst(cb,
+  cb.cp().channel({"zmm"},false).process({"TTT","TTJ","TT"}).AddSyst(cb,
     "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
 
   // Cross-sections and lumi
@@ -633,13 +633,15 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     }
     if (zmm_fit) {
         cb.SetFlag("filters-use-regex", true);
-        cb.cp().bin({"mt_nobtag","et_nobtag"}).process({"ZTT"}).AddSyst(cb, "rate_ZLL_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_nobtag"}).process({"ZLL"}).AddSyst(cb, "rate_ZLL_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"mt_btag","et_btag"}).process({"ZTT"}).AddSyst(cb, "rate_ZLL_btag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZLL_btag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"mt_btag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
-        cb.cp().bin({"mt_nobtag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
-        cb.cp().channel({"zmm"}).process({"ZLL","ZTT"}).AddSyst(cb, "CMS_htt_scale_m_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().bin({"mt_nobtag","et_nobtag","em_nobtag","tt_nobtag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"zmm_nobtag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"zmm_btag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
+        cb.cp().bin({"mt_nobtag","et_nobtag","em_nobtag","tt_nobtag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
+        cb.cp().channel({"zmm"}).process({"ZL","ZJ","ZTT","VV","TT","W","QCD"}).AddSyst(cb, "CMS_htt_scale_m_13TeV", "shape", SystMap<>::init(1.00));
+        cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.7, 1.3);
+        cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.7, 1.3);
         cb.SetFlag("filters-use-regex", false);
     }
   }
