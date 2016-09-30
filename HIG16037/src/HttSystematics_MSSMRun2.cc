@@ -69,7 +69,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // Electron and muon efficiencies
   // ------------------------------
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-    ({"zmm"}, {"ZTT", "ZLL", "TT", "VV", "ZL"},  1.04)
+    ({"zmm"}, {"ZTT", "TT", "VV", "ZL"},  1.04)
     ({"zmm"}, {"ZJ"},  1.02)
     ({"mt"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
@@ -117,6 +117,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"et"}, {9}, {"TTJ"},   1.14, 0.87)
     ({"et"}, {9}, {bbH},  0.98,1.01) 
     ({"et"}, {9}, {ggH},  0.98,1.04) 
+    ({"zmm"}, {8}, {"TT"},   1.01,  0.99)
+    ({"zmm"}, {9}, {"W"},    1.69,  0.93)
+    ({"zmm"}, {9}, {"QCD"},  0.96,  1.04)
+    ({"zmm"}, {9}, {"ZL"},   1.01,  1.00)
+    ({"zmm"}, {9}, {"ZJ"},   0.97,  0.96)
+    ({"zmm"}, {9}, {"ZTT"},  0.99, 1.03)
+    ({"zmm"}, {9}, {"VV"},   1.05, 0.95)
+    ({"zmm"}, {9}, {"TT"},   1.10, 0.90)
     ({"em"}, {8}, {"TT"},   1.01,  0.99) 
     ({"em"}, {8}, {bbH},  0.99,1.01) 
     ({"em"}, {9}, {"W"},    1.69,  0.93) 
@@ -173,7 +181,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"et"}, {9}, {bbH},  0.98, 1.02) 
     ({"zmm"}, {8}, {"VV"},   1.01,   0.99) 
     ({"zmm"}, {8}, {"TT"},   1.03,   0.97) 
-    ({"zmm"}, {8}, {"bbH"},  1.01,   0.99) 
     ({"zmm"}, {9}, {"W"},  0.99, 1.03  ) 
     ({"zmm"}, {9}, {"QCD"},  1.01, 0.88  ) 
     ({"zmm"}, {9}, {"ZTT"},  0.99,   1.02)
@@ -213,7 +220,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"et"}, {9}, {"ZJ"},   0.98,   1.00)
     ({"et"}, {9}, {"ZTT"},  0.97,   1.03)
     ({"zmm"}, {9}, {"ZTT"},  0.98,   1.02)
-    ({"zmm"}, {9}, {"ZLL"},  0.90,   1.05)
     ({"zmm"}, {9}, {"ZL"},  0.95,   1.02)
     ({"zmm"}, {9}, {"ZJ"},  0.92,   1.04)
     ({"zmm"}, {9}, {"W"},  0.94,   1.04)

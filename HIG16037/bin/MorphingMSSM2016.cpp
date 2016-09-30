@@ -592,11 +592,15 @@ int main(int argc, char** argv) {
 
   writer.WriteCards("cmb", cb);
   for (auto chn : chns) {
+    if(chn == std::string("zmm"))
+    {
+        continue;
+    }
     // per-channel
-    writer.WriteCards(chn, cb.cp().channel({chn}));
+    writer.WriteCards(chn, cb.cp().channel({chn, "zmm"}));
     // And per-channel-category
-    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn}).bin_id({8, 10, 11, 12}));
-    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn}).bin_id({9, 13, 14, 15}));
+    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({8, 10, 11, 12}));
+    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({9, 13, 14, 15}));
   }
   // For btag/nobtag areas want to include control regions. This will
   // work even if the extra categories aren't there.
