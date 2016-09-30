@@ -295,8 +295,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   {
     // Add Z crosssection uncertainty on ZL, ZJ and ZLL (not ZTT due to taking into account the zmm control region).
     // Also don't add it for the zmm control region
+    cb.SetFlag("filters-use-regex", true);
     cb.cp().channel({"zmm"},false).process({"ZL", "ZJ", "ZLL"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+    cb.cp().channel({"zmm"},false).bin({"_cr$"}).process({"ZTT"}).AddSyst(cb,
+        "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+    cb.SetFlag("filters-use-regex", false);
   }
   else
   {
@@ -320,15 +324,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // For ZTT use 5% run 1 value for now, should be replaced based
   // on Z->mumu calibration. Also only apply this to signal-region
   // categories for now, using cb_sig instead of cb
-  // In case we use the zmm region in the fit drop this uncertainty
+  // In case we use the zmm region in the fit this uncertainty is currently a placeholder for the uncertainty on the Z->mumu/Z->tautau uncertainty
   // THIS IS TO BE CHECKED
-  if (!zmm_fit)
-  {
-    cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
-      "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
-      ({8}, 1.03)
-      ({9}, 1.05));
-  }
+  cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
+  "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
+  ({8}, 1.03)
+  ({9}, 1.05));
   // Should also add something for ttbar
 
   // Fake-rates
@@ -658,9 +659,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         cb.cp().bin({"zmm_nobtag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"zmm_btag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
-        cb.cp().bin({"mt_nobtag","et_nobtag","em_nobtag","tt_nobtag"}).process({"ZTT"}).AddSyst(cb, "ratio_zll_ztt", "lnN", SystMap<>::init(1.02));
-        //cb.cp().channel({"zmm"}).process({"ZL","ZJ","ZTT","VV","TT","W","QCD"}).AddSyst(cb, "CMS_htt_scale_m_13TeV", "shape", SystMap<>::init(1.00));
         cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.7, 1.3);
         cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.7, 1.3);
         cb.SetFlag("filters-use-regex", false);
