@@ -46,7 +46,7 @@ void To1Bin(T* proc)
 
 bool BinIsControlRegion(ch::Object const* obj)
 {
-    return boost::regex_search(obj->bin(),boost::regex{"_cr$"});
+    return (boost::regex_search(obj->bin(),boost::regex{"_cr$"}) || (obj->channel() == std::string("zmm")));
 }
 
 // Useful to have the inverse sometimes too
@@ -69,6 +69,7 @@ int main(int argc, char** argv) {
   string input_folder_et="Imperial/";
   string input_folder_mt="Imperial/";
   string input_folder_tt="Imperial/";
+  string input_folder_zmm="KIT/";
   string postfix="";
   bool auto_rebin = false;
   bool manual_rebin = false;
@@ -77,6 +78,7 @@ int main(int argc, char** argv) {
   bool check_neg_bins = false;
   bool poisson_bbb = false;
   bool do_w_weighting = true;
+  bool zmm_fit = false;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -85,6 +87,7 @@ int main(int argc, char** argv) {
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial"))
+    ("input_folder_zmm", po::value<string>(&input_folder_zmm)->default_value("KIT"))
     ("postfix", po::value<string>(&postfix)->default_value(""))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("real_data", po::value<bool>(&real_data)->default_value(false))
@@ -92,6 +95,7 @@ int main(int argc, char** argv) {
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
+    ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(false))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
@@ -105,11 +109,10 @@ int main(int argc, char** argv) {
   input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_mt+"/";
   input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_et+"/";
   input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_tt+"/";
+  input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HIG16037/shapes/"+input_folder_zmm+"/";
 
-  VString chns =
-  //    {"tt"};
-//      {"mt"};
-      {"tt","mt","et","em"};
+  VString chns = {"mt","et","tt","em"};
+  if (zmm_fit) chns.push_back("zmm");
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
   mA.setConstant(true);
@@ -121,6 +124,7 @@ int main(int argc, char** argv) {
   bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
+  bkg_procs["zmm"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV", "ZTT"};
 
   VString SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
@@ -135,6 +139,8 @@ int main(int argc, char** argv) {
   binning["tt_btag"] = {500,3900};
   binning["em_nobtag"] = {500,3900};
   binning["em_btag"] = {500,3900};
+  binning["zmm_nobtag"] = {60,70,80,90,100,110,120};
+  binning["zmm_btag"] = {60,70,80,90,100,110,120};
 
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
@@ -166,12 +172,17 @@ int main(int argc, char** argv) {
     {9, "mt_btag"}
     };
 
+  cats["zmm_13TeV"] = {
+    {8, "zmm_nobtag"},
+    {9, "zmm_btag"}
+    };
+
   if (control_region > 0){
       // for each channel use the categories >= 10 for the control regions
       // the control regions are ordered in triples (10,11,12),(13,14,15)...
       for (auto chn : chns){
         // for em or tt do nothing
-        if (ch::contains({"em", "tt"}, chn)) {
+        if (ch::contains({"em", "tt", "zmm"}, chn)) {
           std::cout << " - Skipping extra control regions for channel " << chn << "\n";
           continue;
         }
@@ -211,7 +222,7 @@ int main(int argc, char** argv) {
     if(SM125==string("bkg_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
     if(SM125==string("signal_SM125")) cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
     }
-  if (control_region > 0){
+  if ((control_region > 0) || zmm_fit){
       // Since we now account for QCD in the high mT region we only
       // need to filter signal processes
       cb.FilterAll([](ch::Object const* obj) {
@@ -221,7 +232,8 @@ int main(int argc, char** argv) {
 
 
 
-  ch::AddMSSMRun2Systematics(cb,control_region);
+
+  ch::AddMSSMRun2Systematics(cb, control_region, zmm_fit);
   //! [part7]
   for (string chn:chns){
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
@@ -578,11 +590,15 @@ int main(int argc, char** argv) {
 
   writer.WriteCards("cmb", cb);
   for (auto chn : chns) {
+    if(chn == std::string("zmm"))
+    {
+        continue;
+    }
     // per-channel
-    writer.WriteCards(chn, cb.cp().channel({chn}));
+    writer.WriteCards(chn, cb.cp().channel({chn, "zmm"}));
     // And per-channel-category
-    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn}).bin_id({8, 10, 11, 12}));
-    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn}).bin_id({9, 13, 14, 15}));
+    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({8, 10, 11, 12}));
+    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({9, 13, 14, 15}));
   }
   // For btag/nobtag areas want to include control regions. This will
   // work even if the extra categories aren't there.
