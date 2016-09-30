@@ -329,8 +329,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region = 0) {
   // emu QCD extrapolation 
   cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
     "CMS_htt_QCD_OS_SS_syst_$BIN", "lnN", SystMap<bin_id>::init
-    ({8}, 1.16)
-    ({9}, 1.40));
+    ({8}, 1.23)
+    ({9}, 1.34));
 
  //tt QCD extrapolation: 
  //No b-tag: 2% stat uncertainty + 12% systematic uncertainty (from difference between OS/SS extrapolation factors from tau1 loose-not tight and tau2 medium-not tight
