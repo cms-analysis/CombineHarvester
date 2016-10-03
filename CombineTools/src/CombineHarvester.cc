@@ -426,6 +426,8 @@ void CombineHarvester::LoadShapes(Process* entry,
       if (flags_.at("allow-missing-shapes")) {
         LOGLINE(log(), "Warning, shape missing:");
         log() << Process::PrintHeader << *entry << "\n";
+        mapping.ws->Print();
+        throw std::runtime_error(FNERROR("RooAbsPdf not found in workspace"));
       } else {
         throw std::runtime_error(FNERROR("RooAbsPdf not found in workspace"));
       }
@@ -553,6 +555,7 @@ void CombineHarvester::LoadShapes(Systematic* entry,
   } else if (mapping.IsPdf()) {
     if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is RooDataHist");
     // Try and get this as RooAbsData first. If this doesn't work try pdf
+    std::cout << mapping.WorkspaceObj() << "\t" << p_s_hi << "\t" << p_s_lo << "\n";
     RooDataHist* h =
         dynamic_cast<RooDataHist*>(mapping.sys_ws->data(mapping.WorkspaceObj().c_str()));
     RooDataHist* h_u =

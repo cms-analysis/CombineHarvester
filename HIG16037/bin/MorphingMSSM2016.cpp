@@ -548,6 +548,12 @@ int main(int argc, char** argv) {
   // First we generate a set of bin names:
   RooWorkspace ws("htt", "htt");
 
+  cb.ForEachObs([&](ch::Observation *obs) {
+    int n = obs->shape()->GetNbinsX();
+    RooRealVar x(("bin_" + obs->bin()).c_str(), "", 0, static_cast<float>(n));
+    ws.import(x);
+  });
+
   TFile demo("htt_mssm_demo.root", "RECREATE");
 
   bool do_morphing = true;
@@ -567,14 +573,46 @@ int main(int argc, char** argv) {
       auto procs = cb.cp().bin({b}).process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                             "norm", true, false, false, &demo);
+                             "norm", true, false, false, nullptr);
       }
     }
   }
   demo.Close();
+
+  cb.cp().ForEachObs([&](ch::Observation *p) {
+    auto rdh = ch::TH1F2Data(ch::RebinHist(p->ShapeAsTH1F()), *(ws.var(("bin_"+p->bin()).c_str())), p->bin() + "_data_obs");
+    ws.import(rdh);
+    p->set_shape(nullptr, false);
+  });
+  cb.cp().backgrounds().ForEachProc([&](ch::Process *p) {
+    auto rdh = ch::TH1F2Data(ch::RebinHist(*p->ClonedScaledShape().get()), *(ws.var(("bin_"+p->bin()).c_str())), p->bin() + "_" + p->process() + "_morph");
+    ws.import(rdh);
+    p->set_shape(nullptr, false);
+  });
+  cb.cp().backgrounds().ForEachSyst([&](ch::Systematic *p) {
+    if (p->type() != "shape") return;
+    auto s_u = ch::RebinHist(*p->ClonedShapeU());
+    auto s_d = ch::RebinHist(*p->ClonedShapeD());
+    double rate_nom = 0.;
+    cb.cp().backgrounds().bin({p->bin()}).process({p->process()}).ForEachProc([&](ch::Process *proc) {
+      rate_nom = proc->rate();
+    });
+    s_u.Scale(rate_nom * p->value_u());
+    s_d.Scale(rate_nom * p->value_d());
+    auto rdh_hi = ch::TH1F2Data(s_u, *(ws.var(("bin_"+p->bin()).c_str())), p->bin() + "_" + p->process() + "_" + p->name() + "Up");
+    auto rdh_lo = ch::TH1F2Data(s_d, *(ws.var(("bin_"+p->bin()).c_str())), p->bin() + "_" + p->process() + "_" + p->name() + "Down");
+    ws.import(rdh_hi);
+    ws.import(rdh_lo);
+    p->set_shapes(nullptr, nullptr, nullptr);
+  });
+
+  cb.SetFlag("workspaces-use-clone", true);
   cb.AddWorkspace(ws);
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
-  cb.PrintAll();
+  cb.SetVerbosity(2);
+  cb.cp().backgrounds().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph", "$BIN_$PROCESS_$SYSTEMATIC");
+  cb.cp().ExtractData("htt", "$BIN_$PROCESS");
+  // cb.PrintAll();
 
 
  //Write out datacards. Naming convention important for rest of workflow. We
@@ -586,7 +624,7 @@ int main(int argc, char** argv) {
   // We're not using mass as an identifier - which we need to tell the CardWriter
   // otherwise it will see "*" as the mass value for every object and skip it
   writer.SetWildcardMasses({});
-  writer.SetVerbosity(1);
+  writer.SetVerbosity(0);
 
   writer.WriteCards("cmb", cb);
   for (auto chn : chns) {
@@ -605,6 +643,6 @@ int main(int argc, char** argv) {
   writer.WriteCards("htt_cmb_8_13TeV", cb.cp().bin_id({8, 10, 11, 12}));
   writer.WriteCards("htt_cmb_9_13TeV", cb.cp().bin_id({9, 13, 14, 15}));
 
-  cb.PrintAll();
+  // cb.PrintAll();
   cout << " done\n";
 }

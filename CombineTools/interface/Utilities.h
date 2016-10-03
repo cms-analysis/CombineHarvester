@@ -104,7 +104,7 @@ std::vector<T> Set2Vec(std::set<T> const& in) {
 RooDataHist TH1F2Data(TH1F const& hist, RooRealVar const& x,
                       std::string const& name);
 
-TH1F RebinHist(TH1F const& hist);
+TH1F RebinHist(TH1 const& hist);
 
 TH1F RestoreBinning(TH1F const& src, TH1F const& ref);
 

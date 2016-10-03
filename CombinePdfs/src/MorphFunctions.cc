@@ -500,13 +500,15 @@ void BuildRooMorphing(RooWorkspace& ws, CombineHarvester& cb,
   TH1F proc_hist = cb_bp.GetShape();
   // The x-axis variable has to be called "CMS_th1x", as this is what
   // text2workspace will use for all the normal processes
-  RooRealVar xvar("CMS_th1x", "CMS_th1x", 0,
+  RooRealVar xvar(("bin_"+bin).c_str(), "", 0,
                  static_cast<float>(data_hist.GetNbinsX()));
+  // RooRealVar xvar("CMS_th1x", "CMS_th1x", 0,
+  //                static_cast<float>(data_hist.GetNbinsX()));
   xvar.setBins(data_hist.GetNbinsX());
 
   // Create a second x-axis variable, named specific to the bin, that will be
   // for the finer-binned input
-  RooRealVar morph_xvar(("CMS_th1x_"+bin).c_str(), "", 0,
+  RooRealVar morph_xvar(("CMS_morph_bin_"+bin).c_str(), "", 0,
                  static_cast<float>(proc_hist.GetNbinsX()));
   // We're not going to need roofit to evaluate anything as a function of this
   // morphing x-axis variable, so we set it constant

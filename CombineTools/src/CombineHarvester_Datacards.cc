@@ -583,11 +583,13 @@ void CombineHarvester::FillHistMappings(std::vector<HistMapping> & mappings) {
       // If the prototype pattern is already filled, but doesn't equal this
       // new pattern - then we can't use the prototype
       if (prototype.pattern.size() && prototype.pattern != obj_name) {
+        std::cout << prototype.pattern << "\t" << obj_name << "\n";
         prototype_ok = false;
       }
 
       if (prototype.syst_pattern.size() && obj_sys_name.size() &&
           prototype.syst_pattern != obj_sys_name) {
+        std::cout << prototype.syst_pattern << "\t" << obj_sys_name << "\n";
         prototype_ok = false;
       }
 
