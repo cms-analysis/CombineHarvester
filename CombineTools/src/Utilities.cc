@@ -167,7 +167,7 @@ RooDataHist TH1F2Data(TH1F const& hist, RooRealVar const& x,
   return dh;
 }
 
-TH1F RebinHist(TH1F const& hist) {
+TH1F RebinHist(TH1 const& hist) {
   TH1::AddDirectory(0);
   TH1F shape("tmp", "tmp", hist.GetNbinsX(), 0.,
              static_cast<float>(hist.GetNbinsX()));

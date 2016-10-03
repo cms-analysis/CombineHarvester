@@ -172,10 +172,17 @@ void CombineHarvester::ExtractPdfs(CombineHarvester& target,
   if (norm_rule != "") mapping[0].syst_pattern = ws_name + ":" + norm_rule;
   if (!wspaces_.count(ws_name)) return;
   mapping[0].ws = wspaces_.at(ws_name);
+  mapping[0].sys_ws = wspaces_.at(ws_name);
   for (unsigned  i = 0; i < procs_.size(); ++i) {
     if (!procs_[i]->pdf()) {
       target.LoadShapes(procs_[i].get(), mapping);
     }
+  }
+  for (unsigned i = 0; i < systs_.size(); ++i) {
+    if (systs_[i]->type() != "shape" && systs_[i]->type() != "shapeN2" &&
+        systs_[i]->type() != "shapeU")
+      continue;
+    LoadShapes(systs_[i].get(), mapping);
   }
 }
 
