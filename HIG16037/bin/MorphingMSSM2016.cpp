@@ -574,7 +574,6 @@ int main(int argc, char** argv) {
   demo.Close();
   cb.AddWorkspace(ws);
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
-  cb.PrintAll();
 
 
  //Write out datacards. Naming convention important for rest of workflow. We
@@ -582,7 +581,7 @@ int main(int argc, char** argv) {
  //store the individual datacards for each directory to be combined later, but
  //note that it's also possible to write out the full combined card with CH
   ch::CardWriter writer("output/" + output_folder + "/$TAG/$BIN.txt",
-                        "output/" + output_folder + "/$TAG/$BIN_input.root");
+                        "output/" + output_folder + "/$TAG/htt_input.root");
   // We're not using mass as an identifier - which we need to tell the CardWriter
   // otherwise it will see "*" as the mass value for every object and skip it
   writer.SetWildcardMasses({});
