@@ -6,6 +6,7 @@ import CombineHarvester.CombineTools.ch as ch
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', '-i', help='Input root file')
 parser.add_argument('--dir', '-d', help='directory name, excluding _pass and _fail')
+parser.add_argument('--prefix', '-p', default='', help='prefix to add to the card names')
 parser.add_argument('--output', '-o', default='.', help='Directory where the output cards should be written')
 args = parser.parse_args()
 
@@ -95,8 +96,8 @@ cb.cp().process(['W']).bin_id([1]).AddSyst(
 cb.cp().process(['ZTT', 'ZL', 'ZJ']).AddSyst(
     cb, 'DY_XS', 'rateParam', ch.SystMap()(1.0))
 
-cb.cp().process(['ZL']).AddSyst(
-    cb, 'muon_fr', 'rateParam', ch.SystMap()(1.0))
+# cb.cp().process(['ZL']).AddSyst(
+#     cb, 'muon_fr', 'rateParam', ch.SystMap()(1.0))
 
 cb.GetParameter('effsf').set_val(1.0)
 cb.GetParameter('effsf').set_range(0.5, 1.5)
@@ -104,8 +105,8 @@ cb.GetParameter('effsf').set_range(0.5, 1.5)
 cb.GetParameter('fakesf').set_val(1.0)
 cb.GetParameter('fakesf').set_range(0.5, 2.5)
 
-cb.GetParameter('muon_fr').set_val(1.5)
-cb.GetParameter('muon_fr').set_range(0.5, 2.5)
+# cb.GetParameter('muon_fr').set_val(1.5)
+# cb.GetParameter('muon_fr').set_range(0.5, 2.5)
 
 cb.cp().process(['ZTT']).bin_id([1]).AddSyst(
     cb, 'pass', 'rateParam', ch.SystMap()(('(%g)' % eff_initial, 'effsf')))
@@ -124,8 +125,8 @@ cb.cp().process(['W']).bin_id([0]).AddSyst(
 # ch.SetStandardBinNames(cb)
 # cb.PrintAll()
 
-writer = ch.CardWriter('$TAG/$ANALYSIS_%s.txt' % args.dir,
-                       '$TAG/$ANALYSIS_%s.input.root' % args.dir)
+writer = ch.CardWriter('$TAG/$ANALYSIS_%s.txt' % (args.prefix + args.dir),
+                       '$TAG/$ANALYSIS_%s.input.root'  % (args.prefix + args.dir))
 writer.SetWildcardMasses([])
 writer.SetVerbosity(1)
 writer.WriteCards(args.output, cb)
