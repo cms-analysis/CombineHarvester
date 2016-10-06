@@ -500,9 +500,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10}, 1.02)
-          ({"mt"}, {9, 13}, 1.03)
+          ({"mt"}, {9, 13}, 1.11)
           ({"et"}, {8, 10}, 1.02)
-          ({"et"}, {9, 13}, 1.03));
+          ({"et"}, {9, 13}, 1.14));
 
         // OS/SS W factor syst. uncertainty
         // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
@@ -518,9 +518,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 11}, 1.02)
-          ({"mt"}, {9, 14}, 1.03)
+          ({"mt"}, {9, 14}, 1.14)
           ({"et"}, {8, 11}, 1.02)
-          ({"et"}, {9, 14}, 1.03));
+          ({"et"}, {9, 14}, 1.17));
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
@@ -531,8 +531,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
           ({"et"}, {8, 11}, 1.20)
           ({"et"}, {9, 14}, 1.20));
 
-        //W b-tag extrapolation factor stat. uncertainty
-        cb.cp().bin({bin+"(|_qcd_cr)$",bin+"(|_wjets_cr)$",bin+"(|_wjets_ss_cr)$"}).process({"W"}).AddSyst(cb,
+        //W b-tag extrapolation factor stat. uncertainty - merged into low mT/high mT and W OS/SS uncertainties
+        //which are now calculated for the full b-tag 
+        /*cb.cp().bin({bin+"(|_qcd_cr)$",bin+"(|_wjets_cr)$",bin+"(|_wjets_ss_cr)$"}).process({"W"}).AddSyst(cb,
          "CMS_htt_W_extrap_stat_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
          ({"et"},{9},1.11)
          ({"et"},{13},1.14)
@@ -541,7 +542,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
          ({"mt"},{9},1.12)
          ({"mt"},{13},1.08)
          ({"mt"},{14},1.22)
-         ({"mt"},{15},1.14));
+         ({"mt"},{15},1.14));*/
     
         //W b-tag extrapolation factor syst uncertainty
         //1) b-tag efficiency uncertainty
