@@ -190,7 +190,7 @@ The toys can also be split in multiple batches by adding e.g. -s 0:10:1 as optio
 
 For the saturated model run for each category seperatly
 
-combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/htt_et_8_13TeV/higgsCombine.saturated.GoodnessOfFit.mH160.root --input-toys output/mssm_120516_unblinding/htt_et_8_13TeV/higgsCombine.saturated.toys.GoodnessOfFit.mH160.*.root -o htt_et_8_13TeV_saturated.json
+combineTool.py -M CollectGoodnessOfFit --input output/mssm_120516_unblinding/htt_et_8_13TeV/higgsCombine.saturated.GoodnessOfFit.mH160.root output/mssm_120516_unblinding/htt_et_8_13TeV/higgsCombine.saturated.toys.GoodnessOfFit.mH160.*.root -o htt_et_8_13TeV_saturated.json
 
 For the AD and KS run
 
