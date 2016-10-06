@@ -13,7 +13,7 @@ CAT_DICT = {
 }
 
 RANGE_DICT = {
-    "em" : 1E-4 ,
+    "em" : 1E-5 ,
     "et" : 5E-7 ,
     "mt" : 1E-7 , 
     "tt" : 1E-7 
@@ -34,7 +34,7 @@ for MODE in ['prefit']:
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
             os.system(('python scripts/postFitPlot.py' \
-                  ' --file=shapes_230916_mhmodp.root --ratio --extra_pad="%(PAD)s" --mA=1000 --tanb=50 --model_dep ' \
+                  ' --file=shapes_300916.root --ratio --extra_pad="%(PAD)s" --mA=1000 --tanb=50 --model_dep ' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
                   ' --ratio_range 0.4,1.6 ' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
@@ -45,7 +45,7 @@ for MODE in ['prefit']:
         for CAT in ['8', '9']:
             LABEL = "%s %s" % (CHN_DICT[CHN], CAT_DICT[CAT])
             os.system(('python scripts/postFitPlot.py' \
-                  ' --file=shapes_230916_mhmodp.root --ratio --extra_pad=0.6 --no_signal' \
+                  ' --file=shapes_300916.root --ratio --extra_pad=0.6 --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0 --x_axis_max 200' \
                   ' --ratio_range 0.4,1.6 ' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s' \
