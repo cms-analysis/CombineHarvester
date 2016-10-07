@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
   bool check_neg_bins = false;
   bool poisson_bbb = false;
   bool do_w_weighting = true;
-  bool zmm_fit = false;
+  bool zmm_fit = true;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
-    ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(false))
+    ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(true))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
