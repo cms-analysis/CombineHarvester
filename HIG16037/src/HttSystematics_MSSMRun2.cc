@@ -307,6 +307,15 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     cb.cp().channel({"zmm"},false).bin({"_cr$"}).process({"ZTT"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
     cb.SetFlag("filters-use-regex", false);
+
+    cb.FilterSysts([](ch::Systematic *syst) {
+      return syst->name() == "lumi_13TeV" &&
+        (
+          (syst->channel() == "zmm" && syst->process() == "ZL") ||
+          (syst->channel() != "zmm" && syst->process() == "ZTT" &&
+            (syst->bin_id() == 8 || syst->bin_id() == 9))
+        );
+    });
   }
   else
   {
@@ -666,8 +675,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         cb.cp().bin({"zmm_nobtag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"zmm_btag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
-        cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.7, 1.3);
-        cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.7, 1.3);
+        cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.8, 1.2);
+        cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.95, 1.05);
         cb.SetFlag("filters-use-regex", false);
     }
   }
