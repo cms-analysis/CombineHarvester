@@ -13,7 +13,7 @@ CAT_DICT = {
 }
 
 RANGE_DICT = {
-    "em" : 1E-4 ,
+    "em" : 1E-5 ,
     "et" : 5E-7 ,
     "mt" : 1E-7 , 
     "tt" : 1E-7 
