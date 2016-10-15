@@ -193,8 +193,8 @@ plot.DrawTitle(pads[0], "12.9 fb^{-1} (13 TeV)", 3);
 
 #Add ratio plot if required
 if args.ratio:
-  ratio_bkghist = plot.MakeRatioPlot(bkghist,bkghist,True,False)
-  blind_datahist = plot.MakeRatioPlot(blind_datahist,bkghist,True,False)
+  ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
+  blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
   pads[1].cd()
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
