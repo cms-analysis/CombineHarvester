@@ -131,16 +131,16 @@ int main(int argc, char** argv) {
   //Example - could fill this map with hardcoded binning for different
   //categories if manual_rebin is turned on
   map<string, vector<double> > binning;
-  binning["et_nobtag"] = {500, 700, 900, 3900};
-  binning["et_btag"] = {500,3900};
-  binning["mt_nobtag"] = {500,700,900,1300,1700,1900,3900};
-  binning["mt_btag"] = {500,1300,3900};
-  binning["tt_nobtag"] = {500,3900};
-  binning["tt_btag"] = {500,3900};
-  binning["em_nobtag"] = {500,3900};
-  binning["em_btag"] = {500,3900};
-  binning["zmm_nobtag"] = {60,70,80,90,100,110,120};
-  binning["zmm_btag"] = {60,70,80,90,100,110,120};
+  binning["et_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,3900};
+  binning["et_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
+  binning["mt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,1100,3900};
+  binning["mt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
+  binning["tt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,900,3900};
+  binning["tt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,3900};
+  binning["em_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,1300,1700,3900};
+  binning["em_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,3900};
+/*  binning["zmm_nobtag"] = {60,70,80,90,100,110,120};
+  binning["zmm_btag"] = {60,70,80,90,100,110,120};*/
 
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
@@ -412,7 +412,7 @@ int main(int argc, char** argv) {
   if(auto_rebin) rebin.Rebin(cb, cb);
 
   if(manual_rebin) {
-    for(auto b : bins) {
+    for(auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
       std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
       cb.cp().bin({b}).VariableRebin(binning[b]);
     }
