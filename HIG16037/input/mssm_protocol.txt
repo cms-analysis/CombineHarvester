@@ -89,6 +89,17 @@ This will create one job per masspoint with 500 each. For batch-submission one c
 
 This workflow has also been tested on the grid (normal crab submission options). With --split-points 2000 jobs run for approximately 3.5 hours.
 
+To get the point for the SM expectation one first needs to create a corresponding asimov dataset. This is done using combine and the setPhysicsModelParameters and saveToys options.
+
+combineTool.py -m "125" -M MultiDimFit --boundlist input/mssm_ggH_bbH_2D_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOI r_ggH,r_bbH -t -1 -d output/mssm_unblinding_111016_SMHbkg/cmb/ws.root --there -n ".2D.ToyDataset.SM1" --algo none --saveToys
+
+The resulting asimov dataset can then be loaded in a second step and fitted using the POIs r_ggH and r_bbH. For this copy the toy file into the corresponding folder and run combine loading the toy from this file.
+
+cp output/mssm_unblinding_111016_SMHbkg/cmb/higgsCombine.2D.ToyDataset.SM1.MultiDimFit.mH125.123456.root output/mssm_unblinding_111016/cmb/higgsCombine.2D.ToyDataset.SM1.MultiDimFit.mH125.123456.root
+
+combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -M MultiDimFit --boundlist input/mssm_ggH_bbH_2D_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOI r_ggH,r_bbH -t -1 -d output/mssm_unblinding_111016/cmb/ws.root --there -n ".2D.SM1.bestfit" --algo none --toysFile higgsCombine.2D.ToyDataset.SM1.MultiDimFit.mH125.123456.root
+
+
 Please note: the boundaries (i.e. the range in r_bbH and r_ggH that is scanned) are not yet optimized.
 
 3e) Running model independent limits with signal injected (blue band)
@@ -137,7 +148,11 @@ The plotting takes the asymptotic_grid or HybridNewGridMSSM file as input, and p
 
 The plotting of the 2D limits takes as input the output from the previous combine calls. For each mass point $MASS you will need to run. The script also offers the --debug-output option to allow for saving the inital TGraph2 and contours to a root-file.
 
-python scripts/plotMultiDimFit.py --title-right="2.3 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass $MASS -o 2D_limit_mH${MASS} output/mssm_310516_freezing/cmb/higgsCombine.ggH-bbH.MultiDimFit.mH${MASS}.root
+python scripts/plotMultiDimFit.py --title-right="12.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass $MASS -o 2D_limit_mH${MASS} output/mssm_unblinding_111016/cmb/higgsCombine.ggH-bbH.MultiDimFit.mH${MASS}.root
+
+For also plotting the expectation for the SM Higgs you need to additionally provide the TFile with the points for the SM Higgs (see 3d) with the --sm-exp option 
+
+python scripts/plotMultiDimFit.py --title-right="12.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass $MASS -o 2D_limit_mH${MASS} output/mssm_unblinding_111016/cmb/higgsCombine.ggH-bbH.MultiDimFit.mH${MASS}.root --sm-exp output/mssm_unblinding_111016/cmb/higgsCombine.2D.SM1.bestfit.MultiDimFiti.mH${MASS}.root
 
 4e) plotting model independent limits with signal injected (blue band)
 
