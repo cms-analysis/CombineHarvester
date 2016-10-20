@@ -39,7 +39,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   //SM theory uncertainties
   cb.cp().process({"ggH_SM125"}).AddSyst(cb, "QCDscale_ggH", "lnN",
-    SystMapAsymm<>::init(1.076,0.919));
+    SystMap<>::init(1.039));
 
   cb.cp().process({"qqH_SM125"}).AddSyst(cb, "QCDscale_qqH", "lnN",
     SystMapAsymm<>::init(1.004,0.997));
@@ -54,7 +54,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     SystMapAsymm<>::init(1.058,0.908));*/
 
   cb.cp().process({"ggH_SM125"}).AddSyst(cb, "pdf_Higgs_gg","lnN",
-    SystMap<>::init(1.031));
+    SystMap<>::init(1.032));
 
 /*  cb.cp().process({"TTH_SM125"}).AddSyst(cb, "pdf_Higgs_ttH","lnN",
     SystMap<>::init(1.036));*/

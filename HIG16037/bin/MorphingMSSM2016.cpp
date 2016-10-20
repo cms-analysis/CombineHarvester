@@ -279,16 +279,16 @@ int main(int argc, char** argv) {
        proc->set_rate(proc->rate()*0.0627);
       });
      cb.cp().process({"ggH_SM125"}).ForEachProc([&](ch::Process *proc){
-       proc->set_rate(proc->rate()*44.14);
+       proc->set_rate(proc->rate()*48.58);
      });
      cb.cp().process({"qqH_SM125"}).ForEachProc([&](ch::Process *proc){
        proc->set_rate(proc->rate()*3.782);
      });
      cb.cp().process({"WplusH_SM125"}).ForEachProc([&](ch::Process *proc){
-       proc->set_rate(proc->rate()*0.8399);
+       proc->set_rate(proc->rate()*0.8400);
      });
      cb.cp().process({"WminusH_SM125"}).ForEachProc([&](ch::Process *proc){
-       proc->set_rate(proc->rate()*0.5327);
+       proc->set_rate(proc->rate()*0.5328);
      });
      cb.cp().process({"ZH_SM125"}).ForEachProc([&](ch::Process *proc){
        proc->set_rate(proc->rate()*0.8839);
