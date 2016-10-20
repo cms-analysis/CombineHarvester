@@ -17,7 +17,7 @@ If not using the argument -m MH, the code will setup datacards for all 3 Higgs b
 
 1c) Setting up datacards: for model dependent limits (MSSMvsSM)
 
-MorphingMSSM2016 --output_folder="mssm_111016_unblinding_MSSMvsSM_mhmodp" --postfix="-mttot" --control_region=1 --auto_rebin=true --real_data=true --zmm_fit=true
+MorphingMSSM2016 --output_folder="mssm_111016_unblinding_MSSMvsSM_mhmodp" --postfix="-mttot" --control_region=1 --manual_rebin=true --real_data=true --zmm_fit=true -h "signal_SM125"
 
 1d) Setting up datacards: for model independent limits with SM H as background
 
@@ -83,9 +83,12 @@ Like in AsymptoticGrid mode, points can be added or more toys can be generated f
 
 The 2D limits are run using combineTool to take advantage of the possibilty to run for multiple masses and submission.
 
-combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -M MultiDimFit --boundlist input/mssm_ggH_bbH_2D_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_ggH,r_bbH -d output/mssm_310516_freezing/cmb/ws.root --there -n ".ggH-bbH" --points 500 --algo grid
+combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -M MultiDimFit --boundlist input/mssm_ggH_bbH_2D_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_ggH,r_bbH -d output/mssm_111016_freezing/cmb/ws.root --there -n ".ggH-bbH" --points 500 --algo grid
 
 This will create one job per masspoint with 500 each. For batch-submission one can also specify the option "--split-points N" where N will be the maximum number of points per subjob.
+
+This workflow has also been tested on the grid (normal crab submission options). With --split-points 2000 jobs run for approximately 3.5 hours.
+
 Please note: the boundaries (i.e. the range in r_bbH and r_ggH that is scanned) are not yet optimized.
 
 3e) Running model independent limits with signal injected (blue band)

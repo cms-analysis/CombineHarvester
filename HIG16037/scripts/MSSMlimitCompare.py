@@ -193,7 +193,7 @@ plot.Set(h_top.GetYaxis(), LabelSize=0, TitleSize=0, TickLength=0)
 h_top.Draw()
 
 legend = plot.PositionedLegend(0.5 if args.relative or args.absolute else 0.4, 0.11, 3, 0.015)
-plot.Set(legend, NColumns=1, Header='#bf{%.0f%% CL Excluded:}' % 95)
+plot.Set(legend, NColumns=2, Header='#bf{%.0f%% CL Excluded:}' % 95)
 if not (args.relative or args.absolute):
   for i in range(len(files)):
     legend.AddEntry(exp_graph_list[i],labels[i],"PL")
