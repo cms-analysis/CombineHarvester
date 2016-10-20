@@ -495,7 +495,7 @@ class HybridNewGrid(CombineToolBase):
             # Merge the HypoTestResult objects from each file into one
             res = None
             precomputed = None
-            if status_key in stats and not status_changed:
+            if status_key in stats and not status_changed and stats[status_key]["ntoys"] > 0 :
                 precomputed = stats[status_key]
             else:
                 res = self.GetCombinedHypoTest(files)
