@@ -4,7 +4,7 @@ The input shape files for this analysis are stored in an external repository. On
 
 Otherwise normal https access requiring a username and password can be done with:
 
-    git clone https://gitlab.cern.ch/cms-htt/HIG-16-006.git shapes
+    git clone https://gitlab.cern.ch/cms-htt/SM-PAS-2016.git shapes
 
 New files as well as updates should be pushed directly to the master branch. To avoid creating unnecessary merge commit, please always do git pull with the --rebase option:
 
