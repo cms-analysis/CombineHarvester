@@ -1,6 +1,6 @@
 
 # Link to the CombineHarvester twiki:
-    [CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)
+[CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)
 
 
 # Checkout the CombineHarvester
@@ -17,8 +17,8 @@
 
 # Creating the working directory:
     cd CombineHarvester/CombineTools/bin
-    cp ~abdollah/public/HTT.cpp .
-    // Edit HTT.cpp and add HTT.cpp to the Build File
+    wget https://github.com/cms-analysis/CombineHarvester/blob/SM2016-dev/HTTSM2016/HTT.cpp
+    // Edit HTT.cpp if needed and add HTT.cpp to the Build File
     scram b
     HTT 
 
@@ -36,8 +36,8 @@
     combineTool.py -M CollectLimits */*/*.limit.* --use-dirs -o limits.json
 
 
-# Plotting:
-    plotLimits.py limits_{cmb,em,et,mt,tt}.json:obs --auto-style
+# Plotting the limit:
+    plotLimits.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style
 
 # Making the pulls:
     combine -M MaxLikelihoodFit cmb/125/workspace.root  --robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.1 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminFallbackAlgo \"Minuit2,0:1.\"  --rMin 0.5 --rMax 1.5
