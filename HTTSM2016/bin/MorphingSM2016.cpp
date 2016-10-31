@@ -175,22 +175,22 @@ int main(int argc, char** argv) {
             // if ( chn == "em") continue;
             Categories queue;
             int binid = 10;
-            for (auto cat:cats[chn+"_13TeV"]){
-//                queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
-//                queue.push_back(make_pair(binid+1,cat.second+"_qcd_cr"));
-//                queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
+            for (auto cat:cats[chn]){
+//                queue.push_back(make_pair(binid,chn+"_wjets_cr"));
+//                queue.push_back(make_pair(binid+1,chn+"_qcd_cr"));
+//                queue.push_back(make_pair(binid+2,chn+"_wjets_ss_cr"));
                 
-                queue.push_back(make_pair(binid,cat.second+"_wjets_0jet_cr"));
-                queue.push_back(make_pair(binid+1,cat.second+"_wjets_1jet_cr"));
-                queue.push_back(make_pair(binid+2,cat.second+"_wjets_vbf_cr"));
-                queue.push_back(make_pair(binid+3,cat.second+"_antiiso_0jet_cr"));
-                queue.push_back(make_pair(binid+4,cat.second+"_antiiso_1jet_cr"));
-                queue.push_back(make_pair(binid+5,cat.second+"_antiiso_vbf_cr"));
+                queue.push_back(make_pair(binid,chn+"_wjets_0jet_cr"));
+                queue.push_back(make_pair(binid+1,chn+"_wjets_1jet_cr"));
+                queue.push_back(make_pair(binid+2,chn+"_wjets_vbf_cr"));
+                queue.push_back(make_pair(binid+3,chn+"_antiiso_0jet_cr"));
+                queue.push_back(make_pair(binid+4,chn+"_antiiso_1jet_cr"));
+                queue.push_back(make_pair(binid+5,chn+"_antiiso_vbf_cr"));
                 
                 
                 binid += 6;
             }
-            cats[chn+"_13TeV"].insert(cats[chn+"_13TeV"].end(),queue.begin(),queue.end());
+            cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
         }
     }
     
@@ -335,9 +335,13 @@ int main(int argc, char** argv) {
     }
     // For btag/nobtag areas want to include control regions. This will
     // work even if the extra categories aren't there.
-//    writer.WriteCards("htt_cmb_1_13TeV", cb.cp().bin_id({1, 10, 11, 12}));
-//    writer.WriteCards("htt_cmb_2_13TeV", cb.cp().bin_id({1, 13, 14, 15}));
-//    writer.WriteCards("htt_cmb_3_13TeV", cb.cp().bin_id({1, 17, 17, 18}));
+    writer.WriteCards("htt_cmb_1_13TeV", cb.cp().bin_id({1,10,13}));
+    writer.WriteCards("htt_cmb_2_13TeV", cb.cp().bin_id({2,10,13}));
+    writer.WriteCards("htt_cmb_3_13TeV", cb.cp().bin_id({3,11,14}));
+    writer.WriteCards("htt_cmb_4_13TeV", cb.cp().bin_id({4,11,14}));
+    writer.WriteCards("htt_cmb_5_13TeV", cb.cp().bin_id({5,12,15}));
+    writer.WriteCards("htt_cmb_6_13TeV", cb.cp().bin_id({6,12,15}));
+    
     
     cb.PrintAll();
     cout << " done\n";
