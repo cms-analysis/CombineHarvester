@@ -11,7 +11,7 @@ Note that this uses the new RooMorphingPdf and includes bin-by-bin uncertainties
 
 1b) Setting up datacards: for model dependent limits (asymptotic)
 
-MorphingMSSM2016 --output_folder="mssm_111016_unblinding_mhmodp" --postfix="-mttot" --control_region=1 --auto_rebin=true --real_data=true --zmm_fit=true
+MorphingMSSM2016 --output_folder="mssm_111016_unblinding_mhmodp" --postfix="-mttot" --control_region=1 --manual_rebin=true --real_data=true --zmm_fit=true
 
 If not using the argument -m MH, the code will setup datacards for all 3 Higgs bosons as required for model dependent limits
 
@@ -21,7 +21,7 @@ MorphingMSSM2016 --output_folder="mssm_111016_unblinding_MSSMvsSM_mhmodp" --post
 
 1d) Setting up datacards: for model independent limits with SM H as background
 
-MorphingMSSM2016 --output_folder="mssm_111016_unblinding_SMHbkg" -m MH  --postfix="-mttot" --control_region=1 --auto_rebin=true --real_data=true --zmm_fit=true -h "bkg_SM125"
+MorphingMSSM2016 --output_folder="mssm_111016_unblinding_SMHbkg" -m MH  --postfix="-mttot" --control_region=1 --manual_rebin=true --real_data=true --zmm_fit=true -h "bkg_SM125"
 
 
 
