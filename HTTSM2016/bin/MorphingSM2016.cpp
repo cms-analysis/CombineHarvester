@@ -176,10 +176,19 @@ int main(int argc, char** argv) {
             Categories queue;
             int binid = 10;
             for (auto cat:cats[chn+"_13TeV"]){
-                queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
-                queue.push_back(make_pair(binid+1,cat.second+"_qcd_cr"));
-                queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
-                binid += 3;
+//                queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
+//                queue.push_back(make_pair(binid+1,cat.second+"_qcd_cr"));
+//                queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
+                
+                queue.push_back(make_pair(binid,cat.second+"_wjets_0jet_cr"));
+                queue.push_back(make_pair(binid+1,cat.second+"_wjets_1jet_cr"));
+                queue.push_back(make_pair(binid+2,cat.second+"_wjets_vbf_cr"));
+                queue.push_back(make_pair(binid+3,cat.second+"_antiiso_0jet_cr"));
+                queue.push_back(make_pair(binid+4,cat.second+"_antiiso_1jet_cr"));
+                queue.push_back(make_pair(binid+5,cat.second+"_antiiso_vbf_cr"));
+                
+                
+                binid += 6;
             }
             cats[chn+"_13TeV"].insert(cats[chn+"_13TeV"].end(),queue.begin(),queue.end());
         }
@@ -317,12 +326,12 @@ int main(int argc, char** argv) {
         // per-channel
         writer.WriteCards(chn, cb.cp().channel({chn, "zmm"}));
         // And per-channel-category
-        writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({1,10,11,12}));
-        writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({2,13,14,15}));
-        writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({3,16,17,18}));
-        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({4,19,20,21}));
-        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({5,22,23,24}));
-        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({6,25,26,27}));
+        writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({1,10,13}));
+        writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({2,10,13}));
+        writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({3,11,14}));
+        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({4,11,14}));
+        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({5,12,15}));
+        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({6,12,15}));
     }
     // For btag/nobtag areas want to include control regions. This will
     // work even if the extra categories aren't there.
