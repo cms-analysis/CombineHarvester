@@ -16,7 +16,7 @@ using ch::syst::process;
 using ch::syst::bin;
 using ch::JoinStr;
 
-void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fit) {
+void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit) {
   // Create a CombineHarvester clone that only contains the signal
   // categories
   CombineHarvester cb_sig = cb.cp();
@@ -27,7 +27,7 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fi
   if (control_region == 1){
     // we only want to cosider systematic uncertainties in the signal region.
     // limit to only the 0jet/1jet and vbf categories
-    cb_sig.bin_id({1,2,3,4,5,6,10,11,12,13,14,15});
+    cb_sig.bin_id({1,2,3,4,5,6});
   }
 
   auto signal = Set2Vec(cb.cp().signals().SetFromProcs(
@@ -39,8 +39,8 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fi
   // Electron and muon efficiencies
   // ------------------------------
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-    ({"zmm"}, {"ZTT", "TT", "VV", "ZL"},  1.04)
-    ({"zmm"}, {"ZJ"},  1.02)
+    ({"mm"}, {"ZTT", "TT", "VV", "ZL"},  1.04)
+    ({"mm"}, {"ZJ"},  1.02)
     ({"mt"}, JoinStr({signal, {"ZTT", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
   
@@ -88,27 +88,27 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fi
   cb.cp().process(JoinStr({signal, {"TT","VV", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
-  //Add luminosity uncertainty for W in em, tt and the zmm region as norm is from MC
-  cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
+  //Add luminosity uncertainty for W in em, tt and the mm region as norm is from MC
+  cb.cp().process({"W"}).channel({"tt","em","mm"}).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
-  if(zmm_fit)
+  if(mm_fit)
   {
-    // Add Z crosssection uncertainty on ZL, ZJ and ZLL (not ZTT due to taking into account the zmm control region).
-    // Also don't add it for the zmm control region
+    // Add Z crosssection uncertainty on ZL, ZJ and ZLL (not ZTT due to taking into account the mm control region).
+    // Also don't add it for the mm control region
     cb.SetFlag("filters-use-regex", true);
-    cb.cp().channel({"zmm"},false).process({"ZL", "ZJ", "ZLL"}).AddSyst(cb,
+    cb.cp().channel({"mm"},false).process({"ZL", "ZJ", "ZLL"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
-    cb.cp().channel({"zmm"},false).bin({"_cr$"}).process({"ZTT"}).AddSyst(cb,
+    cb.cp().channel({"mm"},false).bin({"_cr$"}).process({"ZTT"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
     cb.SetFlag("filters-use-regex", false);
 
     cb.FilterSysts([](ch::Systematic *syst) {
       return syst->name() == "lumi_13TeV" &&
         (
-          (syst->channel() == "zmm" && syst->process() == "ZL") ||
-          (syst->channel() != "zmm" && syst->process() == "ZTT" &&
-            (syst->bin_id() == 8 || syst->bin_id() == 9))
+          (syst->channel() == "mm" && syst->process() == "ZL") ||
+          (syst->channel() != "mm" && syst->process() == "ZTT" &&
+            (syst->bin_id() == 1 || syst->bin_id() == 2 || syst->bin_id() == 3 || syst->bin_id() == 4 || syst->bin_id() == 5 || syst->bin_id() == 6 ))
         );
     });
   }
@@ -125,8 +125,8 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fi
   cb.cp().process({"TT"}).AddSyst(cb,
     "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
 
-  // W norm, just for em, tt and the zmm region where MC norm is from MC
-  cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
+  // W norm, just for em, tt and the mm region where MC norm is from MC
+  cb.cp().process({"W"}).channel({"tt","em","mm"}).AddSyst(cb,
     "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
 
@@ -177,19 +177,46 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fi
       // Going to use the regex filtering to select the right subset of
       // categories for each rateParam
       cb.SetFlag("filters-use-regex", true);
-      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
+//      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
         // Regex that matches, e.g. mt_nobtag or mt_nobtag_X
-        cb.cp().bin({bin+"(|_wjets_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_cr_"+bin, "rateParam", SystMap<>::init(1.0));
 
-        // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
-        cb.cp().bin({bin+"(|_antiiso_)$"}).process({"QCD"}).AddSyst(cb,
-          "rate_QCD_antiiso_"+bin, "rateParam", SystMap<>::init(1.0));
+          
+
+        cb.cp().bin({"mt_0jet_low","mt_0jet_high","mt_wjets_0jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_0jet_mt", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_1jet_low","mt_1jet_high","mt_wjets_1jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_1jet_mt", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_vbf_low","mt_vbf_high","mt_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
+        
+        cb.cp().bin({"et_0jet_low","et_0jet_high","et_wjets_0jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"et_1jet_low","et_1jet_high","et_wjets_1jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_1jet_et", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"et_vbf_low","et_vbf_high","et_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
+        
+        
+        cb.cp().bin({"mt_0jet_low","mt_0jet_high","mt_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_mt", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_1jet_low","mt_1jet_high","mt_antiiso_1jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_1jet_mt", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mt_vbf_low","mt_vbf_high","mt_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
+        
+        cb.cp().bin({"et_0jet_low","et_0jet_high","et_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"et_1jet_low","et_1jet_high","et_antiiso_1jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_1jet_et", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"et_vbf_low","et_vbf_high","et_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
+        
+        
+          
+//          cb.cp().bin({bin+"(|_0jet)$"}).process({"W"}).AddSyst(cb, "rate_QCD_cr_0jet_"+bin, "rateParam", SystMap<>::init(1.0));
+//          cb.cp().bin({bin+"(|_1jet)$"}).process({"W"}).AddSyst(cb, "rate_W_cr_1jet_"+bin, "rateParam", SystMap<>::init(1.0));
+//          cb.cp().bin({bin+"(|_vbf)$"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_"+bin, "rateParam", SystMap<>::init(1.0));
+          
+          
+          //        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,
+//          "rate_W_cr_"+bin, "rateParam", SystMap<>::init(1.0));
+//
+//        // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
+//        cb.cp().bin({bin+"(|_antiiso_)$"}).process({"QCD"}).AddSyst(cb,
+//          "rate_QCD_antiiso_"+bin, "rateParam", SystMap<>::init(1.0));
 
         // Regex that matches, e.g. mt_nobtag_wjets_cr or mt_nobtag_wjets_ss_cr
 //        cb.cp().bin({bin+"_wjets_$"}).process({"QCD"}).AddSyst(cb,
 //          "rate_QCD_highmT_"+bin, "rateParam", SystMap<>::init(1.0));
-      }
+//      }
 
         /////////////////
         // Systematics //
@@ -203,17 +230,26 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_fi
     }
     
     
+
     
     
     
-    if (zmm_fit) {
+    if (mm_fit) {
         cb.SetFlag("filters-use-regex", true);
-        cb.cp().bin({"mt_nobtag","et_nobtag","em_nobtag","tt_nobtag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_nobtag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_btag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
-        cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.8, 1.2);
-        cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.95, 1.05);
+        
+        cb.cp().bin({"mt_0jet_low","mt_0jet_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_0jet", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mm_0jet"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_0jet", "rateParam", SystMap<>::init(1.0));
+        
+        cb.cp().bin({"mt_1jet_low","mt_1jet_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_1jet", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mm_1jet"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_1jet", "rateParam", SystMap<>::init(1.0));
+        
+        cb.cp().bin({"mt_vbf_low","mt_vbf_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"mm_vbf"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
+        
+        cb.GetParameter("rate_mm_ZTT_0jet")->set_range(0.8, 1.2);
+        cb.GetParameter("rate_mm_ZTT_1jet")->set_range(0.95, 1.05);
+        cb.GetParameter("rate_mm_ZTT_vbf")->set_range(0.95, 1.05);
+        
         cb.SetFlag("filters-use-regex", false);
     }
   }
