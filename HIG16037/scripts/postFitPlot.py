@@ -87,6 +87,7 @@ parser.add_argument('--auto_blind_check_only',action='store_true',default=False,
 parser.add_argument('--soverb_plot', action='store_true',default=False,help='Make plot with s/root b instead of ratio plot to test what it would blind')
 parser.add_argument('--x_blind_min',default=10000,help='Minimum x for manual blinding')
 parser.add_argument('--x_blind_max',default=4000,help='Maximum x for manual blinding')
+parser.add_argument('--empty_bin_error',action='store_true',default=False, help='Draw error bars for empty bins')
 #General plotting options
 parser.add_argument('--channel_label',default='#mu#tau_{h} no b-tag',help='Channel - category label')
 parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio plot')
@@ -126,6 +127,7 @@ soverb_plot = args.soverb_plot
 auto_blind_check_only = args.auto_blind_check_only
 x_blind_min = args.x_blind_min
 x_blind_max = args.x_blind_max
+empty_bin_error = args.empty_bin_error
 extra_pad = float(args.extra_pad)
 custom_x_range = args.custom_x_range
 custom_y_range = args.custom_y_range
@@ -229,6 +231,7 @@ for i in range(0,sighist.GetNbinsX()):
 bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
 
 total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode, logx=log_x)[0]
+binerror_datahist = total_datahist.Clone()
 blind_datahist = total_datahist.Clone()
 total_datahist.SetMarkerStyle(20)
 blind_datahist.SetMarkerStyle(20)
@@ -308,6 +311,11 @@ if auto_blind or auto_blind_check_only:
                 print binlow_list[h], "-", binhigh_list[h]            
             print "For this pass, applying manual blinding. Disable option --auto_blind_check_only to apply this automatic blinding"
 
+#Set bin errors for empty bins if required:
+if empty_bin_error:
+  for i in range (1,blind_datahist.GetNbinsX()+1):
+    if blind_datahist.GetBinContent(i) == 0:
+      blind_datahist.SetBinError(i,1.8)
 
 #Normalise by bin width except in soverb_plot mode, where interpretation is easier without normalising
 #Also don't normalise by bin width if plotting fractional bkg contribution
@@ -404,6 +412,7 @@ bkghist.SetFillColor(plot.CreateTransparentColor(12,0.4))
 bkghist.SetLineColor(0)
 bkghist.SetMarkerSize(0)
 
+
 stack.Draw("histsame")
 #Don't draw total bkgs/signal if plotting bkg fractions
 if not fractions:
@@ -421,7 +430,7 @@ if not fractions:
       sighist_bbH.SetLineWidth(3)
       sighist_ggH.Draw("histsame")
       sighist_bbH.Draw("histsame")
-if not soverb_plot and not fractions: blind_datahist.DrawCopy("psame")
+if not soverb_plot and not fractions: blind_datahist.DrawCopy("e0psame")
 axish[0].Draw("axissame")
 
 #Setup legend

@@ -36,7 +36,7 @@ for MODE in ['prefit', 'postfit']:
             os.system(('python scripts/postFitPlot.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --mA=1000 --tanb=50 --model_dep' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
-                  ' --ratio_range 0.4,1.6 ' \
+                  ' --ratio_range 0.4,1.6 --empty_bin_error' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
                   ' --channel_label "%(LABEL)s"' % vars()))
 
