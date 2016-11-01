@@ -167,15 +167,14 @@ int main(int argc, char** argv) {
         // for each channel use the categories >= 10 for the control regions
         // the control regions are ordered in triples (10,11,12),(13,14,15)...
         for (auto chn : chns){
-            // for em or tt do nothing
+            // for em or tt or zmm do nothing
             if (ch::contains({"em", "tt", "zmm"}, chn)) {
                 std::cout << " - Skipping extra control regions for channel " << chn << "\n";
                 continue;
             }
-            // if ( chn == "em") continue;
             Categories queue;
             int binid = 10;
-            for (auto cat:cats[chn]){
+//            for (auto cat:cats[chn]){
 //                queue.push_back(make_pair(binid,chn+"_wjets_cr"));
 //                queue.push_back(make_pair(binid+1,chn+"_qcd_cr"));
 //                queue.push_back(make_pair(binid+2,chn+"_wjets_ss_cr"));
@@ -188,8 +187,8 @@ int main(int argc, char** argv) {
                 queue.push_back(make_pair(binid+5,chn+"_antiiso_vbf_cr"));
                 
                 
-                binid += 6;
-            }
+//                binid += 6;
+//            }
             cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
         }
     }
@@ -333,7 +332,7 @@ int main(int argc, char** argv) {
         writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({5,12,15}));
         writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({6,12,15}));
     }
-    // For btag/nobtag areas want to include control regions. This will
+    // For all categories want to include control regions. This will
     // work even if the extra categories aren't there.
     writer.WriteCards("htt_cmb_1_13TeV", cb.cp().bin_id({1,10,13}));
     writer.WriteCards("htt_cmb_2_13TeV", cb.cp().bin_id({2,10,13}));
