@@ -83,11 +83,13 @@ int main(int argc, char** argv) {
     po::options_description config("configuration");
     config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
+    
     ("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS"))
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("USCMS"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("USCMS"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("USCMS"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
+    
     ("postfix", po::value<string>(&postfix)->default_value(""))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("real_data", po::value<bool>(&real_data)->default_value(false))
@@ -103,10 +105,24 @@ int main(int argc, char** argv) {
     po::notify(vm);
     
     
-    ch::CombineHarvester cb;
+    
     
     
     typedef vector<string> VString;
+    typedef vector<pair<int, string>> Categories;
+    //! [part1]
+    // First define the location of the "auxiliaries" directory where we can
+    // source the input files containing the datacard shapes
+    //    string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/bin/AllROOT_20fb/";
+    std::map<string, string> input_dir;
+    input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_em+"/";
+    input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_mt+"/";
+    input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_et+"/";
+    input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_tt+"/";
+    input_dir["mm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_mm+"/";
+    
+    
+    
     VString chns = {"mt","et"};
     if (mm_fit) chns.push_back("mm");
     
@@ -118,15 +134,12 @@ int main(int argc, char** argv) {
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     
     
-    // Or equivalently, specify the mass points explicitly:
-    vector<string> sig_procs = {"ggH","qqH"};
-    //    vector<string> masses = ch::MassesFromRange("120-130:5");
-    vector<string> masses = {"125"};
+    
+    ch::CombineHarvester cb;
     
     
     
-    typedef vector<pair<int, string>> Categories;
-    map<string, Categories> cats;
+    map<string,Categories> cats;
     cats["et"] = {
         {1, "et_0jet_low"},
         {2, "et_1jet_low"},
@@ -203,18 +216,14 @@ int main(int argc, char** argv) {
     
     
     
-    //! [part1]
-    // First define the location of the "auxiliaries" directory where we can
-    // source the input files containing the datacard shapes
-//    string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/bin/AllROOT_20fb/";
-    std::map<string, string> input_dir;
-    input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_em+"/";
-    input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_mt+"/";
-    input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_et+"/";
-    input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_tt+"/";
-    input_dir["mm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_mm+"/";
-    
 
+
+    
+    // Or equivalently, specify the mass points explicitly:
+    vector<string> sig_procs = {"ggH","qqH"};
+    vector<string> masses = ch::MassesFromRange("120-130:5");
+     //   vector<string> masses = {"125"};
+    
  
     //! [part2]
     for (auto chn : chns) {
@@ -229,11 +238,11 @@ int main(int argc, char** argv) {
     
     //Some of the code for this is in a nested namespace, so
     // we'll make some using declarations first to simplify things a bit.
-    using ch::syst::SystMap;
-    using ch::syst::era;
-    using ch::syst::channel;
-    using ch::syst::bin_id;
-    using ch::syst::process;
+//    using ch::syst::SystMap;
+//    using ch::syst::era;
+//    using ch::syst::channel;
+//    using ch::syst::bin_id;
+//    using ch::syst::process;
     
 
     
@@ -301,9 +310,9 @@ int main(int argc, char** argv) {
     });
     
     
-    // Merge to one bin for control region bins
-    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
-    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
+//     //Merge to one bin for control region bins
+//    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
+//    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
     
     
     

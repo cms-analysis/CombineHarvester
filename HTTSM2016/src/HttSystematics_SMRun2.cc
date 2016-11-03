@@ -64,6 +64,11 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit
     ({"tt"},       1.092));
 
 
+    // Tau energy scale
+    // ---------------------
+    cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+    "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+    
   // Electron energy scale
   // ---------------------
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,
@@ -238,12 +243,15 @@ void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit
         cb.SetFlag("filters-use-regex", true);
         
         cb.cp().bin({"mt_0jet_low","mt_0jet_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_0jet", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"et_0jet_low","et_0jet_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_0jet", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"mm_0jet"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_0jet", "rateParam", SystMap<>::init(1.0));
         
         cb.cp().bin({"mt_1jet_low","mt_1jet_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_1jet", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"et_1jet_low","et_1jet_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_1jet", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"mm_1jet"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_1jet", "rateParam", SystMap<>::init(1.0));
         
         cb.cp().bin({"mt_vbf_low","mt_vbf_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"et_vbf_low","et_vbf_high"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"mm_vbf"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
         
         cb.GetParameter("rate_mm_ZTT_0jet")->set_range(0.8, 1.2);
