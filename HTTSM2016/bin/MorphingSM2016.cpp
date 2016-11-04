@@ -127,10 +127,10 @@ int main(int argc, char** argv) {
     if (mm_fit) chns.push_back("mm");
     
     map<string, VString> bkg_procs;
-    bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ","TT", "ZTT"};
-    bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TT","ZTT"};
-    bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "ZTT"};
-    bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
+    bkg_procs["et"] = {"ZTT", "W", "QCD", "ZLL", "TTT","TTJ", "VV"};
+    bkg_procs["mt"] = {"ZTT", "W", "QCD", "ZLL", "TTT","TTJ", "VV"};
+    bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VV", "EWKZ"};
+    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     
     
@@ -141,39 +141,31 @@ int main(int argc, char** argv) {
     
     map<string,Categories> cats;
     cats["et"] = {
-        {1, "et_0jet_low"},
-        {2, "et_1jet_low"},
-        {3, "et_vbf_low"},
-        {4, "et_0jet_high"},
-        {5, "et_1jet_high"},
-        {6, "et_vbf_high"}
+        {1, "et_0jet"},
+        {2, "et_boosted"},
+        {3, "et_vbf"},
+        
     };
     
     cats["mt"] = {
-        {1, "mt_0jet_low"},
-        {2, "mt_1jet_low"},
-        {3, "mt_vbf_low"},
-        {4, "mt_0jet_high"},
-        {5, "mt_1jet_high"},
-        {6, "mt_vbf_high"}
+        {1, "mt_0jet"},
+        {2, "mt_boosted"},
+        {3, "mt_vbf"},
+        
     };
     
     cats["em"] = {
-        {1, "em_0jet_low"},
-        {2, "em_1jet_low"},
-        {3, "em_vbf_low"},
-        {4, "em_0jet_high"},
-        {5, "em_1jet_high"},
-        {6, "em_vbf_high"}};
+        {1, "em_0jet"},
+        {2, "em_boosted"},
+        {3, "em_vbf"}};
+    
     
     cats["tt"] = {
         
-        {1, "tt_1jet_low"},
-        {2, "tt_1jet_high"},
-        {3, "tt_vbf_low"},
-        {4, "tt_vbf_high"},
-        {5, "tt_0jet"}};
-
+        {1, "tt_0jet"},
+        {2, "tt_boosted"},
+        {3, "tt_VBF"}};
+    
     
     cats["mm"] = {
         {1, "mm_0jet"},
@@ -194,21 +186,21 @@ int main(int argc, char** argv) {
             }
             Categories queue;
             int binid = 10;
-//            for (auto cat:cats[chn]){
-//                queue.push_back(make_pair(binid,chn+"_wjets_cr"));
-//                queue.push_back(make_pair(binid+1,chn+"_qcd_cr"));
-//                queue.push_back(make_pair(binid+2,chn+"_wjets_ss_cr"));
-                
-                queue.push_back(make_pair(binid,chn+"_wjets_0jet_cr"));
-                queue.push_back(make_pair(binid+1,chn+"_wjets_1jet_cr"));
-                queue.push_back(make_pair(binid+2,chn+"_wjets_vbf_cr"));
-                queue.push_back(make_pair(binid+3,chn+"_antiiso_0jet_cr"));
-                queue.push_back(make_pair(binid+4,chn+"_antiiso_1jet_cr"));
-                queue.push_back(make_pair(binid+5,chn+"_antiiso_vbf_cr"));
-                
-                
-//                binid += 6;
-//            }
+            //            for (auto cat:cats[chn]){
+            //                queue.push_back(make_pair(binid,chn+"_wjets_cr"));
+            //                queue.push_back(make_pair(binid+1,chn+"_qcd_cr"));
+            //                queue.push_back(make_pair(binid+2,chn+"_wjets_ss_cr"));
+            
+            queue.push_back(make_pair(binid,chn+"_wjets_0jet_cr"));
+            queue.push_back(make_pair(binid+1,chn+"_wjets_1jet_cr"));
+            queue.push_back(make_pair(binid+2,chn+"_wjets_vbf_cr"));
+            queue.push_back(make_pair(binid+3,chn+"_antiiso_0jet_cr"));
+            queue.push_back(make_pair(binid+4,chn+"_antiiso_1jet_cr"));
+            queue.push_back(make_pair(binid+5,chn+"_antiiso_vbf_cr"));
+            
+            
+            //                binid += 6;
+            //            }
             cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
         }
     }
@@ -216,15 +208,15 @@ int main(int argc, char** argv) {
     
     
     
-
-
+    
+    
     
     // Or equivalently, specify the mass points explicitly:
-    vector<string> sig_procs = {"ggH","qqH"};
+    vector<string> sig_procs = {"ggH","qqH","WH","ZH"};
     vector<string> masses = ch::MassesFromRange("120-130:5");
-     //   vector<string> masses = {"125"};
+    //        vector<string> masses = {"125"};
     
- 
+    
     //! [part2]
     for (auto chn : chns) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
@@ -238,13 +230,13 @@ int main(int argc, char** argv) {
     
     //Some of the code for this is in a nested namespace, so
     // we'll make some using declarations first to simplify things a bit.
-//    using ch::syst::SystMap;
-//    using ch::syst::era;
-//    using ch::syst::channel;
-//    using ch::syst::bin_id;
-//    using ch::syst::process;
+    //    using ch::syst::SystMap;
+    //    using ch::syst::era;
+    //    using ch::syst::channel;
+    //    using ch::syst::bin_id;
+    //    using ch::syst::process;
     
-
+    
     
     
     if ((control_region > 0) || mm_fit){
@@ -256,8 +248,8 @@ int main(int argc, char** argv) {
     }
     
     
-  ch::AddSMRun2Systematics(cb, control_region, mm_fit);
-
+    ch::AddSMRun2Systematics(cb, control_region, mm_fit);
+    
     
     
     
@@ -267,23 +259,15 @@ int main(int argc, char** argv) {
                                                            input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                            "$BIN/$PROCESS",
                                                            "$BIN/$PROCESS_$SYSTEMATIC");
-        //    if(SM125==string("signal_SM125")) cb.cp().channel({chn}).process(SM_procs).ExtractShapes(
-        //         input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
-        //         "$BIN/$PROCESS",
-        //         "$BIN/$PROCESS_$SYSTEMATIC");
         cb.cp().channel({chn}).process(sig_procs).ExtractShapes(
                                                                 input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                                 "$BIN/$PROCESS$MASS",
                                                                 "$BIN/$PROCESS$MASS_$SYSTEMATIC");
-        //    cb.cp().channel({chn}).process(sig_procs).ExtractShapes(
-        //        input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-        //        "$BIN/qqH$MASS",
-        //        "$BIN/qqH$MASS_$SYSTEMATIC");
     }
     
     
     
- 
+    
     
     //Now delete processes with 0 yield
     cb.FilterProcs([&](ch::Process *p) {
@@ -310,9 +294,9 @@ int main(int argc, char** argv) {
     });
     
     
-//     //Merge to one bin for control region bins
-//    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
-//    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
+    //     //Merge to one bin for control region bins
+    //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
+    //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
     
     
     
@@ -350,7 +334,7 @@ int main(int argc, char** argv) {
     
     //! [part9]
     // First we generate a set of bin names:
-//    set<string> bins = cb.bin_set();
+    //    set<string> bins = cb.bin_set();
     // This method will produce a set of unique bin names by considering all
     // Observation, Process and Systematic entries in the CombineHarvester
     // instance.
@@ -358,14 +342,14 @@ int main(int argc, char** argv) {
     // We create the output root file that will contain all the shapes.
     // Here we define a CardWriter with a template for how the text datacard
     // and the root files should be named.
-//    ch::CardWriter writer("$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt",
-//                          "$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root");
-//    // writer.SetVerbosity(1);
-//    writer.WriteCards("output/htt_cards8_20fb_22Sep/cmb", cb);
-//    for (auto chn : cb.channel_set()) {
-//        writer.WriteCards("output/htt_cards8_20fb_22Sep/" + chn, cb.cp().channel({chn}));
-//    }
-//    TFile output("output/htt_cards8_20fb_22Sep/htt.input.root", "RECREATE");
+    //    ch::CardWriter writer("$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt",
+    //                          "$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root");
+    //    // writer.SetVerbosity(1);
+    //    writer.WriteCards("output/htt_cards8_20fb_22Sep/cmb", cb);
+    //    for (auto chn : cb.channel_set()) {
+    //        writer.WriteCards("output/htt_cards8_20fb_22Sep/" + chn, cb.cp().channel({chn}));
+    //    }
+    //    TFile output("output/htt_cards8_20fb_22Sep/htt.input.root", "RECREATE");
     
     
     
@@ -375,7 +359,7 @@ int main(int argc, char** argv) {
     
     //! [part9]
     // First we generate a set of bin names:
-
+    
     
     //Write out datacards. Naming convention important for rest of workflow. We
     //make one directory per chn-cat, one per chn and cmb. In this code we only
@@ -383,12 +367,14 @@ int main(int argc, char** argv) {
     //note that it's also possible to write out the full combined card with CH
     string output_prefix = "output/";
     if(output_folder.compare(0,1,"/") == 0) output_prefix="";
-    ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$BIN.txt",
-                          output_prefix + output_folder + "/$TAG/htt_input.root");
+    ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$MASS/$BIN.txt",
+                          output_prefix + output_folder + "/$TAG/common/htt_input.root");
+    
+    
     // We're not using mass as an identifier - which we need to tell the CardWriter
     // otherwise it will see "*" as the mass value for every object and skip it
-    writer.SetWildcardMasses({});
-    writer.SetVerbosity(1);
+    //    writer.SetWildcardMasses({});
+    //    writer.SetVerbosity(1);
     
     writer.WriteCards("cmb", cb);
     for (auto chn : chns) {
@@ -399,32 +385,66 @@ int main(int argc, char** argv) {
         // per-channel
         writer.WriteCards(chn, cb.cp().channel({chn, "mm"}));
         // And per-channel-category
-        writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn,"mm"}).bin_id({1,10,13}));
-        writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn,"mm"}).bin_id({2,10,13}));
-        writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn,"mm"}).bin_id({3,11,14}));
-        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn,"mm"}).bin_id({4,11,14}));
-        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn,"mm"}).bin_id({5,12,15}));
-        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn,"mm"}).bin_id({6,12,15}));
+        //  THERE IS A FLAW IN COMBINEHARVESTER
+        //        writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn,"mm"}).bin_id({1,10,13}));
+        //        writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn,"mm"}).bin_id({2,10,13}));
+        //        writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn,"mm"}).bin_id({3,11,14}));
+        //        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn,"mm"}).bin_id({4,11,14}));
+        //        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn,"mm"}).bin_id({5,12,15}));
+        //        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn,"mm"}).bin_id({6,12,15}));
+        writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn}).bin_id({1}));
+        writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn}).bin_id({2}));
+        writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn}).bin_id({3}));
+        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn}).bin_id({4}));
+        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn}).bin_id({5}));
+        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn}).bin_id({6}));
+        
+        
+        for (auto mmm : masses){
+            
+            if (mm_fit){
+                cb.cp().channel({"mm"}).bin_id({1}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_1_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm1.root");
+                cb.cp().channel({"mm"}).bin_id({2}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_2_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm2.root");
+                cb.cp().channel({"mm"}).bin_id({3}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_3_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm3.root");
+            }
+            
+            
+            if (control_region > 0){
+                cb.cp().channel({chn}).bin_id({10}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_10_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"10.root");
+                cb.cp().channel({chn}).bin_id({11}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_11_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"11.root");
+                cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
+                cb.cp().channel({chn}).bin_id({13}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_13_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"13.root");
+                cb.cp().channel({chn}).bin_id({14}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_14_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"14.root");
+                cb.cp().channel({chn}).bin_id({15}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_15_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"15.root");
+            }
+            
+        }
     }
+    
+    // This part is required in case we need to have limit for each separted categories
     // For all categories want to include control regions. This will
     // work even if the extra categories aren't there.
-    writer.WriteCards("htt_cmb_1_13TeV", cb.cp().bin_id({1,10,13}));
-    writer.WriteCards("htt_cmb_2_13TeV", cb.cp().bin_id({2,10,13}));
-    writer.WriteCards("htt_cmb_3_13TeV", cb.cp().bin_id({3,11,14}));
-    writer.WriteCards("htt_cmb_4_13TeV", cb.cp().bin_id({4,11,14}));
-    writer.WriteCards("htt_cmb_5_13TeV", cb.cp().bin_id({5,12,15}));
-    writer.WriteCards("htt_cmb_6_13TeV", cb.cp().bin_id({6,12,15}));
+    //    writer.WriteCards("htt_cmb_1_13TeV", cb.cp().bin_id({1,10,13}));
+    //    writer.WriteCards("htt_cmb_2_13TeV", cb.cp().bin_id({2,10,13}));
+    //    writer.WriteCards("htt_cmb_3_13TeV", cb.cp().bin_id({3,11,14}));
+    //    writer.WriteCards("htt_cmb_4_13TeV", cb.cp().bin_id({4,11,14}));
+    //    writer.WriteCards("htt_cmb_5_13TeV", cb.cp().bin_id({5,12,15}));
+    //    writer.WriteCards("htt_cmb_6_13TeV", cb.cp().bin_id({6,12,15}));
+    
+    //
+    //
+    //
+    //
+    //    set<string> bins = cb.cp().channel({"mt","mm"}).bin_id({1,10,13}).bin_set();
+    //    std::set<string>::iterator it;
+    //    for (it=bins.begin(); it!=bins.end(); ++it){
+    //        std::cout << " ==================>>>>>>>>   " << *it<<"\n\n\n\n";   //htt_et_10_13TeV
+    //    }
+    
     
     
     cb.PrintAll();
     cout << " done\n";
-    
-    
-    
-    
-    
-    
-    
     
     
 }
