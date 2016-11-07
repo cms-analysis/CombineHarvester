@@ -55,7 +55,7 @@ class MSSMLikeHiggsModel(PhysicsModel):
                 foundDecay = D
         if not foundDecay: raise RuntimeError, "Validation Error: decay string %s does not contain any known decay name" % decaySource
         foundEnergy = None
-        for D in [ "7TeV", "8TeV" ]:
+        for D in [ "7TeV", "8TeV", "13TeV" ]:
             if D in decaySource:
                 if foundEnergy: raise RuntimeError, "Validation Error: decay string %s contains multiple known energies" % decaySource
                 foundEnergy = D
@@ -128,7 +128,7 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
                 self.modelBuilder.out.var("MH").setRange(float(self.mHRange[0]),float(self.mHRange[1]))
                 self.modelBuilder.out.var("MH").setConstant(False)
                 poi+=',MH'
-            else:
+            elif self.options.mass != 0:
                 print 'MH will be assumed to be', self.options.mass
                 self.modelBuilder.out.var("MH").removeRange()
                 self.modelBuilder.out.var("MH").setVal(self.options.mass)

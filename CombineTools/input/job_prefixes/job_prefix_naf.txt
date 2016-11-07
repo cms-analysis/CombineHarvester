@@ -1,0 +1,18 @@
+#!/bin/sh
+ulimit -s unlimited
+cd %(CMSSW_BASE)s/src
+linux_ver=`lsb_release -s -r`
+echo $linux_ver
+if [[ $linux_ver < 6.0 ]];
+then
+     eval "`/afs/desy.de/common/etc/local/ini/ini.pl cmssw_cvmfs`"
+     export SCRAM_ARCH=slc5_amd64_gcc472
+     export SCRAM_ARCH=%(SCRAM_ARCH)s
+else
+     source /cvmfs/cms.cern.ch/cmsset_default.sh
+     export SCRAM_ARCH=slc6_amd64_gcc472
+     export SCRAM_ARCH=%(SCRAM_ARCH)s
+fi
+
+eval `scramv1 runtime -sh`
+cd %(PWD)s

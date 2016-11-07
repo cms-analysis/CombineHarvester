@@ -21,7 +21,7 @@ class PrintWorkspace(CombineToolBase):
             'input', help='The input specified as FILE:WORKSPACE')
 
     def run_method(self):
-        ws_in = args.input.split(':')
+        ws_in = self.args.input.split(':')
         f = ROOT.TFile(ws_in[0])
         ws = f.Get(ws_in[1])
         ws.Print()

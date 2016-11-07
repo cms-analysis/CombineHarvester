@@ -5,6 +5,7 @@ import json
 import os
 import pprint
 from collections import defaultdict
+from array import array
 
 import CombineHarvester.CombineTools.combine.utils as utils
 import CombineHarvester.CombineTools.plotting as plot
@@ -86,6 +87,12 @@ class CollectLimits(CombineToolBase):
             '--use-dirs', action='store_true',
             help="""Use the directory structure to create multiple limit
                  outputs and to set the output file names""")
+        group.add_argument(
+            '--toys', action='store_true',
+            help="""Collect toy values""")
+        group.add_argument(
+            '--limit-err', action='store_true',
+            help="""Also store the uncertainties on the limit""")
 
     def run_method(self):
         limit_sets = defaultdict(list)
@@ -115,18 +122,170 @@ class CollectLimits(CombineToolBase):
                     mh = str(evt.mh)
                     if mh not in js_out:
                         js_out[mh] = {}
-                    if evt.quantileExpected == -1:
-                        js_out[mh]['obs'] = evt.limit
-                    elif abs(evt.quantileExpected - 0.5) < 1E-4:
-                        js_out[mh]["exp0"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.025) < 1E-4:
-                        js_out[mh]["exp-2"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.160) < 1E-4:
-                        js_out[mh]["exp-1"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.840) < 1E-4:
-                        js_out[mh]["exp+1"] = evt.limit
-                    elif abs(evt.quantileExpected - 0.975) < 1E-4:
-                        js_out[mh]["exp+2"] = evt.limit
+                        if self.args.toys:
+                            js_out[mh]['toys'] = {}
+                            for limit in ['obs', 'exp0', 'exp-2', 'exp-1', 'exp+1', 'exp+2']:
+                                js_out[mh]['toys'][limit] = []
+                    if self.args.toys:
+                        if evt.iToy > 0:
+                            if evt.quantileExpected == -1:
+                                js_out[mh]['toys']['obs'].append(evt.limit)
+                            elif abs(evt.quantileExpected - 0.5) < 1E-4:
+                                js_out[mh]['toys']["exp0"].append(evt.limit)
+                            elif abs(evt.quantileExpected - 0.025) < 1E-4:
+                                js_out[mh]['toys']["exp-2"].append(evt.limit)
+                            elif abs(evt.quantileExpected - 0.160) < 1E-4:
+                                js_out[mh]['toys']["exp-1"].append(evt.limit)
+                            elif abs(evt.quantileExpected - 0.840) < 1E-4:
+                                js_out[mh]['toys']["exp+1"].append(evt.limit)
+                            elif abs(evt.quantileExpected - 0.975) < 1E-4:
+                                js_out[mh]['toys']["exp+2"].append(evt.limit)
+                        elif evt.iToy == 0:
+                            if evt.quantileExpected == -1:
+                                js_out[mh]['obs'].append(evt.limit)
+
+                    else:
+                        if evt.quantileExpected == -1:
+                            js_out[mh]['obs'] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['obs_err'] = evt.limitErr
+                        elif abs(evt.quantileExpected - 0.5) < 1E-4:
+                            js_out[mh]["exp0"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp0_err'] = evt.limitErr
+                        elif abs(evt.quantileExpected - 0.025) < 1E-4:
+                            js_out[mh]["exp-2"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp-2_err'] = evt.limitErr
+                        elif abs(evt.quantileExpected - 0.160) < 1E-4:
+                            js_out[mh]["exp-1"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp-1_err'] = evt.limitErr
+                        elif abs(evt.quantileExpected - 0.840) < 1E-4:
+                            js_out[mh]["exp+1"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp+1_err'] = evt.limitErr
+                        elif abs(evt.quantileExpected - 0.975) < 1E-4:
+                            js_out[mh]["exp+2"] = evt.limit
+                            if self.args.limit_err:
+                                js_out[mh]['exp+2_err'] = evt.limitErr
+
+            if self.args.toys:
+                for mh in js_out.keys():
+                    print "Expected bands will be taken from toys"
+                    print mh
+                    limits = sorted(js_out[mh]['toys']['obs'])
+                    # if mh == '90.0':
+                    #     limits = [x for x in limits if x > 2.0]
+                    quantiles = array('d', [0.025, 0.160, 0.5, 0.840, 0.975])
+                    res = array('d', [0., 0., 0., 0., 0.])
+                    empty = array('i', [0])
+                    ROOT.TMath.Quantiles(len(limits), len(quantiles), array('d', limits), res, quantiles, True, empty, 1)
+                    print res
+                    js_out[mh]['exp-2'] = res[0]
+                    js_out[mh]['exp-1'] = res[1]
+                    js_out[mh]['exp0'] = res[2]
+                    js_out[mh]['exp+1'] = res[3]
+                    js_out[mh]['exp+2'] = res[4]
+            # print js_out
+            jsondata = json.dumps(
+                js_out, sort_keys=True, indent=2, separators=(',', ': '))
+            # print jsondata
+            if self.args.output is not None:
+                outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
+                with open(outname, 'w') as out_file:
+                    print '>> Writing output %s from files:' % outname
+                    pprint.pprint(filenames, indent=2)
+                    out_file.write(jsondata)
+
+class CollectGoodnessOfFit(CombineToolBase):
+    description = 'Aggregate Goodness of Fit output from fit and toys'
+    requires_root = True
+    default_name = 'gof.json'
+
+    def __init__(self):
+        CombineToolBase.__init__(self)
+
+    def attach_args(self, group):
+        CombineToolBase.attach_args(self, group)
+        group.add_argument('--input', nargs='+', default=[], help='The input files')
+        group.add_argument(
+            '-o', '--output', nargs='?', const='gof.json',
+            default='gof.json', help="""The name of the output json file.
+            When the --use-dirs option is set the enclosing directory name
+            will be appended to the filename given here.""")
+        group.add_argument(
+            '--use-dirs', action='store_true',
+            help="""Use the directory structure to create multiple limit
+                 outputs and to set the output file names""")
+
+    def run_method(self):
+        limit_sets = defaultdict(list)
+        for filename in self.args.input:
+            if not plot.TFileIsGood(filename):
+                print '>> File %s is corrupt or incomplete, skipping' % filename
+            if not self.args.use_dirs:
+                if 'default' not in limit_sets:
+                    limit_sets['default'] = ([],[])
+                limit_sets['default'][0].append(filename)
+            else:
+                label = 'default'
+                dirs = filename.split('/')
+                # The last dir could be the mass, if so we ignore it and check the next
+                if len(dirs) > 1:
+                    if not isfloat(dirs[-2]):
+                        label = dirs[-2]
+                    elif len(dirs) > 2:
+                        label = dirs[-3]
+                if label not in limit_sets:
+                    limit_sets[label] = ([],[])
+                limit_sets[label][0].append(filename)
+
+
+        for label, (filenames, toyfiles) in limit_sets.iteritems():
+            js_out = {}
+            for filename in filenames:
+                file = ROOT.TFile(filename)
+                tree = file.Get('limit')
+                adding_cat_branch = False
+                branches = []
+                for branch in tree.GetListOfBranches():
+                    # Current logic says any branch after quantileExpected is a special
+                    # GOF branch labelled according to category
+                    if adding_cat_branch:
+                        branches.append(branch.GetName())
+                    if branch.GetName() == 'quantileExpected':
+                        adding_cat_branch = True
+                # print branches
+                for evt in tree:
+                    mh = str(evt.mh)
+                    if mh not in js_out:
+                        js_out[mh] = {}
+                    if evt.quantileExpected != -1:
+                        continue
+                    if branches:
+                        for branch in branches:
+                            if branch not in js_out[mh]:
+                                js_out[mh][branch] = {}
+                                js_out[mh][branch]['toy'] = []
+                            if evt.iToy <= 0:
+                                js_out[mh][branch]['obs'] = [getattr(evt, branch)]
+                            else:
+                                js_out[mh][branch]['toy'].append(getattr(evt, branch))
+                    else:
+                        if 'toy' not in js_out[mh]:
+                            js_out[mh]['toy'] = []
+                        if evt.iToy <= 0:
+                            js_out[mh]['obs'] = [evt.limit]
+                        else:
+                            js_out[mh]['toy'].append(evt.limit)
+            for mh in js_out:
+                if all([entry in js_out[mh] for entry in ['toy','obs']]):
+                    js_out[mh]["p"] = float(len([toy for toy in js_out[mh]['toy'] if toy >= js_out[mh]['obs'][0]]))/len(js_out[mh]['toy'])
+                else:
+                    for branch in js_out[mh]:
+                        js_out[mh][branch]["p"] = float(len([toy for toy in js_out[mh][branch]['toy'] if toy >= js_out[mh][branch]['obs'][0]]))/len(js_out[mh][branch]['toy'])
+
             # print js_out
             jsondata = json.dumps(
                 js_out, sort_keys=True, indent=2, separators=(',', ': '))

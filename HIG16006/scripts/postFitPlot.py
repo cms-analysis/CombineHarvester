@@ -6,10 +6,12 @@ import json
 import sys
 import os
 import fnmatch
+from array import array
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
+ROOT.TH1.AddDirectory(False)
 
-def getHistogram(fname,histname,dirname='',postfitmode='prefit'):
+def getHistogram(fname, histname, dirname='', postfitmode='prefit', allowEmpty=False, logx=False):
   outname = fname.GetName()
   for key in fname.GetListOfKeys():
     histo = fname.Get(key.GetName())
@@ -17,11 +19,28 @@ def getHistogram(fname,histname,dirname='',postfitmode='prefit'):
     if dirname == '' : dircheck=True
     elif dirname in key.GetName(): dircheck=True
     if isinstance(histo,ROOT.TH1F) and key.GetName()==histname:
+      if logx:
+        bin_width = histo.GetBinWidth(1)
+        xbins = []
+        xbins.append(bin_width - 1)
+        axis = histo.GetXaxis()
+        for i in range(1,histo.GetNbinsX()+1):
+         xbins.append(axis.GetBinUpEdge(i))
+        rethist = ROOT.TH1F(histname,histname,histo.GetNbinsX(),array('d',xbins))
+        rethist.SetBinContent(1,histo.GetBinContent(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
+        rethist.SetBinError(1,histo.GetBinError(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
+        for i in range(2,histo.GetNbinsX()+1):
+          rethist.SetBinContent(i,histo.GetBinContent(i))
+          rethist.SetBinError(i,histo.GetBinError(i))
+        histo = rethist
       return [histo,outname]
     elif isinstance(histo,ROOT.TDirectory) and postfitmode in key.GetName() and dircheck:
-      return getHistogram(histo,histname)
+      return getHistogram(histo,histname, allowEmpty=allowEmpty, logx=logx)
   print 'Failed to find %(postfitmode)s histogram with name %(histname)s in file %(fname)s '%vars()
-  return None
+  if allowEmpty:
+    return [ROOT.TH1F('empty', '', 1, 0, 1), outname]
+  else:
+    return None
 
 def signalComp(leg,plots,colour,stacked):
   return dict([('leg_text',leg),('plot_list',plots),('colour',colour),('in_stack',stacked)])
@@ -42,6 +61,7 @@ def createAxisHists(n,src,xmin=0,xmax=499):
   return result
   
 
+plot.ModTDRStyle(r=0.04, l=0.14)
 
 parser = argparse.ArgumentParser()
 #Ingredients when output of PostFitShapes is already provided
@@ -80,6 +100,12 @@ parser.add_argument('--log_y', action='store_true',help='Use log for y axis')
 parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='',help='Optional string for start of output filename')
+parser.add_argument('--bkg_fractions', default=False, action='store_true', help='Instead of yields for each process plot fraction of total bkg in each bin')
+parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.7,1.3")
+parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
+parser.add_argument('--x_title', default='m_{T,#tau#tau} (GeV)',help='Title for the x-axis')
+parser.add_argument('--y_title', default='dN/dM_{T,#tau#tau} (1/GeV)',help='Title for the y-axis')
+parser.add_argument('--lumi', default='2.3 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
@@ -110,7 +136,14 @@ y_axis_max = float(args.y_axis_max)
 model_dep = args.model_dep
 log_y=args.log_y
 log_x=args.log_x
-outname=args.outname + '_'
+fractions=args.bkg_fractions
+#If plotting bkg fractions don't want to use log scale on y axis
+if fractions:
+  log_y = False
+if(args.outname != ''):
+  outname=args.outname + '_'
+else:
+  outname=''
 
 if args.dir and args.file and not args.postfitshapes:
   print 'Provide either directory or filename, not both'
@@ -127,7 +160,7 @@ if args.postfitshapes and not args.dir:
 if manual_blind and auto_blind :
     print 'Pick only one option for blinding strategy out of --manual_blind and --auto_blind'
 #For now, force that one type of blinding is always included! When unblinding the below line will need to be removed
-if not manual_blind and not auto_blind: manual_blind=True    
+#if not manual_blind and not auto_blind: manual_blind=True    
 
 if (args.auto_blind or args.auto_blind_check_only) and args.model_dep:
   print 'Automated blinding only supported for model independent plots, please use manual blinding'
@@ -138,7 +171,8 @@ if (args.auto_blind or args.auto_blind_check_only) and not args.postfitshapes:
   sys.exit(1)
 
 #If call to PostFitWithShapes is requested, this is performed here
-if args.postfitshapes or soverb_plot:
+#if args.postfitshapes or soverb_plot:
+if args.postfitshapes:
   print "Internally calling PostFitShapesFromWorkspace on directory ", args.dir
   for root,dirnames,filenames in os.walk(args.dir):
     for filename in fnmatch.filter(filenames, '*.txt.cmb'):
@@ -186,12 +220,14 @@ background_schemes = {'mt':[backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(
 'em':[backgroundComp("Misidentified e/#mu", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))]}
 
 #Extract relevent histograms from shape file
-[sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode)
-if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH',file_dir, mode)[0]
-if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH',file_dir, mode)[0]
-bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode)[0]
+[sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
+if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH',file_dir, mode, args.no_signal, log_x)[0]
+if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH',file_dir, mode, args.no_signal, log_x)[0]
+for i in range(0,sighist.GetNbinsX()):
+  if sighist.GetBinContent(i) < y_axis_min: sighist.SetBinContent(i,y_axis_min)
+bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
 
-total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode)[0]
+total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode, logx=log_x)[0]
 blind_datahist = total_datahist.Clone()
 total_datahist.SetMarkerStyle(20)
 blind_datahist.SetMarkerStyle(20)
@@ -251,8 +287,8 @@ if auto_blind or auto_blind_check_only:
           os.system('PostFitShapesFromWorkspace -d %(datacard_file)s -w %(workspace_file)s -o %(shape_file)s --freeze %(freeze)s'%vars())
     
           testhisto_file = ROOT.TFile(shape_file)
-          testsighist_ggH = getHistogram(testhisto_file,'ggH', file_dir,mode)[0]
-          testsighist_bbH = getHistogram(testhisto_file,'bbH', file_dir,mode)[0]
+          testsighist_ggH = getHistogram(testhisto_file,'ggH', file_dir,mode,logx=log_x)[0]
+          testsighist_bbH = getHistogram(testhisto_file,'bbH', file_dir,mode,logx=log_x)[0]
           for j in range(1,bkghist.GetNbinsX()):
               soverb_ggH = testsighist_ggH.GetBinContent(j)/math.sqrt(bkghist.GetBinContent(j))
               soverb_bbH = testsighist_bbH.GetBinContent(j)/math.sqrt(bkghist.GetBinContent(j))
@@ -273,7 +309,8 @@ if auto_blind or auto_blind_check_only:
 
 
 #Normalise by bin width except in soverb_plot mode, where interpretation is easier without normalising
-if not soverb_plot:
+#Also don't normalise by bin width if plotting fractional bkg contribution
+if not soverb_plot and not fractions:
     blind_datahist.Scale(1.0,"width")
     total_datahist.Scale(1.0,"width")
     sighist.Scale(1.0,"width")
@@ -290,16 +327,19 @@ for i,t in enumerate(background_schemes[channel]):
   plots = t['plot_list']
   h = ROOT.TH1F()
   for j,k in enumerate(plots):
-    if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode) is not None:
-      h = getHistogram(histo_file,k, file_dir,mode)[0]
+    if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode,logx=log_x) is not None:
+      h = getHistogram(histo_file,k, file_dir,mode, logx=log_x)[0]
       h.SetName(k)
     else:
-      if getHistogram(histo_file,k, file_dir,mode) is not None:
-        h.Add(getHistogram(histo_file,k, file_dir,mode)[0])
+      if getHistogram(histo_file,k, file_dir,mode, logx=log_x) is not None:
+        h.Add(getHistogram(histo_file,k, file_dir,mode,logx=log_x)[0])
   h.SetFillColor(t['colour'])
   h.SetLineColor(ROOT.kBlack)
   h.SetMarkerSize(0)
-  if not soverb_plot: h.Scale(1.0,"width")
+  if not soverb_plot and not fractions : h.Scale(1.0,"width")
+  if fractions:
+    for i in range(1,h.GetNbinsX()+1) :
+      h.SetBinContent(i,h.GetBinContent(i)/bkghist.GetBinContent(i))
   bkg_histos.append(h)
 
 stack = ROOT.THStack("hs","")
@@ -308,43 +348,50 @@ for hists in bkg_histos:
 
 
 #Setup style related things
-plot.ModTDRStyle(r=0.06, l=0.12)
 c2 = ROOT.TCanvas()
 c2.cd()
 if args.ratio:
-  pads=plot.TwoPadSplit(0.29,0.005,0.005)
+  pads=plot.TwoPadSplit(0.29,0.01,0.01)
 else:
   pads=plot.OnePad()
 pads[0].cd()
 if(log_y): pads[0].SetLogy(1)
 if(log_x): pads[0].SetLogx(1)
-if args.ratio:
+if custom_x_range:
+    if x_axis_max > bkghist.GetXaxis().GetXmax(): x_axis_max = bkghist.GetXaxis().GetXmax()
+if args.ratio and not fractions:
   if(log_x): pads[1].SetLogx(1)
-  axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax())
-  axish[1].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
+  axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
+  axish[1].GetXaxis().SetTitle(args.x_title)
   axish[1].GetYaxis().SetNdivisions(4)
   if not soverb_plot: axish[1].GetYaxis().SetTitle("Obs/Exp")
   else: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
+  #axish[1].GetYaxis().SetTitleSize(0.04)
+  #axish[1].GetYaxis().SetLabelSize(0.04)
+  #axish[1].GetYaxis().SetTitleOffset(1.3)
+  #axish[0].GetYaxis().SetTitleSize(0.04)
+  #axish[0].GetYaxis().SetLabelSize(0.04)
+  #axish[0].GetYaxis().SetTitleOffset(1.3)
   axish[0].GetXaxis().SetTitleSize(0)
   axish[0].GetXaxis().SetLabelSize(0)
-  axish[0].GetYaxis().SetTitleOffset(1.4)
-  axish[1].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
-    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
-    axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
+    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+    axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
   if custom_y_range:
     axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
     axish[1].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
 else:
-  axish = createAxisHists(1,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax())
-  axish[0].GetYaxis().SetTitleOffset(1.4)
+  axish = createAxisHists(1,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
+#  axish[0].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
-    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max)
-  if custom_y_range:
+    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+  if custom_y_range and not fractions:
     axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
-if not soverb_plot: axish[0].GetYaxis().SetTitle("dN/dM_{#tau#tau} (1/GeV)")
-else: axish[0].GetYaxis().SetTitle("Events")
-axish[0].GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
+  elif fractions: axish[0].GetYaxis().SetRangeUser(0,1)
+if not soverb_plot and not fractions: axish[0].GetYaxis().SetTitle(args.y_title)
+elif soverb_plot: axish[0].GetYaxis().SetTitle("Events")
+elif fractions: axish[0].GetYaxis().SetTitle("Fraction of total bkg")
+axish[0].GetXaxis().SetTitle(args.x_title)
 if not custom_y_range: axish[0].SetMaximum(extra_pad*bkghist.GetMaximum())
 if not custom_y_range: 
   if(log_y): axish[0].SetMinimum(0.0009)
@@ -357,17 +404,23 @@ bkghist.SetLineColor(0)
 bkghist.SetMarkerSize(0)
 
 stack.Draw("histsame")
-bkghist.Draw("e2same")
-#Add signal, either model dependent or independent
-if model_dep is True: 
-    sighist.SetLineColor(ROOT.kRed)
-    sighist.Draw("histsame")
-else: 
-    sighist_ggH.SetLineColor(ROOT.kBlue)
-    sighist_bbH.SetLineColor(ROOT.kBlue + 3)
-    sighist_ggH.Draw("histsame")
-    sighist_bbH.Draw("histsame")
-if not soverb_plot: blind_datahist.DrawCopy("psame")
+#Don't draw total bkgs/signal if plotting bkg fractions
+if not fractions:
+  bkghist.Draw("e2same")
+  #Add signal, either model dependent or independent
+  if not args.no_signal:
+    if model_dep is True: 
+      sighist.SetLineColor(ROOT.kRed)
+      sighist.SetLineWidth(3)
+      sighist.Draw("histsame")
+    else: 
+      sighist_ggH.SetLineColor(ROOT.kBlue)
+      sighist_bbH.SetLineColor(ROOT.kBlue + 3)
+      sighist_ggH.SetLineWidth(3)
+      sighist_bbH.SetLineWidth(3)
+      sighist_ggH.Draw("histsame")
+      sighist_bbH.Draw("histsame")
+if not soverb_plot and not fractions: blind_datahist.DrawCopy("psame")
 axish[0].Draw("axissame")
 
 #Setup legend
@@ -381,50 +434,52 @@ background_schemes[channel].reverse()
 for legi,hists in enumerate(bkg_histos):
   legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
 legend.AddEntry(bkghist,"Background uncertainty","f")
-if model_dep is True: 
-    legend.AddEntry(sighist,"H,h,A#rightarrow#tau#tau"%vars(),"l")
-else: 
-    legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
-    legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
-if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","P")
-legend.Draw("same")
-latex = ROOT.TLatex()
-latex.SetNDC()
-latex.SetTextAngle(0)
-latex.SetTextColor(ROOT.kBlack)
-latex.SetTextSize(0.026)
-if model_dep is True: 
-    latex.DrawLatex(0.61,0.53,"m_{h}^{mod+}, m_{A}=%(mA)s GeV, tan#beta=%(tb)s"%vars())
-else: 
-    latex.DrawLatex(0.63,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
-    latex.DrawLatex(0.63,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
-
+if not fractions:
+  if not args.no_signal:
+    if model_dep is True: 
+        legend.AddEntry(sighist,"h,H,A#rightarrow#tau#tau"%vars(),"l")
+    else: 
+        legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
+        legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
+  if not soverb_plot: legend.AddEntry(blind_datahist,"Observation","PE")
+  latex = ROOT.TLatex()
+  latex.SetNDC()
+  latex.SetTextAngle(0)
+  latex.SetTextColor(ROOT.kBlack)
+  latex.SetTextSize(0.026)
+  if not args.no_signal:
+    if model_dep is True: 
+        latex.DrawLatex(0.70,0.56,"#splitline{m_{h}^{mod+}, }{m_{A}=%(mA)s GeV, tan#beta=%(tb)s}"%vars())
+    else: 
+        latex.DrawLatex(0.65,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
+        latex.DrawLatex(0.65,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
+if not args.bkg_fractions: legend.Draw("same")
 latex2 = ROOT.TLatex()
 latex2.SetNDC()
 latex2.SetTextAngle(0)
 latex2.SetTextColor(ROOT.kBlack)
 latex2.SetTextSize(0.028)
-latex2.DrawLatex(0.125,0.96,channel_label)
+latex2.DrawLatex(0.145,0.955,channel_label)
 
 
 #CMS and lumi labels
-plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.15)
+plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], "2.2 fb^{-1} (13 TeV)", 3);
+plot.DrawTitle(pads[0], args.lumi, 3)
 
 #Add ratio plot if required
-if args.ratio and not soverb_plot:
+if args.ratio and not soverb_plot and not fractions:
   ratio_bkghist = bkghist.Clone()
   ratio_bkghist.Divide(bkghist)
   blind_datahist.Divide(bkghist)
   pads[1].cd()
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
-  axish[1].SetMinimum(0.7)
-  axish[1].SetMaximum(1.3)
+  axish[1].SetMinimum(float(args.ratio_range.split(',')[0]))
+  axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
   ratio_bkghist.SetMarkerSize(0)
   ratio_bkghist.Draw("e2same")
-  blind_datahist.DrawCopy("psame")
+  blind_datahist.DrawCopy("e0same")
   pads[1].RedrawAxis("G")
 
 if soverb_plot:
@@ -432,7 +487,7 @@ if soverb_plot:
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
   axish[1].SetMinimum(0)
-  axish[1].SetMaximum(2)
+  axish[1].SetMaximum(10)
   if model_dep:
     sighist_forratio.SetLineColor(2)
     sighist_forratio.Draw("same")

@@ -16,6 +16,7 @@
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
 #include "CombineHarvester/CombineTools/interface/HttSystematics.h"
 #include "CombineHarvester/CombineTools/interface/CopyTools.h"
+#include "CombineHarvester/CombineTools/interface/CardWriter.h"
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
 #include "TH2.h"
@@ -30,17 +31,20 @@ int main(int argc, char** argv) {
   string mass = "mA";
   bool no_shape_systs=false;
   bool project=false;
+  string output_folder = "projection_legacy";
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("no_shape_systs,s", po::value<bool>(&no_shape_systs)->default_value(false))
+    ("output_folder", po::value<string>(&output_folder)->default_value("projection_legacy"))
     ("project,p", po::value<bool>(&project)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 1000.);
+  mA.setConstant(true);
   RooRealVar mH("mH", "mH", 90., 1000.);
   RooRealVar mh("mh", "mh", 90., 1000.);
 
@@ -152,42 +156,23 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
  
-  //Individual channel-cats 
-  std::string output_folder="projection";
-  string folder = "output/projection/cmb/";
-  boost::filesystem::create_directories(folder);
-  for (string chn : chns) {
-     string folderchn = "output/projection/"+chn;
-     auto bins = cb.cp().channel({chn}).bin_set();
-      for (auto b : bins) {
-        string folderchncat = "output/"+output_folder+"/"+b;
-        boost::filesystem::create_directories(folderchn);
-        boost::filesystem::create_directories(folderchncat);
-        TFile output((folder + "/"+b+"_input.root").c_str(), "RECREATE");
-        TFile outputchn((folderchn + "/"+b+"_input.root").c_str(), "RECREATE");
-        TFile outputchncat((folderchncat + "/"+b+"_input.root").c_str(), "RECREATE");
-        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchn + "/" + b + ".txt", outputchn);
-        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folderchncat + "/" + b + ".txt", outputchncat);
-        cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(folder + "/" + b + ".txt", output);
-        output.Close();
-        outputchn.Close();
-        outputchncat.Close();
-        if(b.find("8")!=string::npos) {
-            string foldercat = "output/"+output_folder+"/htt_cmb_8_13TeV/";
-            boost::filesystem::create_directories(foldercat);
-            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
-            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
-            outputcat.Close();
-        }
-        else if(b.find("9")!=string::npos) {
-            string foldercat = "output/"+output_folder+"/htt_cmb_9_13TeV/";
-            boost::filesystem::create_directories(foldercat);
-            TFile outputcat((folder + "/"+b+"_input.root").c_str(), "RECREATE");
-            cb.cp().channel({chn}).bin({b}).mass({"*"}).WriteDatacard(foldercat + "/" + b + ".txt", outputcat);
-            outputcat.Close();
-        }
-      }
+ //Write out datacards. Naming convention important for rest of workflow. We
+ //make one directory per chn-cat, one per chn and cmb. In this code we only
+ //store the individual datacards for each directory to be combined later, but
+ //note that it's also possible to write out the full combined card with CH
+  ch::CardWriter writer("output/" + output_folder + "/$TAG/$BIN.txt",
+                        "output/" + output_folder + "/$TAG/$BIN_input.root");
+  // We're not using mass as an identifier - which we need to tell the CardWriter
+  // otherwise it will see "*" as the mass value for every object and skip it
+  writer.SetWildcardMasses({});
+  writer.SetVerbosity(1);
+
+  writer.WriteCards("cmb", cb);
+  for (auto chn : chns) {
+    // per-channel
+    writer.WriteCards(chn, cb.cp().channel({chn}));
   }
+  
      
 
 }

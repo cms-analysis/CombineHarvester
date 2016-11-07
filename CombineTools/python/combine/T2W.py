@@ -78,7 +78,7 @@ class T2W(CombineToolBase):
             # Deal with the directory case first (3)
             if os.path.isdir(arg):
                 print '>> Directory %s, looking for datacards' % arg
-                files = [file for file in os.listdir(arg) if file.endswith('.txt')]
+                files = sorted([file for file in os.listdir(arg) if file.endswith('.txt')])
                 if len(files) == 0:
                     print '>> No .txt files found, skipping this directory'
                     continue
