@@ -72,28 +72,28 @@ int main() {
       .AddSyst(cb, "pdf_Higgs", "lnN", SystMap<>::init(1.036));
   cb.cp().process(sig_procs)
     .AddSyst(cb, "QCDscale_ttH", "lnN", SystMapAsymm<>::init(0.915, 1.058));
-  cb.cp().process(sig_procs)
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_x1", "shape", SystMap<>::init(1.0));
-  cb.cp().process(sig_procs)
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_y1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process(sig_procs)
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_x1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process(sig_procs)
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_y1", "shape", SystMap<>::init(1.0));
 
   cb.cp().process({"TTW"})
       .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.04));
   cb.cp().process({"TTW"})
       .AddSyst(cb, "QCDscale_ttW", "lnN", SystMap<>::init(1.12));
-  cb.cp().process({"TTW"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_x1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"TTW"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_y1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTW"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_x1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTW"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_y1", "shape", SystMap<>::init(1.0));
 
   cb.cp().process({"TTZ"})
       .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(0.966));
   cb.cp().process({"TTZ"})
       .AddSyst(cb, "QCDscale_ttZ", "lnN", SystMap<>::init(1.11));
-  cb.cp().process({"TTZ"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_x1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"TTZ"})
-      .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTZ"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_x1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"TTZ"})
+  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
 
   cb.cp().process({"WZ"})
       .AddSyst(cb, "CMS_ttHl_WZ_4j", "lnN", SystMap<>::init(2.0));
@@ -101,20 +101,20 @@ int main() {
   cb.cp().process({"Rares"})
       .AddSyst(cb, "CMS_ttHl_Rares", "lnN", SystMap<>::init(1.5));
 
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRe_norm", "lnN", SystMap<>::init(1.2));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0));  
+  //cb.cp().process({"fakes_data"})
+  //    .AddSyst(cb, "CMS_ttHl_FRe_norm", "lnN", SystMap<>::init(1.2));
+  //cb.cp().process({"fakes_data"})
+  //    .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"fakes_data"})
+  //    .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0));  
   cb.cp().process({"fakes_data"})
       .AddSyst(cb, "CMS_ttHl_Clos_e_norm", "lnN", SystMap<>::init(0.96));
   cb.cp().process({"fakes_data"})
       .AddSyst(cb, "CMS_ttHl_FRm_norm", "lnN", SystMap<>::init(1.2));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0)); 
+  //cb.cp().process({"fakes_data"})
+  //    .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
+  //cb.cp().process({"fakes_data"})
+  //    .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0)); 
   cb.cp().process({"fakes_data"})
       .AddSyst(cb, "CMS_ttHl_Clos_m_norm", "lnN", SystMap<>::init(1.04));
 
@@ -145,11 +145,13 @@ int main() {
 
   //! [part7]
   cb.cp().backgrounds().ExtractShapes(
-      aux_shapes + "CERN/ttH_2lss_1tau.input.root",
+      //aux_shapes + "CERN/ttH_2lss_1tau.input.root",
+      aux_shapes + "Tallinn/ttH_2lss_1tau.input.root",
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   cb.cp().signals().ExtractShapes(
-      aux_shapes + "CERN/ttH_2lss_1tau.input.root",
+      //aux_shapes + "CERN/ttH_2lss_1tau.input.root",
+      aux_shapes + "Tallinn/ttH_2lss_1tau.input.root",
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   //! [part7]
