@@ -156,7 +156,7 @@ adapt=ROOT.gROOT.GetColor(12)
 new_idx=ROOT.gROOT.GetListOfColors().GetSize() + 1
 trans=ROOT.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(),adapt.GetBlue(), "",0.5)
 
-infoMap = varCfgPlotter.getInfoMap( higgsSF )
+infoMap = varCfgPlotter.getInfoMap( higgsSF, channel )
 bkgs = varCfgPlotter.getBackgrounds()
 signals = varCfgPlotter.getSignals()
 

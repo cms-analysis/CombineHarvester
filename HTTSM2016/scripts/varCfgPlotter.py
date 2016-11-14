@@ -32,11 +32,16 @@ def getFile( channel ) :
     }
     return fileMap[ channel ]
 
-def getInfoMap( higgsSF ) :
+def getInfoMap( higgsSF, channel ) :
+    if channel == "mt" : sub = ("#tau", "#mu") 
+    if channel == "et" : sub = ("#tau", "e")
+    if channel == "em" : sub = ("e", "#mu")
+    if channel == "tt" : sub = ("#tau", "#tau")
+    
     infoMap = OrderedDict()
     # Name : Add these shapes [...], legend name, leg type, fill color
     infoMap["data_obs"] = [["data_obs",],"Observed","elp",1]
-    infoMap["ZTT"] = [["ZTT"],"Z#rightarrow#tau_{#mu}#tau_{h}","f","#ffcc66"]
+    infoMap["ZTT"] = [["ZTT"],"Z#rightarrow#tau_{%s}#tau_{%s}"%(sub[0],sub[1]),"f","#ffcc66"]
     infoMap["ZJ"] = [["ZJ","ZL","ZLL"],"DY others","f","#4496c8"]
     infoMap["TT"] = [["TTT","TTJ"],"t#bar{t}+jets","f","#9999cc"]
     infoMap["VV"] = [["VV",],"Diboson","f","#12cadd"]
