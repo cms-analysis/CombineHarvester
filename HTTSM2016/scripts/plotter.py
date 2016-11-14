@@ -5,6 +5,7 @@ from array import array
 from collections import OrderedDict
 import varCfgPlotter
 import argparse
+import os
 
 parser = argparse.ArgumentParser(
     "Create pre/post-fit plots for SM HTT")
@@ -165,7 +166,10 @@ for cat in categories:
     print "Plotting for:",cat
     
     # Get list of the keys to hists in our category directory
-    histKeys = get_Keys_Of_Class( file, cat, "TH1D" )
+    if channel == "tt" :
+        histKeys = get_Keys_Of_Class( file, cat, "TH1D" )
+    else :
+        histKeys = get_Keys_Of_Class( file, cat, "TH1F" )
     
     # Get nominal shapes for all processes
     initHists = {}
@@ -403,11 +407,12 @@ for cat in categories:
     ROOT.gPad.RedrawAxis()
     
     c.Modified()
+    if not os.path.exists( 'plots' ) : os.makedirs( 'plots' )
     if isLog:
-       c.SaveAs("unroll_log_"+cat+".pdf")
-       c.SaveAs("unroll_log_"+cat+".png")
+       c.SaveAs("plots/unroll_log_"+cat+".pdf")
+       c.SaveAs("plots/unroll_log_"+cat+".png")
     else:
-       c.SaveAs("unroll_"+cat+".pdf")
-       c.SaveAs("unroll_"+cat+".png")
+       c.SaveAs("plots/unroll_"+cat+".pdf")
+       c.SaveAs("plots/unroll_"+cat+".png")
     
     

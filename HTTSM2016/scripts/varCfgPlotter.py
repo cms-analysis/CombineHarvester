@@ -16,6 +16,8 @@ from collections import OrderedDict
 # where we should look for histograms
 def getCategories( channel="tt", prefix="" ) :
     preCategories=["_0jet","_boosted","_VBF"] 
+    if channel == "em" : # FIXME vbf --> VBF when ready
+        preCategories=["_0jet","_boosted","_vbf"] 
     categories=[prefix+channel+cat for cat in preCategories]
     return categories
 
@@ -26,7 +28,8 @@ def getFile( channel ) :
     fileMap = {
         "et" : "shapes/USCMS/htt_et.inputs-sm-13TeV-mvis.root", # Not up to date
         "mt" : "shapes/USCMS/htt_mt.inputs-sm-13TeV-mvis.root", # Not up to date
-        "em" : "shapes/USCMS/htt_em.inputs-sm-13TeV-mvis.root", # Not up to date
+        "em" : "emu_unrolled.root", # Not saved publically
+        #"em" : "shapes/USCMS/htt_em.inputs-sm-13TeV-mvis.root", # Not up to date
         "tt" : "../../SM-PAS-2016/USCMS/htt_tt.inputs-sm-13TeV-svfitmass2D-20161103.root",
         #"tt" : "shapes/USCMS/htt_tt.inputs-sm-13TeV-svfitmass2D.root", # Not up to date
     }
@@ -43,7 +46,11 @@ def getInfoMap( higgsSF, channel ) :
     infoMap["data_obs"] = [["data_obs",],"Observed","elp",1]
     infoMap["ZTT"] = [["ZTT"],"Z#rightarrow#tau_{%s}#tau_{%s}"%(sub[0],sub[1]),"f","#ffcc66"]
     infoMap["ZJ"] = [["ZJ","ZL","ZLL"],"DY others","f","#4496c8"]
-    infoMap["TT"] = [["TTT","TTJ"],"t#bar{t}+jets","f","#9999cc"]
+    if channel == "em" :
+        # This is intentional and will not be changed
+        infoMap["TT"] = [["TT",],"t#bar{t}+jets","f","#9999cc"]
+    else :
+        infoMap["TT"] = [["TTT","TTJ",],"t#bar{t}+jets","f","#9999cc"]
     infoMap["VV"] = [["VV",],"Diboson","f","#12cadd"]
     infoMap["W"] = [["W",],"Electroweak","f","#de5a6a"]
     infoMap["QCD"] = [["QCD",],"QCD multijet","f","#ffccff"]
@@ -111,19 +118,19 @@ def getBinMap() :
         "em" : {
             "em_0jet" : {
                 "nx" : 5,
-                "ny" : 30, #FIXME
-                "binning" : [15,25,35,45,55],
+                "ny" : 12,
+                "binning" : [15,20,25,30,35],
                 "name" : "p_{T}(#mu)",
             },
             "em_boosted" : {
-                "nx" : 7,
-                "ny" : 12, #FIXME
-                "binning" : [0,100,150,200,250,300,350],
+                "nx" : 6,
+                "ny" : 10,
+                "binning" : [0,100,150,200,250,300],
                 "name" : "p_{T}(H)",
             },
-            "em_VBF" : {
+            "em_vbf" : { # FIXME vbf --> VBF when ready
                 "nx" : 4,
-                "ny" : 1, #FIXME
+                "ny" : 5,
                 "binning" : [300,700,1100,1500],
                 "name" : "m_{jj}",
             },
