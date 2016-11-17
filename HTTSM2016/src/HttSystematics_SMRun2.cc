@@ -47,7 +47,7 @@ namespace ch {
         
         //  lumi
         // -----------------------
-        cb.cp().process(JoinStr({signal, {"TT","VV", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
                                                                                           "lumi_13TeV", "lnN", SystMap<>::init(1.062));
         
         //Add luminosity uncertainty for W in em, tt and the mm region as norm is from MC
