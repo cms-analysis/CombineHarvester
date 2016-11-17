@@ -157,41 +157,38 @@ namespace ch {
         
         // Signal Theory uncertainty  currently just call it pdf
         cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-                        ({"em"},process( {"ggH"}),{1}, 1.10)
-                        ({"et"},process( {"ggH"}),{1}, 1.10)
-                        ({"mt"},process( {"ggH"}),{1}, 1.10)
-                        ({"tt"},process( {"ggH"}),{1}, 1.10)
+                        ({"em"},{1},process( {"ggH"}), 1.10)
+                        ({"et"},{1},process( {"ggH"}), 1.10)
+                        ({"mt"},{1},process( {"ggH"}), 1.10)
+                        ({"tt"},{1},process( {"ggH"}), 1.10)
                         
-                        ({"em"},process( {"ggH"}),{2}, 1.20)
-                        ({"et"},process( {"ggH"}),{2}, 1.20)
-                        ({"mt"},process( {"ggH"}),{2}, 1.20)
-                        ({"tt"},process( {"ggH"}),{2}, 1.20)
-                        
-                        
-                        ({"em"},process( {"ggH"}),{3}, 1.50)
-                        ({"et"},process( {"ggH"}),{3}, 1.40)
-                        ({"mt"},process( {"ggH"}),{3}, 1.30)
-                        ({"tt"},process( {"ggH"}),{3}, 1.40)
+                        ({"em"},{2},process( {"ggH"}), 1.20)
+                        ({"et"},{2},process( {"ggH"}), 1.20)
+                        ({"mt"},{2},process( {"ggH"}), 1.20)
+                        ({"tt"},{2},process( {"ggH"}), 1.20)
                         
                         
-                        ({"em"},process( {"qqh"}),{1}, 1.10)
-                        ({"et"},process( {"qqh"}),{1}, 1.10)
-                        ({"mt"},process( {"qqh"}),{1}, 1.10)
-                        ({"tt"},process( {"qqh"}),{1}, 1.08)
-                        
-                        ({"em"},process( {"qqh"}),{2}, 1.07)
-                        ({"et"},process( {"qqh"}),{2}, 1.07)
-                        ({"mt"},process( {"qqh"}),{2}, 1.07)
-                        ({"tt"},process( {"qqh"}),{2}, 1.07)
+                        ({"em"},{3},process( {"ggH"}), 1.50)
+                        ({"et"},{3},process( {"ggH"}), 1.40)
+                        ({"mt"},{3},process( {"ggH"}), 1.30)
+                        ({"tt"},{3},process( {"ggH"}), 1.40)
                         
                         
-                        ({"em"},process( {"qqh"}),{3}, 1.05)
-                        ({"et"},process( {"qqh"}),{3}, 1.05)
-                        ({"mt"},process( {"qqh"}),{3}, 1.05)
-                        ({"tt"},process( {"qqh"}),{3}, 1.05)
+                        ({"em"},{1},process( {"qqH"}), 1.10)
+                        ({"et"},{1},process( {"qqH"}), 1.10)
+                        ({"mt"},{1},process( {"qqH"}), 1.10)
+                        ({"tt"},{1},process( {"qqH"}), 1.08)
+                        
+                        ({"em"},{2},process( {"qqH"}), 1.07)
+                        ({"et"},{2},process( {"qqH"}), 1.07)
+                        ({"mt"},{2},process( {"qqH"}), 1.07)
+                        ({"tt"},{2},process( {"qqH"}), 1.07)
                         
                         
-                        
+                        ({"em"},{3},process( {"qqH"}), 1.05)
+                        ({"et"},{3},process( {"qqH"}), 1.05)
+                        ({"mt"},{3},process( {"qqH"}), 1.05)
+                        ({"tt"},{3},process( {"qqH"}), 1.05)
                         );
         
         
