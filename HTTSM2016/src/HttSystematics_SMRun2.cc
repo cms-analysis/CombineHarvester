@@ -5,6 +5,8 @@
 #include "CombineHarvester/CombineTools/interface/Process.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 
+using namespace std;
+
 namespace ch {
     
     using ch::syst::SystMap;
@@ -38,7 +40,7 @@ namespace ch {
         }
         
         
-        vector<string> sig_procs = {"ggH","qqH","WH","ZH"};
+        std::vector<std::string> sig_procs = {"ggH","qqH","WH","ZH"};
         
         
         
@@ -151,8 +153,8 @@ namespace ch {
         
         // Scale uncertainty on signal Applies to ggH in boosted and VBF. Event-by-event weight applied as a func(on of pth or mjj. Fully correlated between categories and final states.
         // ---------------------
-        cb.cp().process( {"ggH"}).{2, 3},AddSyst(cb,
-                                                     "CMS_htt_XXXXXX_$ERA", "shape", SystMap<>::init(1.00));
+//        cb.cp().process( {"ggH"}).{2, 3},AddSyst(cb,
+//                                                     "CMS_htt_XXXXXX_$ERA", "shape", SystMap<>::init(1.00));
         
         
         // Signal Theory uncertainty  currently just call it pdf
