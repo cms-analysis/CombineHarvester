@@ -95,7 +95,7 @@ namespace ch {
         
         // jet energy scale
         // ---------------------
-        cb.cp().process(JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZLL", "ZJ"}})).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZLL", "ZJ"}})).channel({"em","tt"}).AddSyst(cb,
                                                                                         "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
         

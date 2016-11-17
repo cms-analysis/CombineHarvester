@@ -127,10 +127,10 @@ int main(int argc, char** argv) {
     if (mm_fit) chns.push_back("mm");
     
     map<string, VString> bkg_procs;
-    bkg_procs["et"] = {"ZTT", "W", "QCD", "ZLL", "TTT","TTJ", "VV"};
-    bkg_procs["mt"] = {"ZTT", "W", "QCD", "ZLL", "TTT","TTJ", "VV"};
+    bkg_procs["et"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ", "VV", "EWKZ"};
+    bkg_procs["mt"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ", "VV", "EWKZ"};
     bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VV", "EWKZ"};
-    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV"};
+    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     
     
@@ -192,10 +192,10 @@ int main(int argc, char** argv) {
             //                queue.push_back(make_pair(binid+2,chn+"_wjets_ss_cr"));
             
             queue.push_back(make_pair(binid,chn+"_wjets_0jet_cr"));
-            queue.push_back(make_pair(binid+1,chn+"_wjets_1jet_cr"));
+            queue.push_back(make_pair(binid+1,chn+"_wjets_boosted_cr"));
             queue.push_back(make_pair(binid+2,chn+"_wjets_vbf_cr"));
             queue.push_back(make_pair(binid+3,chn+"_antiiso_0jet_cr"));
-            queue.push_back(make_pair(binid+4,chn+"_antiiso_1jet_cr"));
+            queue.push_back(make_pair(binid+4,chn+"_antiiso_boosted_cr"));
             queue.push_back(make_pair(binid+5,chn+"_antiiso_vbf_cr"));
             
             
@@ -305,7 +305,7 @@ int main(int argc, char** argv) {
     auto bbb = ch::BinByBinFactory()
     .SetAddThreshold(0.1)
     .SetMergeThreshold(0.5)
-    .SetFixNorm(true);
+    .SetFixNorm(false);
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
     
