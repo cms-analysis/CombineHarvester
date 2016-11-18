@@ -123,12 +123,14 @@ int main(int argc, char** argv) {
     
     
     
-    VString chns = {"mt","et"};
+    VString chns = {"mt","et","tt","em"};
     if (mm_fit) chns.push_back("mm");
     
     map<string, VString> bkg_procs;
-    bkg_procs["et"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ", "VV", "EWKZ"};
-    bkg_procs["mt"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ", "VV", "EWKZ"};
+    bkg_procs["et"] = {"ZTT",  "QCD", "ZL", "ZJ","TTT","TTJ", "VV"};
+    bkg_procs["mt"] = {"ZTT",  "QCD", "ZL", "ZJ","TTT","TTJ", "VV"};
+//    bkg_procs["et"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ", "VV", "EWKZ"};
+//    bkg_procs["mt"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ", "VV", "EWKZ"};
     bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VV", "EWKZ"};
     bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
@@ -180,10 +182,10 @@ int main(int argc, char** argv) {
         // the control regions are ordered in triples (10,11,12),(13,14,15)...
         for (auto chn : chns){
             // for em or tt or mm do nothing
-            if (ch::contains({"em", "tt", "mm"}, chn)) {
-                std::cout << " - Skipping extra control regions for channel " << chn << "\n";
-                continue;
-            }
+            if (ch::contains({"mt", "et"}, chn)) {
+                
+                
+            
             Categories queue;
             int binid = 10;
             //            for (auto cat:cats[chn]){
@@ -204,7 +206,7 @@ int main(int argc, char** argv) {
             cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
         }
     }
-    
+    }
     
     
     
@@ -216,14 +218,25 @@ int main(int argc, char** argv) {
     vector<string> masses = ch::MassesFromRange("120-130:5");
     //        vector<string> masses = {"125"};
     
+    using ch::syst::bin_id;
     
     //! [part2]
     for (auto chn : chns) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs, cats[chn], true);
-        
+        //Needed to add ewkz and W as these are not not available/Negative in qcd cR
     }
+    
+    //Add EWKZ and W manually !!!!!!
+    
+    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"EWKZ"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
+    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"EWKZ"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
+    
+    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},{10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}}, false);
+    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},{10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}}, false);
+
+    
     
     //! [part4]
     
@@ -395,9 +408,9 @@ int main(int argc, char** argv) {
         writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn}).bin_id({1}));
         writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn}).bin_id({2}));
         writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn}).bin_id({3}));
-        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn}).bin_id({4}));
-        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn}).bin_id({5}));
-        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn}).bin_id({6}));
+//        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn}).bin_id({4}));
+//        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn}).bin_id({5}));
+//        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn}).bin_id({6}));
         
         
         for (auto mmm : masses){
@@ -410,14 +423,32 @@ int main(int argc, char** argv) {
             
             
             if (control_region > 0){
+                
+                if (ch::contains({"et", "mt"}, chn)) {
+                    
+                
                 cb.cp().channel({chn}).bin_id({10}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_10_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"10.root");
                 cb.cp().channel({chn}).bin_id({11}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_11_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"11.root");
                 cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
                 cb.cp().channel({chn}).bin_id({13}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_13_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"13.root");
                 cb.cp().channel({chn}).bin_id({14}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_14_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"14.root");
                 cb.cp().channel({chn}).bin_id({15}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_15_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"15.root");
+                    
+                    
+                    
+                    
+                    cb.cp().channel({chn}).bin_id({10}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_10_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"10.root");
+                    cb.cp().channel({chn}).bin_id({11}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_11_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"11.root");
+                    cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
+                    cb.cp().channel({chn}).bin_id({13}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_13_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"13.root");
+                    cb.cp().channel({chn}).bin_id({14}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_14_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"14.root");
+                    cb.cp().channel({chn}).bin_id({15}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_15_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"15.root");
+                    
+                    
+                    
+                    
             }
-            
+            }
         }
     }
     
