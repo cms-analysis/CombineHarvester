@@ -1,6 +1,6 @@
 {
   "verbose" : false,
-  "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --clsAcc 0 --fork 0 --redefineSignalPOIs x --setPhysicsModelParameters r=1 --freezeNuisances r",
+  "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --clsAcc 0 --fork 0 --fullBToys--redefineSignalPOIs x --setPhysicsModelParameters r=1 --freezeNuisances r",
   "POIs" : ["mA", "tanb"],
   "grids" : [
     ["90:200|10", "1:20|1", ""],
