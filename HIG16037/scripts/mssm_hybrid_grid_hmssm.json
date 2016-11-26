@@ -1,35 +1,18 @@
 {
   "verbose" : false,
-  "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --clsAcc 0 --fullBToys --fork 0 --redefineSignalPOIs x --setPhysicsModelParameters r=1 --freezeNuisances r",
+  "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --redefineSignalPOIs x --setPhysicsModelParameters r=1 --freezeNuisances r --clsAcc 0 --fork 0",
   "POIs" : ["mA", "tanb"],
   "grids" : [
     ["130:200|10", "1:20|1", ""],
-    ["130:200|10", "20:60|2", ""],
-    ["200:1400|50", "1:20|1", ""],
-    ["200:1400|50", "20:60|2", ""],
+    ["130:200|10", "20:60|2", "0.0"],
+    ["250:450|50", "1:20|1", ""],
+    ["250:450|50", "20:60|2", "0.0"],
+    ["500:1400|50", "1:20|1", ""],
+    ["500:1400|50", "20:60|2", ""],
     ["1400:2000|50", "1:60|5", ""],
     ["1400:2000|50", "60", ""]
   ],
-  "grids_to_remove" :[
-    ["130","32"],
-    ["140","28"],
-    ["150","26:28|2"],
-    ["170","26:28|2"],
-    ["180","26"],
-    ["190","24:26|2"],
-    ["200","24:26|2"],
-    ["250","26:28|2"],
-    ["250","30"],
-    ["300","30"],
-    ["350","32"],
-    ["350","34"],
-    ["350","36"],
-    ["400","36"],
-    ["700:750|50","11"],
-    ["1550","46"],
-    ["1600","51"]
-  ],
-  "toys_per_cycle"  : 500,
+  "toys_per_cycle"  : 800,
   "min_toys"        : 1000,
   "max_toys"        : 200000,
   "signif"          : 3.0,
@@ -45,8 +28,8 @@
       "cms_subtitle"  : "Internal",
       "formats"       : [".pdf", ".png"]
   },
-  "zipfile"         : "/srv/localstage/amd12/hMSSM2016-plots/collected.zip",
-  "statusfile"      : "/srv/localstage/amd12/hMSSM2016-plots/status.json",
+  "zipfile"         : "collected.zip",
+  "statusfile"      : "status.json",
   "output"          : "HybridNewGridMSSM.root",
   "output_incomplete" : true
 }
