@@ -12,7 +12,7 @@ This repository contains a number of subpackages for different analyses. If you 
     bash <(curl -s https://raw.githubusercontent.com/cms-analysis/CombineHarvester/master/CombineTools/scripts/sparse-checkout-ssh.sh)
     git clone via https:
     bash <(curl -s https://raw.githubusercontent.com/cms-analysis/CombineHarvester/master/CombineTools/scripts/sparse-checkout-https.sh)
-    
+
 A new full release area can be set up and compiled in the following steps:
 
     export SCRAM_ARCH=slc6_amd64_gcc491
@@ -20,7 +20,7 @@ A new full release area can be set up and compiled in the following steps:
     cd CMSSW_7_4_7/src
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-    # Check the recommended tag on link above, a tag >= v5.0.2 is needed for the ROOT5 branch of combine
+    # IMPORTANT: Checkout the recommended tag on the link above
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
     scram b
 
