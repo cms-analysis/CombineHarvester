@@ -356,12 +356,12 @@ int main(int argc, char** argv) {
       outfile.WriteTObject(shape_new2.get(), (p->bin()+"_Up").c_str());
 
       // Create shape systematic
-      cb.AddSystFromProc(*p, "CMS_htt_wFakeShape_13TeV", "shape", true, 1.0, 1.0, "", "");
+      cb.AddSystFromProc(*p, "CMS_htt_wFakeShape_13TeV_2015", "shape", true, 1.0, 1.0, "", "");
       // Import the shapes into the Process and Systematic objects
       cb.cp()
           .bin({p->bin()})
           .process({p->process()})
-          .syst_name({"CMS_htt_wFakeShape_13TeV"})
+          .syst_name({"CMS_htt_wFakeShape_13TeV_2015"})
           .ForEachSyst([&](ch::Systematic *sys) {
             sys->set_shapes(std::move(shape_new2), std::move(shape_old), shape_new.get());
           });
