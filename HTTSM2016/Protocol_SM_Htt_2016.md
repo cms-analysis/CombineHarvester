@@ -43,13 +43,22 @@
 
 # Plotting the limit:
 
+    
     plotLimits.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style
     plotLimits.py limits_cmb.json --auto-style   
 
 
+    python plotLimits_SM2.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style --cms-sub Preliminary  -o lim_compare
+    python plotLimits_SM2.py limits_cmb.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_cmb
+    python plotLimits_SM2.py limits_tt.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_tt
+    python plotLimits_SM2.py limits_mt.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_mt
+    python plotLimits_SM2.py limits_et.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_et
+    python plotLimits_SM2.py limits_em.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_em
+
+
 # run MaxLikelihoodFit
 
-    combine -M MaxLikelihoodFit cmb/125/workspace.root  --robustFit=1 --minimizerAlgoForMinos=Minuit2,Migrad  --rMin 0.5 --rMax 1.5
+    combine -M MaxLikelihoodFit cmb/125/workspace.root -t -1  --robustFit=1 --minimizerAlgoForMinos=Minuit2,Migrad  --rMin 0.5 --rMax 1.5  
 
 
 # making the pulls
