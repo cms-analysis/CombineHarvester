@@ -168,6 +168,15 @@ namespace ch {
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
                                                                           "QCDSFUncert_$CHANNEL_vbf_$ERA", "shape", SystMap<>::init(1.00));
         
+        
+        
+        //Iso to antiiso extrapolation
+        cb.cp().process({"QCD"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
+                                                                          "QCD_Extrap_Iso_nonIso_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.20));
+        cb.cp().process({"QCD"}).channel({"et"}).bin_id({1,2,3}).AddSyst(cb,
+                                                                         "QCD_Extrap_Iso_nonIso_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.20));
+        
+        
         //This should affect only shape (normalized to nominal values)
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
                                                                               "WSFUncert_$CHANNEL_0jet_$ERA", "shape", SystMap<>::init(1.00));
