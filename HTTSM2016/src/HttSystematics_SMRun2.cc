@@ -104,8 +104,11 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VV", "ZL", "ZJ","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                                                                                         "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD", "HWW_gg125","HWW_qq125"}})).channel({"em"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
                                                                                                           "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD", "HWW_gg125","HWW_qq125"}})).channel({"em"}).AddSyst(cb,
+                                                                                                                                   "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+        
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
                         ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ","TTJ","TTT","EWKZ"}}), 1.01));
@@ -133,10 +136,20 @@ namespace ch {
         cb.cp().process({"W"}).channel({"tt","em","mm"}).AddSyst(cb,
                                                                  "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.20));
         
-        // QCD norm, just for em
-        cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
-                                                         "CMS_htt_QCD_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
+        // QCD norm, just for em  decorrelating QCD BG for differenet categories
+//        cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
+//        
+//                                                         "CMS_htt_QCD_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
 
+        // QCD norm, just for tt
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,
+                                                                     "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.15));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,
+                                                                     "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.15));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
+                                                                     "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.30));
+        
+        
         // QCD norm, just for tt
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({1}).AddSyst(cb,
                                                          "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.05));
@@ -453,7 +466,7 @@ namespace ch {
             cb.cp().bin({"mt_boosted","mt_antiiso_boosted_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_mt", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"mt_vbf","mt_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
             
-            cb.cp().bin({"et_0jet""et_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_0jet","et_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"et_boosted","et_antiiso_boosted_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_et", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"et_vbf","et_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
             
