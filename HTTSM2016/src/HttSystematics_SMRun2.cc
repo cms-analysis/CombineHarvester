@@ -37,7 +37,7 @@ namespace ch {
         //  lumi
         //##############################################################################
         
-        cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT"}})).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT", "HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
                                                                                       "lumi_13TeV", "lnN", SystMap<>::init(1.062));
         
         //Add luminosity uncertainty for W in em, tt and the mm region as norm is from MC
@@ -54,7 +54,7 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV", "ZL", "ZJ", "ZTT", "EWKZ"}})).channel({"et"}).AddSyst(cb,
                                                                                                                      "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
-        cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT","EWKZ","W"}})).channel({"em"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT","EWKZ","W", "HWW_gg125","HWW_qq125"}})).channel({"em","ttbar"}).AddSyst(cb,
                                                                                                              "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
         cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV", "ZL", "ZJ", "ZTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
@@ -67,14 +67,14 @@ namespace ch {
         //##############################################################################
         cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
                         ({"mm"}, {"ZTT", "TT", "VV", "ZL", "ZJ"},  1.02)
-                        ({"mt"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ"}}),  1.02)
+                        ({"mt"}, JoinStr({sig_procs, {"ZTT", "VV", "ZL", "ZJ","TTT", "TTJ", "EWKZ"}}),  1.02)
 //                        ({"tt"}, JoinStr({sig_procs, {"W"}}),  1.02)
-                        ({"em"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ", "W", "HWW_gg125","HWW_qq125"}}),       1.02));
+                        ({"em","ttbar"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ", "W", "HWW_gg125","HWW_qq125","EWKZ"}}),       1.02));
         
         cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
-                        ({"et"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ"}}),  1.02)
+                        ({"et"}, JoinStr({sig_procs, {"ZTT", "VV", "ZL", "ZJ","TTT", "TTJ", "EWKZ"}}),  1.02)
 //                        ({"tt"}, JoinStr({sig_procs, {"W"}}),  1.02)
-                        ({"em"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ", "W", "HWW_gg125","HWW_qq125"}}),       1.02));
+                        ({"em","ttbar"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ", "W", "HWW_gg125","HWW_qq125"}}),       1.02));
         
         
         
@@ -87,7 +87,9 @@ namespace ch {
                                                                                                   "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
                                                                                                   ({"et", "mt"}, 1.04)
                                                                                                   ({"tt"}, 1.10));
-        
+        cb.cp().process(JoinStr({sig_procs, {"TTJ","ZJ"}})).channel({"tt"}).AddSyst(cb,
+                                                                                        "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
+                                                                                        ({"tt"}, 1.05));
         
         //##############################################################################
         //  Electron, tau, jet and met energy Scale
@@ -96,10 +98,10 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, {"ZTT", "W", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125","QCD"}})).channel({"em"}).AddSyst(cb,
                                                                                                                                               "CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","W","VV"}})).channel({"et","mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                                                                                               "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VV", "ZL", "ZJ"}})).channel({"et","mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VV", "ZL", "ZJ","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                                                                                         "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD", "HWW_gg125","HWW_qq125"}})).channel({"em"}).AddSyst(cb,
