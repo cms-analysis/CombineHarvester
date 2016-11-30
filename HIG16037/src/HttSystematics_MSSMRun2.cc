@@ -68,12 +68,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // Electron and muon efficiencies
   // ------------------------------
+  // should not be correlated as different muon ID/Iso
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
     ({"zmm"}, {"ZTT", "TT", "VV", "ZL"},  1.04)
     ({"zmm"}, {"ZJ"},  1.02)
     ({"mt"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
   
+ //Correlated(?)
   cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
     ({"et"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
@@ -91,6 +93,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // Jet energy scale
   // ----------------
+  // Fully correlated, JME recommendation: https://twiki.cern.ch/twiki/pub/CMS/JetEnergyScale/JECJER_UncertaintyCorrelations_13TeV13TeV.pdf
   cb.cp().AddSyst(cb,
     "CMS_scale_j_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
     ({"mt"}, {8}, {"TTT","TTJ"},   1.01,  0.99)
@@ -153,6 +156,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // b-tagging efficiency and fake rate
   // ----------------------------------
+  // Slightly more hassle: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X#Recommendation_for_combining_201
+  // Used different measurements for b/c-tagging efficiency (comb for 2016 and mujets for 2015, 
+  // So treat b-tagging efficiency as uncorrelated,
+  // Update mis-tagging uncertainties with up/down correlated and uncorrelated parts
   cb.cp().AddSyst(cb,
     "CMS_eff_b_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
     ({"mt"}, {8}, {"TTT","TTJ"},   1.03, 0.97)
@@ -210,6 +217,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"tt"}, {9}, {ggH},  0.99,   1.03));
 
 
+//Need some new uncertainties here, split into correlated and uncorrelated parts
   cb.cp().AddSyst(cb,
     "CMS_fake_b_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
     ({"mt"}, {9}, {"ZL"},   0.99,  1.02)
@@ -235,6 +243,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // Tau-related systematics
   // -----------------------
+  // Uncorrelated with 2015 due to different L1 trigger and application
+  // of tau ID SF in 2016 while this didn't happen in 2015
   cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_$ERA", "lnN", SystMap<channel>::init
     ({"et", "mt"}, 1.05)
@@ -245,22 +255,27 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"et", "mt"}, 1.03)
     ({"tt"},       1.092));
 
+//I'd also say uncorrelated with 2015 due to reasons above
   cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
+//Probably correlated?
   cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
   //DY reweighting
+  //Not sure
   cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
     "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
 
   //W jet->tau FR shape
+  //Not sure
   cb.cp().process(JoinStr({{"W"}})).channel({"et","mt"}).bin_id({8,9}).AddSyst(cb,
     "CMS_htt_wFakeShape_$ERA","shape",SystMap<>::init(1.00));
 
   // Electron energy scale
   // ---------------------
+  // Decorrelate? 
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,
     "CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
@@ -271,7 +286,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // treat it as an uncertainty on the low/high mT factor.
   // For now we also avoid applying this to any of the high-mT control regions
   // as the exact (anti-)correlation with low mT needs to be established
-  // CHECK THIS
+  // Correlated?
   cb.cp().AddSyst(cb,
     "CMS_htt_boson_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
     ({"et", "mt", "em", "tt"}, {8, 9, 11, 14}, JoinStr({signal, {"ZTT", "W"}}), 1.02));
@@ -290,11 +305,13 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // top-quark pT reweighting
   // ------------------------
+  // Correlated
   cb.cp().channel({"zmm"},false).process({"TTT","TTJ","TT"}).AddSyst(cb,
     "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
 
   // Cross-sections and lumi
   // -----------------------
+  // Part correlated: The correponding uncertainty is 6.2%. The correlation with the uncertainty on the 2015 luminosity estimate is 2.3% fully correlated between the two years, and 5.8% (1.5%) uncertainty on stability of the luminosity measurement fully uncorrelated for 2016 (2015).
   cb.cp().process(JoinStr({signal, {"TTT","TTJ","TT","VV","VVT","VVJ", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
@@ -345,7 +362,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // on Z->mumu calibration. Also only apply this to signal-region
   // categories for now, using cb_sig instead of cb
   // In case we use the zmm region in the fit this uncertainty is currently a placeholder for the uncertainty on the Z->mumu/Z->tautau uncertainty
-  // THIS IS TO BE CHECKED
+  // Check names - this unc describes something different in 2015 and 2016 so should not inadvertently be correlated
   cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
   "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
   ({8}, 1.03)
@@ -354,6 +371,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // Fake-rates
   // ----------
+  // Uncorrelated?
   cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
     "CMS_htt_eFakeTau_tight_13TeV", "lnN", SystMap<>::init(1.30));
 
@@ -368,6 +386,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
 
+ //DEFINITELY uncorrelated
   cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
     "CMS_htt_mFakeTau_tight_13TeV", "lnN", SystMap<>::init(1.30)); //Uncertainty ranges from 7-35% depending on eta bin
 
@@ -379,6 +398,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // QCD extrap.
   // -----------
   // emu QCD extrapolation 
+  // Decorrelate
   cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
     "CMS_htt_QCD_OS_SS_syst_$BIN", "lnN", SystMap<bin_id>::init
     ({8}, 1.23)
@@ -389,6 +409,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
  //into tau1 loose-not tight and tau2 tight)
  //B-tag: 20% stat uncertainty + 14% systematic uncertainty (from difference between OS and SS extrapolation factors from tau1 loose-not tight and tau2 loose-not tight 
  //into tau1 loose-not tight and tau2 tight)
+ //Uncorrelated 
   cb.cp().process({"QCD"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_QCD_norm_stat_$BIN", "lnN", SystMap<bin_id>::init
     ({8}, 1.02)
@@ -406,6 +427,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     // Add back the JES and b-tag uncertainties directly to the W and QCD
     // yields in the signal regions (driven by the effect on other backgrounds
     // in the control regions)
+    // Same comments as above for jes
     cb.cp().AddSyst(cb,
       "CMS_scale_j_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
       ({"mt"}, {9}, {"W"},    1.02,    1.04) 
@@ -414,6 +436,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
       ({"et"}, {9}, {"QCD"},  1.013,  0.986)); //To be checked still!
 
     //Need to put these back in in case we did want to fit without the control region for some reason
+    //Same comments as above for b-tagging
     cb.cp().AddSyst(cb,
       "CMS_eff_b_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
       ({"mt"}, {8}, {"W"},    0.99, 1.01)
@@ -427,6 +450,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
     // OS/SS W factor stat. uncertainty
     // Take same numbers as below, but this is probably conservative
+    // Stat unc so uncorrelated.
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.02)
@@ -436,6 +460,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
     // OS/SS W factor syst. uncertainty
     // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
+    // Not sure
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.080)
@@ -445,6 +470,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
     // low/high mT W factor stat. uncertainty
     // Should affect signal region and SS low mT
+    // Stat so uncorrelated
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.020)
@@ -456,6 +482,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     // Currently to be determined, could be motivated by low vs high mT jet->tau FR,
     // where we see a 10-15% variation from low to high mT. Go with 20% for now which
     // is comparable to what was used in Run 1 0-jet (20%) and the MSSM update (30%)
+    // Not sure
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_mT_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.20)
@@ -465,6 +492,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
     // OS/SS QCD factor syst. uncertainty
     // Based on variation in fitted factor from different anti-iso sidebands
+    // Uncorrelated because different tau pT cut
     cb.cp().process({"QCD"}).AddSyst(cb,
       "CMS_htt_QCD_OS_SS_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
       ({"mt"}, {8}, 1.040)
@@ -511,6 +539,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // OS/SS W factor stat. uncertainty
         // Should affect signal region and OS high mT
+        // Stat so uncorrelated
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10}, 1.02)
@@ -520,6 +549,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // OS/SS W factor syst. uncertainty
         // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
+        // Uncorrelated (different tau pT cuts)
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10}, 1.08)
@@ -529,6 +559,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // low/high mT W factor stat. uncertainty
         // Should affect signal region and SS low mT
+        // Stat so uncorrelated
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 11}, 1.02)
@@ -538,6 +569,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
+        // Not sure
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 11}, 1.20)
@@ -560,6 +592,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     
         //W b-tag extrapolation factor syst uncertainty
         //1) b-tag efficiency uncertainty
+        //Don't have anything similar to this in 2015 so need to make sure
+        //names are correct so as not to inadvertently correlate
         cb.cp().process({"W"}).AddSyst(cb,
          "CMS_eff_b_13TeV","lnN", SystMapAsymm<channel, bin_id>::init
          ({"mt"},{9},0.96,1.01)
@@ -586,6 +620,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // OS/SS QCD factor syst. uncertainty
         // Based on variation in fitted factor from different anti-iso sidebands
+        // Uncorrelated (different tau pT cuts)
         cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"QCD"}).AddSyst(cb,
           "CMS_htt_QCD_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10}, 1.040)
@@ -593,6 +628,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
           ({"et"}, {8, 10}, 1.120)
           ({"et"}, {9, 13}, 1.600));
 
+       //JEC - same comments as above apply
         cb.cp().AddSyst(cb,
           "CMS_scale_j_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
           ({"mt"},  {10}, {"TTT"}, 1.015, 0.986)
@@ -635,6 +671,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         //are no longer affected by b-tag efficiency uncertainty
         //Currently using full b-tag definition in this control region
         //so they are back in
+        //Uncorrelated with 2015 due to different measurement
         cb.cp().AddSyst(cb,
           "CMS_eff_b_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
           ({"mt"},  {10}, {"TTT"}, 1.03, 0.97)
