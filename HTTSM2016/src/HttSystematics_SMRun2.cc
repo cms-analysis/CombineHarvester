@@ -37,17 +37,20 @@ namespace ch {
         //  lumi
         //##############################################################################
         
-        cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT", "HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
+        //cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT", "HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
+        //                                                                              "lumi_13TeV", "lnN", SystMap<>::init(1.062));
+        cb.cp().process(JoinStr({sig_procs, {"TT","VV","TTT","TTJ","HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
                                                                                       "lumi_13TeV", "lnN", SystMap<>::init(1.062));
         
-        //Add luminosity uncertainty for W in em, tt and the mm region as norm is from MC
-        cb.cp().process({"W"}).channel({"tt","em","mm"}).AddSyst(cb,
+        //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
+        cb.cp().process({"W"}).channel({"tt","em","mm","ttbar"}).AddSyst(cb,
                                                                  "lumi_13TeV", "lnN", SystMap<>::init(1.062));
         
         
         //##############################################################################
         //  trigger   ##FIXME   the values have been chosen rather arbitrarily
         //##############################################################################
+        
         cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV", "ZL", "ZJ", "ZTT", "EWKZ"}})).channel({"mt"}).AddSyst(cb,
                                                                                                                      "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
@@ -55,11 +58,11 @@ namespace ch {
                                                                                                                      "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
         cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT","EWKZ","W", "HWW_gg125","HWW_qq125"}})).channel({"em","ttbar"}).AddSyst(cb,
-                                                                                                             "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
-        
-        cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV", "ZL", "ZJ", "ZTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                                                                                                    "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.06));
-        
+                                                                                                            // hard coding channel here keeps "em" and "ttbar" correlated
+                                                                                                             "CMS_eff_trigger_em_$ERA", "lnN", SystMap<>::init(1.02));
+
+        // "CMS_eff_trigger_tt_$ERA" is covered by tau ID
+
         
         
         //##############################################################################
@@ -159,17 +162,6 @@ namespace ch {
                                                                      "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.43));
         
         
-//        cb.cp().process({"QCD","W"}).channel({"et","mt"}).AddSyst(cb,
-//                                                                              "QCDSFUncert_$CHANNEL_$BIN_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
-                                                                     "QCDSFUncert_$CHANNEL_0jet_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
-                                                                          "QCDSFUncert_$CHANNEL_boosted_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                                                          "QCDSFUncert_$CHANNEL_vbf_$ERA", "shape", SystMap<>::init(1.00));
-        
-        
-        
         //Iso to antiiso extrapolation
         cb.cp().process({"QCD"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
                                                                           "QCD_Extrap_Iso_nonIso_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.20));
@@ -221,15 +213,11 @@ namespace ch {
         //##############################################################################
         
         cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
-                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
         cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
                                                         "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.25));
-//        cb.cp().process({"TTJ","ZJ"}).channel({"tt","mt","et"}).AddSyst(cb,
-//                                                                        "CMS_htt_jetFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
-        cb.cp().process( {"TTJ","W","ZJ"}).channel({"tt"}).AddSyst(cb,
-                                                                   "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"TTJ","W","ZJ"}).channel({"tt","mt","et"}).AddSyst(cb,
-                                                                             "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
+                                                        "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
         
  
         // mu to tau FR
