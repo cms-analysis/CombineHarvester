@@ -3,6 +3,7 @@ import ROOT
 import math
 import json
 import argparse
+import os
 import CombineHarvester.CombineTools.plotting as plot
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -74,6 +75,10 @@ if args.color_groups is not None:
     for name, col in color_groups.iteritems():
         color_group_hists[name] = ROOT.TH1F()
         plot.Set(color_group_hists[name], FillColor=col, Title=name)
+
+output_dir = os.path.dirname(args.output)
+if output_dir and (not os.path.exists(output_dir)):
+	os.makedirs(output_dir)
 
 for page in xrange(n):
     canv = ROOT.TCanvas(args.output, args.output)
