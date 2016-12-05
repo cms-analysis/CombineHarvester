@@ -508,7 +508,7 @@ int main(int argc, char** argv) {
 
   cout << "Generating bbb uncertainties...";
   auto bbb = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_2016_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
     .SetFixNorm(true)
@@ -522,7 +522,7 @@ int main(int argc, char** argv) {
   }
   // And now do bbb for the control region with a slightly different config:
   auto bbb_ctl = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_2016_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
     .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
@@ -536,6 +536,7 @@ int main(int argc, char** argv) {
   /*cb.cp().syst_name({"CMS_scale_j_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});
   cb.cp().syst_name({"CMS_scale_b_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});
   cb.cp().syst_name({"CMS_fake_b_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});*/
+  cb.RenameSystematic("CMS_htt_wFakeShape_13TeV","CMS_htt_wFakeShape_13TeV_2016");
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}

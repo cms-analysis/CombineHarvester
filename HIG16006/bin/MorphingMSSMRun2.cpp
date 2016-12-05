@@ -261,22 +261,29 @@ int main(int argc, char** argv) {
      cb.cp().process({"QCD"}).channel({"em"}).bin_id({9}).ForEachProc([&](ch::Process *proc){
        proc->set_rate(proc->rate()*(1.3/2.0));
      });
+    
+     //Scaling DY procs to the updated cross section (used for 2016 analysis) so
+     //DY xs uncs can be correlated
+     cb.cp().process({"ZTT","ZJ","ZL","ZLL"}).ForEachProc([&](ch::Process *proc){
+       proc->set_rate(proc->rate()*(5765.4/6025.5));
+     });
 
+    //This also updated to YR4 recommendations!
   if(SM125!=string("")) {
      cb.cp().process(SM_procs).ForEachProc([&](ch::Process * proc) {
        proc->set_rate(proc->rate()*0.0627);
       });
      cb.cp().process({"ggH_SM125"}).ForEachProc([&](ch::Process *proc){
-       proc->set_rate(proc->rate()*44.14);
+       proc->set_rate(proc->rate()*48.58);
      });
      cb.cp().process({"qqH_SM125"}).ForEachProc([&](ch::Process *proc){
        proc->set_rate(proc->rate()*3.782);
      });
      cb.cp().process({"WplusH_SM125"}).ForEachProc([&](ch::Process *proc){
-       proc->set_rate(proc->rate()*0.8399);
+       proc->set_rate(proc->rate()*0.8400);
      });
      cb.cp().process({"WminusH_SM125"}).ForEachProc([&](ch::Process *proc){
-       proc->set_rate(proc->rate()*0.5327);
+       proc->set_rate(proc->rate()*0.5328);
      });
      cb.cp().process({"ZH_SM125"}).ForEachProc([&](ch::Process *proc){
        proc->set_rate(proc->rate()*0.8839);
@@ -496,7 +503,7 @@ int main(int argc, char** argv) {
 
   cout << "Generating bbb uncertainties...";
   auto bbb = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_2015_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
     .SetFixNorm(true)
@@ -510,7 +517,7 @@ int main(int argc, char** argv) {
   }
   // And now do bbb for the control region with a slightly different config:
   auto bbb_ctl = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_2015_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.4)
     .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
