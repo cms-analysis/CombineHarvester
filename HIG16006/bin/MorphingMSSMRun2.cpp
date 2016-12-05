@@ -574,8 +574,8 @@ int main(int argc, char** argv) {
  //make one directory per chn-cat, one per chn and cmb. In this code we only
  //store the individual datacards for each directory to be combined later, but
  //note that it's also possible to write out the full combined card with CH
-  ch::CardWriter writer("output/" + output_folder + "/$TAG/$BIN.txt",
-                        "output/" + output_folder + "/$TAG/$BIN_input.root");
+  ch::CardWriter writer("output/" + output_folder + "/$TAG/$BIN_2015.txt",
+                        "output/" + output_folder + "/$TAG/$BIN_input_2015.root");
   // We're not using mass as an identifier - which we need to tell the CardWriter
   // otherwise it will see "*" as the mass value for every object and skip it
   writer.SetWildcardMasses({});
@@ -586,13 +586,13 @@ int main(int argc, char** argv) {
     // per-channel
     writer.WriteCards(chn, cb.cp().channel({chn}));
     // And per-channel-category
-    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn}).bin_id({8, 10, 11, 12}));
-    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn}).bin_id({9, 13, 14, 15}));
+    writer.WriteCards("htt_"+chn+"_8_13TeV_2015", cb.cp().channel({chn}).bin_id({8, 10, 11, 12}));
+    writer.WriteCards("htt_"+chn+"_9_13TeV_2015", cb.cp().channel({chn}).bin_id({9, 13, 14, 15}));
   }
   // For btag/nobtag areas want to include control regions. This will
   // work even if the extra categories aren't there.
-  writer.WriteCards("htt_cmb_8_13TeV", cb.cp().bin_id({8, 10, 11, 12}));
-  writer.WriteCards("htt_cmb_9_13TeV", cb.cp().bin_id({9, 13, 14, 15}));
+  writer.WriteCards("htt_cmb_8_13TeV_2015", cb.cp().bin_id({8, 10, 11, 12}));
+  writer.WriteCards("htt_cmb_9_13TeV_2015", cb.cp().bin_id({9, 13, 14, 15}));
 
   cb.PrintAll();
   cout << " done\n";
