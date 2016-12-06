@@ -574,8 +574,10 @@ int main(int argc, char** argv) {
  //make one directory per chn-cat, one per chn and cmb. In this code we only
  //store the individual datacards for each directory to be combined later, but
  //note that it's also possible to write out the full combined card with CH
-  ch::CardWriter writer("output/" + output_folder + "/$TAG/$BIN_2015.txt",
-                        "output/" + output_folder + "/$TAG/$BIN_input_2015.root");
+  string output_prefix = "output/";
+  if(output_folder.compare(0,1,"/") == 0) output_prefix="";
+  ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$BIN_2015.txt",
+                        output_prefix + output_folder + "/$TAG/$BIN_input_2015.root");
   // We're not using mass as an identifier - which we need to tell the CardWriter
   // otherwise it will see "*" as the mass value for every object and skip it
   writer.SetWildcardMasses({});
