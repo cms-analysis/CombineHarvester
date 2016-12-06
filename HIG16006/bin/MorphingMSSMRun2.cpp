@@ -560,13 +560,13 @@ int main(int argc, char** argv) {
       auto procs = cb.cp().bin({b}).process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).process_set();
       for (auto p : procs) {
         ch::BuildRooMorphing(ws, cb, b, p, *(mass_var[p]),
-                             "norm", true, false, false, &demo);
+                             "norm", true, false, false, &demo,"2015");
       }
     }
   }
   demo.Close();
   cb.AddWorkspace(ws);
-  cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
+  cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_2015_morph");
   cb.PrintAll();
 
 

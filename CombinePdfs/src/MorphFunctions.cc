@@ -20,7 +20,7 @@ namespace ch {
 void BuildRooMorphing(RooWorkspace& ws, CombineHarvester& cb,
                       std::string const& bin, std::string const& process,
                       RooAbsReal& mass_var, std::string norm_postfix,
-                      bool allow_morph, bool verbose, bool force_template_limit, TFile * file) {
+                      bool allow_morph, bool verbose, bool force_template_limit, TFile * file, std::string const& extra_key) {
   //! [part1]
   // To keep the code concise we'll make some using-declarations here
   using std::set;
@@ -41,9 +41,9 @@ void BuildRooMorphing(RooWorkspace& ws, CombineHarvester& cb,
   // should uniquely label an event category, and mass should be defined and
   // convertible from string to float for every process entry.
   if (verbose) {
-    std::cout << ">> Bin: " << bin << "  Process: " << process << "\n";
+    std::cout << ">> Bin: " << bin << "  Process: " << process << " Extra key: " << extra_key << "\n";
   }
-  TString key = bin + "_" + process;
+  TString key = bin + "_" + process + "_"+extra_key;
 
   // For the sake of efficiency, take a filtered shallow-copy of the input CH
   // instance that just contains the bin,process combination we've been asked to
