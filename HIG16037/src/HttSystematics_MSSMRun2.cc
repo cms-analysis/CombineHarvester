@@ -393,7 +393,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     cb.SetFlag("filters-use-regex", false);
 
     cb.FilterSysts([](ch::Systematic *syst) {
-      return syst->name() == "lumi_13TeV" &&
+      return (syst->name() == "lumi_13TeV" || syst->name() == "lumi_13TeV_2016") &&
         (
           (syst->channel() == "zmm" && syst->process() == "ZL") ||
           (syst->channel() != "zmm" && syst->process() == "ZTT" &&
