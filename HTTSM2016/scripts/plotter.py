@@ -33,7 +33,7 @@ parser.add_argument(
     type=int,
     action="store",
     dest="higgsSF",
-    default=100,
+    default=50,
     help="Provide the Scale Factor for the SM-Higgs signals.  100x is default")
 parser.add_argument(
     "--inputFile",
@@ -82,7 +82,7 @@ def add_lumi():
     lumi.SetFillStyle(    0 )
     lumi.SetTextAlign(   12 )
     lumi.SetTextColor(    1 )
-    lumi.SetTextSize(0.08)
+    lumi.SetTextSize(0.06)
     lumi.SetTextFont (   42 )
     lumi.AddText("2016, 12.9 fb^{-1} (13 TeV)")
     return lumi
@@ -92,7 +92,7 @@ def add_CMS():
     lowY=0.835
     lumi  = ROOT.TPaveText(lowX, lowY+0.06, lowX+0.15, lowY+0.16, "NDC")
     lumi.SetTextFont(61)
-    lumi.SetTextSize(0.1)
+    lumi.SetTextSize(0.08)
     lumi.SetBorderSize(   0 )
     lumi.SetFillStyle(    0 )
     lumi.SetTextAlign(   12 )
@@ -101,11 +101,11 @@ def add_CMS():
     return lumi
 
 def add_Preliminary():
-    lowX=0.18
+    lowX=0.20
     lowY=0.835
     lumi  = ROOT.TPaveText(lowX, lowY+0.06, lowX+0.15, lowY+0.16, "NDC")
     lumi.SetTextFont(52)
-    lumi.SetTextSize(0.08)
+    lumi.SetTextSize(0.06)
     lumi.SetBorderSize(   0 )
     lumi.SetFillStyle(    0 )
     lumi.SetTextAlign(   12 )
@@ -149,7 +149,7 @@ ROOT.gStyle.SetLineWidth(3)
 ROOT.gStyle.SetOptStat(0)
 ROOT.gROOT.SetBatch(True)
 
-c=ROOT.TCanvas("canvas","",0,0,1800,600)
+c=ROOT.TCanvas("canvas","",0,0,1800,1000)
 c.cd()
 
 
@@ -167,7 +167,7 @@ for cat in categories:
     
     # Get list of the keys to hists in our category directory
     if channel == "tt" :
-        histKeys = get_Keys_Of_Class( file, cat, "TH1D" )
+        histKeys = get_Keys_Of_Class( file, cat, "TH1F" )
     else :
         histKeys = get_Keys_Of_Class( file, cat, "TH1F" )
     
@@ -187,8 +187,8 @@ for cat in categories:
     # Check for a few fundamental histos
     assert (initHists["data_obs"] != None), "Where's your data hist?!"
     assert (initHists["ZTT"] != None), "Where's your ZTT hist?!"
-    for sig in signals :
-        assert (initHists[sig] != None), "Where's your %s?!" % sig
+    #for sig in signals :
+    #    assert (initHists[sig] != None), "Where's your %s?!" % sig
 
     
     nBins = initHists["data_obs"].GetXaxis().GetNbins()
@@ -200,7 +200,7 @@ for cat in categories:
     # Make the final hists, some initial shapes need to be merged
     hists = {}
     for name, val in infoMap.iteritems() :
-        hists[ name ] = ROOT.TH1D( name+cat, val[1], nBins, 0, nBins*binWidth )
+        hists[ name ] = ROOT.TH1F( name+cat, val[1], nBins, 0, nBins*binWidth )
         hists[ name ].Sumw2()
         for toAdd in val[0] :
             if not toAdd in initHists :
@@ -222,10 +222,11 @@ for cat in categories:
     hists["data_obs"].GetYaxis().SetLabelSize(0.06)
     hists["data_obs"].GetYaxis().SetTitleSize(0.075)
     hists["data_obs"].GetYaxis().SetTitleOffset(0.56)
+    hists["data_obs"].GetYaxis().SetTickLength(0.012)
     hists["data_obs"].SetTitle("")
     hists["data_obs"].GetYaxis().SetTitle("Events/bin")
     hists["data_obs"].SetMarkerStyle(20)
-    hists["data_obs"].SetMarkerSize(1)
+    hists["data_obs"].SetMarkerSize(2)
     hists["data_obs"].SetLineWidth(2)
     for sig in signals :
         hists[ sig ].SetLineColor(ROOT.TColor.GetColor( infoMap[ sig ][3] ))
@@ -282,16 +283,16 @@ for cat in categories:
         if (b<0):
             b=0.000001
         #if (10*s/((b+0.09*b*0.09*b)**0.5) > 0.5):
-    if (2*s/(s+b)**0.5 > 0.2):
-        hists["data_obs"].SetBinContent(k,100000000)
-        hists["data_obs"].SetBinError(k,100000000)
-    hists["data_obs"].Draw("e")
+        if (2*s/(0.0000001+s+b)**0.5 > 0.2):
+           hists["data_obs"].SetBinContent(k,100000000)
+           hists["data_obs"].SetBinError(k,0)
+    hists["data_obs"].Draw("ep")
     stack.Draw("histsame")
     errorBand.Draw("e2same")
     for sig in signals :
         hists[ sig ].Scale(higgsSF)
         hists[ sig ].Draw("histsame")
-    hists["data_obs"].Draw("esame")
+    hists["data_obs"].Draw("epsame")
     
     
     # Add the nice pretty gray lines to deliniate
@@ -301,7 +302,7 @@ for cat in categories:
     nx = binMap[channel][cat]["nx"]
     ny = binMap[channel][cat]["ny"]
     for z in range(1, nx+1):
-        if channel == "tt" and cat == "tt_0jet" : continue # tt_0jet not unrolled!
+        if channel == "tt" and (cat == "tt_0jet" or "_tt_1" in cat): continue # tt_0jet not unrolled!
         line.append(ROOT.TLine(z*ny,0,z*ny,hists["data_obs"].GetMaximum()))
         line[z-1].SetLineStyle(3)
         line[z-1].Draw("same")
@@ -313,7 +314,7 @@ for cat in categories:
         label[z-1].SetBorderSize(   0 )
         label[z-1].SetFillStyle(    0 )
         label[z-1].SetTextAlign(   12 )
-        label[z-1].SetTextSize ( 0.06 )
+        label[z-1].SetTextSize ( 0.04 )
         label[z-1].SetTextColor(    1 )
         label[z-1].SetTextFont (   42 )
         label[z-1].Draw("same")
@@ -338,14 +339,14 @@ for cat in categories:
     categ.SetBorderSize(   0 )
     categ.SetFillStyle(    0 )
     categ.SetTextAlign(   12 )
-    categ.SetTextSize ( 0.08 )
+    categ.SetTextSize ( 0.06 )
     categ.SetTextColor(    1 )
     categ.SetTextFont (   42 )
-    if "0jet" in cat: 
-        categ.AddText(catMap[channel]+", no jet")
-    elif "boosted" in cat:
-        categ.AddText(catMap[channel]+", boosted")
-    elif "VBF" in cat:
+    if "0jet" in cat or "_1_" in cat: 
+        categ.AddText(catMap[channel]+", 0 jet")
+    elif "boosted" in cat or "_2_" in cat:
+        categ.AddText(catMap[channel]+", Boosted")
+    elif "VBF" in cat or "vbf" in cat or "_3_" in cat:
         categ.AddText(catMap[channel]+", VBF")
     categ.Draw("same")
     
@@ -376,8 +377,11 @@ for cat in categories:
     h1.Divide(hwoE)
     h3.Divide(hwoE)
     h1.GetXaxis().SetTitle("2D bin number")
+    if channel == "tt" and (cat == "tt_0jet" or "tt_1" in cat):
+       h1.GetXaxis().SetTitle("m_{#tau#tau} (GeV)")
     h1.GetXaxis().SetLabelSize(0.08)
     h1.GetYaxis().SetLabelSize(0.08)
+    h1.GetYaxis().SetTickLength(0.012)
     h1.GetYaxis().SetTitle("Obs./Exp.")
     #h1.GetXaxis().SetNdivisions(505)
     h1.GetYaxis().SetNdivisions(5)
@@ -391,7 +395,7 @@ for cat in categories:
     h1.GetXaxis().SetTitleFont(42)
     h1.GetYaxis().SetTitleFont(42)
     
-    h1.Draw("ep")
+    h1.Draw("e0psame")
     h3.Draw("e2same")
     
     line2=[]
@@ -416,3 +420,4 @@ for cat in categories:
        c.SaveAs("plots/unroll_"+cat+".png")
     
     
+

@@ -1,6 +1,6 @@
 ### Nov 13, 2016
 ### File to store all of the configurations for the
-### SM HTT prefit/postfit plotter
+### SM HTT prefit/prefit plotter
 ###
 ###
 # FIXME FIXME FIXME
@@ -14,13 +14,17 @@ from collections import OrderedDict
 
 # Provide the category names (folder names)
 # where we should look for histograms
-def getCategories( channel="tt", prefix="" ) :
-    preCategories=["_0jet","_boosted","_VBF"] 
-    if channel == "em" : # FIXME vbf --> VBF when ready
-        preCategories=["_0jet","_boosted","_vbf"] 
-    categories=[prefix+channel+cat for cat in preCategories]
-    return categories
+#def getCategories( channel="tt", prefix="" ) :
+#    preCategories=["_0jet","_boosted","_VBF"] 
+#    if channel == "em" or channel == "et" or channel == "mt": # FIXME vbf --> VBF when ready
+#        preCategories=["_0jet","_boosted","_vbf"] 
+#    categories=[prefix+channel+cat for cat in preCategories]
+#    return categories
 
+def getCategories( channel="tt", prefix="" ) :
+    preCategories=["_1_","_2_","_3_"]
+    categories=["htt_"+channel+cat+"13TeV_prefit" for cat in preCategories]
+    return categories
 
 # Provide standard mapping to our files
 # this can be overridden with --inputFile
@@ -36,10 +40,10 @@ def getFile( channel ) :
     return fileMap[ channel ]
 
 def getInfoMap( higgsSF, channel ) :
-    if channel == "mt" : sub = ("#tau", "#mu") 
-    if channel == "et" : sub = ("#tau", "e")
+    if channel == "mt" : sub = ("h", "#mu") 
+    if channel == "et" : sub = ("h", "e")
     if channel == "em" : sub = ("e", "#mu")
-    if channel == "tt" : sub = ("#tau", "#tau")
+    if channel == "tt" : sub = ("h", "h")
     
     infoMap = OrderedDict()
     # Name : Add these shapes [...], legend name, leg type, fill color
@@ -52,19 +56,19 @@ def getInfoMap( higgsSF, channel ) :
     else :
         infoMap["TT"] = [["TTT","TTJ",],"t#bar{t}+jets","f","#9999cc"]
     infoMap["VV"] = [["VV",],"Diboson","f","#12cadd"]
-    infoMap["W"] = [["W",],"Electroweak","f","#de5a6a"]
+    infoMap["W"] = [["W",],"W+jets","f","#de5a6a"]
     infoMap["QCD"] = [["QCD",],"QCD multijet","f","#ffccff"]
-    infoMap["qqH125"] = [["qqH125",],"qqH 125 (X%i)"%higgsSF,"l","#4faf4e"]
-    infoMap["ggH125"] = [["ggH125",],"ggh 125 (X%i)"%higgsSF,"l","#5911ff"]
+    #infoMap["H125"] = [["ggH125","WH125","ZH125","qqH125",],"H#rightarrow#tau#tau 125 (X%i)"%higgsSF,"l","#000000"]
+    infoMap["H125"] = [["ggH","WH","ZH","qqH",],"H#rightarrow#tau#tau 125 (X%i)"%higgsSF,"l","#000000"]
     return infoMap
 
 
 def getBackgrounds() :    
-    bkgs=["QCD", "VV", "TT", "W", "ZJ", "ZTT"]
+    bkgs=["QCD", "W", "VV", "TT", "ZJ", "ZTT"]
     return bkgs
 
 def getSignals() :
-    signals=["qqH125", "ggH125"]
+    signals=["H125"]
     return signals
 
 # Labeling map, this provides, for each channel
@@ -75,80 +79,80 @@ def getSignals() :
 # and labeling for the divider lines
 def getBinMap() :
     binMap = {
-    # FIXME    "et" : {
-    # FIXME        "et_0jet" : {
-    # FIXME            "nx" : 5,
-    # FIXME            "ny" : 30, #FIXME
-    # FIXME            "binning" : [15,25,35,45,55],
-    # FIXME            "name" : "p_{T}(#mu)",
-    # FIXME        },
-    # FIXME        "et_boosted" : {
-    # FIXME            "nx" : 7,
-    # FIXME            "ny" : 12, #FIXME
-    # FIXME            "binning" : [0,100,150,200,250,300,350],
-    # FIXME            "name" : "p_{T}(H)",
-    # FIXME        },
-    # FIXME        "et_VBF" : {
-    # FIXME            "nx" : 4,
-    # FIXME            "ny" : 1, #FIXME
-    # FIXME            "binning" : [300,700,1100,1500],
-    # FIXME            "name" : "m_{jj}",
-    # FIXME        },
-    # FIXME    }, # end 'et'
-    # FIXME    "mt" : {
-    # FIXME        "mt_0jet" : {
-    # FIXME            "nx" : 5,
-    # FIXME            "ny" : 30, #FIXME
-    # FIXME            "binning" : [15,25,35,45,55],
-    # FIXME            "name" : "p_{T}(#mu)",
-    # FIXME        },
-    # FIXME        "mt_boosted" : {
-    # FIXME            "nx" : 7,
-    # FIXME            "ny" : 12, #FIXME
-    # FIXME            "binning" : [0,100,150,200,250,300,350],
-    # FIXME            "name" : "p_{T}(H)",
-    # FIXME        },
-    # FIXME        "mt_VBF" : {
-    # FIXME            "nx" : 4,
-    # FIXME            "ny" : 1, #FIXME
-    # FIXME            "binning" : [300,700,1100,1500],
-    # FIXME            "name" : "m_{jj}",
-    # FIXME        },
-    # FIXME    }, # end 'mt'
         "em" : {
-            "em_0jet" : {
-                "nx" : 5,
+            "htt_em_1_13TeV_prefit" : {
+                "nx" : 6,
                 "ny" : 12,
-                "binning" : [15,20,25,30,35],
+                "binning" : [15,20,25,30,35,40],
                 "name" : "p_{T}(#mu)",
             },
-            "em_boosted" : {
+            "htt_em_2_13TeV_prefit" : {
                 "nx" : 6,
                 "ny" : 10,
                 "binning" : [0,100,150,200,250,300],
-                "name" : "p_{T}(H)",
+                "name" : "p_{T}^{#tau#tau}",
             },
-            "em_vbf" : { # FIXME vbf --> VBF when ready
+            "htt_em_3_13TeV_prefit" : { # FIXME vbf --> VBF when ready
                 "nx" : 4,
                 "ny" : 5,
                 "binning" : [300,700,1100,1500],
                 "name" : "m_{jj}",
             },
         }, # end 'em'
+        "mt" : {
+            "htt_mt_1_13TeV_prefit" : {
+                "nx" : 6,
+                "ny" : 12,
+                "binning" : [30,35,40,45,50,55],
+                "name" : "p_{T}(#tau_{h})",
+            },
+            "htt_mt_2_13TeV_prefit" : {
+                "nx" : 6,
+                "ny" : 10,
+                "binning" : [0,100,150,200,250,300],
+                "name" : "p_{T}^{#tau#tau}",
+            },
+            "htt_mt_3_13TeV_prefit" : { 
+                "nx" : 4,
+                "ny" : 5,
+                "binning" : [300,700,1100,1500],
+                "name" : "m_{jj}",
+            },
+        }, # end 'mt'
+        "et" : {
+            "htt_et_1_13TeV_prefit" : {
+                "nx" : 6,
+                "ny" : 12,
+                "binning" : [30,35,40,45,50,55],
+                "name" : "p_{T}(#tau_{h})",
+            },
+            "htt_et_2_13TeV_prefit" : {
+                "nx" : 6,
+                "ny" : 10,
+                "binning" : [0,100,150,200,250,300],
+                "name" : "p_{T}^{#tau#tau}",
+            },
+            "htt_et_3_13TeV_prefit" : { 
+                "nx" : 4,
+                "ny" : 5,
+                "binning" : [300,700,1100,1500],
+                "name" : "m_{jj}",
+            },
+        }, # end 'et'
         "tt" : {
-            "tt_0jet" : {
+            "htt_tt_1_13TeV_prefit" : {
                 "nx" : 1,
                 "ny" : 30,
                 "binning" : [0,],
                 "name" : "N/A",
             },
-            "tt_boosted" : {
+            "htt_tt_2_13TeV_prefit" : {
                 "nx" : 4,
                 "ny" : 12,
                 "binning" : [0,100,170,300],
-                "name" : "p_{T}(H)",
+                "name" : "p_{T}^{#tau#tau}",
             },
-            "tt_VBF" : {
+            "htt_tt_3_13TeV_prefit" : {
                 "nx" : 4,
                 "ny" : 12,
                 "binning" : [0,300,500,800],
@@ -157,8 +161,4 @@ def getBinMap() :
         }, # end 'tt'
     }
     return binMap
-
-
-
-
 
