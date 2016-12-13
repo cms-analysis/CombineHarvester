@@ -37,9 +37,7 @@ namespace ch {
         //  lumi
         //##############################################################################
         
-        //cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT", "HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
-        //                                                                              "lumi_13TeV", "lnN", SystMap<>::init(1.062));
-        cb.cp().process(JoinStr({sig_procs, {"TT","VV","TTT","TTJ","HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"VV","HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
                                                                                       "lumi_13TeV", "lnN", SystMap<>::init(1.062));
         
         //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
