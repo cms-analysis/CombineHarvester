@@ -291,7 +291,7 @@ void CombineHarvester::LoadShapes(Observation* entry,
   }
   HistMapping mapping =
       ResolveMapping(entry->process(), entry->bin(), mappings);
-  boost::replace_all(mapping.pattern, "$CHANNEL", entry->bin());
+  boost::replace_all(mapping.pattern, "$CHANNEL", entry->channel());
   boost::replace_all(mapping.pattern, "$BIN", entry->bin());
   boost::replace_all(mapping.pattern, "$PROCESS", entry->process());
   boost::replace_all(mapping.pattern, "$MASS", entry->mass());
@@ -375,7 +375,7 @@ void CombineHarvester::LoadShapes(Process* entry,
   }
   HistMapping mapping =
       ResolveMapping(entry->process(), entry->bin(), mappings);
-  boost::replace_all(mapping.pattern, "$CHANNEL", entry->bin());
+  boost::replace_all(mapping.pattern, "$CHANNEL", entry->channel());
   boost::replace_all(mapping.pattern, "$BIN", entry->bin());
   boost::replace_all(mapping.pattern, "$PROCESS", entry->process());
   boost::replace_all(mapping.pattern, "$MASS", entry->mass());
@@ -436,7 +436,7 @@ void CombineHarvester::LoadShapes(Process* entry,
       // For when we're not parsing a datacard, syst_pattern is being using to
       // note a different mapping for the normalisation term
       norm_mapping.pattern = norm_mapping.syst_pattern;
-      boost::replace_all(norm_mapping.pattern, "$CHANNEL", entry->bin());
+      boost::replace_all(norm_mapping.pattern, "$CHANNEL", entry->channel());
       boost::replace_all(norm_mapping.pattern, "$BIN", entry->bin());
       boost::replace_all(norm_mapping.pattern, "$PROCESS", entry->process());
       boost::replace_all(norm_mapping.pattern, "$MASS", entry->mass());
@@ -510,13 +510,13 @@ void CombineHarvester::LoadShapes(Systematic* entry,
   // ResolveMapping will throw if this fails
   HistMapping mapping =
       ResolveMapping(entry->process(), entry->bin(), mappings);
-  boost::replace_all(mapping.pattern, "$CHANNEL", entry->bin());
+  boost::replace_all(mapping.pattern, "$CHANNEL", entry->channel());
   boost::replace_all(mapping.pattern, "$BIN", entry->bin());
   boost::replace_all(mapping.pattern, "$PROCESS", entry->process());
   boost::replace_all(mapping.pattern, "$MASS", entry->mass());
   std::string p_s =
       mapping.IsPdf() ? mapping.SystWorkspaceObj() : mapping.syst_pattern;
-  boost::replace_all(p_s, "$CHANNEL", entry->bin());
+  boost::replace_all(p_s, "$CHANNEL", entry->channel());
   boost::replace_all(p_s, "$BIN", entry->bin());
   boost::replace_all(p_s, "$PROCESS", entry->process());
   boost::replace_all(p_s, "$MASS", entry->mass());
