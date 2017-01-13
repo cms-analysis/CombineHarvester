@@ -345,20 +345,20 @@ void makePlot(double canvasSizeX, double canvasSizeY,
   delete canvas;
 }
 
-void makePostFitPlots_1l_2tau()
+void makePostFitPlots_3l_1tau()
 {
   gROOT->SetBatch(true);
 
   TH1::AddDirectory(false);
 
   std::vector<std::string> categories;
-  categories.push_back("ttH_1l_2tau_prefit");
-  categories.push_back("ttH_1l_2tau_postfit");
+  categories.push_back("ttH_3l_1tau_prefit");
+  categories.push_back("ttH_3l_1tau_postfit");
 
   std::string inputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/cut_optimization/";
   std::map<std::string, std::string> inputFileNames; // key = category
-  inputFileNames["ttH_1l_2tau_prefit"]  = "ttH_1l_2tau_shapes.root";
-  inputFileNames["ttH_1l_2tau_postfit"] = "ttH_1l_2tau_shapes.root";
+  inputFileNames["ttH_3l_1tau_prefit"]  = "ttH_3l_1tau_shapes.root";
+  inputFileNames["ttH_3l_1tau_postfit"] = "ttH_3l_1tau_shapes.root";
   
   for ( std::vector<std::string>::const_iterator category = categories.begin();
 	category != categories.end(); ++category ) {
@@ -395,7 +395,7 @@ void makePostFitPlots_1l_2tau()
     TH1* histogramBgrUncertainty = (TH1*)histogramBgrSum->Clone("TotalBkgErr");
 
     std::string outputFilePath = "/home/veelken/CombineHarvester/CMSSW_7_4_7/src/CombineHarvester/ttH_htt/macros";
-    std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());
+    std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());    
     makePlot(800, 900,
 	     histogramTTH,
 	     histogramData, 
@@ -405,7 +405,7 @@ void makePostFitPlots_1l_2tau()
 	     histogramRares,
 	     histogramBgrSum,
 	     histogramBgrUncertainty,	
-	     "m_{#tau#tau}^{vis} [GeV]", 0.9,
+	     "N_{jets}", 0.9,
 	     true, 3.e-4, 3.e0, "Events", 0.9,
 	     outputFileName);
 
