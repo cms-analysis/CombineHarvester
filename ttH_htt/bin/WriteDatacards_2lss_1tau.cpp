@@ -117,8 +117,8 @@ int main(int argc, char** argv) {
 
   //cb.cp().process({"WZ"})
   //    .AddSyst(cb, "CMS_ttHl_WZ_4j", "lnN", SystMap<>::init(2.0));
-  cb.cp().process({"TT"})
-      .AddSyst(cb, "CMS_ttHl_TT", "lnN", SystMap<>::init(2.0));
+  //cb.cp().process({"TT"})
+  //    .AddSyst(cb, "CMS_ttHl_TT", "lnN", SystMap<>::init(2.0));
   cb.cp().process({"EWK"})
       .AddSyst(cb, "CMS_ttHl_EWK_4j", "lnN", SystMap<>::init(2.0));
   
@@ -176,12 +176,10 @@ int main(int argc, char** argv) {
 
   //! [part7]
   cb.cp().backgrounds().ExtractShapes(
-      //aux_shapes + "CERN/ttH_2lss_1tau.input.root",
       aux_shapes + input_file,
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   cb.cp().signals().ExtractShapes(
-      //aux_shapes + "CERN/ttH_2lss_1tau.input.root",
       aux_shapes + input_file,
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
