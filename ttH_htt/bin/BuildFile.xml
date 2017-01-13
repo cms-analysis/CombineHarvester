@@ -1,11 +1,5 @@
-<bin file="WriteDatacards_0l_2tau.cpp" name="WriteDatacards_0l_2tau"></bin>
-<bin file="WriteDatacards_1l_1tau.cpp" name="WriteDatacards_1l_1tau"></bin>
-<bin file="WriteDatacards_0l_3tau.cpp" name="WriteDatacards_0l_3tau"></bin>
 <bin file="WriteDatacards_1l_2tau.cpp" name="WriteDatacards_1l_2tau"></bin>
-<bin file="WriteDatacards_1l_2tau_ttbarBkg_only.cpp" name="WriteDatacards_1l_2tau_ttbarBkg_only"></bin>
 <bin file="WriteDatacards_2lss_1tau.cpp" name="WriteDatacards_2lss_1tau"></bin>
-<bin file="WriteDatacards_2los_1tau.cpp" name="WriteDatacards_2los_1tau"></bin>
-<bin file="WriteDatacards_2l_2tau.cpp" name="WriteDatacards_2l_2tau"></bin>
 <bin file="WriteDatacards_3l_1tau.cpp" name="WriteDatacards_3l_1tau"></bin>
 <use name="root"/>
 <use name="rootmath"/>
