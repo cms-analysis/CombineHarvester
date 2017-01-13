@@ -1,5 +1,6 @@
-<bin file="WriteDatacards_2lss_1tau.cpp" name="WriteDatacards_2lss_1tau"></bin>
 <bin file="WriteDatacards_1l_2tau.cpp" name="WriteDatacards_1l_2tau"></bin>
+<bin file="WriteDatacards_2lss_1tau.cpp" name="WriteDatacards_2lss_1tau"></bin>
+<bin file="WriteDatacards_3l_1tau.cpp" name="WriteDatacards_3l_1tau"></bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>

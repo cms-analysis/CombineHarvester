@@ -19,19 +19,19 @@ using boost::starts_with;
 namespace po = boost::program_options;
 
 int main(int argc, char** argv) {
-  
+
   std::string input_file, output_file;
   double lumi = -1.;
   bool add_shape_sys = true;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
-    ("input_file,i", po::value<string>(&input_file)->default_value("Tallinn/ttH_1l_2tau_2016Jul08_vTight.input.root"))
-    ("output_file,o", po::value<string>(&output_file)->default_value("ttH_1l_2tau.root"))
+    ("input_file,i", po::value<string>(&input_file)->default_value("Tallinn/ttH_3l_1tau_2016Jul16_Tight.input.root"))
+    ("output_file,o", po::value<string>(&output_file)->default_value("ttH_3l_1tau.root"))
     ("lumi,l", po::value<double>(&lumi)->default_value(lumi))
     ("add_shape_sys,s", po::value<bool>(&add_shape_sys)->default_value(true));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
-  po::notify(vm);
+  po::notify(vm);  
 
   //! [part1]
   // First define the location of the "auxiliaries" directory where we can
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   // Here we will just define two categories for an 8TeV analysis. Each entry in
   // the vector below specifies a bin name and corresponding bin_id.
   ch::Categories cats = {
-      {1, "ttH_1l_2tau"}
+      {1, "ttH_3l_1tau"}
     };
   // ch::Categories is just a typedef of vector<pair<int, string>>
   //! [part1]
@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "CMS_ttHl_Rares", "lnN", SystMap<>::init(1.5));
 
   cb.cp().process({proc_fakes})
-      .AddSyst(cb, "CMS_ttHl_fakes", "lnN", SystMap<>::init(1.6));
+      .AddSyst(cb, "CMS_ttHl_fakes", "lnN", SystMap<>::init(1.3));
 
   cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.01));
@@ -142,11 +142,11 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.06));
   cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
-      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.12));
+      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.06));
   if ( add_shape_sys ) {
     cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
         .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
-  
+
     cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
         .AddSyst(cb, "CMS_ttHl_tauES", "shape", SystMap<>::init(1.0));
   }
@@ -158,17 +158,17 @@ int main(int argc, char** argv) {
     for ( auto s : {"HF", "HFStats1", "HFStats2", "LF", "LFStats1", "LFStats2", "cErr1", "cErr2"} ) {
       cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
           .AddSyst(cb, Form("CMS_ttHl_btag_%s", s), "shape", SystMap<>::init(1.0));
-    }
+    }  
   }
   //! [part6]
 
   //! [part7]
   cb.cp().backgrounds().ExtractShapes(
-      aux_shapes + input_file,
+      aux_shapes + input_file.data(),
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   cb.cp().signals().ExtractShapes(
-      aux_shapes + input_file,
+      aux_shapes + input_file.data(),
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   //! [part7]
