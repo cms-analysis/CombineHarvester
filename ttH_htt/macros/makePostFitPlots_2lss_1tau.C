@@ -365,7 +365,7 @@ void makePostFitPlots_2lss_1tau()
   categories.push_back("ttH_2lss_1tau_prefit");
   categories.push_back("ttH_2lss_1tau_postfit");
 
-  std::string inputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/cut_optimization/";
+  std::string inputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/";
   std::map<std::string, std::string> inputFileNames; // key = category
   inputFileNames["ttH_2lss_1tau_prefit"]  = "ttH_2lss_1tau_shapes.root";
   inputFileNames["ttH_2lss_1tau_postfit"] = "ttH_2lss_1tau_shapes.root";
@@ -395,7 +395,8 @@ void makePostFitPlots_2lss_1tau()
     TH1* histogramTTV = (TH1*)histogramTTW->Clone(histogramNameTTV.Data());
     histogramTTV->Add(histogramTTZ);
 
-    TH1* histogramWZ = loadHistogram(inputFile, *category, "WZ");
+    //TH1* histogramWZ = loadHistogram(inputFile, *category, "WZ");
+    TH1* histogramWZ = loadHistogram(inputFile, *category, "EWK");
 
     TH1* histogramRares = loadHistogram(inputFile, *category, "Rares");
 
@@ -406,7 +407,7 @@ void makePostFitPlots_2lss_1tau()
     TH1* histogramBgrSum = loadHistogram(inputFile, *category, "TotalBkg");
     TH1* histogramBgrUncertainty = (TH1*)histogramBgrSum->Clone("TotalBkgErr");
 
-    std::string outputFilePath = "/home/veelken/CombineHarvester/CMSSW_7_4_7/src/CombineHarvester/ttH_htt/macros";
+    std::string outputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/macros";
     std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());
     makePlot(800, 900,
 	     histogramTTH,

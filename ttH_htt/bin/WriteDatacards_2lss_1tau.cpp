@@ -33,6 +33,8 @@ int main(int argc, char** argv) {
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
+  cout<<input_file<<endl;
+
   //! [part1]
   // First define the location of the "auxiliaries" directory where we can
   // source the input files containing the datacard shapes
@@ -65,8 +67,8 @@ int main(int argc, char** argv) {
   //! [part3]
 
   //! [part4]
-  //vector<string> bkg_procs = {"TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data"};
-  vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
+  vector<string> bkg_procs = {"TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
+  //vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
   cb.AddProcesses({"*"}, {"*"}, {"13TeV"}, {"*"}, bkg_procs, cats, false);
 
   vector<string> sig_procs = {"ttH_hww", "ttH_hzz", "ttH_htt"};
@@ -92,28 +94,28 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "pdf_Higgs", "lnN", SystMap<>::init(1.036));
   cb.cp().process(sig_procs)
     .AddSyst(cb, "QCDscale_ttH", "lnN", SystMapAsymm<>::init(0.915, 1.058));
-  //cb.cp().process(sig_procs)
-  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_x1", "shape", SystMap<>::init(1.0));
-  //cb.cp().process(sig_procs)
-  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_y1", "shape", SystMap<>::init(1.0));
+  cb.cp().process(sig_procs)
+      .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_x1", "shape", SystMap<>::init(1.0));
+  cb.cp().process(sig_procs)
+      .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_y1", "shape", SystMap<>::init(1.0));
 
   cb.cp().process({"TTW"})
       .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.04));
   cb.cp().process({"TTW"})
       .AddSyst(cb, "QCDscale_ttW", "lnN", SystMap<>::init(1.12));
-  //cb.cp().process({"TTW"})
-  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_x1", "shape", SystMap<>::init(1.0));
-  //cb.cp().process({"TTW"})
-  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_y1", "shape", SystMap<>::init(1.0));
+  cb.cp().process({"TTW"})
+      .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_x1", "shape", SystMap<>::init(1.0));
+  cb.cp().process({"TTW"})
+      .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_y1", "shape", SystMap<>::init(1.0));
 
   cb.cp().process({"TTZ"})
       .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(0.966));
   cb.cp().process({"TTZ"})
       .AddSyst(cb, "QCDscale_ttZ", "lnN", SystMap<>::init(1.11));
-  //cb.cp().process({"TTZ"})
-  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_x1", "shape", SystMap<>::init(1.0));
-  //cb.cp().process({"TTZ"})
-  //    .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
+  cb.cp().process({"TTZ"})
+      .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_x1", "shape", SystMap<>::init(1.0));
+  cb.cp().process({"TTZ"})
+      .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
 
   //cb.cp().process({"WZ"})
   //    .AddSyst(cb, "CMS_ttHl_WZ_4j", "lnN", SystMap<>::init(2.0));
@@ -159,7 +161,8 @@ int main(int argc, char** argv) {
     cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
         .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
 
-    cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ"}}))
+    //cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ"}}))
         .AddSyst(cb, "CMS_ttHl_tauES", "shape", SystMap<>::init(1.0));
   }
 
