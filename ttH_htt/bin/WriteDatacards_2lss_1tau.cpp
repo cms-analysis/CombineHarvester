@@ -33,8 +33,6 @@ int main(int argc, char** argv) {
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
-  cout<<input_file<<endl;
-
   //! [part1]
   // First define the location of the "auxiliaries" directory where we can
   // source the input files containing the datacard shapes
