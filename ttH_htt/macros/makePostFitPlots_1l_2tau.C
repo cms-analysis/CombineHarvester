@@ -98,7 +98,7 @@ void addLabel_CMS_luminosity(double x0_cms, double y0, double x0_luminosity)
 void makePlot(double canvasSizeX, double canvasSizeY,
 	      TH1* histogramTTH, 
 	      TH1* histogramData, 
-	      TH1* histogramTT,
+	      TH1* histogramFakes,
 	      TH1* histogramTTV,
 	      TH1* histogramEWK,
 	      TH1* histogramRares,
@@ -117,10 +117,10 @@ void makePlot(double canvasSizeX, double canvasSizeY,
   if ( histogramData ) {
     histogramData_density = divideHistogramByBinWidth(histogramData);      
   }
-  TH1* histogramTT_density = 0;
-  if ( histogramTT ) {
-    if ( histogramData ) checkCompatibleBinning(histogramTT, histogramData);
-    histogramTT_density = divideHistogramByBinWidth(histogramTT);
+  TH1* histogramFakes_density = 0;
+  if ( histogramFakes ) {
+    if ( histogramData ) checkCompatibleBinning(histogramFakes, histogramData);
+    histogramFakes_density = divideHistogramByBinWidth(histogramFakes);
   } 
   TH1* histogramTTV_density = 0;
   if ( histogramTTV ) {
@@ -210,12 +210,12 @@ void makePlot(double canvasSizeX, double canvasSizeY,
   
   legend->AddEntry(histogramTTH_density, "t#bar{t}H", "l");
 
-  histogramTT_density->SetTitle("");
-  histogramTT_density->SetStats(false);
-  histogramTT_density->SetMaximum(yMax);
-  histogramTT_density->SetMinimum(yMin);
-  histogramTT_density->SetFillColor(kMagenta - 10); 
-  legend->AddEntry(histogramTT_density, "t#bar{t}+jets", "f");
+  histogramFakes_density->SetTitle("");
+  histogramFakes_density->SetStats(false);
+  histogramFakes_density->SetMaximum(yMax);
+  histogramFakes_density->SetMinimum(yMin);
+  histogramFakes_density->SetFillColor(kMagenta - 10); 
+  legend->AddEntry(histogramFakes_density, "Fakes", "f");
 
   histogramTTV_density->SetFillColor(kOrange - 4);
   legend->AddEntry(histogramTTV_density, "t#bar{t}+V", "f");
@@ -230,7 +230,7 @@ void makePlot(double canvasSizeX, double canvasSizeY,
   histogramStack_density->Add(histogramRares_density);
   histogramStack_density->Add(histogramEWK_density);
   histogramStack_density->Add(histogramTTV_density);
-  histogramStack_density->Add(histogramTT_density);
+  histogramStack_density->Add(histogramFakes_density);
   histogramStack_density->Draw("histsame");
   
   histogramBgrUncertainty_density->SetFillColor(kBlack);
@@ -329,7 +329,7 @@ void makePlot(double canvasSizeX, double canvasSizeY,
   
   delete histogramTTH_density;
   delete histogramData_density;
-  delete histogramTT_density;
+  delete histogramFakes_density;
   delete histogramTTV_density;
   delete histogramEWK_density;
   delete histogramRares_density;
@@ -355,7 +355,7 @@ void makePostFitPlots_1l_2tau()
   categories.push_back("ttH_1l_2tau_prefit");
   categories.push_back("ttH_1l_2tau_postfit");
 
-  std::string inputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/cut_optimization/";
+  std::string inputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/";
   std::map<std::string, std::string> inputFileNames; // key = category
   inputFileNames["ttH_1l_2tau_prefit"]  = "ttH_1l_2tau_shapes.root";
   inputFileNames["ttH_1l_2tau_postfit"] = "ttH_1l_2tau_shapes.root";
@@ -379,7 +379,7 @@ void makePostFitPlots_1l_2tau()
 
     TH1* histogramData = loadHistogram(inputFile, *category, "data_obs");
 
-    TH1* histogramTT = loadHistogram(inputFile, *category, "TT");
+    TH1* histogramFakes = loadHistogram(inputFile, *category, "fakes_data");
 
     TH1* histogramTTW = loadHistogram(inputFile, *category, "TTW");
     TH1* histogramTTZ = loadHistogram(inputFile, *category, "TTZ");
@@ -394,12 +394,12 @@ void makePostFitPlots_1l_2tau()
     TH1* histogramBgrSum = loadHistogram(inputFile, *category, "TotalBkg");
     TH1* histogramBgrUncertainty = (TH1*)histogramBgrSum->Clone("TotalBkgErr");
 
-    std::string outputFilePath = "/home/veelken/CombineHarvester/CMSSW_7_4_7/src/CombineHarvester/ttH_htt/macros";
+    std::string outputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/macros";
     std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());
     makePlot(800, 900,
 	     histogramTTH,
 	     histogramData, 
-	     histogramTT,
+	     histogramFakes,
 	     histogramTTV,
 	     histogramEWK,
 	     histogramRares,

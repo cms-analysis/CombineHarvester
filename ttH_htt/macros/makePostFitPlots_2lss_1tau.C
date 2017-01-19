@@ -420,7 +420,7 @@ void makePostFitPlots_2lss_1tau()
 	     histogramBgrSum,
 	     histogramBgrUncertainty,	
 	     "Discriminant", 0.9,
-	     true, 1.e-2, 1.e+1, "Events", 0.9,
+	     false, 1.e-2, 1.e+2, "Events", 0.9,
 	     outputFileName);
 
     delete histogramTTH;
