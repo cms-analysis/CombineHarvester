@@ -695,7 +695,7 @@ void makePostFitPlots_2lss_1tau()
     std::cout << "histogramSum_mc = " << histogramSum_mc << std::endl;
     TH1* histogramErr_mc = (TH1*)histogramSum_mc->Clone("TotalBkgErr");
 
-    std::string outputFilePath = "/home/veelken/CombineHarvester/CMSSW_7_4_7/src/CombineHarvester/ttH_htt/macros";
+    std::string outputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/macros";
     std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());
     makePlot(histogram_data, doKeepBlinded,
 	     histogram_ttH, 
@@ -716,7 +716,6 @@ void makePostFitPlots_2lss_1tau()
 
     delete histogram_ttH;
     delete histogramErr_mc;
-
     delete inputFile;
   }
 }

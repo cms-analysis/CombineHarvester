@@ -216,6 +216,7 @@ void addLabel_CMS_preliminary(double x0, double y0, double x0_luminosity)
   label_luminosity->Draw();
 }
 
+
 void setStyle_uncertainty(TH1* histogram)
 {
   const int color_int = 12;
@@ -248,6 +249,7 @@ void makePlot(TH1* histogram_data, bool doKeepBlinded,
 	      const std::string& label,
 	      const std::string& outputFileName,
 	      bool useLogScale)
+
 {
   TH1* histogram_data_density = 0;
   if ( histogram_data ) {
@@ -291,6 +293,7 @@ void makePlot(TH1* histogram_data, bool doKeepBlinded,
   if ( histogram_EWK ) {
     if ( histogram_data ) checkCompatibleBinning(histogram_EWK, histogram_data);
     histogram_EWK_density = divideHistogramByBinWidth(histogram_EWK);
+
   }
   histogram_EWK_density->SetFillColor(610);
   histogram_EWK_density->SetLineColor(1);
@@ -439,6 +442,7 @@ void makePlot(TH1* histogram_data, bool doKeepBlinded,
     histogramErr_mc_density->Draw("e2same");
   }
   
+
   if ( !doKeepBlinded ) {
     histogram_data_density->Draw("e1psame");
   }
@@ -678,8 +682,9 @@ void makePostFitPlots_1l_2tau()
     std::cout << "histogramSum_mc = " << histogramSum_mc << std::endl;
     TH1* histogramErr_mc = (TH1*)histogramSum_mc->Clone("TotalBkgErr");
 
-    std::string outputFilePath = "/home/veelken/CombineHarvester/CMSSW_7_4_7/src/CombineHarvester/ttH_htt/macros";
+    std::string outputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/macros";
     std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());
+
     makePlot(histogram_data, doKeepBlinded,
 	     histogram_ttH, 
 	     histogram_ttZ,
@@ -698,7 +703,6 @@ void makePostFitPlots_1l_2tau()
 
     delete histogram_ttH;
     delete histogramErr_mc;
-
     delete inputFile;
   }
 }
