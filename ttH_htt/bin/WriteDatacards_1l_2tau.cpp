@@ -23,13 +23,15 @@ int main(int argc, char** argv) {
   std::string input_file, output_file;
   double lumi = -1.;
   bool add_shape_sys = true;
+  std::string disc;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
     ("input_file,i", po::value<string>(&input_file)->default_value("Tallinn/ttH_1l_2tau_2016Jul08_vTight.input.root"))
     ("output_file,o", po::value<string>(&output_file)->default_value("ttH_1l_2tau.root"))
     ("lumi,l", po::value<double>(&lumi)->default_value(lumi))
-    ("add_shape_sys,s", po::value<bool>(&add_shape_sys)->default_value(true));
+    ("add_shape_sys,s", po::value<bool>(&add_shape_sys)->default_value(true))
+    ("discriminant,d", po::value<string>(&disc)->default_value("x"));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -167,12 +169,12 @@ int main(int argc, char** argv) {
   //! [part7]
   cb.cp().backgrounds().ExtractShapes(
       aux_shapes + input_file,
-      "x_$PROCESS",
-      "x_$PROCESS_$SYSTEMATIC");
+      disc + "_$PROCESS",
+      disc + "_$PROCESS_$SYSTEMATIC");
   cb.cp().signals().ExtractShapes(
       aux_shapes + input_file,
-      "x_$PROCESS",
-      "x_$PROCESS_$SYSTEMATIC");
+      disc + "_$PROCESS",
+      disc + "_$PROCESS_$SYSTEMATIC");
   //! [part7]
 
   // CV: scale yield of all signal and background processes by lumi/2.3,

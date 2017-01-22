@@ -74,10 +74,10 @@ for channel in channels:
         channel_base = search_string
     ##datacardFile_input = os.path.join(datacardDir, channel_base, datacardFiles[channel] % shapeVariable)
     datacardFile_input = os.path.join(datacardDir, datacardFiles[channel])
-    datacardFile_output = os.path.join(workingDir, "limits", "ttH_%s.root" % channel)
+    datacardFile_output = os.path.join(workingDir, "limits", "ttH_{}_{}.root".format(channel, shapeVariable))
     run_cmd('rm ttH_%s.txt' % channel)
     run_cmd('rm %s' % datacardFile_output)
-    run_cmd('%s --input_file=%s --output_file=%s --add_shape_sys=false' % (WriteDatacard_executables[channel], datacardFile_input, datacardFile_output))
+    run_cmd('%s --input_file=%s --output_file=%s --add_shape_sys=false --discriminant=%s' % (WriteDatacard_executables[channel], datacardFile_input, datacardFile_output, shapeVariable))
     txtFile = datacardFile_output.replace(".root", ".txt")
     run_cmd('cp %s %s' % (datacardFile_output, datacardFile_output.replace("/limits/", "/")))
     ##run_cmd('combine -M MaxLikelihoodFit -t -1 -m 125 %s' % txtFile)
