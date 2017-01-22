@@ -56,10 +56,12 @@ makePostFitPlots_macros = {
 }    
 
 def run_cmd(command):
-  print "executing command = '%s'" % command
-  p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-  stdout, stderr = p.communicate()
-  return stdout
+    print "executing command = '%s'" % command
+    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode != 0 and not command.startswith('rm'):
+        raise RuntimeError("command {} failed:\n{}\n{}".format(command, stdout, stderr))
+    return stdout
 
 workingDir = os.getcwd()
 datacardDir = "/home/veelken/public/HIG16022_datacards/"
