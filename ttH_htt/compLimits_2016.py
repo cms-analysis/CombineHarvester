@@ -57,14 +57,23 @@ makePostFitPlots_macros = {
 
 def run_cmd(command):
     print "executing command = '%s'" % command
-    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
     stdout, stderr = p.communicate()
     if p.returncode != 0 and not command.startswith('rm'):
         raise RuntimeError("command {} failed:\n{}\n{}".format(command, stdout, stderr))
     return stdout
 
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--outdir", default=os.getcwd())
+args = parser.parse_args()
+
 workingDir = os.getcwd()
-datacardDir = "/home/veelken/public/HIG16022_datacards/"
+datacardDir = args.outdir
+
+if not os.path.exists(os.path.join(workingDir, 'limits')):
+    os.makedirs(os.path.join(workingDir, 'limits'))
 
 for channel in channels:
   for shapeVariable in shapeVariables[channel]:
