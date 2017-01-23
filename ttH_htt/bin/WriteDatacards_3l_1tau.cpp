@@ -138,13 +138,13 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "CMS_ttHl_fakes", "lnN", SystMap<>::init(1.3));
 
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
-      .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.01));
+      .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.06));
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
-      .AddSyst(cb, "CMS_ttHl_lepEff_elloose", "lnN", SystMap<>::init(1.02));
+      .AddSyst(cb, "CMS_ttHl_lepEff_elloose", "lnN", SystMap<>::init(1.04));
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
-      .AddSyst(cb, "CMS_ttHl_lepEff_muloose", "lnN", SystMap<>::init(1.015));
+      .AddSyst(cb, "CMS_ttHl_lepEff_muloose", "lnN", SystMap<>::init(1.04));
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
-      .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.06));
+      .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.09));
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.06));
   if ( add_shape_sys ) {
