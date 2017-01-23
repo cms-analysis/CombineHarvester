@@ -68,7 +68,9 @@ int main(int argc, char** argv) {
   //std::string proc_fakes = "fakes_mc";
   std::string proc_fakes = "fakes_data";
 
-  vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", proc_fakes};
+  //vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", proc_fakes};
+  //vector<string> bkg_procs = {"TTW", "TTZ", "EWK", proc_fakes};
+  vector<string> bkg_procs = {"TTW", "TTZ", "EWK", "Rares", proc_fakes};
   cb.AddProcesses({"*"}, {"*"}, {"13TeV"}, {"*"}, bkg_procs, cats, false);
 
   vector<string> sig_procs = {"ttH_hww", "ttH_hzz", "ttH_htt"};

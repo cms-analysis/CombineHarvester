@@ -66,7 +66,10 @@ int main(int argc, char** argv) {
 
   //! [part4]
   //vector<string> bkg_procs = {"TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data"};
-  vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
+  //vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
+  //vector<string> bkg_procs = {"TTW", "TTZ", "EWK", "fakes_data", "flips_data"};
+  //vector<string> bkg_procs = {"TTW", "TTZ", "fakes_data", "flips_data"};
+  vector<string> bkg_procs = {"TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
   cb.AddProcesses({"*"}, {"*"}, {"13TeV"}, {"*"}, bkg_procs, cats, false);
 
   vector<string> sig_procs = {"ttH_hww", "ttH_hzz", "ttH_htt"};
