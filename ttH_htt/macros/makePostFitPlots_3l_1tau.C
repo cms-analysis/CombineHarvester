@@ -31,6 +31,7 @@ TH1* loadHistogram(TFile* inputFile, const std::string& directory, const std::st
     assert(0);
   }
   if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+
   //int numBins = histogram->GetNbinsX();
   //for ( int iBin = 0; iBin <= (numBins + 1); ++iBin ) {
   //  histogram->SetBinError(iBin, 0.);
@@ -215,6 +216,7 @@ void addLabel_CMS_preliminary(double x0, double y0, double x0_luminosity)
   label_luminosity->SetBorderSize(0);
   label_luminosity->Draw();
 }
+
 
 void setStyle_uncertainty(TH1* histogram)
 {
@@ -622,6 +624,7 @@ void makePostFitPlots_3l_1tau()
       dumpHistogram(histogram_data);
     }
 
+
     TH1* histogram_ttH_htt = loadHistogram(inputFile, *category, "ttH_htt");
     TH1* histogram_ttH_hww = loadHistogram(inputFile, *category, "ttH_hww");
     TH1* histogram_ttH_hzz = loadHistogram(inputFile, *category, "ttH_hzz");
@@ -668,7 +671,7 @@ void makePostFitPlots_3l_1tau()
     std::cout << "histogramSum_mc = " << histogramSum_mc << std::endl;
     TH1* histogramErr_mc = (TH1*)histogramSum_mc->Clone("TotalBkgErr");
 
-    std::string outputFilePath = "/home/veelken/CombineHarvester/CMSSW_7_4_7/src/CombineHarvester/ttH_htt/macros";
+    std::string outputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/macros";
     std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());
     makePlot(histogram_data, doKeepBlinded,
 	     histogram_ttH, 
@@ -688,7 +691,6 @@ void makePostFitPlots_3l_1tau()
 
     delete histogram_ttH;
     delete histogramErr_mc;
-
     delete inputFile;
   }
 }
