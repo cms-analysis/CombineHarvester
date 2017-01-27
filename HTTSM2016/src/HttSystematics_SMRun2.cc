@@ -37,22 +37,26 @@ namespace ch {
         //  lumi
         //##############################################################################
         
-        cb.cp().process(JoinStr({sig_procs, {"VV","HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"VV","VVT","HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
                                                                                       "lumi_13TeV", "lnN", SystMap<>::init(1.062));
+        cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.062));
         
         //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
         cb.cp().process({"W"}).channel({"tt","em","mm","ttbar"}).AddSyst(cb,
                                                                  "lumi_13TeV", "lnN", SystMap<>::init(1.062));
-        
+
+	if (!ttbar_fit){
+          cb.cp().process({"TTT","TTJ"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.062));
+	}
         
         //##############################################################################
         //  trigger   ##FIXME   the values have been chosen rather arbitrarily
         //##############################################################################
         
-        cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV", "ZL", "ZJ", "ZTT", "EWKZ"}})).channel({"mt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV","VVT", "ZL", "ZJ", "ZTT", "EWKZ"}})).channel({"mt"}).AddSyst(cb,
                                                                                                                      "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
-        cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV", "ZL", "ZJ", "ZTT", "EWKZ"}})).channel({"et"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"TTJ","TTT","VV","VVT", "ZL", "ZJ", "ZTT", "EWKZ"}})).channel({"et"}).AddSyst(cb,
                                                                                                                      "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
         cb.cp().process(JoinStr({sig_procs, {"TT","VV", "ZL", "ZJ", "ZTT","EWKZ","W", "HWW_gg125","HWW_qq125"}})).channel({"em","ttbar"}).AddSyst(cb,
@@ -68,23 +72,23 @@ namespace ch {
         //##############################################################################
         cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
                         ({"mm"}, {"ZTT", "TT", "VV", "ZL", "ZJ"},  1.02)
-                        ({"mt"}, JoinStr({sig_procs, {"ZTT", "VV", "ZL", "ZJ","TTT", "TTJ", "EWKZ"}}),  1.02)
+                        ({"mt"}, JoinStr({sig_procs, {"ZTT", "VV","VVT", "ZL", "ZJ","TTT", "TTJ", "EWKZ"}}),  1.02)
 //                        ({"tt"}, JoinStr({sig_procs, {"W"}}),  1.02)
                         ({"em","ttbar"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ", "W", "HWW_gg125","HWW_qq125","EWKZ"}}),       1.02));
         
         cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
-                        ({"et"}, JoinStr({sig_procs, {"ZTT", "VV", "ZL", "ZJ","TTT", "TTJ", "EWKZ"}}),  1.02)
+                        ({"et"}, JoinStr({sig_procs, {"ZTT", "VV","VVT", "ZL", "ZJ","TTT", "TTJ", "EWKZ"}}),  1.02)
 //                        ({"tt"}, JoinStr({sig_procs, {"W"}}),  1.02)
                         ({"em","ttbar"}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ", "W", "HWW_gg125","HWW_qq125"}}),       1.02));
         
+
         
-        
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","TTT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                                                                                   "CMS_eff_t_$ERA", "lnN", SystMap<channel>::init
                                                                                                   ({"et", "mt"}, 1.08)
                                                                                                   ({"tt"},       1.16));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","TTT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                                                                                   "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
                                                                                                   ({"et", "mt"}, 1.04)
                                                                                                   ({"tt"}, 1.10));
@@ -99,10 +103,10 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, {"ZTT", "W", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125","QCD"}})).channel({"em"}).AddSyst(cb,
                                                                                                                                               "CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","VVT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                                                                                               "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VV", "ZL", "ZJ","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VVT","VV", "ZL", "ZJ","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                                                                                         "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
@@ -112,7 +116,7 @@ namespace ch {
         
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, {"ZTT", "TT", "VV", "ZL", "ZJ","TTJ","TTT","EWKZ"}}), 1.01));
+                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, {"ZTT", "TT", "VV","VVT", "ZL", "ZJ","TTJ","TTT","EWKZ"}}), 1.01));
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
                         ({"em","tt"}, {1, 2, 3}, JoinStr({sig_procs, {"W"}}), 1.01));
@@ -126,13 +130,13 @@ namespace ch {
         //##############################################################################
         
         //   Diboson  Normalisation - fully correlated
-        cb.cp().process({"VV"}).AddSyst(cb,
+        cb.cp().process({"VV","VVT"}).AddSyst(cb,
                                         "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
         if (! ttbar_fit){
         //   ttbar Normalisation - fully correlated
-        cb.cp().process({"TT"}).AddSyst(cb,
-                                        "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));}
-        
+	  cb.cp().process({"TT"}).AddSyst(cb, //mf: TTJ, TTT missing?
+					  "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));}
+
         // W norm, just for em, tt and the mm region where MC norm is from MC
         cb.cp().process({"W"}).channel({"tt","em","mm"}).AddSyst(cb,
                                                                  "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.20));
@@ -226,7 +230,7 @@ namespace ch {
                                                                              "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
  
         
-        
+
         //##############################################################################
         // Theoretical Uncertainties on signal
         //##############################################################################
@@ -375,7 +379,6 @@ namespace ch {
         
         
         
-        
         if(mm_fit)
         {
             // Add Z crosssection uncertainty on ZL, ZJ  (not ZTT due to taking into account the mm control region).
@@ -423,7 +426,7 @@ namespace ch {
         
         //    }
         
-        
+
         if (control_region == 1) {
             // Create rateParams for control regions:
             //  - [x] 1 rateParam for all W in every region
@@ -500,7 +503,6 @@ namespace ch {
         
         
         
-        
         if (mm_fit) {
             cb.SetFlag("filters-use-regex", true);
             
@@ -555,8 +557,63 @@ namespace ch {
             
             cb.SetFlag("filters-use-regex", false);
         }
-        
-        
+
+	//jet fakes: shape uncertainties
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet0_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet1_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet0_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet1_stat", "shape", SystMap<>::init(1.00));
+
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet0_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet1_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet0_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet1_stat", "shape", SystMap<>::init(1.00));
+
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm0_njet0_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm0_njet1_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm1_njet0_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm1_njet1_stat", "shape", SystMap<>::init(1.00));
+
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_w_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_tt_syst", "shape", SystMap<>::init(1.00));
+
+        //jet fakes: stat norm unc
+	cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_stat_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
+                                                                        ({"mt"}, {1}, 1.04)
+                                                                        ({"mt"}, {2}, 1.03)
+                                                                        ({"mt"}, {3}, 1.045)
+                                                                        ({"et"}, {1}, 1.04)
+                                                                        ({"et"}, {2}, 1.05)
+                                                                        ({"et"}, {3}, 1.065)
+                                                                        ({"tt"}, {1}, 1.03)
+                                                                        ({"tt"}, {2}, 1.04)
+                                                                        ({"tt"}, {3}, 1.05)
+                                                                        );
+        //jet fakes: syst norm: bin-correlated
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_syst_$CHANNEL", "lnN", SystMap<channel, bin_id>::init
+                                                                        ({"mt"}, {1}, 1.065)
+                                                                        ({"mt"}, {2}, 1.062)
+                                                                        ({"mt"}, {3}, 1.078)
+                                                                        ({"et"}, {1}, 1.073)
+                                                                        ({"et"}, {2}, 1.067)
+                                                                        ({"et"}, {3}, 1.083)
+                                                                        ({"tt"}, {1}, 1.026)
+                                                                        ({"tt"}, {2}, 1.032)
+                                                                        ({"tt"}, {3}, 1.040)
+                                                                        );
+        //jet fakes: syst norm: bin-dependent
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_sub_syst_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
+                                                                        ({"mt"}, {1}, 1.06)
+                                                                        ({"mt"}, {2}, 1.04)
+                                                                        ({"mt"}, {3}, 1.04)
+                                                                        ({"et"}, {1}, 1.06)
+                                                                        ({"et"}, {2}, 1.04)
+                                                                        ({"et"}, {3}, 1.04)
+                                                                        ({"tt"}, {1}, 1.06)
+                                                                        ({"tt"}, {2}, 1.04)
+									);
+
         
     }
 }
