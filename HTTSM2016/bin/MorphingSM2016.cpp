@@ -81,6 +81,7 @@ int main(int argc, char** argv) {
     bool do_w_weighting = false;
     bool mm_fit = false;
     bool ttbar_fit = false;
+    bool do_jetfakes = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -102,6 +103,7 @@ int main(int argc, char** argv) {
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("mm_fit", po::value<bool>(&mm_fit)->default_value(true))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true))
+    ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
@@ -133,11 +135,17 @@ int main(int argc, char** argv) {
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
-    bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
-    bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
-//    bkg_procs["et"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
-//    bkg_procs["mt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
-    bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
+    if (do_jetfakes){
+      bkg_procs["et"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["mt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
+    }else{
+      bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
+      bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
+      //    bkg_procs["et"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
+      //    bkg_procs["mt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
+      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
+    }
     bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV"};
@@ -242,8 +250,15 @@ int main(int argc, char** argv) {
 //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"EWKZ"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
 //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"EWKZ"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
 //    
-    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},{10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}}, false);
-    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},{10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}}, false);
+    if (control_region > 0){
+      if (channel=="et") cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},{10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}}, false);
+      if (channel=="mt") cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},{10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}}, false);
+    }else if (!do_jetfakes){
+      if (channel=="et") cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
+      if (channel=="mt") cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
+    }
+    //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},{10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}}, false);
+    //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},{10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}}, false);
 
     
     
