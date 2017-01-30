@@ -136,6 +136,7 @@ var NAVTREEINDEX1 =
 "classch_1_1_bin_by_bin_factory.html#a4f8c2b763538030dcab6cd3566b27568":[16,0,0,3,7],
 "classch_1_1_bin_by_bin_factory.html#a57a7a111d2b683912cb70e5e9786432c":[16,0,0,3,10],
 "classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf":[16,0,0,3,1],
+"classch_1_1_bin_by_bin_factory.html#a7240cc3c8d9be4d77e3e041256397e8f":[16,0,0,3,11],
 "classch_1_1_bin_by_bin_factory.html#a76d34782e2b31e762f07093e7d3748ab":[16,0,0,3,9],
 "classch_1_1_bin_by_bin_factory.html#a8ac5cd6b06c95b4bee7449dbde576067":[16,0,0,3,4],
 "classch_1_1_bin_by_bin_factory.html#a9873544209128b4d1dcbf9d897fe1094":[16,0,0,3,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "classch_1_1_combine_harvester.html#aff8e163ca0abe844603e676d142986a0":[16,0,0,5,86],
 "classch_1_1_fn_timer.html":[16,0,0,6],
 "classch_1_1_fn_timer.html#a4dc02384a997b93294cd083b107a673e":[16,0,0,6,5],
-"classch_1_1_fn_timer.html#a68814f0e60141ebf55f8138f7dbb597d":[16,0,0,6,3],
-"classch_1_1_fn_timer.html#aa6368e35ad1520773275baf7ad1bbcb6":[16,0,0,6,4]
+"classch_1_1_fn_timer.html#a68814f0e60141ebf55f8138f7dbb597d":[16,0,0,6,3]
 };

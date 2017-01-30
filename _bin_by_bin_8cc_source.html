@@ -117,182 +117,195 @@ $(document).ready(function(){initNavTree('_bin_by_bin_8cc_source.html','');});
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;      merge_threshold_(0.),</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;      fix_norm_(true),</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;      poisson_errors_(false),</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      merge_zero_bins_(true) {}</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      merge_zero_bins_(true),</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;      merge_saturated_bins_(true) {}</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">   21</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">BinByBinFactory::MergeBinErrors</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;cb) {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="comment">// Reduce merge_threshold very slightly to avoid numerical issues</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="comment">// E.g. two backgrounds each with bin error 1.0. merge_threshold of</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="comment">// 0.5 should not result in merging - but can do depending on</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="comment">// machine and compiler</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">double</span> merge_threshold = merge_threshold_ - 1E-9 * merge_threshold_;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">auto</span> bins = cb.<a class="code" href="classch_1_1_combine_harvester.html#a869c951c635b86fba33b2c550c9c39c9">bin_set</a>();</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; bin : bins) {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">unsigned</span> bbb_added = 0;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">unsigned</span> bbb_removed = 0;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> tmp = std::move(cb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#a83dd50569a1f1a4b5a46f2ad2b5c1cdb">bin</a>({bin}).histograms());</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::vector&lt;Process *&gt; procs;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    tmp.<a class="code" href="classch_1_1_combine_harvester.html#a44064524ffe47ccac63ef8025a6f46dc">ForEachProc</a>([&amp;](<a class="code" href="classch_1_1_process.html">Process</a> *p) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <span class="keywordflow">if</span> (p-&gt;<a class="code" href="classch_1_1_process.html#a7fdac7c901b10af74e32709528d86f71">shape</a>()-&gt;GetSumw2N() == 0) {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;Process &quot;</span> &lt;&lt; p-&gt;<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>()</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                  &lt;&lt; <span class="stringliteral">&quot; does not continue the weights information needed for &quot;</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                     <span class="stringliteral">&quot;valid errors, skipping\n&quot;</span>;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        procs.push_back(p);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    });</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">if</span> (procs.size() == 0) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    std::vector&lt;std::unique_ptr&lt;TH1&gt;&gt; h_copies(procs.size());</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; h_copies.size(); ++i) {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      h_copies[i] = procs[i]-&gt;ClonedScaledShape();</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt;= h_copies[0]-&gt;GetNbinsX(); ++i) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keywordtype">double</span> tot_bbb_added = 0.0;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      std::vector&lt;std::pair&lt;double, TH1 *&gt;&gt; result;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> j = 0; j &lt; h_copies.size(); ++j) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordtype">double</span> val = h_copies[j]-&gt;GetBinContent(i);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordtype">double</span> err = h_copies[j]-&gt;GetBinError(i);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">if</span> (val == 0.0 &amp;&amp; err == 0.0) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">if</span> (val == 0.0 &amp;&amp; !merge_zero_bins_) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">if</span> (val == 0 || (err/val) &gt; bbb_threshold_) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;          bbb_added += 1;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;          tot_bbb_added += (err * err);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          result.push_back(std::make_pair(err*err, h_copies[j].<span class="keyword">get</span>()));</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="keywordflow">if</span> (tot_bbb_added == 0.0) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      std::sort(result.begin(), result.end());</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      <span class="keywordtype">double</span> removed = 0.0;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> r = 0; r &lt; result.size(); ++r) {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">if</span> ((result[r].first + removed) &lt; (merge_threshold * tot_bbb_added) &amp;&amp;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            r &lt; (result.size() - 1)) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;          bbb_removed += 1;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;          removed += result[r].first;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;          result[r].second-&gt;SetBinError(i, 0.0);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      }</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      <span class="keywordtype">double</span> expand = std::sqrt(1. / (1. - (removed / tot_bbb_added)));</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> r = 0; r &lt; result.size(); ++r) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        result[r]</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            .second-&gt;SetBinError(i, result[r].second-&gt;GetBinError(i) * expand);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    }</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; h_copies.size(); ++i) {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;      procs[i]-&gt;set_shape(std::move(h_copies[i]), <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">if</span> (v_ &gt; 0) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;BIN: &quot;</span> &lt;&lt; bin &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Total bbb added:    &quot;</span> &lt;&lt; bbb_added &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Total bbb removed:  &quot;</span> &lt;&lt; bbb_removed &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Total bbb =======&gt;: &quot;</span> &lt;&lt; bbb_added-bbb_removed &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  }</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">   92</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">BinByBinFactory::AddBinByBin</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;src, <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;dest) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">unsigned</span> bbb_added = 0;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  std::vector&lt;Process *&gt; procs;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  src.<a class="code" href="classch_1_1_combine_harvester.html#a44064524ffe47ccac63ef8025a6f46dc">ForEachProc</a>([&amp;](<a class="code" href="classch_1_1_process.html">Process</a> *p) { </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    procs.push_back(p);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  });</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; procs.size(); ++i) {</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordflow">if</span> (!procs[i]-&gt;shape()) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    TH1 <span class="keyword">const</span>* h = procs[i]-&gt;shape();</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">if</span> (h-&gt;GetSumw2N() == 0) {</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Process &quot;</span> &lt;&lt; procs[i]-&gt;process()</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; does not continue the weights information needed for &quot;</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                   <span class="stringliteral">&quot;valid errors, skipping\n&quot;</span>;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">unsigned</span> n_pop_bins = 0;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 1; j &lt;= h-&gt;GetNbinsX(); ++j) {</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keywordflow">if</span> (h-&gt;GetBinContent(j) &gt; 0.0) ++n_pop_bins;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    }</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">if</span> (n_pop_bins &lt;= 1 &amp;&amp; fix_norm_) {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      <span class="keywordflow">if</span> (v_ &gt;= 1) {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;Requested fixed_norm but template has &lt;= 1 populated &quot;</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                     <span class="stringliteral">&quot;bins, skipping\n&quot;</span>;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        std::cout &lt;&lt; <a class="code" href="classch_1_1_process.html#ab2cc280e1babe330441de6791e06c2c1">Process::PrintHeader</a> &lt;&lt; *(procs[i]) &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      }</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 1; j &lt;= h-&gt;GetNbinsX(); ++j) {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      <span class="keywordtype">bool</span> do_bbb = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      <span class="keywordtype">double</span> val = h-&gt;GetBinContent(j);</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="keywordtype">double</span> err = h-&gt;GetBinError(j);</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      <span class="keywordtype">double</span> err_lo = err;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      <span class="keywordtype">double</span> err_hi = err;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      <span class="keywordflow">if</span> (val == 0. &amp;&amp; err &gt; 0.) do_bbb = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      <span class="keywordflow">if</span> (val &gt; 0. &amp;&amp; (err / val) &gt; bbb_threshold_) do_bbb = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      <span class="comment">// if (h-&gt;GetBinContent(j) &lt;= 0.0) {</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="comment">//   if (h-&gt;GetBinError(j) &gt; 0.0) {</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      <span class="comment">//     std::cout &lt;&lt; *(procs_[i]) &lt;&lt; &quot;\n&quot;;</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      <span class="comment">//     std::cout &lt;&lt; &quot;Bin with content &lt;= 0 and error &gt; 0 found, skipping\n&quot;;</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <span class="comment">//   }</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      <span class="comment">//   continue;</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <span class="comment">// }</span></div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      <span class="keywordflow">if</span> (do_bbb &amp;&amp; poisson_errors_ &amp;&amp; val &gt; 0.) {</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keywordtype">double</span> n_evt_float = (val*val) / (err*err);</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keywordtype">unsigned</span> n_evt = std::floor(0.5 + n_evt_float);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="keywordflow">if</span> (n_evt == 0) n_evt = 1;</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        <span class="keywordtype">double</span> cl = 0.68;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        <span class="comment">// For now use the exact poisson interval, it&#39;s generally more conservative</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="comment">// than the interval based on the likelihood</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        err_hi = ROOT::Math::gamma_quantile((1.-((1.-cl)/2.)), n_evt+1, 1) - n_evt;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        err_lo = n_evt - ROOT::Math::gamma_quantile(((1.-cl)/2.), n_evt, 1);</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        <span class="comment">// std::cout &lt;&lt; &quot;Bin &quot; &lt;&lt; j &lt;&lt; &quot; content: &quot; &lt;&lt; val &lt;&lt; &quot;\tErr: &quot; &lt;&lt; err </span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        <span class="comment">//           &lt;&lt; &quot;\t EffEvents: &quot; &lt;&lt; n_evt_float &lt;&lt; &quot;\t&quot; &lt;&lt; n_evt</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="comment">//           &lt;&lt; &quot;\tErrLo: &quot; &lt;&lt; (err_lo/n_evt_float)*val</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="comment">//           &lt;&lt; &quot;\tErrHi: &quot; &lt;&lt; (err_hi/n_evt_float)*val &lt;&lt; &quot;\n&quot;;</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        err_hi = (err_hi/n_evt_float) * val;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        err_lo = (err_lo/n_evt_float) * val;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      }</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;      <span class="keywordflow">if</span> (do_bbb) {</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        ++bbb_added;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <a class="code" href="classch_1_1_systematic.html">ch::Systematic</a> sys;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <a class="code" href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">ch::SetProperties</a>(&amp;sys, procs[i]);</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#ad6299bae494e334e253e7486f7bff1d0">set_type</a>(<span class="stringliteral">&quot;shape&quot;</span>);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        std::string name = pattern_;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$ANALYSIS&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#acc6dfa0e69fd9c9647e4b242bfe6a93e">analysis</a>());</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$CHANNEL&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a60ff05363e905e268f4a85bc9d2a63c1">channel</a>());</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$BIN&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>());</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$BINID&quot;</span>, boost::lexical_cast&lt;std::string&gt;(sys.<a class="code" href="classch_1_1_object.html#ac57605a5c14ab76dc7be7ec7fa74be81">bin_id</a>()));</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$ERA&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7">era</a>());</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$PROCESS&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>());</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$MASS&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce">mass</a>());</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$#&quot;</span>, boost::lexical_cast&lt;std::string&gt;(j));</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#a5b8ccb1b97744d1b4c2b9e5f410c4049">set_name</a>(name);</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#aae12e2d99a326bfe80a821cb5885afbf">set_asymm</a>(<span class="keyword">true</span>);</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        std::unique_ptr&lt;TH1&gt; h_d(static_cast&lt;TH1 *&gt;(h-&gt;Clone()));</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        std::unique_ptr&lt;TH1&gt; h_u(static_cast&lt;TH1 *&gt;(h-&gt;Clone()));</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        h_d-&gt;SetBinContent(j, val - err_lo);</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">if</span> (h_d-&gt;GetBinContent(j) &lt; 0.) h_d-&gt;SetBinContent(j, 0.);</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordflow">if</span> (!(h_d-&gt;Integral() &gt; 0.)) h_d-&gt;SetBinContent(j,0.00001*h-&gt;Integral());</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        h_u-&gt;SetBinContent(j, val + err_hi);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        <span class="keywordflow">if</span> (fix_norm_) {</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a40fb079acc7cdf7acd81d7bccb653f8a">set_value_d</a>(1.0);</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a780d467fd100c4c521fc604ddcea6f0f">set_value_u</a>(1.0);</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a40fb079acc7cdf7acd81d7bccb653f8a">set_value_d</a>(h_d-&gt;Integral()/h-&gt;Integral());</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a780d467fd100c4c521fc604ddcea6f0f">set_value_u</a>(h_u-&gt;Integral()/h-&gt;Integral());</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        }</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#a400bca9bdb905d91e094ebd30a4aac7d">set_shapes</a>(std::move(h_u), std::move(h_d), <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        dest.<a class="code" href="classch_1_1_combine_harvester.html#a2eefb78479b655130b6cf5710bdea33c">CreateParameterIfEmpty</a>(sys.<a class="code" href="classch_1_1_systematic.html#a003ef543320b8966fd66d85cc5a8cd87">name</a>());</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        dest.<a class="code" href="classch_1_1_combine_harvester.html#ab6ba1e447ab5b290c22c23218ddf64cd">InsertSystematic</a>(sys);</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;      }</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    }</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  }</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="comment">// std::cout &lt;&lt; &quot;bbb added: &quot; &lt;&lt; bbb_added &lt;&lt; std::endl;</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;}</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno"><a class="line" href="classch_1_1_bin_by_bin_factory.html#a9873544209128b4d1dcbf9d897fe1094">  189</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classch_1_1_bin_by_bin_factory.html#a9873544209128b4d1dcbf9d897fe1094">BinByBinFactory::MergeAndAdd</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;src, <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;dest) {</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <a class="code" href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">MergeBinErrors</a>(src);</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <a class="code" href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">AddBinByBin</a>(src, dest);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;}</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;}</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">   22</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">BinByBinFactory::MergeBinErrors</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;cb) {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="comment">// Reduce merge_threshold very slightly to avoid numerical issues</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="comment">// E.g. two backgrounds each with bin error 1.0. merge_threshold of</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="comment">// 0.5 should not result in merging - but can do depending on</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="comment">// machine and compiler</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">double</span> merge_threshold = merge_threshold_ - 1E-9 * merge_threshold_;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">auto</span> bins = cb.<a class="code" href="classch_1_1_combine_harvester.html#a869c951c635b86fba33b2c550c9c39c9">bin_set</a>();</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; bin : bins) {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">unsigned</span> bbb_added = 0;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">unsigned</span> bbb_removed = 0;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> tmp = std::move(cb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#a83dd50569a1f1a4b5a46f2ad2b5c1cdb">bin</a>({bin}).histograms());</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    std::vector&lt;Process *&gt; procs;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    tmp.<a class="code" href="classch_1_1_combine_harvester.html#a44064524ffe47ccac63ef8025a6f46dc">ForEachProc</a>([&amp;](<a class="code" href="classch_1_1_process.html">Process</a> *p) {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keywordflow">if</span> (p-&gt;<a class="code" href="classch_1_1_process.html#a7fdac7c901b10af74e32709528d86f71">shape</a>()-&gt;GetSumw2N() == 0) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;Process &quot;</span> &lt;&lt; p-&gt;<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>()</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                  &lt;&lt; <span class="stringliteral">&quot; does not continue the weights information needed for &quot;</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                     <span class="stringliteral">&quot;valid errors, skipping\n&quot;</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        procs.push_back(p);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    });</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">if</span> (procs.size() == 0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    std::vector&lt;std::unique_ptr&lt;TH1&gt;&gt; h_copies(procs.size());</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; h_copies.size(); ++i) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      h_copies[i] = procs[i]-&gt;ClonedScaledShape();</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt;= h_copies[0]-&gt;GetNbinsX(); ++i) {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordtype">double</span> tot_bbb_added = 0.0;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      std::vector&lt;std::tuple&lt;double, TH1 *, bool&gt;&gt; result;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> j = 0; j &lt; h_copies.size(); ++j) {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordtype">double</span> val = h_copies[j]-&gt;GetBinContent(i);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordtype">double</span> err = h_copies[j]-&gt;GetBinError(i);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="comment">// Might exclude this bin from the merging procedure:</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="comment">//  - If the content and error are both zero</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">if</span> (val == 0.0 &amp;&amp; err == 0.0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="comment">//  - If the content is zero (and the error implicitly non-zero)</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="comment">//    only merge if the MergeZeroBins option is true</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordflow">if</span> (val == 0.0 &amp;&amp; !merge_zero_bins_) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="comment">//  - Bin participates in the merging if err/val threshold is met</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="comment">//    *OR* if the content is zero but the error &gt; zero.</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">if</span> (val == 0 || (err/val) &gt; bbb_threshold_) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;          bbb_added += 1;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;          <span class="keywordtype">bool</span> can_expand = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;          <span class="keywordflow">if</span> (!merge_saturated_bins_ &amp;&amp; err &gt;= val) {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            can_expand = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;            tot_bbb_added += (err * err);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;          }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;          result.push_back(std::make_tuple(err*err, h_copies[j].<span class="keyword">get</span>(), can_expand));</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">if</span> (tot_bbb_added == 0.0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      std::sort(result.begin(), result.end());</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      <span class="keywordtype">double</span> removed = 0.0;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> r = 0; r &lt; result.size(); ++r) {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keywordflow">if</span> ((std::get&lt;0&gt;(result[r]) + removed) &lt; (merge_threshold * tot_bbb_added) &amp;&amp;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            r &lt; (result.size() - 1)) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          bbb_removed += 1;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;          removed += std::get&lt;0&gt;(result[r]);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;          std::get&lt;1&gt;(result[r])-&gt;SetBinError(i, 0.0);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        }</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      }</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      <span class="keywordtype">double</span> expand = std::sqrt(1. / (1. - (removed / tot_bbb_added)));</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> r = 0; r &lt; result.size(); ++r) {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">if</span> (!std::get&lt;2&gt;(result[r])) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        std::get&lt;1&gt;(result[r])-&gt;SetBinError(</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            i, std::get&lt;1&gt;(result[r])-&gt;GetBinError(i) * expand);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      }</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; h_copies.size(); ++i) {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      procs[i]-&gt;set_shape(std::move(h_copies[i]), <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">if</span> (v_ &gt; 0) {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;BIN: &quot;</span> &lt;&lt; bin &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Total bbb added:    &quot;</span> &lt;&lt; bbb_added &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Total bbb removed:  &quot;</span> &lt;&lt; bbb_removed &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Total bbb =======&gt;: &quot;</span> &lt;&lt; bbb_added-bbb_removed &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    }</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  }</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">  105</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">BinByBinFactory::AddBinByBin</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;src, <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;dest) {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keywordtype">unsigned</span> bbb_added = 0;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  std::vector&lt;Process *&gt; procs;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  src.<a class="code" href="classch_1_1_combine_harvester.html#a44064524ffe47ccac63ef8025a6f46dc">ForEachProc</a>([&amp;](<a class="code" href="classch_1_1_process.html">Process</a> *p) { </div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    procs.push_back(p);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  });</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; procs.size(); ++i) {</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">if</span> (!procs[i]-&gt;shape()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    TH1 <span class="keyword">const</span>* h = procs[i]-&gt;shape();</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordflow">if</span> (h-&gt;GetSumw2N() == 0) {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      std::cout &lt;&lt; <span class="stringliteral">&quot;Process &quot;</span> &lt;&lt; procs[i]-&gt;process()</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; does not continue the weights information needed for &quot;</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                   <span class="stringliteral">&quot;valid errors, skipping\n&quot;</span>;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    }</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordtype">unsigned</span> n_pop_bins = 0;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 1; j &lt;= h-&gt;GetNbinsX(); ++j) {</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="keywordflow">if</span> (h-&gt;GetBinContent(j) &gt; 0.0) ++n_pop_bins;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    }</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordflow">if</span> (n_pop_bins &lt;= 1 &amp;&amp; fix_norm_) {</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      <span class="keywordflow">if</span> (v_ &gt;= 1) {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;Requested fixed_norm but template has &lt;= 1 populated &quot;</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;                     <span class="stringliteral">&quot;bins, skipping\n&quot;</span>;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        std::cout &lt;&lt; <a class="code" href="classch_1_1_process.html#ab2cc280e1babe330441de6791e06c2c1">Process::PrintHeader</a> &lt;&lt; *(procs[i]) &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    }</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 1; j &lt;= h-&gt;GetNbinsX(); ++j) {</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <span class="keywordtype">bool</span> do_bbb = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;      <span class="keywordtype">double</span> val = h-&gt;GetBinContent(j);</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      <span class="keywordtype">double</span> err = h-&gt;GetBinError(j);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      <span class="keywordtype">double</span> err_lo = err;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;      <span class="keywordtype">double</span> err_hi = err;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      <span class="keywordflow">if</span> (val == 0. &amp;&amp; err &gt; 0.) do_bbb = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;      <span class="keywordflow">if</span> (val &gt; 0. &amp;&amp; (err / val) &gt; bbb_threshold_) do_bbb = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;      <span class="comment">// if (h-&gt;GetBinContent(j) &lt;= 0.0) {</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;      <span class="comment">//   if (h-&gt;GetBinError(j) &gt; 0.0) {</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;      <span class="comment">//     std::cout &lt;&lt; *(procs_[i]) &lt;&lt; &quot;\n&quot;;</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;      <span class="comment">//     std::cout &lt;&lt; &quot;Bin with content &lt;= 0 and error &gt; 0 found, skipping\n&quot;;</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;      <span class="comment">//   }</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;      <span class="comment">//   continue;</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;      <span class="comment">// }</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      <span class="keywordflow">if</span> (do_bbb &amp;&amp; poisson_errors_ &amp;&amp; val &gt; 0.) {</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        <span class="keywordtype">double</span> n_evt_float = (val*val) / (err*err);</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordtype">unsigned</span> n_evt = std::floor(0.5 + n_evt_float);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <span class="keywordflow">if</span> (n_evt == 0) n_evt = 1;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        <span class="keywordtype">double</span> cl = 0.68;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="comment">// For now use the exact poisson interval, it&#39;s generally more conservative</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="comment">// than the interval based on the likelihood</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        err_hi = ROOT::Math::gamma_quantile((1.-((1.-cl)/2.)), n_evt+1, 1) - n_evt;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        err_lo = n_evt - ROOT::Math::gamma_quantile(((1.-cl)/2.), n_evt, 1);</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <span class="comment">// std::cout &lt;&lt; &quot;Bin &quot; &lt;&lt; j &lt;&lt; &quot; content: &quot; &lt;&lt; val &lt;&lt; &quot;\tErr: &quot; &lt;&lt; err </span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        <span class="comment">//           &lt;&lt; &quot;\t EffEvents: &quot; &lt;&lt; n_evt_float &lt;&lt; &quot;\t&quot; &lt;&lt; n_evt</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        <span class="comment">//           &lt;&lt; &quot;\tErrLo: &quot; &lt;&lt; (err_lo/n_evt_float)*val</span></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        <span class="comment">//           &lt;&lt; &quot;\tErrHi: &quot; &lt;&lt; (err_hi/n_evt_float)*val &lt;&lt; &quot;\n&quot;;</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        err_hi = (err_hi/n_evt_float) * val;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        err_lo = (err_lo/n_evt_float) * val;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;      }</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;      <span class="keywordflow">if</span> (do_bbb) {</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        ++bbb_added;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <a class="code" href="classch_1_1_systematic.html">ch::Systematic</a> sys;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <a class="code" href="namespacech.html#a0ea5d53cb275e53807f576a4020cf15e">ch::SetProperties</a>(&amp;sys, procs[i]);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#ad6299bae494e334e253e7486f7bff1d0">set_type</a>(<span class="stringliteral">&quot;shape&quot;</span>);</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        std::string name = pattern_;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$ANALYSIS&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#acc6dfa0e69fd9c9647e4b242bfe6a93e">analysis</a>());</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$CHANNEL&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a60ff05363e905e268f4a85bc9d2a63c1">channel</a>());</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$BIN&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>());</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$BINID&quot;</span>, boost::lexical_cast&lt;std::string&gt;(sys.<a class="code" href="classch_1_1_object.html#ac57605a5c14ab76dc7be7ec7fa74be81">bin_id</a>()));</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$ERA&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7">era</a>());</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$PROCESS&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>());</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$MASS&quot;</span>, sys.<a class="code" href="classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce">mass</a>());</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;        boost::replace_all(name, <span class="stringliteral">&quot;$#&quot;</span>, boost::lexical_cast&lt;std::string&gt;(j));</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#a5b8ccb1b97744d1b4c2b9e5f410c4049">set_name</a>(name);</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#aae12e2d99a326bfe80a821cb5885afbf">set_asymm</a>(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        std::unique_ptr&lt;TH1&gt; h_d(static_cast&lt;TH1 *&gt;(h-&gt;Clone()));</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        std::unique_ptr&lt;TH1&gt; h_u(static_cast&lt;TH1 *&gt;(h-&gt;Clone()));</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        h_d-&gt;SetBinContent(j, val - err_lo);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <span class="keywordflow">if</span> (h_d-&gt;GetBinContent(j) &lt; 0.) h_d-&gt;SetBinContent(j, 0.);</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;        <span class="keywordflow">if</span> (!(h_d-&gt;Integral() &gt; 0.)) h_d-&gt;SetBinContent(j,0.00001*h-&gt;Integral());</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        h_u-&gt;SetBinContent(j, val + err_hi);</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        <span class="keywordflow">if</span> (fix_norm_) {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a40fb079acc7cdf7acd81d7bccb653f8a">set_value_d</a>(1.0);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a780d467fd100c4c521fc604ddcea6f0f">set_value_u</a>(1.0);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a40fb079acc7cdf7acd81d7bccb653f8a">set_value_d</a>(h_d-&gt;Integral()/h-&gt;Integral());</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;          sys.<a class="code" href="classch_1_1_systematic.html#a780d467fd100c4c521fc604ddcea6f0f">set_value_u</a>(h_u-&gt;Integral()/h-&gt;Integral());</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        }</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        sys.<a class="code" href="classch_1_1_systematic.html#a400bca9bdb905d91e094ebd30a4aac7d">set_shapes</a>(std::move(h_u), std::move(h_d), <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        dest.<a class="code" href="classch_1_1_combine_harvester.html#a2eefb78479b655130b6cf5710bdea33c">CreateParameterIfEmpty</a>(sys.<a class="code" href="classch_1_1_systematic.html#a003ef543320b8966fd66d85cc5a8cd87">name</a>());</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        dest.<a class="code" href="classch_1_1_combine_harvester.html#ab6ba1e447ab5b290c22c23218ddf64cd">InsertSystematic</a>(sys);</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      }</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    }</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  }</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="comment">// std::cout &lt;&lt; &quot;bbb added: &quot; &lt;&lt; bbb_added &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;}</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;</div>
+<div class="line"><a name="l00202"></a><span class="lineno"><a class="line" href="classch_1_1_bin_by_bin_factory.html#a9873544209128b4d1dcbf9d897fe1094">  202</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classch_1_1_bin_by_bin_factory.html#a9873544209128b4d1dcbf9d897fe1094">BinByBinFactory::MergeAndAdd</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;src, <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;dest) {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <a class="code" href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">MergeBinErrors</a>(src);</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <a class="code" href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">AddBinByBin</a>(src, dest);</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;}</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;}</div>
 <div class="ttc" id="classch_1_1_object_html_acc6dfa0e69fd9c9647e4b242bfe6a93e"><div class="ttname"><a href="classch_1_1_object.html#acc6dfa0e69fd9c9647e4b242bfe6a93e">ch::Object::analysis</a></div><div class="ttdeci">virtual std::string const &amp; analysis() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00025">Object.h:25</a></div></div>
 <div class="ttc" id="classch_1_1_bin_by_bin_factory_html_ad83ac54b41f5ee9eabc33866bb61b834"><div class="ttname"><a href="classch_1_1_bin_by_bin_factory.html#ad83ac54b41f5ee9eabc33866bb61b834">ch::BinByBinFactory::BinByBinFactory</a></div><div class="ttdeci">BinByBinFactory()</div><div class="ttdef"><b>Definition:</b> <a href="_bin_by_bin_8cc_source.html#l00011">BinByBin.cc:11</a></div></div>
 <div class="ttc" id="classch_1_1_systematic_html_ad6299bae494e334e253e7486f7bff1d0"><div class="ttname"><a href="classch_1_1_systematic.html#ad6299bae494e334e253e7486f7bff1d0">ch::Systematic::set_type</a></div><div class="ttdeci">void set_type(std::string const &amp;type)</div><div class="ttdef"><b>Definition:</b> <a href="_systematic_8h_source.html#l00023">Systematic.h:23</a></div></div>
@@ -317,13 +330,13 @@ $(document).ready(function(){initNavTree('_bin_by_bin_8cc_source.html','');});
 <div class="ttc" id="classch_1_1_process_html_a7fdac7c901b10af74e32709528d86f71"><div class="ttname"><a href="classch_1_1_process.html#a7fdac7c901b10af74e32709528d86f71">ch::Process::shape</a></div><div class="ttdeci">TH1 const * shape() const </div><div class="ttdef"><b>Definition:</b> <a href="_process_8h_source.html#l00042">Process.h:42</a></div></div>
 <div class="ttc" id="classch_1_1_systematic_html_a780d467fd100c4c521fc604ddcea6f0f"><div class="ttname"><a href="classch_1_1_systematic.html#a780d467fd100c4c521fc604ddcea6f0f">ch::Systematic::set_value_u</a></div><div class="ttdeci">void set_value_u(double const &amp;value_u)</div><div class="ttdef"><b>Definition:</b> <a href="_systematic_8h_source.html#l00026">Systematic.h:26</a></div></div>
 <div class="ttc" id="classch_1_1_process_html_ab2cc280e1babe330441de6791e06c2c1"><div class="ttname"><a href="classch_1_1_process.html#ab2cc280e1babe330441de6791e06c2c1">ch::Process::PrintHeader</a></div><div class="ttdeci">static std::ostream &amp; PrintHeader(std::ostream &amp;out)</div><div class="ttdef"><b>Definition:</b> <a href="_process_8cc_source.html#l00131">Process.cc:131</a></div></div>
-<div class="ttc" id="classch_1_1_bin_by_bin_factory_html_a9873544209128b4d1dcbf9d897fe1094"><div class="ttname"><a href="classch_1_1_bin_by_bin_factory.html#a9873544209128b4d1dcbf9d897fe1094">ch::BinByBinFactory::MergeAndAdd</a></div><div class="ttdeci">void MergeAndAdd(CombineHarvester &amp;src, CombineHarvester &amp;dest)</div><div class="ttdoc">A convenience function which calls MergeBinErrors and AddBinByBin in turn. </div><div class="ttdef"><b>Definition:</b> <a href="_bin_by_bin_8cc_source.html#l00189">BinByBin.cc:189</a></div></div>
+<div class="ttc" id="classch_1_1_bin_by_bin_factory_html_a9873544209128b4d1dcbf9d897fe1094"><div class="ttname"><a href="classch_1_1_bin_by_bin_factory.html#a9873544209128b4d1dcbf9d897fe1094">ch::BinByBinFactory::MergeAndAdd</a></div><div class="ttdeci">void MergeAndAdd(CombineHarvester &amp;src, CombineHarvester &amp;dest)</div><div class="ttdoc">A convenience function which calls MergeBinErrors and AddBinByBin in turn. </div><div class="ttdef"><b>Definition:</b> <a href="_bin_by_bin_8cc_source.html#l00202">BinByBin.cc:202</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_aa2f03ad2ae3518c7169ea0dc79bca780"><div class="ttname"><a href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">ch::Object::bin</a></div><div class="ttdeci">virtual std::string const &amp; bin() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00016">Object.h:16</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_a5ff1c80eee75e9f6d5ebc7d7089503d7"><div class="ttname"><a href="classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7">ch::Object::era</a></div><div class="ttdeci">virtual std::string const &amp; era() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00028">Object.h:28</a></div></div>
-<div class="ttc" id="classch_1_1_bin_by_bin_factory_html_a6e0495e815c6a5ac41b45fb200b860cf"><div class="ttname"><a href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">ch::BinByBinFactory::MergeBinErrors</a></div><div class="ttdeci">void MergeBinErrors(CombineHarvester &amp;cb)</div><div class="ttdoc">Merges histogram bin errors between processes. </div><div class="ttdef"><b>Definition:</b> <a href="_bin_by_bin_8cc_source.html#l00021">BinByBin.cc:21</a></div></div>
+<div class="ttc" id="classch_1_1_bin_by_bin_factory_html_a6e0495e815c6a5ac41b45fb200b860cf"><div class="ttname"><a href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">ch::BinByBinFactory::MergeBinErrors</a></div><div class="ttdeci">void MergeBinErrors(CombineHarvester &amp;cb)</div><div class="ttdoc">Merges histogram bin errors between processes. </div><div class="ttdef"><b>Definition:</b> <a href="_bin_by_bin_8cc_source.html#l00022">BinByBin.cc:22</a></div></div>
 <div class="ttc" id="classch_1_1_process_html"><div class="ttname"><a href="classch_1_1_process.html">ch::Process</a></div><div class="ttdef"><b>Definition:</b> <a href="_process_8h_source.html#l00014">Process.h:14</a></div></div>
 <div class="ttc" id="classch_1_1_systematic_html_a003ef543320b8966fd66d85cc5a8cd87"><div class="ttname"><a href="classch_1_1_systematic.html#a003ef543320b8966fd66d85cc5a8cd87">ch::Systematic::name</a></div><div class="ttdeci">std::string const &amp; name() const </div><div class="ttdef"><b>Definition:</b> <a href="_systematic_8h_source.html#l00021">Systematic.h:21</a></div></div>
-<div class="ttc" id="classch_1_1_bin_by_bin_factory_html_ab097f067dce0a722af70dd86bf1b5398"><div class="ttname"><a href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">ch::BinByBinFactory::AddBinByBin</a></div><div class="ttdeci">void AddBinByBin(CombineHarvester &amp;src, CombineHarvester &amp;dest)</div><div class="ttdoc">Create bin-by-bin shape uncertainties for every process in src, and add these to dest ...</div><div class="ttdef"><b>Definition:</b> <a href="_bin_by_bin_8cc_source.html#l00092">BinByBin.cc:92</a></div></div>
+<div class="ttc" id="classch_1_1_bin_by_bin_factory_html_ab097f067dce0a722af70dd86bf1b5398"><div class="ttname"><a href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">ch::BinByBinFactory::AddBinByBin</a></div><div class="ttdeci">void AddBinByBin(CombineHarvester &amp;src, CombineHarvester &amp;dest)</div><div class="ttdoc">Create bin-by-bin shape uncertainties for every process in src, and add these to dest ...</div><div class="ttdef"><b>Definition:</b> <a href="_bin_by_bin_8cc_source.html#l00105">BinByBin.cc:105</a></div></div>
 <div class="ttc" id="classch_1_1_systematic_html"><div class="ttname"><a href="classch_1_1_systematic.html">ch::Systematic</a></div><div class="ttdef"><b>Definition:</b> <a href="_systematic_8h_source.html#l00012">Systematic.h:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

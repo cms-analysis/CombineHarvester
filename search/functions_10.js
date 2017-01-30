@@ -44,6 +44,7 @@ var searchData=
   ['setfromprocs',['SetFromProcs',['../classch_1_1_combine_harvester.html#a7a0c6913b055e11798269034ae324298',1,'ch::CombineHarvester']]],
   ['setfromsysts',['SetFromSysts',['../classch_1_1_combine_harvester.html#a6c60a401231bfded23a56abe3f6dbf77',1,'ch::CombineHarvester']]],
   ['setgroup',['SetGroup',['../classch_1_1_combine_harvester.html#a5d75e03de3d628f7281a2e6914722bc5',1,'ch::CombineHarvester']]],
+  ['setmergesaturatedbins',['SetMergeSaturatedBins',['../classch_1_1_bin_by_bin_factory.html#a7240cc3c8d9be4d77e3e041256397e8f',1,'ch::BinByBinFactory']]],
   ['setmergethreshold',['SetMergeThreshold',['../classch_1_1_bin_by_bin_factory.html#aa983d4e391adbf5a7af40458a3ffc062',1,'ch::BinByBinFactory']]],
   ['setmergezerobins',['SetMergeZeroBins',['../classch_1_1_bin_by_bin_factory.html#a57a7a111d2b683912cb70e5e9786432c',1,'ch::BinByBinFactory']]],
   ['setpattern',['SetPattern',['../classch_1_1_bin_by_bin_factory.html#a4f8c2b763538030dcab6cd3566b27568',1,'ch::BinByBinFactory']]],

@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"classch_1_1_fn_timer.html#aa6368e35ad1520773275baf7ad1bbcb6":[16,0,0,6,4],
 "classch_1_1_fn_timer.html#aa6e36b42f8bfa11abc0223da0ff485cc":[16,0,0,6,1],
 "classch_1_1_fn_timer.html#ad250e7cf97d91e1fe83d1d861a2fc7ab":[16,0,0,6,2],
 "classch_1_1_fn_timer_1_1_token.html":[16,0,0,6,0],
@@ -172,8 +173,8 @@ var NAVTREEINDEX2 =
 "functions_d.html":[16,2,0,3],
 "functions_e.html":[16,2,0,4],
 "functions_f.html":[16,2,0,5],
-"functions_func.html":[16,2,1,0],
 "functions_func.html":[16,2,1],
+"functions_func.html":[16,2,1,0],
 "functions_func_b.html":[16,2,1,1],
 "functions_func_c.html":[16,2,1,2],
 "functions_func_d.html":[16,2,1,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "limits.html#limits-building-the-workspaces":[6,0,1],
 "limits.html#limits-calculating-limits":[6,0,2],
 "limits.html#limits-collecting":[6,0,3],
-"limits.html#limits-creating-the-datacards":[6,0,0],
-"limits.html#limits-more-POIs":[6,1]
+"limits.html#limits-creating-the-datacards":[6,0,0]
 };

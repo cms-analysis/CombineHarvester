@@ -140,8 +140,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a76d34782e2b31e762f07093e7d3748ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct approximate Poisson uncertainties instead of default Gaussian.  <a href="#a76d34782e2b31e762f07093e7d3748ab">More...</a><br /></td></tr>
 <tr class="separator:a76d34782e2b31e762f07093e7d3748ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57a7a111d2b683912cb70e5e9786432c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classch_1_1_bin_by_bin_factory.html">BinByBinFactory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_bin_by_bin_factory.html#a57a7a111d2b683912cb70e5e9786432c">SetMergeZeroBins</a> (bool merge)</td></tr>
-<tr class="memdesc:a57a7a111d2b683912cb70e5e9786432c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct approximate Poisson uncertainties instead of default Gaussian.  <a href="#a57a7a111d2b683912cb70e5e9786432c">More...</a><br /></td></tr>
+<tr class="memdesc:a57a7a111d2b683912cb70e5e9786432c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set whether bins with zero content can participate in the merging procedure.  <a href="#a57a7a111d2b683912cb70e5e9786432c">More...</a><br /></td></tr>
 <tr class="separator:a57a7a111d2b683912cb70e5e9786432c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7240cc3c8d9be4d77e3e041256397e8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classch_1_1_bin_by_bin_factory.html">BinByBinFactory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_bin_by_bin_factory.html#a7240cc3c8d9be4d77e3e041256397e8f">SetMergeSaturatedBins</a> (bool merge)</td></tr>
+<tr class="memdesc:a7240cc3c8d9be4d77e3e041256397e8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set whether bins with error &gt;= content participate in the merging procedure.  <a href="#a7240cc3c8d9be4d77e3e041256397e8f">More...</a><br /></td></tr>
+<tr class="separator:a7240cc3c8d9be4d77e3e041256397e8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Merges bin uncertainties and creates bin-by-bin statistical uncertainties. </p>
@@ -199,7 +202,7 @@ bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 </ul>
 <dl class="section note"><dt>Note</dt><dd>For a valid result all analysis event categories must have a unique <code>bin()</code> value. </dd></dl>
 
-<p>Definition at line <a class="el" href="_bin_by_bin_8cc_source.html#l00021">21</a> of file <a class="el" href="_bin_by_bin_8cc_source.html">BinByBin.cc</a>.</p>
+<p>Definition at line <a class="el" href="_bin_by_bin_8cc_source.html#l00022">22</a> of file <a class="el" href="_bin_by_bin_8cc_source.html">BinByBin.cc</a>.</p>
 
 </div>
 </div>
@@ -235,7 +238,7 @@ bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 <li>The third parameters is a pattern-string which prescribes how the bin-by-bin uncertainties should be named. By default this is <code>CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#</code>, but can be changed with <a class="el" href="classch_1_1_bin_by_bin_factory.html#a4f8c2b763538030dcab6cd3566b27568">SetPattern</a>. Note that the special term <code>$#</code> should always be included as this is replaced with the bin index. </li>
 </ul>
 
-<p>Definition at line <a class="el" href="_bin_by_bin_8cc_source.html#l00092">92</a> of file <a class="el" href="_bin_by_bin_8cc_source.html">BinByBin.cc</a>.</p>
+<p>Definition at line <a class="el" href="_bin_by_bin_8cc_source.html#l00105">105</a> of file <a class="el" href="_bin_by_bin_8cc_source.html">BinByBin.cc</a>.</p>
 
 </div>
 </div>
@@ -265,7 +268,7 @@ bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
 <p>A convenience function which calls <a class="el" href="classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf">MergeBinErrors</a> and <a class="el" href="classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398">AddBinByBin</a> in turn. </p>
 
-<p>Definition at line <a class="el" href="_bin_by_bin_8cc_source.html#l00189">189</a> of file <a class="el" href="_bin_by_bin_8cc_source.html">BinByBin.cc</a>.</p>
+<p>Definition at line <a class="el" href="_bin_by_bin_8cc_source.html#l00202">202</a> of file <a class="el" href="_bin_by_bin_8cc_source.html">BinByBin.cc</a>.</p>
 
 </div>
 </div>
@@ -459,9 +462,37 @@ bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 </table>
 </div><div class="memdoc">
 
-<p>Construct approximate Poisson uncertainties instead of default Gaussian. </p>
+<p>Set whether bins with zero content can participate in the merging procedure. </p>
 
 <p>Definition at line <a class="el" href="_bin_by_bin_8h_source.html#l00140">140</a> of file <a class="el" href="_bin_by_bin_8h_source.html">BinByBin.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7240cc3c8d9be4d77e3e041256397e8f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classch_1_1_bin_by_bin_factory.html">BinByBinFactory</a>&amp; ch::BinByBinFactory::SetMergeSaturatedBins </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>merge</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set whether bins with error &gt;= content participate in the merging procedure. </p>
+
+<p>Definition at line <a class="el" href="_bin_by_bin_8h_source.html#l00148">148</a> of file <a class="el" href="_bin_by_bin_8h_source.html">BinByBin.h</a>.</p>
 
 </div>
 </div>

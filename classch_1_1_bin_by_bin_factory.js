@@ -10,5 +10,6 @@ var classch_1_1_bin_by_bin_factory =
     [ "SetPattern", "classch_1_1_bin_by_bin_factory.html#a4f8c2b763538030dcab6cd3566b27568", null ],
     [ "SetFixNorm", "classch_1_1_bin_by_bin_factory.html#a05d997b69c619df3c2f7d20e4e7106b7", null ],
     [ "SetPoissonErrors", "classch_1_1_bin_by_bin_factory.html#a76d34782e2b31e762f07093e7d3748ab", null ],
-    [ "SetMergeZeroBins", "classch_1_1_bin_by_bin_factory.html#a57a7a111d2b683912cb70e5e9786432c", null ]
+    [ "SetMergeZeroBins", "classch_1_1_bin_by_bin_factory.html#a57a7a111d2b683912cb70e5e9786432c", null ],
+    [ "SetMergeSaturatedBins", "classch_1_1_bin_by_bin_factory.html#a7240cc3c8d9be4d77e3e041256397e8f", null ]
 ];

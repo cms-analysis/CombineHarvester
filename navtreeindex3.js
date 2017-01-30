@@ -1,13 +1,14 @@
 var NAVTREEINDEX3 =
 {
+"limits.html#limits-more-POIs":[6,1],
 "limits.html#limits-morphing-cards":[6,0,5],
 "limits.html#limits-one-POI":[6,0],
 "limits.html#limits-plotting":[6,0,4],
 "limits.html#limits-pre-vs-post":[6,1,0],
 "md_docs__charged_higgs.html":[9],
 "md_docs__hybrid_new_grid.html":[13],
-"namespacech.html":[16,0,0],
 "namespacech.html":[15,0,0],
+"namespacech.html":[16,0,0],
 "namespacech_1_1syst.html":[15,0,0,0],
 "namespacech_1_1syst.html":[16,0,0,0],
 "namespacech_1_1syst_1_1detail.html":[15,0,0,0,0],
