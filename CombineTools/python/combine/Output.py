@@ -116,67 +116,68 @@ class CollectLimits(CombineToolBase):
         for label, filenames in limit_sets.iteritems():
             js_out = {}
             for filename in filenames:
-                file = ROOT.TFile(filename)
-                tree = file.Get('limit')
-                for evt in tree:
-                    mh = str(evt.mh)
-                    if mh not in js_out:
-                        js_out[mh] = {}
+                if plot.TFileIsGood(filename):
+                    file = ROOT.TFile(filename)
+                    tree = file.Get('limit')
+                    for evt in tree:
+                        mh = str(evt.mh)
+                        if mh not in js_out:
+                            js_out[mh] = {}
+                            if self.args.toys:
+                                js_out[mh]['toys'] = {}
+                                for limit in ['obs', 'exp0', 'exp-2', 'exp-1', 'exp+1', 'exp+2']:
+                                    js_out[mh]['toys'][limit] = []
                         if self.args.toys:
-                            js_out[mh]['toys'] = {}
-                            for limit in ['obs', 'exp0', 'exp-2', 'exp-1', 'exp+1', 'exp+2']:
-                                js_out[mh]['toys'][limit] = []
-                    if self.args.toys:
-                        if evt.iToy > 0:
-                            if evt.quantileExpected == -1:
-                                js_out[mh]['toys']['obs'].append(evt.limit)
-                            elif abs(evt.quantileExpected - 0.5) < 1E-4:
-                                js_out[mh]['toys']["exp0"].append(evt.limit)
-                            elif abs(evt.quantileExpected - 0.025) < 1E-4:
-                                js_out[mh]['toys']["exp-2"].append(evt.limit)
-                            elif abs(evt.quantileExpected - 0.160) < 1E-4:
-                                js_out[mh]['toys']["exp-1"].append(evt.limit)
-                            elif abs(evt.quantileExpected - 0.840) < 1E-4:
-                                js_out[mh]['toys']["exp+1"].append(evt.limit)
-                            elif abs(evt.quantileExpected - 0.975) < 1E-4:
-                                js_out[mh]['toys']["exp+2"].append(evt.limit)
-                        elif evt.iToy == 0:
-                            if evt.quantileExpected == -1:
-                                js_out[mh]['obs'].append(evt.limit)
+                            if evt.iToy > 0:
+                                if evt.quantileExpected == -1:
+                                    js_out[mh]['toys']['obs'].append(evt.limit)
+                                elif abs(evt.quantileExpected - 0.5) < 1E-4:
+                                    js_out[mh]['toys']["exp0"].append(evt.limit)
+                                elif abs(evt.quantileExpected - 0.025) < 1E-4:
+                                    js_out[mh]['toys']["exp-2"].append(evt.limit)
+                                elif abs(evt.quantileExpected - 0.160) < 1E-4:
+                                    js_out[mh]['toys']["exp-1"].append(evt.limit)
+                                elif abs(evt.quantileExpected - 0.840) < 1E-4:
+                                    js_out[mh]['toys']["exp+1"].append(evt.limit)
+                                elif abs(evt.quantileExpected - 0.975) < 1E-4:
+                                    js_out[mh]['toys']["exp+2"].append(evt.limit)
+                            elif evt.iToy == 0:
+                                if evt.quantileExpected == -1:
+                                    js_out[mh]['obs'].append(evt.limit)
 
-                    else:
-                        if evt.quantileExpected == -1:
-                            js_out[mh]['obs'] = evt.limit
-                            if self.args.limit_err:
-                                js_out[mh]['obs_err'] = evt.limitErr
-                        elif abs(evt.quantileExpected - 0.5) < 1E-4:
-                            js_out[mh]["exp0"] = evt.limit
-                            if self.args.limit_err:
-                                js_out[mh]['exp0_err'] = evt.limitErr
-                        elif abs(evt.quantileExpected - 0.025) < 1E-4:
-                            js_out[mh]["exp-2"] = evt.limit
-                            if self.args.limit_err:
-                                js_out[mh]['exp-2_err'] = evt.limitErr
-                        elif abs(evt.quantileExpected - 0.160) < 1E-4:
-                            js_out[mh]["exp-1"] = evt.limit
-                            if self.args.limit_err:
-                                js_out[mh]['exp-1_err'] = evt.limitErr
-                        elif abs(evt.quantileExpected - 0.840) < 1E-4:
-                            js_out[mh]["exp+1"] = evt.limit
-                            if self.args.limit_err:
-                                js_out[mh]['exp+1_err'] = evt.limitErr
-                        elif abs(evt.quantileExpected - 0.975) < 1E-4:
-                            js_out[mh]["exp+2"] = evt.limit
-                            if self.args.limit_err:
-                                js_out[mh]['exp+2_err'] = evt.limitErr
+                        else:
+                            if evt.quantileExpected == -1:
+                                js_out[mh]['obs'] = evt.limit
+                                if self.args.limit_err:
+                                    js_out[mh]['obs_err'] = evt.limitErr
+                            elif abs(evt.quantileExpected - 0.5) < 1E-4:
+                                js_out[mh]["exp0"] = evt.limit
+                                if self.args.limit_err:
+                                    js_out[mh]['exp0_err'] = evt.limitErr
+                            elif abs(evt.quantileExpected - 0.025) < 1E-4:
+                                js_out[mh]["exp-2"] = evt.limit
+                                if self.args.limit_err:
+                                    js_out[mh]['exp-2_err'] = evt.limitErr
+                            elif abs(evt.quantileExpected - 0.160) < 1E-4:
+                                js_out[mh]["exp-1"] = evt.limit
+                                if self.args.limit_err:
+                                    js_out[mh]['exp-1_err'] = evt.limitErr
+                            elif abs(evt.quantileExpected - 0.840) < 1E-4:
+                                js_out[mh]["exp+1"] = evt.limit
+                                if self.args.limit_err:
+                                    js_out[mh]['exp+1_err'] = evt.limitErr
+                            elif abs(evt.quantileExpected - 0.975) < 1E-4:
+                                js_out[mh]["exp+2"] = evt.limit
+                                if self.args.limit_err:
+                                    js_out[mh]['exp+2_err'] = evt.limitErr
 
             if self.args.toys:
                 for mh in js_out.keys():
                     print "Expected bands will be taken from toys"
                     print mh
                     limits = sorted(js_out[mh]['toys']['obs'])
-                    # if mh == '90.0':
-                    #     limits = [x for x in limits if x > 2.0]
+                    #if mh == '160.0' or mh == '90.0' :
+                    #    limits = [x for x in limits if x > 0.1]
                     quantiles = array('d', [0.025, 0.160, 0.5, 0.840, 0.975])
                     res = array('d', [0., 0., 0., 0., 0.])
                     empty = array('i', [0])
