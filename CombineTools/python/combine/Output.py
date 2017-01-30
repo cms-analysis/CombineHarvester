@@ -176,8 +176,8 @@ class CollectLimits(CombineToolBase):
                     print "Expected bands will be taken from toys"
                     print mh
                     limits = sorted(js_out[mh]['toys']['obs'])
-                    if mh == '160.0' or mh == '90.0' :
-                        limits = [x for x in limits if x > 0.1]
+                    #if mh == '160.0' or mh == '90.0' :
+                    #    limits = [x for x in limits if x > 0.1]
                     quantiles = array('d', [0.025, 0.160, 0.5, 0.840, 0.975])
                     res = array('d', [0., 0., 0., 0., 0.])
                     empty = array('i', [0])
