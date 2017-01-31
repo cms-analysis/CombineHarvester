@@ -559,24 +559,26 @@ namespace ch {
         }
 
 	//jet fakes: shape uncertainties
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet0_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet1_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet0_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet1_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet0_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet1_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet0_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet1_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
 
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm0_njet0_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm0_njet1_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm1_njet0_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm1_njet1_stat", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_syst", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_w_syst", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_tt_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_w_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_tt_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
 
         //jet fakes: stat norm unc
 	cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_stat_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
