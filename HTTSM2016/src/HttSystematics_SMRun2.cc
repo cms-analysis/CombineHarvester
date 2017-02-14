@@ -110,10 +110,82 @@ namespace ch {
                                                                                                         "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
-                                                                                                          "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+                                                                              //"CMS_scale_j_$BIN_$ERA", "shape", SystMap<>::init(1.00));
+                                                                              "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD", "HWW_gg125","HWW_qq125"}})).channel({"em"}).AddSyst(cb,
-                                                                                                                                   "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
-        
+                                                                              //"CMS_scale_j_$BIN_$ERA", "shape", SystMap<>::init(1.00));
+                                                                              "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+
+        // JES factorization test tautau        
+        std::vector< std::string > uncertNames = {
+            "AbsoluteFlavMap",
+            "AbsoluteMPFBias",
+            "AbsoluteScale",
+            "AbsoluteStat",
+            //"CorrelationGroupFlavor",
+            //"CorrelationGroupIntercalibration",
+            //"CorrelationGroupMPFInSitu",
+            //"CorrelationGroupUncorrelated",
+            //"CorrelationGroupbJES",
+            //"FlavorPhotonJet",
+            //"FlavorPureBottom",
+            //"FlavorPureCharm",
+            //"FlavorPureGluon",
+            //"FlavorPureQuark",
+            "FlavorQCD",
+            //"FlavorZJet",
+            "Fragmentation",
+            "PileUpDataMC",
+            //"PileUpEnvelope",
+            //"PileUpMuZero",
+            "PileUpPtBB",
+            "PileUpPtEC1",
+            "PileUpPtEC2",
+            "PileUpPtHF",
+            "PileUpPtRef",
+            "RelativeBal",
+            "RelativeFSR",
+            "RelativeJEREC1",
+            "RelativeJEREC2",
+            "RelativeJERHF",
+            "RelativePtBB",
+            "RelativePtEC1",
+            "RelativePtEC2",
+            "RelativePtHF",
+            "RelativeStatEC",
+            "RelativeStatFSR",
+            "RelativeStatHF",
+            "SinglePionECAL",
+            "SinglePionHCAL",
+            //"SubTotalAbsolute",
+            //"SubTotalMC",
+            //"SubTotalPileUp",
+            //"SubTotalPt",
+            //"SubTotalRelative",
+            //"SubTotalScale",
+            "TimePtEta",
+            //"TimeRunBCD",
+            //"TimeRunE",
+            //"TimeRunF",
+            //"TimeRunGH",
+            //"TotalNoFlavorNoTime",
+            //"TotalNoFlavor",
+            //"TotalNoTime",
+            //"Total", // Total JES value, don't include
+            //"Closure", // Closure Measure, don't include
+        }; // end uncertNames
+        //for (string uncert:uncertNames){
+        //    //cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VV", "ZL", "ZJ","EWKZ"}})).channel({"et"}).AddSyst(cb,
+        //    //                                                    "CMS_Jet"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //    //cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VV", "ZL", "ZJ","EWKZ"}})).channel({"mt"}).AddSyst(cb,
+        //    //                                                    "CMS_scale_j_Jet"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //    cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VV", "ZL", "ZJ","EWKZ"}})).channel({"tt","et","mt"}).AddSyst(cb,
+        //                                                        "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //    //cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD", "HWW_gg125","HWW_qq125"}})).channel({"em"}).AddSyst(cb,
+        //    //                                                    "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //}
+
+
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
                         ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, {"ZTT", "TT", "VV","VVT", "ZL", "ZJ","TTJ","TTT","EWKZ"}}), 1.01));
@@ -205,8 +277,8 @@ namespace ch {
         // Ttbar shape reweighting, Between no and twice the correction
         //##############################################################################
         
-        cb.cp().process( {"TTJ","TTT"}).channel({"et","mt","tt"}).AddSyst(cb,
-                                                                          "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
+// FIXME?        cb.cp().process( {"TTJ","TTT"}).channel({"et","mt","tt"}).AddSyst(cb,
+// FIXME?                                                                          "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"TT"}).channel({"em"}).AddSyst(cb,
                                                          "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
         
@@ -218,8 +290,8 @@ namespace ch {
                                                         "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
         cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
                                                         "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.25));
-        cb.cp().process( {"TTJ","W","ZJ"}).channel({"tt","mt","et"}).AddSyst(cb,
-                                                        "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
+        //cb.cp().process( {"TTJ","W","ZJ"}).channel({"tt","mt","et"}).AddSyst(cb,
+        //                                                "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
         
  
         // mu to tau FR
@@ -236,7 +308,8 @@ namespace ch {
         //##############################################################################
         
         //scale_gg on signal
-        cb.cp().process( {"ggH"}).channel({"et","mt","tt","em"}).AddSyst(cb,
+        //cb.cp().process( {"ggH"}).channel({"et","mt","tt","em"}).AddSyst(cb,
+        cb.cp().process( {"ggH"}).channel({"et","mt","tt"}).AddSyst(cb,
                                                                          "CMS_scale_gg_$ERA", "shape", SystMap<>::init(1.00));
         
         // Scale uncertainty on signal Applies to ggH in boosted and VBF. Event-by-event weight applied as a func(on of pth or mjj. Fully correlated between categories and final states.
@@ -325,6 +398,22 @@ namespace ch {
         
         
         cb.cp().AddSyst(cb, "CMS_ggH_UEPS", "lnN", SystMap<channel, bin_id, process>::init
+        // Run I values were in 2%-10% range, I just took those as estimates for now
+                        //({"em"},{1},{"ggH"}, 1.02)
+                        //({"et"},{1},{"ggH"}, 1.02)
+                        //({"mt"},{1},{"ggH"}, 1.02)
+                        //({"tt"},{1},{"ggH"}, 0.98)
+                        //
+                        //({"em"},{2},{"ggH"}, 0.95)
+                        //({"et"},{2},{"ggH"}, 1.05)
+                        //({"mt"},{2},{"ggH"}, 0.95)
+                        //({"tt"},{2},{"ggH"}, 0.95)
+                        //
+                        //
+                        //({"em"},{3},{"ggH"}, 0.90)
+                        //({"et"},{3},{"ggH"}, 0.90)
+                        //({"mt"},{3},{"ggH"}, 0.90)
+                        //({"tt"},{3},{"ggH"}, 0.90)
                         ({"em"},{1},{"ggH"}, 1.04)
                         ({"et"},{1},{"ggH"}, 1.07)
                         ({"mt"},{1},{"ggH"}, 1.07)

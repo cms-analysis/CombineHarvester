@@ -87,10 +87,11 @@ int main(int argc, char** argv) {
     config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
     
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("USCMS"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("USCMS"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("USCMS"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS/JES_test"))
+    //("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("USCMS/JES_test"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("USCMS/JES_test"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("USCMS/JES_test"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     
@@ -232,8 +233,8 @@ int main(int argc, char** argv) {
     
     // Or equivalently, specify the mass points explicitly:
     vector<string> sig_procs = {"ggH","qqH","WH","ZH"};
-    vector<string> masses = ch::MassesFromRange("120-130:5");
-    //        vector<string> masses = {"125"};
+// FIXME    vector<string> masses = ch::MassesFromRange("120-130:5");
+            vector<string> masses = {"125"};
     
     using ch::syst::bin_id;
     
@@ -339,27 +340,27 @@ int main(int argc, char** argv) {
     
     
     
-    //! [part8]
-    auto bbb = ch::BinByBinFactory()
-    .SetAddThreshold(0.1)
-    .SetMergeThreshold(0.5)
-    .SetFixNorm(false);
-    bbb.MergeBinErrors(cb.cp().backgrounds());
-    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
-    
-    
-    
-    // And now do bbb for the control region with a slightly different config:
-    auto bbb_ctl = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
-    .SetAddThreshold(0.)
-    .SetMergeThreshold(0.4)
-    .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
-    .SetVerbosity(1);
-    // Will merge but only for non W and QCD processes, to be on the safe side
-    bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
-    bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
-    cout << " done\n";
+//    //! [part8]
+//    auto bbb = ch::BinByBinFactory()
+//    .SetAddThreshold(0.1)
+//    .SetMergeThreshold(0.5)
+//    .SetFixNorm(false);
+//    bbb.MergeBinErrors(cb.cp().backgrounds());
+//    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+//    
+//    
+//    
+//    // And now do bbb for the control region with a slightly different config:
+//    auto bbb_ctl = ch::BinByBinFactory()
+//    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+//    .SetAddThreshold(0.)
+//    .SetMergeThreshold(0.4)
+//    .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
+//    .SetVerbosity(1);
+//    // Will merge but only for non W and QCD processes, to be on the safe side
+//    bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
+//    bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
+//    cout << " done\n";
     
     
     
@@ -395,6 +396,7 @@ int main(int argc, char** argv) {
     cb.SetGroup("nonThySyst", {".*"});
     cb.SetGroup("theory", {"CMS_ggH_.*|CMS_qqH_.*|CMS_scale_gg_13TeV"});
     cb.RemoveGroup("nonThySyst", {"CMS_ggH_.*|CMS_qqH_.*|CMS_scale_gg_13TeV"});
+    cb.SetGroup("JESGroup", {"CMS_scale_j.*"});
     
     
     
