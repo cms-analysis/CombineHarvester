@@ -1,6 +1,6 @@
 #! /bin/csh -f
 
-WriteDatacards_2lss_1tau
+WriteDatacards_2lss_1tau_FRjt_syst
 
 combine -M MaxLikelihoodFit -m 125 ttH_2lss_1tau.txt
 
