@@ -1,8 +1,8 @@
 #! /bin/csh -f
 
-WriteDatacards_2lss_1tau -i datacard_MEM_nomiss.root -o ttH_2lss_1tau_2016_MEM_nomiss.root
+WriteDatacards_2lss_1tau_FRjt_syst -i datacard_MEM_nomiss.root -o ttH_2lss_1tau_2016_MEM_nomiss.root -b ttH_2lss_1tau_nomiss
 
-WriteDatacards_2lss_1tau -i datacard_MEM_missing.root -o ttH_2lss_1tau_2016_MEM_missing.root
+WriteDatacards_2lss_1tau_FRjt_syst -i datacard_MEM_missing.root -o ttH_2lss_1tau_2016_MEM_missing.root -b ttH_2lss_1tau_missing
 
 combineCards.py ttH_2lss_1tau_2016_MEM_nomiss.txt ttH_2lss_1tau_2016_MEM_missing.txt > ttH_2lss_1tau_2016_MEM_2cat.txt
 
