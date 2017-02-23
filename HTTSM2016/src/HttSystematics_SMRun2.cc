@@ -33,6 +33,16 @@ namespace ch {
         
         std::vector<std::string> sig_procs = {"ggH","qqH","WH","ZH"};
         
+        // N.B. when adding this list of backgrounds to a nuisance, only
+        // the backgrounds that are included in the background process
+        // defined in MorphingSM2016.cpp are included in the actual DCs
+        // This is a list of all MC based backgrounds
+        // QCD is explicitly excluded
+        std::vector<std::string> all_mc_bkgs = {
+            "ZL","ZJ","ZTT","TTJ","TTT","TT",
+            "W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
+            "HWW_gg125","HWW_qq125","EWKZ"};
+
         //##############################################################################
         //  lumi
         //##############################################################################
@@ -103,8 +113,23 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, {"ZTT", "W", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125","QCD"}})).channel({"em"}).AddSyst(cb,
                                              "CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         
+        // Use only one of the TES options below per channel
+        // these both need to be included while we work on getting all channels
+        // having DM based TES, then we will switch permanently
+        //
+        // Standard TES
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","VVT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                              "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+
+        // Decay Mode based TES Settings
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).AddSyst(cb,
+        //                                          "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        //                                          "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        //                                          "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        //                                          "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TTJ","TTT","W","VVT","VV", "ZL", "ZJ","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                              "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
