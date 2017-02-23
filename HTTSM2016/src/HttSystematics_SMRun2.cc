@@ -49,7 +49,7 @@ namespace ch {
         
         cb.cp().process(JoinStr({sig_procs, {"VV","VVT","HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.026));
-        cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.062));
+        cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.026));
         
         //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
         cb.cp().process({"W"}).channel({"tt","em","mm","ttbar"}).AddSyst(cb,
