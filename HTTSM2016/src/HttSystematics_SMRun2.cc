@@ -53,10 +53,10 @@ namespace ch {
         
         //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
         cb.cp().process({"W"}).channel({"tt","em","mm","ttbar"}).AddSyst(cb,
-                                            "lumi_13TeV", "lnN", SystMap<>::init(1.062));
+                                            "lumi_13TeV", "lnN", SystMap<>::init(1.026));
 
 	if (!ttbar_fit){
-          cb.cp().process({"TTT","TTJ"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.062));
+          cb.cp().process({"TTT","TTJ"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.026));
 	}
         
         //##############################################################################
