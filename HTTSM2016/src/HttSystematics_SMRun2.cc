@@ -21,14 +21,16 @@ namespace ch {
     void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit) {
         // Create a CombineHarvester clone that only contains the signal
         // categories
-        CombineHarvester cb_sig = cb.cp();
-        
-        
-        if (control_region == 1){
-            // we only want to cosider systematic uncertainties in the signal region.
-            // limit to only the 0jet/1jet and vbf categories
-            cb_sig.bin_id({1,2,3});
-        }
+        //
+        // cb_sig is unused at the moment, (was it ever used in this analysis?) delete?
+        //CombineHarvester cb_sig = cb.cp();
+        //
+        //
+        //if (control_region == 1){
+        //    // we only want to cosider systematic uncertainties in the signal region.
+        //    // limit to only the 0jet/1jet and vbf categories
+        //    cb_sig.bin_id({1,2,3});
+        //}
         
         
         std::vector<std::string> sig_procs = {"ggH","qqH","WH","ZH"};
