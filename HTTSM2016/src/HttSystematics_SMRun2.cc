@@ -120,12 +120,21 @@ namespace ch {
         // having DM based TES, then we will switch permanently
         //
         // Standard TES
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
+        // FIXME
+        // This CR segment is temporary, just to check that the CRs work (needed to use old DCS
+        // without scale_t on all shapes)
+        // FIXME
+        if (control_region == 1) {
+            cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","VVT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
                                              "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+        }
+        else {
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
+                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+        }
+
 
         // Decay Mode based TES Settings
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).AddSyst(cb,
-        //                                          "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
         //                                          "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
         //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
@@ -586,11 +595,13 @@ namespace ch {
             cb.cp().bin({"et_vbf","et_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
             
             
-            
-            
             //          cb.cp().bin({bin+"(|_0jet)$"}).process({"W"}).AddSyst(cb, "rate_QCD_cr_0jet_"+bin, "rateParam", SystMap<>::init(1.0));
             //          cb.cp().bin({bin+"(|_boosted)$"}).process({"W"}).AddSyst(cb, "rate_W_cr_1jet_"+bin, "rateParam", SystMap<>::init(1.0));
             //          cb.cp().bin({bin+"(|_vbf)$"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_"+bin, "rateParam", SystMap<>::init(1.0));
+ 
+            cb.cp().bin({"tt_0jet","tt_0jet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_boosted","tt_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_vbf","tt_vbf_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_tt", "rateParam", SystMap<>::init(1.0));
             
             
             //        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,
@@ -615,10 +626,7 @@ namespace ch {
             }
             cb.SetFlag("filters-use-regex", false);
         }
-        
-        
-        
-        
+            
         
         if (mm_fit) {
             cb.SetFlag("filters-use-regex", true);
