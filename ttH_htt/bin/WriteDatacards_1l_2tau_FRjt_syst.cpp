@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
   cb.cp().signals()
       .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init
 	       //({"13TeV"}, 1.027));
-	       ({"13TeV_2016"}, 1.06));
+	       ({"13TeV_2016"}, 1.026));
   //! [part5]
 
   //! [part6]

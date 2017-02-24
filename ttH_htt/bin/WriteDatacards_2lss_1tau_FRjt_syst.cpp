@@ -81,6 +81,7 @@ int main(int argc, char** argv) {
     bkg_procs.push_back(bkg_name);
     bkg_name = bkg_procs_MC[i_b];
     bkg_name.append("_faketau");
+    if(bin_name.find("nomiss")!=std::string::npos && bkg_procs_MC[i_b]=="EWK") continue; //No EWK_faketau in no miss category
     bkg_procs.push_back(bkg_name);
   }
   bkg_procs.push_back("fakes_data");
@@ -115,7 +116,7 @@ int main(int argc, char** argv) {
   cb.cp().signals()
       .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init
 	       //({"13TeV"}, 1.027));
-	       ({"13TeV_2016"}, 1.06));
+	       ({"13TeV_2016"}, 1.026));
 
   //! [part5]
 
@@ -164,27 +165,42 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "CMS_ttHl_Rares", "lnN", SystMap<>::init(1.5));
 
 
+
+  if ( add_shape_sys ) {
+
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRe_norm", "shape", SystMap<>::init(1.0));
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRe_pt", "shape", SystMap<>::init(1.0));
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRe_b", "shape", SystMap<>::init(1.0));
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRe_ec", "shape", SystMap<>::init(1.0));
+
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRm_norm", "shape", SystMap<>::init(1.0));
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRm_pt", "shape", SystMap<>::init(1.0));
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRm_b", "shape", SystMap<>::init(1.0));
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_FRm_ec", "shape", SystMap<>::init(1.0));
+
+  }
+
+  cb.cp().process({"fakes_data"})
+      .AddSyst(cb, "CMS_ttHl_Clos_e_norm", "lnN", SystMap<>::init(0.9));
   cb.cp().process({"fakes_data"})
       .AddSyst(cb, "CMS_ttHl_Clos_m_norm", "lnN", SystMap<>::init(1.2));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_Clos_e_norm", "lnN", SystMap<>::init(0.95));
 
-  cb.cp().process({"fakes_data"})
-    .AddSyst(cb, "CMS_ttHl_FRm_norm", "lnN", SystMap<>::init(1.3));
-  cb.cp().process({"fakes_data"})
-    .AddSyst(cb, "CMS_ttHl_FRe_norm", "lnN", SystMap<>::init(1.25));
+ if ( add_shape_sys ) {
 
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_Clos_e_shape", "shape", SystMap<>::init(1.0));
+     cb.cp().process({"fakes_data"})
+        .AddSyst(cb, "CMS_ttHl_Clos_m_shape", "shape", SystMap<>::init(1.0));
 
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0));  
-
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0)); 
-
+ }
 
   cb.cp().process({"flips_data"})
       .AddSyst(cb, "CMS_ttHl_QF", "lnN", SystMap<>::init(1.3));
@@ -202,9 +218,9 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.1));
   
   if ( add_shape_sys ) {
-    cb.cp().process({"ttH_hww_faketau", "ttH_hzz_faketau", "ttH_htt_faketau", "TTW_faketau", "TTZ_faketau", "Rares_gentau"})
+    cb.cp().process({"ttH_hww_faketau", "ttH_hzz_faketau", "ttH_htt_faketau", "TTW_faketau", "TTZ_faketau", "Rares_faketau"})
       .AddSyst(cb, "CMS_ttHl_FRjt_norm", "shape", SystMap<>::init(1.0));
-    cb.cp().process({"ttH_hww_faketau", "ttH_hzz_faketau", "ttH_htt_faketau", "TTW_faketau", "TTZ_faketau", "Rares_gentau"})
+    cb.cp().process({"ttH_hww_faketau", "ttH_hzz_faketau", "ttH_htt_faketau", "TTW_faketau", "TTZ_faketau", "Rares_faketau"})
       .AddSyst(cb, "CMS_ttHl_FRjt_shape", "shape", SystMap<>::init(1.0));
   }
 
