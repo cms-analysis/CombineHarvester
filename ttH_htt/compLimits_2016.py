@@ -56,13 +56,24 @@ makePostFitPlots_macros = {
 }    
 
 def run_cmd(command):
-  print "executing command = '%s'" % command
-  p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-  stdout, stderr = p.communicate()
-  return stdout
+    print "executing command = '%s'" % command
+    p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode != 0 and not command.startswith('rm'):
+        raise RuntimeError("command {} failed:\n{}\n{}".format(command, stdout, stderr))
+    return stdout
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--outdir", default=os.getcwd())
+args = parser.parse_args()
 
 workingDir = os.getcwd()
-datacardDir = "/home/veelken/public/HIG16022_datacards/"
+datacardDir = args.outdir
+
+if not os.path.exists(os.path.join(workingDir, 'limits')):
+    os.makedirs(os.path.join(workingDir, 'limits'))
 
 for channel in channels:
   for shapeVariable in shapeVariables[channel]:
@@ -72,10 +83,10 @@ for channel in channels:
         channel_base = search_string
     ##datacardFile_input = os.path.join(datacardDir, channel_base, datacardFiles[channel] % shapeVariable)
     datacardFile_input = os.path.join(datacardDir, datacardFiles[channel])
-    datacardFile_output = os.path.join(workingDir, "limits", "ttH_%s.root" % channel)
+    datacardFile_output = os.path.join(workingDir, "limits", "ttH_{}_{}.root".format(channel, shapeVariable))
     run_cmd('rm ttH_%s.txt' % channel)
     run_cmd('rm %s' % datacardFile_output)
-    run_cmd('%s --input_file=%s --output_file=%s --add_shape_sys=false' % (WriteDatacard_executables[channel], datacardFile_input, datacardFile_output))
+    run_cmd('%s --input_file=%s --output_file=%s --add_shape_sys=false --discriminant=%s' % (WriteDatacard_executables[channel], datacardFile_input, datacardFile_output, shapeVariable))
     txtFile = datacardFile_output.replace(".root", ".txt")
     run_cmd('cp %s %s' % (datacardFile_output, datacardFile_output.replace("/limits/", "/")))
     ##run_cmd('combine -M MaxLikelihoodFit -t -1 -m 125 %s' % txtFile)
