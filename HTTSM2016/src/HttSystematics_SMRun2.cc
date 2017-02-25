@@ -224,10 +224,10 @@ namespace ch {
 
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, all_mc_bkgs}), 1.01));
+                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, all_mc_bkgs_no_W}), 1.01));
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em","tt"}, {1, 2, 3}, JoinStr({sig_procs, {"W"}}), 1.01));
+                        ({"em","tt"}, {1, 2, 3}, {"W"}, 1.01));
         
         
         
@@ -621,6 +621,35 @@ namespace ch {
             /////////////////
             // Systematics //
             /////////////////
+
+            // Add the zmumu extrapolation uncertainties to Drell-Yan in CRs
+            if(!mm_fit)
+            {
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.06));
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_0jet_$ERA", "lnN", SystMap<>::init(1.06));
+                
+
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_boosted_$ERA", "lnN", SystMap<>::init(1.02));
+                
+
+                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"et","mt","tt"}).bin_id({12,15}).AddSyst(cb,
+                                                 "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+            }
+
+            // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
+            cb.cp().AddSyst(cb,
+                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                            ({"et", "mt"}, {10, 11, 12, 13, 14, 15}, JoinStr({all_mc_bkgs_no_W}), 1.01));
+            cb.cp().AddSyst(cb,
+                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                            ({"tt"}, {10, 11, 12}, JoinStr({all_mc_bkgs}), 1.01));
+
+
             
             // Should set a sensible range for our rateParams
             for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
