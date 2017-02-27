@@ -117,10 +117,10 @@ namespace ch {
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
 
         // TauTau - 1+ jet to tau fakes
-        cb.cp().process(JoinStr({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"})).channel({"tt"}).AddSyst(cb,
+        cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
                                              "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
         
-        cb.cp().process(JoinStr({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"})).channel({"tt"}).AddSyst(cb,
+        cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.05));
         
         //##############################################################################
@@ -242,6 +242,17 @@ namespace ch {
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
                         ({"em","tt"}, {1, 2, 3}, {"W"}, 1.01));
         
+        if (control_region > 0) {
+            // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
+            cb.cp().AddSyst(cb,
+                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                            ({"et", "mt"}, {10, 11, 12, 13, 14, 15}, JoinStr({all_mc_bkgs_no_W}), 1.01));
+            cb.cp().AddSyst(cb,
+                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                            ({"tt"}, {10, 11, 12}, JoinStr({all_mc_bkgs}), 1.01));
+        }
+
+
         
         
         
@@ -654,15 +665,6 @@ namespace ch {
             /////////////////
             // Systematics //
             /////////////////
-
-            // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
-            cb.cp().AddSyst(cb,
-                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                            ({"et", "mt"}, {10, 11, 12, 13, 14, 15}, JoinStr({all_mc_bkgs_no_W}), 1.01));
-            cb.cp().AddSyst(cb,
-                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                            ({"tt"}, {10, 11, 12}, JoinStr({all_mc_bkgs}), 1.01));
-
 
             
             // Should set a sensible range for our rateParams
