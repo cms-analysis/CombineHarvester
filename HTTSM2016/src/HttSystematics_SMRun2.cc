@@ -96,19 +96,32 @@ namespace ch {
                         ({"em","ttbar"}, JoinStr({sig_procs, all_mc_bkgs}),       1.02));
         
 
+        // Tau Efficiency applied to all MC
+        // in tautau channel the applied value depends on the number of taus which is determined by
+        // gen match. WJets for example is assumed to have 1 real tau and 1 fake as is TTJ
+        // compared to ZTT which has 2 real taus.
+        // We also have channel specific components and fully correlated components
+        //
+        // ETau & MuTau
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<channel>::init
-                                             ({"et", "mt"}, 1.08)
-                                             ({"tt"},       1.16));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
+
+        // TauTau - 2 real taus
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.16));
         
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
-                                             ({"et", "mt"}, 1.04)
-                                             ({"tt"}, 1.10));
-        cb.cp().process(JoinStr({sig_procs, {"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
-                                             ({"tt"}, 1.05));
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
+
+        // TauTau - 1+ jet to tau fakes
+        cb.cp().process(JoinStr({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"})).channel({"tt"}).AddSyst(cb,
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
+        
+        cb.cp().process(JoinStr({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"})).channel({"tt"}).AddSyst(cb,
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.05));
         
         //##############################################################################
         //  Electron, tau, jet and met energy Scale
