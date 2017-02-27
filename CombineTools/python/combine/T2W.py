@@ -131,7 +131,8 @@ class T2W(CombineToolBase):
         # Check if we need to combine some individual cards
         if len(cc_cards_post) > 0:
             passthru = [x for x in self.passthru]
-            passthru.extend(['-m', self.args.mass])
+            if self.args.mass is not None:
+                passthru.extend(['-m', self.args.mass])
             cc_cmd = proto_cc % ({
                 'CARDS': ' '.join(cc_cards_post),
                 'COMBINED': self.args.cc

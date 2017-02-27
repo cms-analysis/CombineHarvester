@@ -1040,7 +1040,7 @@ def ReZeroTGraph(gr, doIt=False):
                 before = gr.GetY()[i]
                 gr.GetY()[i] -= min_y
                 after = gr.GetY()[i]
-                print 'Point %i, before=%f, after=%f' % (i, before, after)
+                # print 'Point %i, before=%f, after=%f' % (i, before, after)
     return min_y
 
 
