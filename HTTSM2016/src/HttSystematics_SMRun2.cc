@@ -556,8 +556,28 @@ namespace ch {
             
             cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em","tt","mt","et"}).bin_id({3}).AddSyst(cb,
                                              "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+
+            // Add the zmumu extrapolation uncertainties to Drell-Yan in CRs
+            // if applicable
+            if(control_region > 0)
+            {
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.06));
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_0jet_$ERA", "lnN", SystMap<>::init(1.06));
+                
+
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
+                                                 "CMS_htt_zmm_extrap_boosted_$ERA", "lnN", SystMap<>::init(1.02));
+                
+
+                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"et","mt","tt"}).bin_id({12,15}).AddSyst(cb,
+                                                 "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+            }
             
-        }
+        } // end not mm_fit
         
         
         
@@ -634,25 +654,6 @@ namespace ch {
             /////////////////
             // Systematics //
             /////////////////
-
-            // Add the zmumu extrapolation uncertainties to Drell-Yan in CRs
-            if(!mm_fit)
-            {
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.06));
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_0jet_$ERA", "lnN", SystMap<>::init(1.06));
-                
-
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_boosted_$ERA", "lnN", SystMap<>::init(1.02));
-                
-
-                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"et","mt","tt"}).bin_id({12,15}).AddSyst(cb,
-                                                 "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-            }
 
             // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
             cb.cp().AddSyst(cb,
