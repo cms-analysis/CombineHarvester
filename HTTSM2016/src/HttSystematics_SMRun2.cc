@@ -104,24 +104,24 @@ namespace ch {
         //
         // ETau & MuTau
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.045));
         
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
 
         // TauTau - 2 real taus
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.16));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.12));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
 
         // TauTau - 1+ jet to tau fakes
         cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.06));
         
         cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.05));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
         //##############################################################################
         //  Electron, tau, jet and met energy Scale
