@@ -529,6 +529,10 @@ def ParamFromFilename(filename, param):
 ##@{
 
 def TGraphFromTree(tree, xvar, yvar, selection):
+    print tree
+    print xvar
+    print yvar
+    print selection
     tree.Draw(xvar + ':' + yvar, selection, 'goff')
     gr = R.TGraph(tree.GetSelectedRows(), tree.GetV1(), tree.GetV2())
     return gr
@@ -932,6 +936,18 @@ def RemoveGraphYAbove(graph, val):
             graph.RemovePoint(i)
             RemoveGraphYAbove(graph, val)
             break
+
+
+def SetMinToZero(graph):
+    min = 999.
+    minNum = -1
+    for i in xrange(graph.GetN()):
+        if graph.GetY()[i] < min :
+            min = graph.GetY()[i]
+            minNum = i
+    for i in xrange(graph.GetN()):
+        graph.SetPoint(i, graph.GetX()[i], graph.GetY()[i]-min)
+    
 
 
 def ImproveMinimum(graph, func, doIt=False):
