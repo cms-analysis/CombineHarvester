@@ -1,4 +1,5 @@
 
+# See: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#MultiSignalModel_ready_made_mode
 
 # It is helpful to break down the significance by
 # channel and category. When doing this, we want to
