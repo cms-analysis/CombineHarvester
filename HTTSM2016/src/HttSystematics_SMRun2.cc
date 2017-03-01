@@ -139,30 +139,30 @@ namespace ch {
         // This CR segment is temporary, just to check that the CRs work (needed to use old DCS
         // without scale_t on all shapes)
         // FIXME
-        if (control_region == 1) {
-            cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","VVT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
-                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
-        }
-        else {
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
-        }
+//        if (control_region == 1) {
+//            cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","VVT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
+//                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+//        }
+//        else {
+//            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
+//                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+//        }
 
 
         // Decay Mode based TES Settings
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
-        //                                          "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
-        //                                          "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
-        //                                          "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+                                                  "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+                                                  "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+                                                  "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
 
         // Standard JES, factorized 27 JES implementation below
         // only use 1 at a time.  ttbar CR might not implement
         // full 27 JES...
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
-                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+//        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
+//                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
         // FIXME Is DESY going to have scale_j for all shapes?
         cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
@@ -227,12 +227,12 @@ namespace ch {
             //"Closure", // Closure Measure, don't include
         }; // end uncertNames
         // Uncomment below for 27 JES
-        //for (string uncert:uncertNames){
-        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","et","mt"}).AddSyst(cb,
-        //                                   "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
-        //                                   "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-        //}
+        for (string uncert:uncertNames){
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","et","mt"}).AddSyst(cb,
+                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
+                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        }
 
 
         cb.cp().AddSyst(cb,
@@ -354,12 +354,13 @@ namespace ch {
         //                                   "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
         
  
-        // mu to tau FR
-        cb.cp().process( {"ZL"}).channel({"mt"}).AddSyst(cb,
-                                             "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
-        // e to tau FR
-        cb.cp().process( {"ZL"}).channel({"et"}).AddSyst(cb,
-                                             "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+        //FIXME   could not be found in the the DCs in 27 Feb
+//        // mu to tau FR
+//        cb.cp().process( {"ZL"}).channel({"mt"}).AddSyst(cb,
+//                                             "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+//        // e to tau FR
+//        cb.cp().process( {"ZL"}).channel({"et"}).AddSyst(cb,
+//                                             "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
  
         
 
