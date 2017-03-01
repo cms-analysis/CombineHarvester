@@ -26,12 +26,12 @@ int main(int argc, char** argv) {
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
-    ("input_file,i", po::value<string>(&input_file)->default_value("Tallinn/ttH_2lss_1tau_2016Jul11_Tight.input.root"))
-    ("output_file,o", po::value<string>(&output_file)->default_value("ttH_2lss_1tau.root"))
+    ("input_file,i", po::value<string>(&input_file)->default_value("Tallinn/ttH_3l_1tau_2016Jul16_Tight.input.root"))
+    ("output_file,o", po::value<string>(&output_file)->default_value("ttH_3l_1tau.root"))
     ("lumi,l", po::value<double>(&lumi)->default_value(lumi))
     ("add_shape_sys,s", po::value<bool>(&add_shape_sys)->default_value(true));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
-  po::notify(vm);
+  po::notify(vm);  
 
   //! [part1]
   // First define the location of the "auxiliaries" directory where we can
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
   //string aux_shapes = "/afs/cern.ch/user/v/veelken/public/HIG15008_datacards/";
   string aux_shapes = "/home/veelken/public/HIG15008_datacards/";
   if ( input_file.find_first_of("/") == 0 ) aux_shapes = ""; // set aux_shapes directory to zero in case full path to input file is given on command line
- 
+
   // Create an empty CombineHarvester instance that will hold all of the
   // datacard configuration and histograms etc.
   ch::CombineHarvester cb;
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   // Here we will just define two categories for an 8TeV analysis. Each entry in
   // the vector below specifies a bin name and corresponding bin_id.
   ch::Categories cats = {
-      {1, "ttH_2lss_1tau"}
+      {1, "ttH_3l_1tau"}
     };
   // ch::Categories is just a typedef of vector<pair<int, string>>
   //! [part1]
@@ -65,8 +65,11 @@ int main(int argc, char** argv) {
   //! [part3]
 
   //! [part4]
-  vector<string> bkg_procs = {"TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
-  //vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data"};
+  //std::string proc_fakes = "fakes_mc";
+  std::string proc_fakes = "fakes_data";
+
+  vector<string> bkg_procs = {"TTW", "TTZ", "EWK", "Rares", proc_fakes};
+  //vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", proc_fakes};
   cb.AddProcesses({"*"}, {"*"}, {"13TeV"}, {"*"}, bkg_procs, cats, false);
 
   vector<string> sig_procs = {"ttH_hww", "ttH_hzz", "ttH_htt"};
@@ -97,6 +100,13 @@ int main(int argc, char** argv) {
   cb.cp().process(sig_procs)
       .AddSyst(cb, "CMS_ttHl_thu_shape_ttH_y1", "shape", SystMap<>::init(1.0));
 
+  // CV: PDF and scale uncertainties for tt+jets background taken from 
+  //      https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+  //cb.cp().process({"TT"})
+  //    .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.03));
+  //cb.cp().process({"TT"})
+  //    .AddSyst(cb, "QCDscale_ttJets", "lnN", SystMap<>::init(1.04));
+
   cb.cp().process({"TTW"})
       .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.04));
   cb.cp().process({"TTW"})
@@ -115,36 +125,15 @@ int main(int argc, char** argv) {
   cb.cp().process({"TTZ"})
       .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
 
-  //cb.cp().process({"WZ"})
-  //    .AddSyst(cb, "CMS_ttHl_WZ_4j", "lnN", SystMap<>::init(2.0));
-  //cb.cp().process({"TT"})
-  //    .AddSyst(cb, "CMS_ttHl_TT", "lnN", SystMap<>::init(2.0));
   cb.cp().process({"EWK"})
-      .AddSyst(cb, "CMS_ttHl_EWK_4j", "lnN", SystMap<>::init(2.0));
+      .AddSyst(cb, "CMS_ttHl_EWK", "lnN", SystMap<>::init(1.5));
   
   cb.cp().process({"Rares"})
       .AddSyst(cb, "CMS_ttHl_Rares", "lnN", SystMap<>::init(1.5));
 
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRe_norm", "lnN", SystMap<>::init(1.2));
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRe_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0));  
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_Clos_e_norm", "lnN", SystMap<>::init(0.96));
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_FRm_norm", "lnN", SystMap<>::init(1.2));
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_corr1", "shape", SystMap<>::init(1.0));
-  //cb.cp().process({"fakes_data"})
-  //    .AddSyst(cb, "CMS_ttHl_FRm_shape_2lss_anticorr1", "shape", SystMap<>::init(1.0)); 
-  cb.cp().process({"fakes_data"})
-      .AddSyst(cb, "CMS_ttHl_Clos_m_norm", "lnN", SystMap<>::init(1.04));
+  cb.cp().process({proc_fakes})
+      .AddSyst(cb, "CMS_ttHl_fakes", "lnN", SystMap<>::init(1.3));
 
-  cb.cp().process({"flips_data"})
-      .AddSyst(cb, "CMS_ttHl_QF", "lnN", SystMap<>::init(1.3));
-  
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
       .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.01));
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
@@ -159,29 +148,28 @@ int main(int argc, char** argv) {
     cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
         .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
 
-    //cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ"}}))
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
         .AddSyst(cb, "CMS_ttHl_tauES", "shape", SystMap<>::init(1.0));
   }
 
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
   if ( add_shape_sys ) {
     for ( auto s : {"HF", "HFStats1", "HFStats2", "LF", "LFStats1", "LFStats2", "cErr1", "cErr2"} ) {
       cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares"}}))
           .AddSyst(cb, Form("CMS_ttHl_btag_%s", s), "shape", SystMap<>::init(1.0));
-    }
+    }  
   }
   //! [part6]
 
   //! [part7]
   cb.cp().backgrounds().ExtractShapes(
-      aux_shapes + input_file,
+      aux_shapes + input_file.data(),
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   cb.cp().signals().ExtractShapes(
-      aux_shapes + input_file,
+      aux_shapes + input_file.data(),
       "x_$PROCESS",
       "x_$PROCESS_$SYSTEMATIC");
   //! [part7]
@@ -190,7 +178,7 @@ int main(int argc, char** argv) {
   //     with 2.3 corresponding to integrated luminosity of 2015 dataset
   if ( lumi > 0. ) {  
     std::cout << "scaling signal and background yields to L=" << lumi << "fb^-1 @ 13 TeV." << std::endl;
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data"}})).ForEachProc([&](ch::Process* proc) {
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "Rares", proc_fakes}})).ForEachProc([&](ch::Process* proc) {
       proc->set_rate(proc->rate()*lumi/2.3);
     });
   }
@@ -229,7 +217,7 @@ int main(int argc, char** argv) {
     //cb.cp().bin({b}).mass({"*"}).WriteDatacard(
     //	b + ".txt", output);
     cb.cp().bin({b}).mass({"*"}).WriteDatacard(
-      TString(output_file.data()).ReplaceAll(".root", ".txt").Data(), output);				       
+      TString(output_file.data()).ReplaceAll(".root", ".txt").Data(), output);	
   }
   //! [part9]
 

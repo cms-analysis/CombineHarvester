@@ -31,6 +31,7 @@ TH1* loadHistogram(TFile* inputFile, const std::string& directory, const std::st
     assert(0);
   }
   if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+
   //int numBins = histogram->GetNbinsX();
   //for ( int iBin = 0; iBin <= (numBins + 1); ++iBin ) {
   //  histogram->SetBinError(iBin, 0.);
@@ -249,7 +250,6 @@ void makePlot(TH1* histogram_data, bool doKeepBlinded,
 	      const std::string& label,
 	      const std::string& outputFileName,
 	      bool useLogScale)
-
 {
   TH1* histogram_data_density = 0;
   if ( histogram_data ) {
@@ -293,7 +293,6 @@ void makePlot(TH1* histogram_data, bool doKeepBlinded,
   if ( histogram_EWK ) {
     if ( histogram_data ) checkCompatibleBinning(histogram_EWK, histogram_data);
     histogram_EWK_density = divideHistogramByBinWidth(histogram_EWK);
-
   }
   histogram_EWK_density->SetFillColor(610);
   histogram_EWK_density->SetLineColor(1);
@@ -392,57 +391,46 @@ void makePlot(TH1* histogram_data, bool doKeepBlinded,
   // CV: calling THStack::Draw() causes segmentation violation ?!
   //histogramStack_mc->Draw("histsame");
 
-  // CV: draw fakes background on top, as it is by far dominant
-  //     and would prevent the ttH signal and other backgrounds to be seen otherwise !!
-  histogram_fakes_density->Add(histogram_ttH_density);
-  histogram_fakes_density->Add(histogram_ttZ_density);
-  histogram_fakes_density->Add(histogram_ttW_density);
-  histogram_fakes_density->Add(histogram_EWK_density);
-  histogram_fakes_density->Add(histogram_Rares_density);
+  // CV: draw histograms without using THStack instead;
+  //     note that order in which histograms need to be drawn needs to be reversed 
+  //     compared to order in which histograms were added to THStack !!
+  histogram_ttH_density->Add(histogram_ttZ_density);
+  histogram_ttH_density->Add(histogram_ttW_density);
+  histogram_ttH_density->Add(histogram_EWK_density);
+  histogram_ttH_density->Add(histogram_Rares_density);
+  histogram_ttH_density->Add(histogram_fakes_density);
+  histogram_ttH_density->Draw("histsame");
+  std::cout << "histogram_ttH_density = " << histogram_ttH_density << ":" << std::endl;
+  dumpHistogram(histogram_ttH_density);
+
+  histogram_ttZ_density->Add(histogram_ttW_density);
+  histogram_ttZ_density->Add(histogram_EWK_density);
+  histogram_ttZ_density->Add(histogram_Rares_density);
+  histogram_ttZ_density->Add(histogram_fakes_density);
+  histogram_ttZ_density->Draw("histsame");
+
+  histogram_ttW_density->Add(histogram_EWK_density);
+  histogram_ttW_density->Add(histogram_Rares_density);
+  histogram_ttW_density->Add(histogram_fakes_density);
+  histogram_ttW_density->Draw("histsame");
+
+  histogram_EWK_density->Add(histogram_Rares_density);
+  histogram_EWK_density->Add(histogram_fakes_density);
+  histogram_EWK_density->Draw("histsame");
+
+  histogram_Rares_density->Add(histogram_fakes_density);
+  histogram_Rares_density->Draw("histsame");
+
   TH1* histogram_fakes_density_cloned = (TH1*)histogram_fakes_density->Clone();
   histogram_fakes_density_cloned->SetFillColor(10);
   histogram_fakes_density_cloned->SetFillStyle(1001);
   histogram_fakes_density_cloned->Draw("histsame");
   histogram_fakes_density->Draw("histsame");
-  std::cout << "histogram_fakes_density = " << histogram_fakes_density << ":" << std::endl;
-  dumpHistogram(histogram_fakes_density);
-
-  histogram_ttH_density->Add(histogram_ttZ_density);
-  histogram_ttH_density->Add(histogram_ttW_density);
-  histogram_ttH_density->Add(histogram_EWK_density);
-  histogram_ttH_density->Add(histogram_Rares_density);
-  //histogram_ttH_density->Add(histogram_fakes_density);
-  histogram_ttH_density->Draw("histsame");
-
-  histogram_ttZ_density->Add(histogram_ttW_density);
-  histogram_ttZ_density->Add(histogram_EWK_density);
-  histogram_ttZ_density->Add(histogram_Rares_density);
-  //histogram_ttZ_density->Add(histogram_fakes_density);
-  histogram_ttZ_density->Draw("histsame");
-
-  histogram_ttW_density->Add(histogram_EWK_density);
-  histogram_ttW_density->Add(histogram_Rares_density);
-  //histogram_ttW_density->Add(histogram_fakes_density);
-  histogram_ttW_density->Draw("histsame");
-
-  histogram_EWK_density->Add(histogram_Rares_density);
-  //histogram_EWK_density->Add(histogram_fakes_density);
-  histogram_EWK_density->Draw("histsame");
-
-  //histogram_Rares_density->Add(histogram_fakes_density);
-  histogram_Rares_density->Draw("histsame");
-
-  //TH1* histogram_fakes_density_cloned = (TH1*)histogram_fakes_density->Clone();
-  //histogram_fakes_density_cloned->SetFillColor(10);
-  //histogram_fakes_density_cloned->SetFillStyle(1001);
-  //histogram_fakes_density_cloned->Draw("histsame");
-  //histogram_fakes_density->Draw("histsame");
 
   if ( histogramErr_mc_density ) {    
     histogramErr_mc_density->Draw("e2same");
   }
   
-
   if ( !doKeepBlinded ) {
     histogram_data_density->Draw("e1psame");
   }
@@ -603,20 +591,20 @@ void makePlot(TH1* histogram_data, bool doKeepBlinded,
   delete canvas;
 }
 
-void makePostFitPlots_1l_2tau()
+void makePostFitPlots_3l_1tau()
 {
   gROOT->SetBatch(true);
 
   TH1::AddDirectory(false);
 
   std::vector<std::string> categories;
-  categories.push_back("ttH_1l_2tau_prefit");
-  categories.push_back("ttH_1l_2tau_postfit");
+  categories.push_back("ttH_3l_1tau_prefit");
+  categories.push_back("ttH_3l_1tau_postfit");
 
   std::string inputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/limits/";
   std::map<std::string, std::string> inputFileNames; // key = category
-  inputFileNames["ttH_1l_2tau_prefit"]  = "ttH_1l_2tau_mTauTauVis_2016_shapes.root";
-  inputFileNames["ttH_1l_2tau_postfit"] = "ttH_1l_2tau_mTauTauVis_2016_shapes.root";
+  inputFileNames["ttH_3l_1tau_prefit"]  = "ttH_3l_1tau_mvaDiscr_3l_2016_shapes.root";
+  inputFileNames["ttH_3l_1tau_postfit"] = "ttH_3l_1tau_mvaDiscr_3l_2016_shapes.root";
   
   bool doKeepBlinded = true;
   //bool doKeepBlinded = false;
@@ -635,6 +623,7 @@ void makePostFitPlots_1l_2tau()
     if ( !doKeepBlinded ) {
       dumpHistogram(histogram_data);
     }
+
 
     TH1* histogram_ttH_htt = loadHistogram(inputFile, *category, "ttH_htt");
     TH1* histogram_ttH_hww = loadHistogram(inputFile, *category, "ttH_hww");
@@ -684,7 +673,6 @@ void makePostFitPlots_1l_2tau()
 
     std::string outputFilePath = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/ttH_htt/macros";
     std::string outputFileName = Form("%s/plots/makePostFitPlots_%s.pdf", outputFilePath.data(), category->data());
-
     makePlot(histogram_data, doKeepBlinded,
 	     histogram_ttH, 
 	     histogram_ttZ,
@@ -694,10 +682,10 @@ void makePostFitPlots_1l_2tau()
 	     histogram_fakes,
 	     histogramSum_mc,
 	     histogramErr_mc,		
-	     "m_{#tau#tau}^{vis} [GeV]", 
-	     "dN/dm_{#tau#tau}^{vis} [1/GeV]", 1.01e-2, 1.99e+1, 
+	     "MVA Discriminator", 
+	     "Events", 1.01e-2, 1.99e+1, 
 	     true,
-	     "1l_2tau",
+	     "3l_1tau",
 	     outputFileName,
 	     true);
 

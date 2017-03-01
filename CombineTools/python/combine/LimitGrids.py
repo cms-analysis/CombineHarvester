@@ -210,6 +210,9 @@ class HybridNewGrid(CombineToolBase):
         if hyp_res is not None:
             # We will take the number of toys thrown as the minimum of the number of b-only or s+b toys
             ntoys = min(hyp_res.GetNullDistribution().GetSize(), hyp_res.GetAltDistribution().GetSize())
+            print '>>> Number of b toys %i' %(hyp_res.GetNullDistribution().GetSize())
+            print '>>> Number of s+b toys %i'%(hyp_res.GetAltDistribution().GetSize())
+
         if precomputed is not None:
             ntoys = precomputed['ntoys']
 
@@ -481,21 +484,27 @@ class HybridNewGrid(CombineToolBase):
             # First check if we use the status json
             all_files = val.values()
             status_files = []
-            files = [x for x in val.values() if plot.TFileIsGood(x)]
+            files =[]
+
 
             if status_key in stats:
                 status_files = stats[status_key]['files']
                 if set(all_files) == set(status_files):
                     print 'For point %s, no files have been updated' % name
                     status_changed = False
-                if set(files) == set(status_files) and len(files) < len(all_files):
-                    print 'For point %s, new files exist but they are not declared good' % name
-                    status_changed = False
+                    files = all_files
+                else:
+                    files = [x for x in val.values() if plot.TFileIsGood(x)]
+                    if set(files) == set(status_files) and len(files) < len(all_files):
+                        print 'For point %s, new files exist but they are not declared good' % name
+                        status_changed = False
+            else:
+                files = [x for x in val.values() if plot.TFileIsGood(x)]
 
             # Merge the HypoTestResult objects from each file into one
             res = None
             precomputed = None
-            if status_key in stats and not status_changed:
+            if status_key in stats and not status_changed and stats[status_key]["ntoys"] > 0 :
                 precomputed = stats[status_key]
             else:
                 res = self.GetCombinedHypoTest(files)

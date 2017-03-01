@@ -1,6 +1,6 @@
-<bin file="WriteDatacards_1l_2tau.cpp" name="WriteDatacards_1l_2tau"></bin>
-<bin file="WriteDatacards_2lss_1tau.cpp" name="WriteDatacards_2lss_1tau"></bin>
-<bin file="WriteDatacards_3l_1tau.cpp" name="WriteDatacards_3l_1tau"></bin>
+<bin file="MorphingMSSM2016.cpp" name="MorphingMSSM2016"></bin>
+<bin file="QCDBiasStudy.cpp" name="QCDBiasStudy"></bin>
+<bin file="QCDRatioMeasurement.cpp" name="QCDRatioMeasurement2016"></bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
@@ -15,3 +15,5 @@
 <use name="boost_regex"/>
 <use name="rootpy"/>
 <use name="CombineHarvester/CombineTools"/>
+<use name="CombineHarvester/HIG16037"/>
+<use name="CombineHarvester/CombinePdfs"/>
