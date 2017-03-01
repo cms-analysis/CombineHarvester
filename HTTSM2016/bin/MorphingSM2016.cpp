@@ -141,9 +141,10 @@ int main(int argc, char** argv) {
       bkg_procs["mt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
       bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
     }else{
-      bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
-      bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
-      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV", "EWKZ"};
+      bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
+      bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
+      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ"};
+//        bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
     }
     bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
@@ -343,27 +344,27 @@ int main(int argc, char** argv) {
     
     
     
-//    //! [part8]
-//    auto bbb = ch::BinByBinFactory()
-//    .SetAddThreshold(0.1)
-//    .SetMergeThreshold(0.5)
-//    .SetFixNorm(false);
-//    bbb.MergeBinErrors(cb.cp().backgrounds());
-//    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
-//    
-//    
-//    
-//    // And now do bbb for the control region with a slightly different config:
-//    auto bbb_ctl = ch::BinByBinFactory()
-//    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
-//    .SetAddThreshold(0.)
-//    .SetMergeThreshold(0.4)
-//    .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
-//    .SetVerbosity(1);
-//    // Will merge but only for non W and QCD processes, to be on the safe side
-//    bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
-//    bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
-//    cout << " done\n";
+    //! [part8]
+    auto bbb = ch::BinByBinFactory()
+    .SetAddThreshold(0.1)
+    .SetMergeThreshold(0.5)
+    .SetFixNorm(false);
+    bbb.MergeBinErrors(cb.cp().backgrounds());
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+    
+    
+    
+    // And now do bbb for the control region with a slightly different config:
+    auto bbb_ctl = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetAddThreshold(0.)
+    .SetMergeThreshold(0.4)
+    .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
+    .SetVerbosity(1);
+    // Will merge but only for non W and QCD processes, to be on the safe side
+    bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
+    bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
+    cout << " done\n";
     
     
     
