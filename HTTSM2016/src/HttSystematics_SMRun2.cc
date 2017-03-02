@@ -104,24 +104,24 @@ namespace ch {
         //
         // ETau & MuTau
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.045));
         
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
 
         // TauTau - 2 real taus
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.16));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.12));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
 
         // TauTau - 1+ jet to tau fakes
         cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.06));
         
         cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.05));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
         //##############################################################################
         //  Electron, tau, jet and met energy Scale
@@ -150,11 +150,11 @@ namespace ch {
 
 
         // Decay Mode based TES Settings
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
 
@@ -289,11 +289,11 @@ namespace ch {
         
         // QCD norm, just for tt
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({1}).AddSyst(cb,
-                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.05));
+                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.027));
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({2}).AddSyst(cb,
-                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.05));
+                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.027));
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                             "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.43));
+                                             "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.15));
         
         
         //Iso to antiiso extrapolation
