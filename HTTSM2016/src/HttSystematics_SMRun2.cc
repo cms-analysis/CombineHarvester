@@ -53,7 +53,7 @@ namespace ch {
         //  lumi
         //##############################################################################
         
-        cb.cp().process(JoinStr({sig_procs, {"VV","VVT","VVJ","HWW_gg125","HWW_qq125","EWKZ"}})).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"VV","VVT","VVJ","HWW_gg125","HWW_qq125"}})).AddSyst(cb,
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.026));
         cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.026));
         
@@ -104,24 +104,24 @@ namespace ch {
         //
         // ETau & MuTau
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.045));
         
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
 
         // TauTau - 2 real taus
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.16));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.12));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
 
         // TauTau - 1+ jet to tau fakes
         cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.08));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.06));
         
         cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.05));
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
         //##############################################################################
         //  Electron, tau, jet and met energy Scale
@@ -150,11 +150,11 @@ namespace ch {
 
 
         // Decay Mode based TES Settings
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","tt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
 
@@ -289,11 +289,11 @@ namespace ch {
         
         // QCD norm, just for tt
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({1}).AddSyst(cb,
-                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.05));
+                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.027));
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({2}).AddSyst(cb,
-                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.05));
+                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.027));
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                             "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.43));
+                                             "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.15));
         
         
         //Iso to antiiso extrapolation
@@ -554,39 +554,70 @@ namespace ch {
         }
         else
         {
-            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({1}).AddSyst(cb,
-                                             "CMS_htt_zmm_extrap_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.06));
-            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({1}).AddSyst(cb,
-                                             "CMS_htt_zmm_extrap_0jet_$ERA", "lnN", SystMap<>::init(1.06));
+            // Z->mumu CR normalization propagation
+            // 0jet normalization only
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                             "CMS_htt_zmm_norm_extrap_0jet_$CHANNEL_$ERA", "lnN",
+                                             SystMap<channel, bin_id>::init({"em","tt"},{1}, 1.07));
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                             "CMS_htt_zmm_norm_extrap_0jet_lt_$ERA", "lnN",
+                                             SystMap<channel, bin_id>::init({"et","mt"},{1}, 1.07));
             
+            // boosted normalization only
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                             "CMS_htt_zmm_norm_extrap_boosted_$CHANNEL_$ERA", "lnN",
+                                             SystMap<channel, bin_id>::init({"em","tt"},{2}, 1.07));
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                             "CMS_htt_zmm_norm_extrap_boosted_lt_$ERA", "lnN",
+                                             SystMap<channel, bin_id>::init({"et","mt"},{2}, 1.07));
+            
+            // VBF norm and shape for et/mt/tt
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"em"}).bin_id({3}).AddSyst(cb,
+                                             "CMS_htt_zmm_norm_extrap_VBF_em_$ERA", "lnN", SystMap<>::init(1.15));
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
+                                             "CMS_htt_zmm_norm_extrap_VBF_lt_$ERA", "lnN", SystMap<>::init(1.15));
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
+                                             "CMS_htt_zmm_norm_extrap_VBF_tt_$ERA", "lnN", SystMap<>::init(1.10));
 
-            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({2}).AddSyst(cb,
-                                             "CMS_htt_zmm_extrap_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
-            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({2}).AddSyst(cb,
-                                             "CMS_htt_zmm_extrap_boosted_$ERA", "lnN", SystMap<>::init(1.02));
-            
-            
-            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em","tt","mt","et"}).bin_id({3}).AddSyst(cb,
+            // FIXME should have EWKZ in all
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
                                              "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em","mt","et"}).bin_id({3}).AddSyst(cb,
+                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+
 
             // Add the zmumu extrapolation uncertainties to Drell-Yan in CRs
             // if applicable
             if(control_region > 0)
             {
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.06));
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({10,13}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_0jet_$ERA", "lnN", SystMap<>::init(1.06));
+                // Z->mumu CR normalization propagation
+                // 0jet normalization only
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                                 "CMS_htt_zmm_norm_extrap_0jet_$CHANNEL_$ERA", "lnN",
+                                                 SystMap<channel, bin_id>::init({"tt"},{10}, 1.07));
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                                 "CMS_htt_zmm_norm_extrap_0jet_lt_$ERA", "lnN",
+                                                 SystMap<channel, bin_id>::init({"et","mt"},{10,13}, 1.07));
                 
-
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
-                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest"}).bin_id({11,14}).AddSyst(cb,
-                                                 "CMS_htt_zmm_extrap_boosted_$ERA", "lnN", SystMap<>::init(1.02));
+                // boosted normalization only
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                                 "CMS_htt_zmm_norm_extrap_boosted_$CHANNEL_$ERA", "lnN",
+                                                 SystMap<channel, bin_id>::init({"tt"},{11}, 1.07));
+                cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
+                                                 "CMS_htt_zmm_norm_extrap_boosted_lt_$ERA", "lnN",
+                                                 SystMap<channel, bin_id>::init({"et","mt"},{11,14}, 1.07));
                 
+                // VBF norm and shape for et/mt/tt
+                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"et","mt"}).bin_id({12,15}).AddSyst(cb,
+                                                 "CMS_htt_zmm_norm_extrap_VBF_lt_$ERA", "lnN", SystMap<>::init(1.15));
+                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({12}).AddSyst(cb,
+                                                 "CMS_htt_zmm_norm_extrap_VBF_tt_$ERA", "lnN", SystMap<>::init(1.10));
 
-                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"et","mt","tt"}).bin_id({12,15}).AddSyst(cb,
+                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"mt","et"}).bin_id({12,15}).AddSyst(cb,
                                                  "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+                cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({12,15}).AddSyst(cb,
+                                                 "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+
             }
             
         } // end not mm_fit

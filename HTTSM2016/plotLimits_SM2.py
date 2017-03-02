@@ -24,7 +24,7 @@ parser.add_argument(
 parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
 parser.add_argument(
-    '--lumi', default='(12.9 fb^{-1})', help="""Lumi""")
+    '--lumi', default='(35.9 fb^{-1})', help="""Lumi""")
 parser.add_argument(
     '--scenario-label', default='', help="""Scenario name to be drawn in top
     left of plot""")

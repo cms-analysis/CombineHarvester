@@ -1,3 +1,7 @@
+#XXX 
+#XXX N.B. this is not the proper way to do this. See
+#XXX scripts/channelCompatibilityCheck.sh
+#XXX 
 # Script to produce significances for different category and channel
 # breakdowns
 #
