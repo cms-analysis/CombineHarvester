@@ -143,8 +143,7 @@ int main(int argc, char** argv) {
     }else{
       bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
       bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
-      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ"};
-//        bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
+      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
     }
     bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
@@ -238,7 +237,9 @@ int main(int argc, char** argv) {
     // Or equivalently, specify the mass points explicitly:
     vector<string> sig_procs = {"ggH","qqH","WH","ZH"};
 // FIXME    vector<string> masses = ch::MassesFromRange("120-130:5");
-            vector<string> masses = {"125"};
+    //vector<string> masses = {"110","120","125","130","140"};
+    // FIXME, add 110 and 140 back in, they are not in ttbar, and was throwing an error
+    vector<string> masses = {"120","125","130"};
     
     using ch::syst::bin_id;
     
