@@ -127,8 +127,22 @@ namespace ch {
         cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
+        
         //##############################################################################
-        //  Electron, tau, jet and met energy Scale
+        //  b tag and mistag rate  efficiencies
+        //##############################################################################
+        
+        cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em"}, {1}, JoinStr({"TTJ","TTT","TT"}), 1.035));
+        cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em"}, {2,3}, JoinStr({"TTJ","TTT","TT"}), 1.05));
+
+        cb.cp().AddSyst(cb, "CMS_htt_mistag_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em"}, {2, 3}, JoinStr({"VV","VVT","VVJ"}), 1.015));
+        
+        
+        //##############################################################################
+        //  Electron and tau energy Scale
         //##############################################################################
         
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
@@ -162,6 +176,9 @@ namespace ch {
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
 
+        //##############################################################################
+        //  jet and met energy Scale
+        //##############################################################################
         
         
         
