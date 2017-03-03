@@ -48,6 +48,10 @@ namespace ch {
             "ZL","ZJ","ZTT","TTJ","TTT","TT",
             "ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
             "HWW_gg125","HWW_qq125","EWKZ"};
+        std::vector<std::string> all_mc_bkgs_no_TTJ = {
+            "ZL","ZJ","ZTT","TTT","TT",
+            "ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
+            "HWW_gg125","HWW_qq125","EWKZ"};
 
         //##############################################################################
         //  lumi
@@ -158,15 +162,18 @@ namespace ch {
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
 
+        
+        
+        
         // Standard JES, factorized 27 JES implementation below
-        // only use 1 at a time.  ttbar CR might not implement
+        // only use 1 at a time.
         // full 27 JES...
 //        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
 //                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
         // FIXME Is DESY going to have scale_j for all shapes?
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
-                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+//        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
+//                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
 
         // JES factorization test tautau        
         std::vector< std::string > uncertNames = {
@@ -228,10 +235,21 @@ namespace ch {
         }; // end uncertNames
         // Uncomment below for 27 JES
         for (string uncert:uncertNames){
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","et","mt"}).AddSyst(cb,
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt"}).AddSyst(cb,
                                            "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
             cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
                                            "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            
+            //Note:  TTJ is excluded from bin 13 of et channel as it was empty and causing error
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({1,2,3,10,11,12,14,15}).AddSyst(cb,
+                                            "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_TTJ})).channel({"et"}).bin_id({13}).AddSyst(cb,
+                                            "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            
+            cb.cp().process({"ZTT","TT","W","VV", "ZL", "QCD"}).channel({"ttbar"}).AddSyst(cb,
+                                            "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            
+            
         }
 
 
@@ -533,9 +551,29 @@ namespace ch {
                         );
         
         
-        cb.cp().process(sig_procs).AddSyst(cb,"CMS_BR_htt_THU", "lnN", SystMap<>::init(1.017));
-        cb.cp().process(sig_procs).AddSyst(cb,"CMS_BR_htt_PU_mq", "lnN", SystMap<>::init(1.0099));
-        cb.cp().process(sig_procs).AddSyst(cb,"CMS_BR_htt_PU_alphas", "lnN", SystMap<>::init(1.0062));
+        //    Uncertainty on BR for HTT @ 125 GeV
+        cb.cp().process(sig_procs).AddSyst(cb,"BR_htt_THU", "lnN", SystMap<>::init(1.017));
+        cb.cp().process(sig_procs).AddSyst(cb,"BR_htt_PU_mq", "lnN", SystMap<>::init(1.0099));
+        cb.cp().process(sig_procs).AddSyst(cb,"BR_htt_PU_alphas", "lnN", SystMap<>::init(1.0062));
+        
+        //    Uncertainty on BR of HWW @ 125 GeV
+        cb.cp().process({"HWW_gg125","HWW_qq125"}).AddSyst(cb,"BR_hww_THU", "lnN", SystMap<>::init(1.0099));
+        cb.cp().process({"HWW_gg125","HWW_qq125"}).AddSyst(cb,"BR_hww_PU_mq", "lnN", SystMap<>::init(1.0099));
+        cb.cp().process({"HWW_gg125","HWW_qq125"}).AddSyst(cb,"BR_hww_PU_alphas", "lnN", SystMap<>::init(1.0066));
+        
+        
+        cb.cp().process({"ggH","HWW_gg125"}).AddSyst(cb,"QCDScale_ggH", "lnN", SystMap<>::init(1.039));
+        cb.cp().process({"qqH","HWW_qq125"}).AddSyst(cb,"QCDScale_qqH", "lnN", SystMap<>::init(1.004));
+        cb.cp().process({"WH"}).AddSyst(cb,"QCDScale_VH", "lnN", SystMap<>::init(1.007));
+        cb.cp().process({"ZH"}).AddSyst(cb,"QCDScale_VH", "lnN", SystMap<>::init(1.038));
+        
+        cb.cp().process({"ggH","HWW_gg125"}).AddSyst(cb,"pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
+        cb.cp().process({"ggH","HWW_gg125"}).AddSyst(cb,"pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
+        cb.cp().process({"WH"}).AddSyst(cb,"pdf_Higgs_VH", "lnN", SystMap<>::init(1.019));
+        cb.cp().process({"ZH"}).AddSyst(cb,"pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
+        
+        
+        
         
         
         //  // Recoil corrections
