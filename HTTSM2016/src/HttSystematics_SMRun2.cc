@@ -133,12 +133,12 @@ namespace ch {
         //##############################################################################
         
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"}, {1}, JoinStr({"TTJ","TTT","TT"}), 1.035));
+                        ({"em"}, {1}, process({"TTJ","TTT","TT"}), 1.035));
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"}, {2,3}, JoinStr({"TTJ","TTT","TT"}), 1.05));
+                        ({"em"}, {2,3}, process({"TTJ","TTT","TT"}), 1.05));
 
         cb.cp().AddSyst(cb, "CMS_htt_mistag_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"}, {2, 3}, JoinStr({"VV","VVT","VVJ"}), 1.015));
+                        ({"em"}, {2, 3}, process({"VV","VVT","VVJ"}), 1.015));
         
         
         //##############################################################################
@@ -315,11 +315,11 @@ namespace ch {
 
         // QCD norm, just for tt
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,
-                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.15));
+                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.10));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,
-                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.15));
+                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.10));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                             "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.30));
+                                             "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
         
         
         // QCD norm, just for tt
@@ -351,9 +351,9 @@ namespace ch {
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
                                              "WHighMTtoLowMT_$CHANNEL_0jet_$ERA", "lnN", SystMap<>::init(1.10));
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
-                                             "WHighMTtoLowMT_$CHANNEL_boosted_$ERA", "lnN", SystMap<>::init(1.10));
+                                             "WHighMTtoLowMT_$CHANNEL_boosted_$ERA", "lnN", SystMap<>::init(1.05));
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                             "WHighMTtoLowMT_$CHANNEL_vbf_$ERA", "lnN", SystMap<>::init(1.20));
+                                             "WHighMTtoLowMT_$CHANNEL_vbf_$ERA", "lnN", SystMap<>::init(1.10));
         
         
 
