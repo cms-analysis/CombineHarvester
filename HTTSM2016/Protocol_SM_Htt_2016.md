@@ -44,8 +44,8 @@
 # Plotting the limit:
 
     
-    plotLimits.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style
-    plotLimits.py limits_cmb.json --auto-style   
+    plotLimits.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style -o lim_compare
+    plotLimits.py limits_cmb.json --auto-style   -o lim_expected_cmb 
 
 
     python ../../plotLimits_SM2.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style --cms-sub Preliminary  -o lim_compare
@@ -63,7 +63,7 @@
 
 # making the pulls
 
-    python ../../../../HiggsAnalysis/CombinedLimit/test/diffNuisances.py  mlfit.root -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f text mlfit.root > mlfit.txt
+    python ../../../../../HiggsAnalysis/CombinedLimit/test/diffNuisances.py  mlfit.root -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f text mlfit.root > mlfit.txt
 
 
 # postfit plots
@@ -73,8 +73,13 @@
 
 # Computing the Impact
 
-    combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --doInitialFit --robustFit 1 -t -1 --rMin 0.5 --rMax 1.5 --expectSignal=1
+    combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --doInitialFit --robustFit 1 -t -1 --rMin 0.5 --rMax 1.5 --expectSignal=1 --parallel 8
+    ---------------------------
     combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --robustFit 1 --doFits -t -1 --rMin 0.5 --rMax 1.5 --expectSignal=1 --parallel 8
+    *Note*: Instead of the above line one can run the jobs via lxbatch:
+    combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad --doFits -t -1 --rMin 0.5 --rMax 1.5 --expectSignal=1 --job-mode lxbatch --task-name lxbatch-test --sub-opts='-q 8nh' --merge 10 --dry-run   (--dry-run option let you check how the jobs will look like before submiting to lxbatch)  
+    combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad --doFits -t -1 --rMin 0.5 --rMax 1.5 --expectSignal=1 --job-mode lxbatch --task-name lxbatch-test --sub-opts='-q 8nh' --merge 10 
+    ---------------------------
     combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 -o impacts.json
     plotImpacts.py -i impacts.json -o impacts
 
@@ -82,6 +87,19 @@
 # Computing the expected significance:
 
     combine -M ProfileLikelihood --significance cmb/125/workspace.root -t -1 --expectSignal=1
+
+# Making the pvalue plot:
+
+    cp ../../../scripts/runPvalue.sh .
+    sh  runPvalue.sh .
+
+# Making the S/S+B weighted plot
+
+    SBWeighted_HTT.cpp  --datacards=cmb/125/combined.txt.cmb    --output=sb-weighted  --postfor=false
+
+
+
+
 
 
 
