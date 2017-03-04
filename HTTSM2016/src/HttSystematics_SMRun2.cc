@@ -133,12 +133,12 @@ namespace ch {
         //##############################################################################
         
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"}, {1}, process({"TTJ","TTT","TT"}), 1.035));
+                        ({"em"}, {1}, {"TTJ","TTT","TT"}, 1.035));
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"}, {2,3}, process({"TTJ","TTT","TT"}), 1.05));
+                        ({"em"}, {2,3}, {"TTJ","TTT","TT"}, 1.05));
 
         cb.cp().AddSyst(cb, "CMS_htt_mistag_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"}, {2, 3}, process({"VV","VVT","VVJ"}), 1.015));
+                        ({"em"}, {2, 3}, {"VV","VVT","VVJ"}, 1.015));
         
         
         //##############################################################################
