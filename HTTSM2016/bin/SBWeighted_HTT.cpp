@@ -31,6 +31,7 @@ int main(int argc, char* argv[]){
   string output           = "";
   string text1            = "";
   string text2            = "";
+  bool blinded            = true;
   bool postfit            = true;
 
   po::variables_map vm;
@@ -53,6 +54,9 @@ int main(int argc, char* argv[]){
     ("text2",
       po::value<string>(&text2)->default_value(""),
       "[REQUIRED] output name (no extension)")
+    ("blinded",
+     po::value<bool>(&blinded)->default_value("true"),
+     "[REQUIRED] blinded")
     ("postfit",
       po::value<bool>(&postfit)->required(),
       "[REQUIRED] use the pulls file to make a post-fit plot");
@@ -156,10 +160,10 @@ int main(int argc, char* argv[]){
   for (auto chn : channels) {
     by_chn.push_back(
         new TH1F(cmb.cp().channel({chn}).backgrounds().GetShape()));
-    if (chn == "et") by_chn.back()->SetFillColor(TColor::GetColor(84, 166, 226));
-    if (chn == "mt") by_chn.back()->SetFillColor(TColor::GetColor(212, 66,  88));
-    if (chn == "em") by_chn.back()->SetFillColor(TColor::GetColor(201, 198, 116));
-    if (chn == "tt") by_chn.back()->SetFillColor(TColor::GetColor(245, 197, 85));
+    if (chn == "et") by_chn.back()->SetFillColorAlpha(TColor::GetColor(200, 2, 285),.85);
+    if (chn == "mt") by_chn.back()->SetFillColorAlpha(TColor::GetColor(408, 106, 154),.85);
+    if (chn == "em") by_chn.back()->SetFillColorAlpha(TColor::GetColor(200, 222, 285),.85);
+    if (chn == "tt") by_chn.back()->SetFillColorAlpha(TColor::GetColor(208, 376, 124),.85);
     if (chn == "ee") by_chn.back()->SetFillColor(TColor::GetColor(247, 186, 254));
     if (chn == "mm") by_chn.back()->SetFillColor(TColor::GetColor(112, 142, 122));
     if (chn == "vhtt") by_chn.back()->SetFillColor(TColor::GetColor(137, 132, 192));
@@ -219,6 +223,14 @@ int main(int argc, char* argv[]){
 
   if (pads[0]->GetLogy()) h[0]->SetMinimum(0.1);
 
+    if (blinded){
+    for (int ibin=0; ibin < sb_obs.GetNbinsX() ; ibin++ ){
+        if (ibin > 7)
+            sb_obs.SetBinContent(ibin,0);
+    }
+  }
+    
+    
   stack->Draw("histsame");
   stack_bkg.Draw("histsame");
   sb_err.Draw("e2same");
@@ -242,9 +254,34 @@ int main(int argc, char* argv[]){
     FixOverlay();
   }
 
-  DrawTitle(pads[0], "CombineHarvester", 1);
+  DrawTitle(pads[0], "CMS Preliminary                       35.9 fb^{-1} (13 TeV)", 1);
 
-
+//
+//    float lowX=0.65;
+//    float lowY=0.85;
+//    TPaveText * lumi  = new TPaveText(lowX, lowY+0.06, lowX+0.30, lowY+0.16, "NDC");
+//    lumi->SetBorderSize(   0 );
+//    lumi->SetFillStyle(    0 );
+//    lumi->SetTextAlign(   12 );
+//    lumi->SetTextColor(    1 );
+//    lumi->SetTextSize(0.04);
+//    lumi->SetTextFont (   42 );
+//    lumi->AddText("35.9 fb^{-1} (13 TeV)");
+//    lumi->Draw();
+//    
+//    lowX=0.15;
+//    lowY=0.75;
+//    TPaveText * lumi1  = new TPaveText(lowX, lowY+0.06, lowX+0.15, lowY+0.16, "NDC");
+//    lumi1->SetTextFont(61);
+//    lumi1->SetTextSize(0.05);
+//    lumi1->SetBorderSize(   0 );
+//    lumi1->SetFillStyle(    0 );
+//    lumi1->SetTextAlign(   12 );
+//    lumi1->SetTextColor(    1 );
+//    lumi1->AddText("CMS Preliminary");
+//    lumi1->Draw();
+    
+    
 
   canv->Print(".pdf");
 

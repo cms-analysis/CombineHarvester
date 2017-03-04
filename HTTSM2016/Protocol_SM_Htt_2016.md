@@ -95,8 +95,8 @@
 
 # Making the S/S+B weighted plot
 
-    SBWeighted_HTT.cpp  --datacards=cmb/125/combined.txt.cmb    --output=sb-weighted  --postfor=false
-
+    cp ../../../scripts/runSBWeighted.sh .
+    sh runSBWeighted.sh
 
 
 
