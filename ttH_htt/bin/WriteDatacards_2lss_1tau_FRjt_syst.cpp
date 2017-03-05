@@ -113,10 +113,8 @@ int main(int argc, char** argv) {
   using ch::syst::process;
 
   //! [part5]
-  cb.cp().signals()
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init
-	       //({"13TeV"}, 1.027));
-	       ({"13TeV_2016"}, 1.026));
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+    .AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.026));
 
   //! [part5]
 
@@ -215,7 +213,7 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.06));
 
   cb.cp().process({"ttH_hww_gentau", "ttH_hzz_gentau", "ttH_htt_gentau", "TTW_gentau", "TTZ_gentau", "Rares_gentau"})
-      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.1));
+      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.05));
   
   if ( add_shape_sys ) {
     cb.cp().process({"ttH_hww_faketau", "ttH_hzz_faketau", "ttH_htt_faketau", "TTW_faketau", "TTZ_faketau", "Rares_faketau"})

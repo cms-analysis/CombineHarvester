@@ -84,10 +84,8 @@ int main(int argc, char** argv) {
   using ch::syst::process;
 
   //! [part5]
-  cb.cp().signals()
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init
-	       //({"13TeV"}, 1.027));
-	       ({"13TeV_2016"}, 1.026));
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+      .AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.026));
   //! [part5]
 
   //! [part6]
@@ -146,6 +144,7 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "CMS_ttHl_FRjt_shape", "shape", SystMap<>::init(1.0));
   }    
 
+
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.03));
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
@@ -155,7 +154,7 @@ int main(int argc, char** argv) {
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.03));
   cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
-      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.20));
+      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.10));
 
   if ( add_shape_sys ) {
     cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
