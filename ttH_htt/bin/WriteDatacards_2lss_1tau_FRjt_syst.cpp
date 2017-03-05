@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
   using ch::syst::process;
 
   //! [part5]
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
     .AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.026));
 
   //! [part5]
@@ -203,13 +203,13 @@ int main(int argc, char** argv) {
   cb.cp().process({"flips_data"})
       .AddSyst(cb, "CMS_ttHl_QF", "lnN", SystMap<>::init(1.3));
   
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
       .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.02));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_elloose", "lnN", SystMap<>::init(1.03));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_muloose", "lnN", SystMap<>::init(1.03));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.06));
 
   cb.cp().process({"ttH_hww_gentau", "ttH_hzz_gentau", "ttH_htt_gentau", "TTW_gentau", "TTZ_gentau", "Rares_gentau"})
@@ -223,9 +223,9 @@ int main(int argc, char** argv) {
   }
 
   if ( add_shape_sys ) {
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
         .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
         .AddSyst(cb, "CMS_ttHl_tauES", "shape", SystMap<>::init(1.0));
   }
 
@@ -234,7 +234,7 @@ int main(int argc, char** argv) {
 
   if ( add_shape_sys ) {
     for ( auto s : {"HF", "HFStats1", "HFStats2", "LF", "LFStats1", "LFStats2", "cErr1", "cErr2"} ) {
-      cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_gentau", "Rares_gentau", "Rares_faketau"}}))
+      cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTW_faketau", "TTZ_gentau", "TTZ_faketau", "Rares_gentau", "Rares_faketau"}}))
           .AddSyst(cb, Form("CMS_ttHl_btag_%s", s), "shape", SystMap<>::init(1.0));
     }
   }

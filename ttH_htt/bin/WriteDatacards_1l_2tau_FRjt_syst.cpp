@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
   using ch::syst::process;
 
   //! [part5]
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.026));
   //! [part5]
 
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
   }
 
   cb.cp().process({"EWK_gentau"})
-      .AddSyst(cb, "CMS_ttHl_EWK", "lnN", SystMap<>::init(1.5));
+      .AddSyst(cb, "CMS_ttHl_EWK_4j", "lnN", SystMap<>::init(2.0));
   
   cb.cp().process({"Rares_gentau"})
       .AddSyst(cb, "CMS_ttHl_Rares", "lnN", SystMap<>::init(1.5));
@@ -145,31 +145,31 @@ int main(int argc, char** argv) {
   }    
 
 
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.03));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_elloose", "lnN", SystMap<>::init(1.02));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_muloose", "lnN", SystMap<>::init(1.02));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.03));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.10));
 
   if ( add_shape_sys ) {
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
         .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
   
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
         .AddSyst(cb, "CMS_ttHl_tauES", "shape", SystMap<>::init(1.0));
   }
 
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
   if ( add_shape_sys ) {
     for ( auto s : {"HF", "HFStats1", "HFStats2", "LF", "LFStats1", "LFStats2", "cErr1", "cErr2"} ) {
-      cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau"}}))
+      cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
           .AddSyst(cb, Form("CMS_ttHl_btag_%s", s), "shape", SystMap<>::init(1.0));
     }
   }
