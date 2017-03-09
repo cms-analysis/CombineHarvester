@@ -128,6 +128,19 @@ namespace ch {
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         
         
+        
+        
+        //######################## Tau Id shape uncertainty (added March 08)
+        
+        cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
+                                                            "CMS_tauDMReco_1prong_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
+                                                                          "CMS_tauDMReco_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
+                                                                          "CMS_tauDMReco_3prong_$ERA", "shape", SystMap<>::init(1.00));
+        
+        
+        
         //##############################################################################
         //  b tag and mistag rate  efficiencies
         //##############################################################################
@@ -168,11 +181,11 @@ namespace ch {
 
 
         // Decay Mode based TES Settings
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).bin_id({1,2,3}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).bin_id({1,2,3}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).bin_id({1,2,3}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
 
@@ -190,7 +203,6 @@ namespace ch {
  //           cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3}).channel({"em"}).AddSyst(cb,
  //                                          "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
-        // FIXME Is DESY going to have scale_j for all shapes?
 //        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
 //                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
 
@@ -254,7 +266,7 @@ namespace ch {
         }; // end uncertNames
         // Uncomment below for 27 JES
         //
-  /*      
+        
 for (string uncert:uncertNames){
             cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt"}).AddSyst(cb,
                                            "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
@@ -273,14 +285,14 @@ for (string uncert:uncertNames){
             
         }
 
-*/
 
-        for (string uncert:uncertNames){
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt","et"}).bin_id({1,2,3}).AddSyst(cb,
-                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3}).channel({"em"}).AddSyst(cb,
-                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-        }
+
+//        for (string uncert:uncertNames){
+//            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt","et"}).bin_id({1,2,3}).AddSyst(cb,
+//                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+//            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3}).channel({"em"}).AddSyst(cb,
+//                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+//        }
 
 
         cb.cp().AddSyst(cb,
@@ -385,31 +397,57 @@ for (string uncert:uncertNames){
         // Ttbar shape reweighting, Between no and twice the correction
         //##############################################################################
         
-// FIXME?        cb.cp().process( {"TTJ","TTT","TTJ_rest"}).channel({"et","mt","tt"}).AddSyst(cb,
-// FIXME?                                    "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"TTJ","TTT","TTJ_rest"}).channel({"tt"}).AddSyst(cb,
+                                        "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"TTJ","TTT"}).channel({"et","mt"}).AddSyst(cb,
+                                        "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"TT"}).channel({"em"}).AddSyst(cb,
-                                             "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
+                                        "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
         
         //##############################################################################
-        // electron/muon/jet  to tau fake only in tt, mt and et channels ##FIXME  should add mt and et channels
+        // ZL shape  and electron/muon  to tau fake only in  mt and et channels (updated March 08)
         //##############################################################################
         
-        cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
-                                             "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
+        cb.cp().process( {"ZL"}).channel({"mt","et"}).bin_id({1}).AddSyst(cb,
+                                                         "CMS_ZLShape_$CHANNEL_0jet_1prong_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"ZL"}).channel({"mt","et"}).bin_id({1}).AddSyst(cb,
+                                                         "CMS_ZLShape_$CHANNEL_0jet_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"ZL"}).channel({"mt","et"}).bin_id({2,3}).AddSyst(cb,
+                                                         "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+        
+        
         cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
-                                             "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.25));
-        cb.cp().process( {"TTJ","W","ZJ","VVJ","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt","mt","et"}).AddSyst(cb,
-                                           "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
+                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.25));
+        cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
         
- 
-        //FIXME   could not be found in the the DCs in 27 Feb
-//        // mu to tau FR
-        cb.cp().process( {"ZL"}).channel({"mt"}).AddSyst(cb,
-                                             "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
-        // e to tau FR
-        cb.cp().process( {"ZL"}).channel({"et"}).AddSyst(cb,
-                                             "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
- 
+        
+        
+        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1}).AddSyst(cb,
+                                                                     "CMS_mFakeTau_0jet_tauDMReco_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1}).AddSyst(cb,
+                                                                     "CMS_eFakeTau_0jet_tauDMReco_$ERA", "shape", SystMap<>::init(1.00));
+        
+//        
+//        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1}).AddSyst(cb,
+//                                                                        "CMS_ZLShape_mFakeTau_0jet_1prong_$ERA", "shape", SystMap<>::init(1.00));
+//        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1}).AddSyst(cb,
+//                                                                        "CMS_ZLShape_mFakeTau_0jet_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+//        cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1}).AddSyst(cb,
+//                                                                        "CMS_ZLShape_eFakeTau_0jet_1prong_$ERA", "shape", SystMap<>::init(1.00));
+//        cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1}).AddSyst(cb,
+//                                                                        "CMS_ZLShape_eFakeTau_0jet_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+//        
+        
+        //##############################################################################
+        // jet  to tau fake only in tt, mt and et channels
+        //##############################################################################
+        
+        cb.cp().process( {"TTJ","ZJ","VVJ","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt","mt","et"}).AddSyst(cb,
+                                                                            "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
+        
+        cb.cp().process( {"W"}).channel({"tt","mt","et"}).bin_id({1,2,3,13,14,15}).AddSyst(cb,
+                                                                "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
         
 
         //##############################################################################
