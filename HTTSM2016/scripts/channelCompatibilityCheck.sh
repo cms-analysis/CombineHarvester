@@ -59,26 +59,26 @@ text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel -
 for SIGNAL in r_em r_et r_mt r_tt; do
     echo ""
     echo "group: Channel " ${SIGNAL}
-    combine -M ProfileLikelihood --significance workspace_channel_breakdown.root -t -1 --setPhysicsModelParameters r_em=1,r_et=1,r_mt=1,r_tt=1 --redefineSignalPOIs ${SIGNAL}
+    combine -M ProfileLikelihood --significance workspace_channel_breakdown.root -t -1 --setPhysicsModelParameters r_em=1,r_et=1,r_mt=1,r_tt=1 --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
 done
 
 # Run for each category
 for SIGNAL in r_0jet r_boosted r_vbf; do
     echo ""
     echo "group: Category " ${SIGNAL}
-    combine -M ProfileLikelihood --significance workspace_category_breakdown.root -t -1 --setPhysicsModelParameters r_0jet=1,r_boosted=1,r_vbf=1 --redefineSignalPOIs ${SIGNAL}
+    combine -M ProfileLikelihood --significance workspace_category_breakdown.root -t -1 --setPhysicsModelParameters r_0jet=1,r_boosted=1,r_vbf=1 --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
 done
 
 # Run for each category
 for SIGNAL in r_em_1 r_em_2 r_em_3 r_et_1 r_et_2 r_et_3 r_mt_1 r_mt_2 r_mt_3 r_tt_1 r_tt_2 r_tt_3; do
     echo ""
     echo "group: Category " ${SIGNAL}
-    combine -M ProfileLikelihood --significance workspace_channel_and_category_breakdown.root -t -1 --setPhysicsModelParameters r_em_1=1,r_em_2=1,r_em_3=1,r_et_1=1,r_et_2=1,r_et_3=1,r_mt_1=1,r_mt_2=1,r_mt_3=1,r_tt_1=1,r_tt_2=1,r_tt_3=1, --redefineSignalPOIs ${SIGNAL}
+    combine -M ProfileLikelihood --significance workspace_channel_and_category_breakdown.root -t -1 --setPhysicsModelParameters r_em_1=1,r_em_2=1,r_em_3=1,r_et_1=1,r_et_2=1,r_et_3=1,r_mt_1=1,r_mt_2=1,r_mt_3=1,r_tt_1=1,r_tt_2=1,r_tt_3=1, --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
 done
 
 echo ""
 echo "group: Combined"
-combine -M ProfileLikelihood --significance cmb/125/workspace.root -t -1 --expectSignal=1
+combine -M ProfileLikelihood --significance cmb/125/workspace.root -t -1 --expectSignal=1 -n _SigCombined
 
 
 
