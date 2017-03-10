@@ -708,7 +708,7 @@ for (string uncert:uncertNames){
             // FIXME should have EWKZ in all
             cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
                                              "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em","mt","et"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"em","mt","et"}).bin_id({3}).AddSyst(cb,
                                              "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
 
