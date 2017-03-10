@@ -415,18 +415,22 @@ for (string uncert:uncertNames){
         cb.cp().process( {"ZL"}).channel({"mt","et"}).bin_id({2,3}).AddSyst(cb,
                                                          "CMS_htt_ZLShape_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         
+
+        //Changed March 10
+//        cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
+//                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.25));
+//        cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
+//                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
         
-        cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
-                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.25));
-        cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
-                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
         
-        
-        
-        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1}).AddSyst(cb,
-                                                                     "CMS_mFakeTau_0jet_tauDMReco_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1}).AddSyst(cb,
-                                                                     "CMS_eFakeTau_0jet_tauDMReco_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
+                                                                     "CMS_mFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
+                                                                     "CMS_mFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1,2,3}).AddSyst(cb,
+                                                                     "CMS_eFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1,2,3}).AddSyst(cb,
+                                                                     "CMS_eFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
         
 //        
 //        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1}).AddSyst(cb,

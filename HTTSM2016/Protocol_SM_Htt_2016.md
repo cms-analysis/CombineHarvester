@@ -80,6 +80,12 @@
     combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad --doFits -t -1 --rMin 0.5 --rMax 1.5 --expectSignal=1 --job-mode lxbatch --task-name lxbatch-test --sub-opts='-q 8nh' --merge 10 --dry-run   (--dry-run option let you check how the jobs will look like before submiting to lxbatch)  
     combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad --doFits -t -1 --rMin 0.5 --rMax 1.5 --expectSignal=1 --job-mode lxbatch --task-name lxbatch-test --sub-opts='-q 8nh' --merge 10 
     ---------------------------
+    # Impact for limited number of nuisance parameters 
+
+   combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 --robustFit 1 --doFits -t -1 --minimizerAlgoForMinos Minuit2,Migrad --rMin 0.5 --rMax 1.5 --expectSignal=1 --parallel 18 --named CMS_scale_t_et_13TeV,CMS_scale_t_mt_13TeV,CMS_scale_t_tt_13TeV --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP
+
+    ---------------------------
+
     combineTool.py -M Impacts -d cmb/125/workspace.root -m 125 -o impacts.json
     plotImpacts.py -i impacts.json -o impacts
 
@@ -87,6 +93,12 @@
 # Computing the expected significance:
 
     combine -M ProfileLikelihood --significance cmb/125/workspace.root -t -1 --expectSignal=1
+
+# Computing the expected significance per channel per category (including constraints from all channels)
+
+    cd scripts
+    sh channelCompatibilityCheck.sh
+
 
 # Making the pvalue plot:
 
