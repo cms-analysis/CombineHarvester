@@ -31,7 +31,11 @@ combineTool.py -M T2W -m 125 -P HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcFH
 combine -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,3.0:CF=0.0,1.5 kappaWorkspace.root --algo=singles --robustFit=1 -t -1  --expectSignal=1 --minimizerAlgoForMinos=Minuit2,Migrad
 
 # Perform 2D scan in CV vs. CF
-combineTool.py -n CvCf -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,3.0:CF=0.0,1.5 kappaWorkspace.root --algo=grid --points=2000 -t -1 --expectSignal=1 --minimizerAlgoForMinos=Minuit2,Migrad
+# Uncomment the following line to run this scan on 1 core.
+# This can be sped up by running multicored, see
+# scripts/kappaF_kappaV_Multithreading.py
+#
+#combineTool.py -n CvCf -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,3.0:CF=0.0,1.5 kappaWorkspace.root --algo=grid --points=2000 -t -1 --expectSignal=1 --minimizerAlgoForMinos=Minuit2,Migrad
 
 # Run this on the output root file
 #root -l higgsCombineCvCf.MultiDimFit.mH125.root ../../../../scripts/contours2D.cxx
