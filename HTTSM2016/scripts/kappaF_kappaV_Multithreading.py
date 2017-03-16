@@ -34,7 +34,7 @@ def runFit(points, toys, j) :
     toRun.append('-m')
     toRun.append('125')
     toRun.append('--setPhysicsModelParameterRanges')
-    toRun.append('CV=0.0,3.0:CF=0.0,1.5')
+    toRun.append('CV=0.0,3.5:CF=0.0,1.5')
     toRun.append('kappaWorkspace.root')
     toRun.append('--algo=grid')
     toRun.append('--points=%i' % points)
@@ -84,7 +84,7 @@ print "\n\n"
 print "Now Run:"
 print "hadd higgsCombineCvCf.MultiDimFit.mH125.root higgsCombineCvCf.*.MultiDimFit.mH125.root"
 print "root -l higgsCombineCvCf.MultiDimFit.mH125.root ../../../../scripts/contours2D.cxx"
-print 'contour2D("CV",%i,0.0,3.0,"CF",%i,0.0,1.5,1.,1.)' % (math.sqrt(nPoints), math.sqrt(nPoints))
+print 'contour2D("CV",%i,0.0,3.5,"CF",%i,0.0,1.5,1.,1.)' % (math.sqrt(nPoints), math.sqrt(nPoints))
 print "\n\n"
 
 
