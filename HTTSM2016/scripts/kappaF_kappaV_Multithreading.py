@@ -1,10 +1,9 @@
 # Simple script to multithread the process of the KappaF, KappaV 2d grid
 # Adjust the values below:
-#  - nToysPerJob = number of toys per multithreaded process
+#  - nCores = number of cores running multithreaded process
 #  - points = number of total points
 #
-# points / nToysPerJob = number of cores you will need to run on
-# You do not need to set the number of cores
+# points / nCores = nToysPerJob you will need to run
 
 
 
@@ -15,8 +14,8 @@ import math
 
 
 
-nToysPerJob = 15
-points = 200
+nCores = 5 # Don't set this too high.  It can crash your machine
+points = 2000 # 2000 gives very nice contours
 
 
 
@@ -55,18 +54,21 @@ def runFit(points, toys, j) :
 # CH takes your nPointsIn and chooses the next largest integer
 # value that is a perfect square as its input nPoints
 # So we want to match that if we are multithreading
-def findNPointss( nPointsIn ) :
+def findNPoints( nPointsIn ) :
     toSquare = math.sqrt( nPointsIn )
     print "Sqrt( %i ) = %.2f" % (nPointsIn, toSquare)
     return math.ceil( toSquare ) * math.ceil( toSquare )
 
 
-nPoints = findNPointss( points )
+nPoints = findNPoints( points )
 print "nPoints ",nPoints
-jobs = int(nPoints/nToysPerJob)+1
+#jobs = int(nPoints/nToysPerJob)+1
+nToysPerJob  = int(nPoints/nCores)+1 # +1 makes sure we get final points
+print "nCores ",nCores
+print "nToysPerJob ",nToysPerJob
 processes = []
 
-for i in range( jobs ) :
+for i in range( nCores ) :
     processes.append( Process(target=runFit, args=(nPoints, nToysPerJob, i,) ) )
     processes[-1].start()
 
