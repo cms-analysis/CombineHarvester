@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
     }
     bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "HWW_gg125", "HWW_qq125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
-    bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV"};
+    bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ"};
     
     
     
@@ -254,10 +254,14 @@ int main(int argc, char** argv) {
 //    
 //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"EWKZ"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
 //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"EWKZ"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
-//    
+
     if (control_region > 0){
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},{10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}}, false);
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},{10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}}, false);
+      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},
+                                    {10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}
+                                    {13, "et_antiiso_0jet_cr"},{14, "et_antiiso_boosted_cr"},{15, "et_antiiso_vbf_cr"}}, false);
+      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},
+                                    {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}
+                                    {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"},{15, "mt_antiiso_vbf_cr"}}, false);
     }else if (!do_jetfakes){
       cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
       cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
