@@ -27,7 +27,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   if (control_region == 1){
     // we only want to cosider systematic uncertainties in the signal region.
     // limit to only the btag and nobtag categories
-    cb_sig.bin_id({8,9});
+    cb_sig.bin_id({8,9,10,11,12,13});
   }
 
   std::vector<std::string> SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
@@ -473,15 +473,20 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
       ({"et"}, {9}, 1.600));
     }
     if (control_region == 1) {
+      // QCD rate params come in correctly for free by not adding the additional unneccesariy W control regions
       // Create rateParams for control regions:
-      //  - [x] 1 rateParam for all W in every region
-      //  - [x] 1 rateParam for QCD in low mT
-      //  - [x] 1 rateParam for QCD in high mT
-      //  - [x] lnNs for the QCD OS/SS ratio
+      //  - [x] 1 rateParam for W in all regions of tight and loose mT selections
+      //  - [x] 1 rateParam for W in all regions of loose iso selection
+      //  - [x] 1 rateParam for QCD in tight low mT
+      //  - [x] 1 rateParam for QCD in loose iso low mT
+      //  - [x] 1 rateParam for QCD in loose mT low mT
+      //  - [x] 1 rateParam for QCD in tight+loose mT high mT
+      //  - [x] 1 rateParam for QCD in loose iso high mT
+      //  - [] lnNs for the QCD OS/SS ratio
       //         * should account for stat + syst
       //         * systs should account for: extrap. from anti-iso to iso region,
       //           possible difference between ratio in low mT and high mT (overkill?)
-      //  - [x] lnNs for the W+jets OS/SS ratio
+      //  - [] lnNs for the W+jets OS/SS ratio
       //         * should account for stat only if not being accounted for with bbb,
       //           i.e. because the OS/SS ratio was measured with a relaxed selection
       //         * systs should account for: changes in low/high mT and OS/SS due to JES
@@ -491,11 +496,33 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
       // Going to use the regex filtering to select the right subset of
       // categories for each rateParam
       cb.SetFlag("filters-use-regex", true);
-      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
-        // Regex that matches, e.g. mt_nobtag or mt_nobtag_X
-        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_"+bin, "rateParam", SystMap<>::init(1.0));
+        //Regex that matches eg et_nobtag_tight, et_nobtag_loosemt, et_nobtag_tight_X and et_nobtag_loosemt_X
+        cb.cp().bin({"et_nobtag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_et_nobtag", "rateParam", SystMap<>::init(1.0));
 
+        cb.cp().bin({"mt_nobtag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_mt_nobtag", "rateParam", SystMap<>::init(1.0));
+
+        cb.cp().bin({"et_btag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_et_btag", "rateParam", SystMap<>::init(1.0));
+
+        cb.cp().bin({"mt_btag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_mt_btag", "rateParam", SystMap<>::init(1.0));
+
+        //Regex that matches et_nobtag_looseiso or et_nobtag_looseiso_X
+        cb.cp().bin({"et_nobtag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_et_nobtag", "rateParam", SystMap<>::init(1.0));
+
+        cb.cp().bin({"mt_nobtag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_mt_nobtag", "rateParam", SystMap<>::init(1.0));
+
+        cb.cp().bin({"et_btag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_et_btag", "rateParam", SystMap<>::init(1.0));
+
+        cb.cp().bin({"mt_btag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
+          "rate_W_tightiso_mt_btag", "rateParam", SystMap<>::init(1.0));
+
+      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
         // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"QCD"}).AddSyst(cb,
           "rate_QCD_lowmT_"+bin, "rateParam", SystMap<>::init(1.0));

@@ -111,7 +111,8 @@ int main(int argc, char** argv) {
   input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_tt+"/";
   input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_zmm+"/";
 
-  VString chns = {"mt","et","tt","em"};
+  VString chns = {"mt","et","tt"};
+  //VString chns = {"mt","et","tt","em"};
   if (zmm_fit) chns.push_back("zmm");
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
@@ -153,8 +154,12 @@ int main(int argc, char** argv) {
   //
   map<string,Categories> cats;
   cats["et_13TeV"] = {
-    {8, "et_nobtag"},
-    {9, "et_btag"}
+    {8, "et_nobtag_tight"},
+    {9, "et_btag_tight"},
+    {10, "et_nobtag_loosemt"},
+    {11, "et_btag_loosemt"},
+    {12, "et_nobtag_looseiso"},
+    {13, "et_btag_looseiso"}
     };
 
   cats["em_13TeV"] = {
@@ -168,8 +173,12 @@ int main(int argc, char** argv) {
     };
 
   cats["mt_13TeV"] = {
-    {8, "mt_nobtag"},
-    {9, "mt_btag"}
+    {8, "mt_nobtag_tight"},
+    {9, "mt_btag_tight"},
+    {10, "mt_nobtag_loosemt"},
+    {11, "mt_btag_loosemt"},
+    {12, "mt_nobtag_looseiso"},
+    {13, "mt_btag_looseiso"}
     };
 
   cats["zmm_13TeV"] = {
@@ -188,11 +197,15 @@ int main(int argc, char** argv) {
         }
         // if ( chn == "em") continue;
         Categories queue;
-        int binid = 10;
+        int binid = 14;
         for (auto cat:cats[chn+"_13TeV"]){
-          queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
+          if(binid != 23 && binid!=20){ //Fairly shit way of dropping no b-tag loose mT wjets CR
+            queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
+          }
           queue.push_back(make_pair(binid+1,cat.second+"_qcd_cr"));
-          queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
+          if(binid != 23 && binid!=20){ //Fairly shit way of dropping no b-tag loose mT wjets ss CR
+            queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
+          }
           binid += 3;
         }
         cats[chn+"_13TeV"].insert(cats[chn+"_13TeV"].end(),queue.begin(),queue.end());
@@ -217,7 +230,7 @@ int main(int argc, char** argv) {
 
     cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn+"_13TeV"], false);
 
-    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
+    //cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
     if(SM125==string("bkg_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
     if(SM125==string("signal_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
@@ -316,72 +329,6 @@ int main(int argc, char** argv) {
             obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
           });
         }
-  }
-
-  if (do_w_weighting) {
-    // Grab the 2D hist of mT,tautau vs jet pT
-    TFile weight_file("shapes/resources/WJetsFakeWeights.root");
-    TH2F *weights = (TH2F*)(weight_file.Get("hist")->Clone());
-    weights->SetDirectory(0);
-    weight_file.Close();
-
-    // Create an output file to contain the shapes that are produced
-    TFile outfile("WJetsFakeWeights_Debug.root", "RECREATE");
-
-    // Weighting function, defined up to jet pT of 200 GeV
-    double pt_max = 200.;
-    TF1 *landau = new TF1("fn","9.794*TMath::Landau(x,210,137,0)", 0, pt_max);
-
-    // Only correct W shape in e-tau and mu-tau signal regions
-    cb.cp().channel({"et", "mt"}).bin_id({8, 9}).process({"W"}).ForEachProc([&](ch::Process *p) {
-      // Three copies of the nomianl shape
-      auto shape_old = p->ClonedScaledShape(); // Leave this unchanged, will become Down syst
-      auto shape_new = p->ClonedScaledShape();  // Will become new nominal
-      auto shape_new2 = p->ClonedScaledShape(); // Will become Up shape with double correction
-      for (int i = 1; i <= shape_new->GetNbinsX(); ++i) {
-          // For each bin do the weighted sum of jet pT scale factors retrieved
-          // from the landu function
-          int weight_i = weights->GetXaxis()->FindFixBin(shape_new->GetBinCenter(i));
-          float tot_weight = 0.;
-          for (int j = 1; j <= weights->GetNbinsY(); ++j) {
-            tot_weight += (weights->GetBinContent(weight_i, j) *
-                           landau->Eval(std::min(
-                               weights->GetYaxis()->GetBinCenter(j), pt_max)));
-          }
-          if (tot_weight == 0.) tot_weight = 1.;
-          shape_new->SetBinContent(i, shape_new->GetBinContent(i)*tot_weight);
-          shape_new2->SetBinContent(i, shape_new2->GetBinContent(i)*tot_weight*tot_weight);
-      }
-      // Normalise the corrected shapes to the initial integral
-      shape_new->Scale(shape_old->Integral()/shape_new->Integral());
-      shape_new2->Scale(shape_old->Integral()/shape_new2->Integral());
-
-      // std::cout << *p << "\n";
-      // std::cout << "Correction:\n";
-      // shape_new->Print("range");
-      // std::cout << "Up Systematic:\n";
-      // shape_new2->Print("range");
-
-      // Write shapes into debug file
-      outfile.WriteTObject(shape_old.get(), (p->bin()+"_Down").c_str());
-      outfile.WriteTObject(shape_new.get(), (p->bin()+"_Nominal").c_str());
-      outfile.WriteTObject(shape_new2.get(), (p->bin()+"_Up").c_str());
-
-      // Create shape systematic
-      cb.AddSystFromProc(*p, "CMS_htt_wFakeShape_13TeV", "shape", true, 1.0, 1.0, "", "");
-      // Import the shapes into the Process and Systematic objects
-      cb.cp()
-          .bin({p->bin()})
-          .process({p->process()})
-          .syst_name({"CMS_htt_wFakeShape_13TeV"})
-          .ForEachSyst([&](ch::Systematic *sys) {
-            sys->set_shapes(std::move(shape_new2), std::move(shape_old), shape_new.get());
-          });
-      p->set_shape(std::move(shape_new), false);
-    });
-
-    // Close the debug file
-    outfile.Close();
   }
 
 
