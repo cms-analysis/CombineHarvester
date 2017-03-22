@@ -30,6 +30,20 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     cb_sig.bin_id({8,9,10,11,12,13});
   }
 
+  cb.cp().bin_id({8,9,14,15,16,17,18,19}).ForEachObj([&](ch::Object *obj){
+      obj->set_attribute("region","tight");
+  });
+  cb.cp().bin_id({10,21,11,24}).ForEachObj([&](ch::Object *obj){
+       obj->set_attribute("region","loosemt");
+  });
+  cb.cp().bin_id({12,13,16,17,28,29,30,31}).ForEachObj([&](ch::Object *obj){
+      obj->set_attribute("region","looseiso");
+  });
+
+ cb.cp().attr({"looseiso"},"region").process({"TTT"}).ForEachProc([&](ch::Process *proc){
+    std::cout<<proc->bin_id()<<std::endl;
+ });
+
   std::vector<std::string> SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
   auto signal = Set2Vec(cb.cp().signals().SetFromProcs(
