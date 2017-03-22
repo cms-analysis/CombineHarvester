@@ -412,8 +412,6 @@ for (string uncert:uncertNames){
                                                          "CMS_ZLShape_$CHANNEL_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZL"}).channel({"mt","et"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process( {"ZL"}).channel({"mt","et"}).AddSyst(cb,
-                                                         "CMS_ZLShape_$CHANNEL_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
         
         
