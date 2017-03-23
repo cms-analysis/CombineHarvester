@@ -156,9 +156,27 @@ $(document).ready(function(){initNavTree('_algorithm_8h_source.html','');});
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> cond != <a class="code" href="namespacech.html#a7778c42ab19640ea360293c20bfa24f5">ch::contains_rgx</a>(rgx, fn(p));</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  });</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Input, <span class="keyword">typename</span> Filter, <span class="keyword">typename</span> Converter, <span class="keyword">typename</span> Funcarg&gt;</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="namespacech.html#af86af10e2226a6deb97ad890c1ac9f0b">   59</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a66828130e239590bca8112c89d68b653">FilterContaining</a>(Input&amp; in, Filter <span class="keyword">const</span>&amp; filter, Converter fn, Funcarg arg,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                      <span class="keywordtype">bool</span> cond) {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  boost::remove_erase_if(in, [&amp;](<span class="keyword">typename</span> Input::value_type <span class="keyword">const</span>&amp; p) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> cond != <a class="code" href="namespacech.html#a961ef6b98124198d1648868011bc0153">ch::contains</a>(filter, fn(p,arg));</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  });</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Input, <span class="keyword">typename</span> Filter, <span class="keyword">typename</span> Converter, <span class="keyword">typename</span> Funcarg&gt;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="namespacech.html#ab0a522713ffa93da18cb26132f875344">   67</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a281b148e8871f50f2c3269ab91b1a837">FilterContainingRgx</a>(Input&amp; in, Filter <span class="keyword">const</span>&amp; filter, Converter fn, Funcarg arg,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                         <span class="keywordtype">bool</span> cond) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::vector&lt;boost::regex&gt; rgx;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; ele : filter) rgx.emplace_back(ele);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  boost::remove_erase_if(in, [&amp;](<span class="keyword">typename</span> Input::value_type <span class="keyword">const</span>&amp; p) {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">return</span> cond != <a class="code" href="namespacech.html#a7778c42ab19640ea360293c20bfa24f5">ch::contains_rgx</a>(rgx, fn(p,arg));</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  });</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="namespacech_html_a7778c42ab19640ea360293c20bfa24f5"><div class="ttname"><a href="namespacech.html#a7778c42ab19640ea360293c20bfa24f5">ch::contains_rgx</a></div><div class="ttdeci">bool contains_rgx(const std::vector&lt; boost::regex &gt; &amp;r, T p)</div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00034">Algorithm.h:34</a></div></div>
 <div class="ttc" id="namespacech_html_a66828130e239590bca8112c89d68b653"><div class="ttname"><a href="namespacech.html#a66828130e239590bca8112c89d68b653">ch::FilterContaining</a></div><div class="ttdeci">void FilterContaining(Input &amp;in, Filter const &amp;filter, Converter fn, bool cond)</div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00041">Algorithm.h:41</a></div></div>
 <div class="ttc" id="namespacech_html"><div class="ttname"><a href="namespacech.html">ch</a></div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00010">Algorithm.h:10</a></div></div>

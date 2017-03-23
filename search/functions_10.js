@@ -5,6 +5,7 @@ var searchData=
   ['set2vec',['Set2Vec',['../namespacech.html#a5e23234ab65cfa48c99b83d94e291125',1,'ch']]],
   ['set_5fanalysis',['set_analysis',['../classch_1_1_object.html#a1bae4062339f6b27251fa40eb3360120',1,'ch::Object']]],
   ['set_5fasymm',['set_asymm',['../classch_1_1_systematic.html#aae12e2d99a326bfe80a821cb5885afbf',1,'ch::Systematic']]],
+  ['set_5fattribute',['set_attribute',['../classch_1_1_object.html#a7fdcd9b776c2fa52ad292ef857dd285b',1,'ch::Object']]],
   ['set_5fbin',['set_bin',['../classch_1_1_object.html#a7997c967b45c8048e5d37284634192c8',1,'ch::Object']]],
   ['set_5fbin_5fid',['set_bin_id',['../classch_1_1_object.html#af89246351b95fa11b2baa05b6d7ed191',1,'ch::Object']]],
   ['set_5fchannel',['set_channel',['../classch_1_1_object.html#af7f8e3b47e518df640826bd2c6aac600',1,'ch::Object']]],

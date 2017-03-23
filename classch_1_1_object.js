@@ -21,5 +21,9 @@ var classch_1_1_object =
     [ "bin_id", "classch_1_1_object.html#ac57605a5c14ab76dc7be7ec7fa74be81", null ],
     [ "set_mass", "classch_1_1_object.html#a5c94a9f7878cd40ca8aa8f701b6953e3", null ],
     [ "mass", "classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce", null ],
+    [ "set_attribute", "classch_1_1_object.html#a7fdcd9b776c2fa52ad292ef857dd285b", null ],
+    [ "delete_attribute", "classch_1_1_object.html#afe324e1fe370f7804a30e84da0a67556", null ],
+    [ "all_attributes", "classch_1_1_object.html#ac67ae0228db7343bdb8d408e11e19318", null ],
+    [ "attribute", "classch_1_1_object.html#a4c0ab9bc1a210c618008faa8dd72f65d", null ],
     [ "swap", "classch_1_1_object.html#a9ea9cb8427d79a8fccee9409eae3f603", null ]
 ];

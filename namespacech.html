@@ -172,6 +172,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a281b148e8871f50f2c3269ab91b1a837"><td class="memTemplParams" colspan="2">template&lt;typename Input , typename Filter , typename Converter &gt; </td></tr>
 <tr class="memitem:a281b148e8871f50f2c3269ab91b1a837"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacech.html#a281b148e8871f50f2c3269ab91b1a837">FilterContainingRgx</a> (Input &amp;in, Filter const &amp;filter, Converter fn, bool cond)</td></tr>
 <tr class="separator:a281b148e8871f50f2c3269ab91b1a837"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af86af10e2226a6deb97ad890c1ac9f0b"><td class="memTemplParams" colspan="2">template&lt;typename Input , typename Filter , typename Converter , typename Funcarg &gt; </td></tr>
+<tr class="memitem:af86af10e2226a6deb97ad890c1ac9f0b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacech.html#af86af10e2226a6deb97ad890c1ac9f0b">FilterContaining</a> (Input &amp;in, Filter const &amp;filter, Converter fn, Funcarg arg, bool cond)</td></tr>
+<tr class="separator:af86af10e2226a6deb97ad890c1ac9f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0a522713ffa93da18cb26132f875344"><td class="memTemplParams" colspan="2">template&lt;typename Input , typename Filter , typename Converter , typename Funcarg &gt; </td></tr>
+<tr class="memitem:ab0a522713ffa93da18cb26132f875344"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacech.html#ab0a522713ffa93da18cb26132f875344">FilterContainingRgx</a> (Input &amp;in, Filter const &amp;filter, Converter fn, Funcarg arg, bool cond)</td></tr>
+<tr class="separator:ab0a522713ffa93da18cb26132f875344"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30449f890154e9002086dbfacc74d85c"><td class="memTemplParams" colspan="2">template&lt;typename Function &gt; </td></tr>
 <tr class="memitem:a30449f890154e9002086dbfacc74d85c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacech.html#a30449f890154e9002086dbfacc74d85c">CloneObs</a> (<a class="el" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a> &amp;src, <a class="el" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a> &amp;dest, Function func)</td></tr>
 <tr class="memdesc:a30449f890154e9002086dbfacc74d85c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duplicate <a class="el" href="classch_1_1_observation.html">Observation</a> objects in one instance, which are then modified by a user-supplied function, before being inserted into another instance.  <a href="#a30449f890154e9002086dbfacc74d85c">More...</a><br /></td></tr>
@@ -613,6 +619,102 @@ template&lt;typename Input , typename Filter , typename Converter &gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00049">49</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af86af10e2226a6deb97ad890c1ac9f0b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Input , typename Filter , typename Converter , typename Funcarg &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void ch::FilterContaining </td>
+          <td>(</td>
+          <td class="paramtype">Input &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Filter const &amp;&#160;</td>
+          <td class="paramname"><em>filter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Converter&#160;</td>
+          <td class="paramname"><em>fn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Funcarg&#160;</td>
+          <td class="paramname"><em>arg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cond</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00059">59</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab0a522713ffa93da18cb26132f875344"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Input , typename Filter , typename Converter , typename Funcarg &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void ch::FilterContainingRgx </td>
+          <td>(</td>
+          <td class="paramtype">Input &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Filter const &amp;&#160;</td>
+          <td class="paramname"><em>filter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Converter&#160;</td>
+          <td class="paramname"><em>fn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Funcarg&#160;</td>
+          <td class="paramname"><em>arg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cond</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_algorithm_8h_source.html#l00067">67</a> of file <a class="el" href="_algorithm_8h_source.html">Algorithm.h</a>.</p>
 
 </div>
 </div>

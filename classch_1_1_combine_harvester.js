@@ -28,6 +28,7 @@ var classch_1_1_combine_harvester =
     [ "era", "classch_1_1_combine_harvester.html#a4bb3afda2ccc54a1c259be6b715ae8e5", null ],
     [ "channel", "classch_1_1_combine_harvester.html#af0aa39911df61ce140c97b13ffde77e9", null ],
     [ "mass", "classch_1_1_combine_harvester.html#a25c231ed8b1614c5d50f192210374474", null ],
+    [ "attr", "classch_1_1_combine_harvester.html#a634f83792bbce25a8ceed4621fbb6ca2", null ],
     [ "syst_name", "classch_1_1_combine_harvester.html#a8a287dbad29d1c2c4963eef0e5d08ea9", null ],
     [ "syst_type", "classch_1_1_combine_harvester.html#af13ff7dd8c281cd9e9cfd6b11fc05b95", null ],
     [ "process_rgx", "classch_1_1_combine_harvester.html#a1745d39918ec65cf539fcf72b03f6329", null ],

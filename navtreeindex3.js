@@ -1,5 +1,12 @@
 var NAVTREEINDEX3 =
 {
+"introrun1_h_t_t.html#run1HTTSM":[8,1],
+"introrun1_h_t_t.html#run1HTTsystematics":[8,0],
+"limits.html":[6],
+"limits.html#limits-building-the-workspaces":[6,0,1],
+"limits.html#limits-calculating-limits":[6,0,2],
+"limits.html#limits-collecting":[6,0,3],
+"limits.html#limits-creating-the-datacards":[6,0,0],
 "limits.html#limits-more-POIs":[6,1],
 "limits.html#limits-morphing-cards":[6,0,5],
 "limits.html#limits-one-POI":[6,0],

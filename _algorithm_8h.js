@@ -6,5 +6,7 @@ var _algorithm_8h =
     [ "contains", "_algorithm_8h.html#a7d0976239046f20281fb0bd2bd2c3625", null ],
     [ "contains_rgx", "_algorithm_8h.html#a7778c42ab19640ea360293c20bfa24f5", null ],
     [ "FilterContaining", "_algorithm_8h.html#a66828130e239590bca8112c89d68b653", null ],
-    [ "FilterContainingRgx", "_algorithm_8h.html#a281b148e8871f50f2c3269ab91b1a837", null ]
+    [ "FilterContainingRgx", "_algorithm_8h.html#a281b148e8871f50f2c3269ab91b1a837", null ],
+    [ "FilterContaining", "_algorithm_8h.html#af86af10e2226a6deb97ad890c1ac9f0b", null ],
+    [ "FilterContainingRgx", "_algorithm_8h.html#ab0a522713ffa93da18cb26132f875344", null ]
 ];
