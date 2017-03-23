@@ -30,19 +30,21 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     cb_sig.bin_id({8,9,10,11,12,13});
   }
 
-  cb.cp().bin_id({8,9,14,15,16,17,18,19}).ForEachObj([&](ch::Object *obj){
-      obj->set_attribute("region","tight");
+  cb.cp().bin_id({8,9,10,11,14,15,16,17,18,19,21,24}).ForEachObj([&](ch::Object *obj){
+      obj->set_attribute("tauiso","tight");
   });
-  cb.cp().bin_id({10,21,11,24}).ForEachObj([&](ch::Object *obj){
-       obj->set_attribute("region","loosemt");
-  });
-  cb.cp().bin_id({12,13,16,17,28,29,30,31}).ForEachObj([&](ch::Object *obj){
-      obj->set_attribute("region","looseiso");
+  cb.cp().bin_id({12,13,16,17,26,27,28,29,30,31}).ForEachObj([&](ch::Object *obj){
+      obj->set_attribute("tauiso","loose");
   });
 
- cb.cp().attr({"looseiso"},"region").process({"TTT"}).ForEachProc([&](ch::Process *proc){
-    std::cout<<proc->bin_id()<<std::endl;
- });
+  cb.cp().bin_id({8,10,12,14,15,16,21,26,27,28}).ForEachObj([&](ch::Object *obj){
+      obj->set_attribute("cat","nobtag");
+  });
+  cb.cp().bin_id({9,11,13,17,18,19,23,24,29,30,31}).ForEachObj([&](ch::Object *obj){
+      obj->set_attribute("cat","btag");
+  });
+
+
 
   std::vector<std::string> SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
@@ -119,6 +121,30 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"mt"}, {9}, {"VVJ"},   1.06, 0.95)
     ({"mt"}, {9}, {ggH},  1.03, 0.96) 
     ({"mt"}, {9}, {bbH},  0.98,1.02) 
+    ({"mt"}, {10}, {"TTT","TTJ"},   1.01,  0.99)
+    ({"mt"}, {10}, {"VVJ"},   1.00,  0.99)
+    ({"mt"}, {10}, {bbH},  1.01, 0.99) 
+    ({"mt"}, {11}, {"ZL"},   0.97 ,  1.03)
+    ({"mt"}, {11}, {"ZJ"},   1.02,  1.03)
+    ({"mt"}, {11}, {"ZTT"},  0.98,  1.01)
+    ({"mt"}, {11}, {"TTT"},   1.09,  0.90)
+    ({"mt"}, {11}, {"TTJ"},   1.12,  0.88)
+    ({"mt"}, {11}, {"VVT"},   1.07, 0.96)
+    ({"mt"}, {11}, {"VVJ"},   1.06, 0.95)
+    ({"mt"}, {11}, {ggH},  1.03, 0.96) 
+    ({"mt"}, {11}, {bbH},  0.98,1.02) 
+    ({"mt"}, {12}, {"TTT","TTJ"},   1.01,  0.99)
+    ({"mt"}, {12}, {"VVJ"},   1.00,  0.99)
+    ({"mt"}, {12}, {bbH},  1.01, 0.99) 
+    ({"mt"}, {13}, {"ZL"},   0.97 ,  1.03)
+    ({"mt"}, {13}, {"ZJ"},   1.02,  1.03)
+    ({"mt"}, {13}, {"ZTT"},  0.98,  1.01)
+    ({"mt"}, {13}, {"TTT"},   1.09,  0.90)
+    ({"mt"}, {13}, {"TTJ"},   1.12,  0.88)
+    ({"mt"}, {13}, {"VVT"},   1.07, 0.96)
+    ({"mt"}, {13}, {"VVJ"},   1.06, 0.95)
+    ({"mt"}, {13}, {ggH},  1.03, 0.96) 
+    ({"mt"}, {13}, {bbH},  0.98,1.02) 
     ({"et"}, {8}, {"TTT","TTJ"},   1.01,  0.99)
     ({"et"}, {8}, {"VVJ"},   1.01,  0.99)
     ({"et"}, {8}, {bbH},  1.01,0.99) 
@@ -131,6 +157,30 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"et"}, {9}, {"TTJ"},   1.14, 0.87)
     ({"et"}, {9}, {bbH},  0.98,1.01) 
     ({"et"}, {9}, {ggH},  0.98,1.04) 
+    ({"et"}, {10}, {"TTT","TTJ"},   1.01,  0.99)
+    ({"et"}, {10}, {"VVJ"},   1.01,  0.99)
+    ({"et"}, {10}, {bbH},  1.01,0.99) 
+    ({"et"}, {11}, {"ZL"},   1.01,  1.00)
+    ({"et"}, {11}, {"ZJ"},   0.97,  0.96)
+    ({"et"}, {11}, {"ZTT"},  0.96,  1.01)
+    ({"et"}, {11}, {"VVT"},   1.04,  0.94)
+    ({"et"}, {11}, {"VVJ"},   1.11,  0.96)
+    ({"et"}, {11}, {"TTT"},   1.10, 0.91)
+    ({"et"}, {11}, {"TTJ"},   1.14, 0.87)
+    ({"et"}, {11}, {bbH},  0.98,1.01) 
+    ({"et"}, {11}, {ggH},  0.98,1.04) 
+    ({"et"}, {12}, {"TTT","TTJ"},   1.01,  0.99)
+    ({"et"}, {12}, {"VVJ"},   1.01,  0.99)
+    ({"et"}, {12}, {bbH},  1.01,0.99) 
+    ({"et"}, {13}, {"ZL"},   1.01,  1.00)
+    ({"et"}, {13}, {"ZJ"},   0.97,  0.96)
+    ({"et"}, {13}, {"ZTT"},  0.96,  1.01)
+    ({"et"}, {13}, {"VVT"},   1.04,  0.94)
+    ({"et"}, {13}, {"VVJ"},   1.11,  0.96)
+    ({"et"}, {13}, {"TTT"},   1.10, 0.91)
+    ({"et"}, {13}, {"TTJ"},   1.14, 0.87)
+    ({"et"}, {13}, {bbH},  0.98,1.01) 
+    ({"et"}, {13}, {ggH},  0.98,1.04) 
     ({"zmm"}, {8}, {"TT"},   1.01,  0.99)
     ({"zmm"}, {9}, {"W"},    1.69,  0.93)
     ({"zmm"}, {9}, {"QCD"},  0.96,  1.04)
@@ -181,6 +231,30 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"mt"}, {9}, {"ZTT"},  0.98,   1.02)
     ({"mt"}, {9}, {ggH},  0.98,1) 
     ({"mt"}, {9}, {bbH},  0.98, 1.02) 
+    ({"mt"}, {10}, {"TTT","TTJ"},   1.03, 0.97)
+    ({"mt"}, {10}, {"VVT"},   1.01, 1.00)
+    ({"mt"}, {10}, {"VVJ"},   1.01, 0.99)
+    ({"mt"}, {10}, {bbH},  1.01, 0.99) 
+    ({"mt"}, {11}, {"ZL"},   0.97,   1.03)
+    ({"mt"}, {11}, {"ZJ"},   0.98,   1.02)
+    ({"mt"}, {11}, {"TTT","TTJ"},   0.99,   1.01)
+    ({"mt"}, {11}, {"VVT"},   0.97,   1.01)
+    ({"mt"}, {11}, {"VVJ"},   0.99,   1.02)
+    ({"mt"}, {11}, {"ZTT"},  0.98,   1.02)
+    ({"mt"}, {11}, {ggH},  0.98,1) 
+    ({"mt"}, {11}, {bbH},  0.98, 1.02) 
+    ({"mt"}, {12}, {"TTT","TTJ"},   1.03, 0.97)
+    ({"mt"}, {12}, {"VVT"},   1.01, 1.00)
+    ({"mt"}, {12}, {"VVJ"},   1.01, 0.99)
+    ({"mt"}, {12}, {bbH},  1.01, 0.99) 
+    ({"mt"}, {13}, {"ZL"},   0.97,   1.03)
+    ({"mt"}, {13}, {"ZJ"},   0.98,   1.02)
+    ({"mt"}, {13}, {"TTT","TTJ"},   0.99,   1.01)
+    ({"mt"}, {13}, {"VVT"},   0.97,   1.01)
+    ({"mt"}, {13}, {"VVJ"},   0.99,   1.02)
+    ({"mt"}, {13}, {"ZTT"},  0.98,   1.02)
+    ({"mt"}, {13}, {ggH},  0.98,1) 
+    ({"mt"}, {13}, {bbH},  0.98, 1.02) 
     ({"et"}, {8}, {"VVT","VVJ"},   1.01,   0.99)
     ({"et"}, {8}, {"TTT","TTJ"},   1.03,   0.97)
     ({"et"}, {8}, {bbH},  1.01, 0.99) 
@@ -193,6 +267,30 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"et"}, {9}, {"TTJ"},   0.99,   1.01)
     ({"et"}, {9}, {ggH},  0.98, 1.02) 
     ({"et"}, {9}, {bbH},  0.98, 1.02) 
+    ({"et"}, {10}, {"VVT","VVJ"},   1.01,   0.99)
+    ({"et"}, {10}, {"TTT","TTJ"},   1.03,   0.97)
+    ({"et"}, {10}, {bbH},  1.01, 0.99) 
+    ({"et"}, {11}, {"ZL"},   0.99,   1.01)
+    ({"et"}, {11}, {"ZJ"},   0.98,   1.04)
+    ({"et"}, {11}, {"ZTT"},  0.98,   1.02)
+    ({"et"}, {11}, {"VVT"},   0.99,   1.01)
+    ({"et"}, {11}, {"VVJ"},   1.00,   1.02)
+    ({"et"}, {11}, {"TTT"},   0.99,   1.02)
+    ({"et"}, {11}, {"TTJ"},   0.99,   1.01)
+    ({"et"}, {11}, {ggH},  0.98, 1.02) 
+    ({"et"}, {11}, {bbH},  0.98, 1.02) 
+    ({"et"}, {12}, {"VVT","VVJ"},   1.01,   0.99)
+    ({"et"}, {12}, {"TTT","TTJ"},   1.03,   0.97)
+    ({"et"}, {12}, {bbH},  1.01, 0.99) 
+    ({"et"}, {13}, {"ZL"},   0.99,   1.01)
+    ({"et"}, {13}, {"ZJ"},   0.98,   1.04)
+    ({"et"}, {13}, {"ZTT"},  0.98,   1.02)
+    ({"et"}, {13}, {"VVT"},   0.99,   1.01)
+    ({"et"}, {13}, {"VVJ"},   1.00,   1.02)
+    ({"et"}, {13}, {"TTT"},   0.99,   1.02)
+    ({"et"}, {13}, {"TTJ"},   0.99,   1.01)
+    ({"et"}, {13}, {ggH},  0.98, 1.02) 
+    ({"et"}, {13}, {bbH},  0.98, 1.02) 
     ({"zmm"}, {8}, {"VV"},   1.01,   0.99) 
     ({"zmm"}, {8}, {"TT"},   1.03,   0.97) 
     ({"zmm"}, {9}, {"W"},  0.99, 1.03  ) 
@@ -230,9 +328,23 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"mt"}, {9}, {"ZJ"},   0.93,   1.05)
     ({"mt"}, {9}, {"ZTT"},  0.97,   1.02)
     ({"mt"}, {9}, {ggH},  0.96, 1.04)
+    ({"mt"}, {11}, {"ZL"},   0.99,  1.02)
+    ({"mt"}, {11}, {"ZJ"},   0.93,   1.05)
+    ({"mt"}, {11}, {"ZTT"},  0.97,   1.02)
+    ({"mt"}, {11}, {ggH},  0.96, 1.04)
+    ({"mt"}, {13}, {"ZL"},   0.99,  1.02)
+    ({"mt"}, {13}, {"ZJ"},   0.93,   1.05)
+    ({"mt"}, {13}, {"ZTT"},  0.97,   1.02)
+    ({"mt"}, {13}, {ggH},  0.96, 1.04)
     ({"et"}, {9}, {"ZL"},   0.99,   1.01)
     ({"et"}, {9}, {"ZJ"},   0.98,   1.00)
     ({"et"}, {9}, {"ZTT"},  0.97,   1.03)
+    ({"et"}, {11}, {"ZL"},   0.99,   1.01)
+    ({"et"}, {11}, {"ZJ"},   0.98,   1.00)
+    ({"et"}, {11}, {"ZTT"},  0.97,   1.03)
+    ({"et"}, {13}, {"ZL"},   0.99,   1.01)
+    ({"et"}, {13}, {"ZJ"},   0.98,   1.00)
+    ({"et"}, {13}, {"ZTT"},  0.97,   1.03)
     ({"zmm"}, {9}, {"ZTT"},  0.98,   1.02)
     ({"zmm"}, {9}, {"ZL"},  0.95,   1.02)
     ({"zmm"}, {9}, {"ZJ"},  0.92,   1.04)
@@ -288,19 +400,19 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // CHECK THIS
   cb.cp().AddSyst(cb,
     "CMS_htt_boson_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-    ({"et", "mt", "em", "tt"}, {8, 9, 11, 14}, JoinStr({signal, {"ZTT", "W"}}), 1.02));
+    ({"et", "mt", "em", "tt"}, {8, 9, 10, 11, 12, 13, 15, 18, 21, 24, 27, 30}, JoinStr({signal, {"ZTT", "W"}}), 1.02));
 
   cb.cp().AddSyst(cb,
     "CMS_htt_boson_reso_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-    ({"et", "mt", "em", "tt"}, {8, 9, 11, 14}, JoinStr({signal, {"ZTT", "W"}}), 1.02));
+    ({"et", "mt", "em", "tt"}, {8, 9, 10, 11, 12, 13, 15, 18, 21, 24,27, 30}, JoinStr({signal, {"ZTT", "W"}}), 1.02));
 
   cb.cp().AddSyst(cb,
     "CMS_htt_ewkTop_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-    ({"et", "mt", "em", "tt"}, {8, 9, 11, 14}, {"TTT","TTJ","TT","VV", "VVT","VVJ"}, 1.02));
+    ({"et", "mt", "em", "tt"}, {8, 9, 10, 11, 12, 13, 15, 18, 21, 24, 27, 30}, {"TTT","TTJ","TT","VV", "VVT","VVJ"}, 1.02));
 
   cb.cp().AddSyst(cb,
     "CMS_htt_ewkTop_reso_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-    ({"et", "mt", "em", "tt"}, {8, 9, 11, 14}, {"TTT","TTJ","TT","VV", "VVT","VVJ"}, 1.02));
+    ({"et", "mt", "em", "tt"}, {8, 9, 10, 11, 12, 13, 15, 18, 21, 24, 27, 30}, {"TTT","TTJ","TT","VV", "VVT","VVJ"}, 1.02));
 
   // top-quark pT reweighting
   // ------------------------
@@ -332,7 +444,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         (
           (syst->channel() == "zmm" && syst->process() == "ZL") ||
           (syst->channel() != "zmm" && syst->process() == "ZTT" &&
-            (syst->bin_id() == 8 || syst->bin_id() == 9))
+            (syst->bin_id() == 8 || syst->bin_id() == 9 || syst->bin_id() == 10 || syst->bin_id()==11||syst->bin_id()==12||syst->bin_id()==13))
         );
     });
   }
@@ -363,7 +475,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
   "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
   ({8}, 1.03)
-  ({9}, 1.05));
+  ({9}, 1.05)
+  ({10}, 1.03)
+  ({11}, 1.05)
+  ({12}, 1.03)
+  ({13}, 1.05));
+
   // Should also add something for ttbar
 
   // Fake-rates
@@ -376,8 +493,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   cb.cp().channel({"et", "mt", "tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
-    ({8,9,10,11,12,13,14,15}, {"ZJ"},1.20)
-    ({8,9,10,11,12,13,14,15}, {"TTJ"},1.20));
+    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"ZJ"},1.20)
+    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"TTJ"},1.20));
   
   cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
@@ -415,6 +532,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
 
   if (control_region == 0) {
+    //THIS HASN'T BEEN UPDATED - NOT TO BE USED!
     // the uncertainty model in the signal region is the classical one
 
     // Add back the JES and b-tag uncertainties directly to the W and QCD
@@ -507,35 +625,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
       //           and btag (if relevant); OS/SS being wrong in the MC (from enriched data?);
       //           low/high mT being wrong in the MC (fake rate dependence?)
 
+      //Here we use the additional 'tauiso' and 'cat'
+      //attributes to create the W+jets rateParams
+      cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+        "rate_W_$ATTR(tauiso)_$CHANNEL_$ATTR(cat)", "rateParam", SystMap<>::init(1.0));
+
       // Going to use the regex filtering to select the right subset of
-      // categories for each rateParam
+      // categories for the QCD rate params
       cb.SetFlag("filters-use-regex", true);
-        //Regex that matches eg et_nobtag_tight, et_nobtag_loosemt, et_nobtag_tight_X and et_nobtag_loosemt_X
-        cb.cp().bin({"et_nobtag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_et_nobtag", "rateParam", SystMap<>::init(1.0));
-
-        cb.cp().bin({"mt_nobtag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_mt_nobtag", "rateParam", SystMap<>::init(1.0));
-
-        cb.cp().bin({"et_btag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_et_btag", "rateParam", SystMap<>::init(1.0));
-
-        cb.cp().bin({"mt_btag(_tight|_loosemt)(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_mt_btag", "rateParam", SystMap<>::init(1.0));
-
-        //Regex that matches et_nobtag_looseiso or et_nobtag_looseiso_X
-        cb.cp().bin({"et_nobtag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_et_nobtag", "rateParam", SystMap<>::init(1.0));
-
-        cb.cp().bin({"mt_nobtag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_mt_nobtag", "rateParam", SystMap<>::init(1.0));
-
-        cb.cp().bin({"et_btag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_et_btag", "rateParam", SystMap<>::init(1.0));
-
-        cb.cp().bin({"mt_btag_looseiso(|_.*)$"}).process({"W"}).AddSyst(cb,
-          "rate_W_tightiso_mt_btag", "rateParam", SystMap<>::init(1.0));
-
       for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
         // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"QCD"}).AddSyst(cb,
@@ -544,7 +641,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         // Regex that matches, e.g. mt_nobtag_wjets_cr or mt_nobtag_wjets_ss_cr
         cb.cp().bin({bin+"_wjets(|_ss)_cr$"}).process({"QCD"}).AddSyst(cb,
           "rate_QCD_highmT_"+bin, "rateParam", SystMap<>::init(1.0));
-
+       }
+      
 
         /////////////////
         // Systematics //
@@ -552,39 +650,74 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // OS/SS W factor stat. uncertainty
         // Should affect signal region and OS high mT
-        cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
-          "CMS_htt_W_OS_SS_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 10}, 1.02)
-          ({"mt"}, {9, 13}, 1.11)
-          ({"et"}, {8, 10}, 1.02)
-          ({"et"}, {9, 13}, 1.14));
+        // Should be correlated between the regions with tight tau iso
+        cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+          "CMS_htt_W_OS_SS_stat_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
+          ({"mt"}, {8, 14}, 1.02)
+          ({"mt"}, {10}, 1.02) //dummy value that will probably be different from 8 and 10
+          ({"mt"}, {9, 17}, 1.11)
+          ({"mt"}, {11}, 1.11)
+          ({"mt"}, {12, 26},1.02)
+          ({"mt"}, {13, 29},1.11)
+          ({"et"}, {8, 14}, 1.02)
+          ({"et"}, {10}, 1.02) //dummy value that will probably be different from 8 and 10
+          ({"et"}, {9, 17}, 1.14)
+          ({"et"}, {11}, 1.14)
+          ({"et"}, {12, 26},1.02)
+          ({"et"}, {13, 29},1.14));
 
         // OS/SS W factor syst. uncertainty
-        // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
-        cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"W"}).AddSyst(cb,
-          "CMS_htt_W_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 10}, 1.08)
-          ({"mt"}, {9, 13}, 1.10)
-          ({"et"}, {8, 10}, 1.08)
-          ({"et"}, {9, 13}, 1.10));
+        // Based on data/MC for OS/SS ratio in anti-tau iso high mT region
+        // Correlated between regions with tight tau iso but otherwise uncorrelated
+        // even if the uncert will end up being the same
+        cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+          "CMS_htt_W_OS_SS_systt_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
+          ({"mt"}, {8, 10, 14}, 1.08)
+          ({"mt"}, {9, 11, 17}, 1.10)
+          ({"mt"}, {12, 26},1.08)
+          ({"mt"}, {13, 29},1.10)
+          ({"et"}, {8, 10, 14}, 1.08)
+          ({"et"}, {9, 11, 17}, 1.10)
+          ({"et"}, {12, 26},1.08)
+          ({"et"}, {13, 29},1.10));
+  
 
         // low/high mT W factor stat. uncertainty
         // Should affect signal region and SS low mT
+        // Should be uncorrelated between different tau isol regions now
+      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 11}, 1.02)
-          ({"mt"}, {9, 14}, 1.14)
-          ({"et"}, {8, 11}, 1.02)
-          ({"et"}, {9, 14}, 1.17));
+          ({"mt"}, {8, 15}, 1.02)
+          ({"mt"}, {9, 18}, 1.14)
+          ({"mt"}, {10, 21}, 1.02)
+          ({"mt"}, {11, 24}, 1.14)
+          ({"mt"}, {12, 27}, 1.02)
+          ({"mt"}, {13, 30}, 1.14)
+          ({"et"}, {8, 15}, 1.02)
+          ({"et"}, {9, 18}, 1.17)
+          ({"et"}, {10, 21}, 1.02)
+          ({"et"}, {11, 24}, 1.17)
+          ({"et"}, {12, 27}, 1.02)
+          ({"et"}, {13, 30}, 1.17));
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
-          "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 11}, 1.20)
-          ({"mt"}, {9, 14}, 1.20)
-          ({"et"}, {8, 11}, 1.20)
-          ({"et"}, {9, 14}, 1.20));
+          "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
+          ({"mt"}, {8, 15}, 1.20)
+          ({"mt"}, {9, 18}, 1.20)
+          ({"mt"}, {10, 21}, 1.20)
+          ({"mt"}, {11, 24}, 1.20)
+          ({"mt"}, {12, 27}, 1.20)
+          ({"mt"}, {13, 30}, 1.20)
+          ({"et"}, {8, 15}, 1.20)
+          ({"et"}, {9, 18}, 1.20)
+          ({"et"}, {10, 21}, 1.20)
+          ({"et"}, {11, 24}, 1.20)
+          ({"et"}, {12, 27}, 1.20)
+          ({"et"}, {13, 30}, 1.20));
+        }
 
         //W b-tag extrapolation factor stat. uncertainty - merged into low mT/high mT and W OS/SS uncertainties
         //which are now calculated for the full b-tag 
@@ -627,88 +760,177 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // OS/SS QCD factor syst. uncertainty
         // Based on variation in fitted factor from different anti-iso sidebands
-        cb.cp().bin({bin+"(|_wjets_cr)$"}).process({"QCD"}).AddSyst(cb,
-          "CMS_htt_QCD_OS_SS_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 10}, 1.040)
-          ({"mt"}, {9, 13}, 1.600)
-          ({"et"}, {8, 10}, 1.120)
-          ({"et"}, {9, 13}, 1.600));
+        cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+          "CMS_htt_QCD_OS_SS_syst_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
+          ({"mt"}, {8, 14}, 1.040)
+          ({"mt"}, {10}, 1.040)
+          ({"mt"}, {9, 17}, 1.600)
+          ({"mt"}, {11}, 1.600)
+          ({"mt"}, {12, 26}, 1.040)
+          ({"mt"}, {13, 29}, 1.600)
+          ({"et"}, {8, 14}, 1.120)
+          ({"et"}, {10}, 1.120)
+          ({"et"}, {9, 17}, 1.600)
+          ({"et"}, {11}, 1.600)
+          ({"et"}, {12, 26}, 1.120)
+          ({"et"}, {13, 29}, 1.600));
 
         cb.cp().AddSyst(cb,
           "CMS_scale_j_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"mt"},  {10}, {"TTT"}, 1.015, 0.986)
-          ({"mt"},  {10}, {"TTJ"}, 1.013, 0.99)
-          ({"mt"},  {11}, {"TTT"}, 1.01, 0.99)
-          ({"mt"},  {11}, {"TTJ"}, 1.01, 0.99)
-          ({"mt"},  {11}, {"VVJ"}, 1.01, 1.00)
-          ({"mt"},  {12}, {"TTJ"}, 1.01, 0.99)
-          ({"mt"},  {13}, {"TTT"}, 1.10, 0.91)
-          ({"mt"},  {13}, {"TTJ"}, 1.11, 0.89)
-          ({"mt"},  {13}, {"VVT"}, 1.04, 0.97)
-          ({"mt"},  {13}, {"VVJ"}, 1.04, 0.96)
-          ({"mt"},  {13}, {"ZTT"}, 1.06, 0.87)
-          ({"mt"},  {13}, {"ZL"}, 0.97, 0.99)
-          ({"mt"},  {13}, {"ZJ"}, 0.95, 0.96)
-          ({"mt"},  {14}, {"ZJ"}, 0.97, 1.34)
-          ({"mt"},  {14}, {"TTT"}, 1.15, 0.92)
-          ({"mt"},  {14}, {"TTJ"}, 1.11, 0.87)
-          ({"mt"},  {14}, {"VVT"}, 0.96, 0.94)
-          ({"mt"},  {14}, {"VVJ"}, 1.02, 0.90)
-          ({"mt"},  {15}, {"TTT"}, 1.14, 0.90)
-          ({"mt"},  {15}, {"TTJ"}, 1.12, 0.89)
-          ({"mt"},  {15}, {"ZJ"}, 0.93, 1.04)
-          ({"mt"},  {15}, {"VVT"}, 0.96, 1.01)
-          ({"mt"},  {15}, {"VVJ"}, 1.07, 0.93)
-          ({"et"},  {10}, {"TTT","TTJ"}, 1.01, 0.99)
-          ({"et"},  {11}, {"TTT"}, 1.02, 1.00)
-          ({"et"},  {11}, {"TTJ"}, 1.01, 0.99)
-          ({"et"},  {12}, {"TTT","TTJ"}, 1.01, 0.99)
-          ({"et"},  {13}, {"TTT"}, 1.09, 0.91)
-          ({"et"},  {13}, {"TTJ"}, 1.12, 0.90)
-          ({"et"},  {13}, {"VVT"}, 1.04, 0.96)
-          ({"et"},  {13}, {"VVJ"}, 1.06, 0.96)
-					({"et"},  {14}, {"TTJ"}, 1.15, 0.88)
-          ({"et"},  {14}, {"VVJ"}, 1.08, 0.94)
-          ({"et"},  {15}, {"VVJ"}, 1.07, 0.94)
-          ({"et"},  {15}, {"TTJ"}, 1.15, 0.91));
+          ({"mt"},  {14}, {"TTT"}, 1.015, 0.986)
+          ({"mt"},  {14}, {"TTJ"}, 1.013, 0.99)
+          ({"mt"},  {15}, {"TTT"}, 1.01, 0.99)
+          ({"mt"},  {15}, {"TTJ"}, 1.01, 0.99)
+          ({"mt"},  {15}, {"VVJ"}, 1.01, 1.00)
+          ({"mt"},  {16}, {"TTJ"}, 1.01, 0.99)
+          ({"mt"},  {21}, {"TTT"}, 1.01, 0.99)
+          ({"mt"},  {21}, {"TTJ"}, 1.01, 0.99)
+          ({"mt"},  {21}, {"VVJ"}, 1.01, 1.00)
+          ({"mt"},  {26}, {"TTT"}, 1.015, 0.986)
+          ({"mt"},  {26}, {"TTJ"}, 1.013, 0.99)
+          ({"mt"},  {27}, {"TTT"}, 1.01, 0.99)
+          ({"mt"},  {27}, {"TTJ"}, 1.01, 0.99)
+          ({"mt"},  {27}, {"VVJ"}, 1.01, 1.00)
+          ({"mt"},  {28}, {"TTJ"}, 1.01, 0.99)
+          ({"mt"},  {17}, {"TTT"}, 1.10, 0.91)
+          ({"mt"},  {17}, {"TTJ"}, 1.11, 0.89)
+          ({"mt"},  {17}, {"VVT"}, 1.04, 0.97)
+          ({"mt"},  {17}, {"VVJ"}, 1.04, 0.96)
+          ({"mt"},  {17}, {"ZTT"}, 1.06, 0.87)
+          ({"mt"},  {17}, {"ZL"}, 0.97, 0.99)
+          ({"mt"},  {17}, {"ZJ"}, 0.95, 0.96)
+          ({"mt"},  {18}, {"ZJ"}, 0.97, 1.34)
+          ({"mt"},  {18}, {"TTT"}, 1.15, 0.92)
+          ({"mt"},  {18}, {"TTJ"}, 1.11, 0.87)
+          ({"mt"},  {18}, {"VVT"}, 0.96, 0.94)
+          ({"mt"},  {18}, {"VVJ"}, 1.02, 0.90)
+          ({"mt"},  {19}, {"TTT"}, 1.14, 0.90)
+          ({"mt"},  {19}, {"TTJ"}, 1.12, 0.89)
+          ({"mt"},  {19}, {"ZJ"}, 0.93, 1.04)
+          ({"mt"},  {19}, {"VVT"}, 0.96, 1.01)
+          ({"mt"},  {19}, {"VVJ"}, 1.07, 0.93)
+          ({"mt"},  {24}, {"ZJ"}, 0.97, 1.34)
+          ({"mt"},  {24}, {"TTT"}, 1.15, 0.92)
+          ({"mt"},  {24}, {"TTJ"}, 1.11, 0.87)
+          ({"mt"},  {24}, {"VVT"}, 0.96, 0.94)
+          ({"mt"},  {24}, {"VVJ"}, 1.02, 0.90)
+          ({"mt"},  {29}, {"TTT"}, 1.10, 0.91)
+          ({"mt"},  {29}, {"TTJ"}, 1.11, 0.89)
+          ({"mt"},  {29}, {"VVT"}, 1.04, 0.97)
+          ({"mt"},  {29}, {"VVJ"}, 1.04, 0.96)
+          ({"mt"},  {29}, {"ZTT"}, 1.06, 0.87)
+          ({"mt"},  {29}, {"ZL"}, 0.97, 0.99)
+          ({"mt"},  {29}, {"ZJ"}, 0.95, 0.96)
+          ({"mt"},  {30}, {"ZJ"}, 0.97, 1.34)
+          ({"mt"},  {30}, {"TTT"}, 1.15, 0.92)
+          ({"mt"},  {30}, {"TTJ"}, 1.11, 0.87)
+          ({"mt"},  {30}, {"VVT"}, 0.96, 0.94)
+          ({"mt"},  {30}, {"VVJ"}, 1.02, 0.90)
+          ({"mt"},  {31}, {"TTT"}, 1.14, 0.90)
+          ({"mt"},  {31}, {"TTJ"}, 1.12, 0.89)
+          ({"mt"},  {31}, {"ZJ"}, 0.93, 1.04)
+          ({"mt"},  {31}, {"VVT"}, 0.96, 1.01)
+          ({"mt"},  {31}, {"VVJ"}, 1.07, 0.93)
+          ({"et"},  {14}, {"TTT","TTJ"}, 1.01, 0.99)
+          ({"et"},  {15}, {"TTT"}, 1.02, 1.00)
+          ({"et"},  {15}, {"TTJ"}, 1.01, 0.99)
+          ({"et"},  {16}, {"TTT","TTJ"}, 1.01, 0.99)
+          ({"et"},  {21}, {"TTT"}, 1.02, 1.00)
+          ({"et"},  {21}, {"TTJ"}, 1.01, 0.99)
+          ({"et"},  {26}, {"TTT","TTJ"}, 1.01, 0.99)
+          ({"et"},  {27}, {"TTT"}, 1.02, 1.00)
+          ({"et"},  {27}, {"TTJ"}, 1.01, 0.99)
+          ({"et"},  {28}, {"TTT","TTJ"}, 1.01, 0.99)
+          ({"et"},  {17}, {"TTT"}, 1.09, 0.91)
+          ({"et"},  {17}, {"TTJ"}, 1.12, 0.90)
+          ({"et"},  {17}, {"VVT"}, 1.04, 0.96)
+          ({"et"},  {17}, {"VVJ"}, 1.06, 0.96)
+					({"et"},  {18}, {"TTJ"}, 1.15, 0.88)
+          ({"et"},  {18}, {"VVJ"}, 1.08, 0.94)
+          ({"et"},  {19}, {"VVJ"}, 1.07, 0.94)
+          ({"et"},  {19}, {"TTJ"}, 1.15, 0.91)
+					({"et"},  {24}, {"TTJ"}, 1.15, 0.88)
+          ({"et"},  {24}, {"VVJ"}, 1.08, 0.94)
+          ({"et"},  {29}, {"TTT"}, 1.09, 0.91)
+          ({"et"},  {29}, {"TTJ"}, 1.12, 0.90)
+          ({"et"},  {29}, {"VVT"}, 1.04, 0.96)
+          ({"et"},  {29}, {"VVJ"}, 1.06, 0.96)
+					({"et"},  {30}, {"TTJ"}, 1.15, 0.88)
+          ({"et"},  {30}, {"VVJ"}, 1.08, 0.94)
+          ({"et"},  {31}, {"VVJ"}, 1.07, 0.94)
+          ({"et"},  {31}, {"TTJ"}, 1.15, 0.91));
 
-        //If fitting 1-jet selection instead of b-tag in high mT control regions, categories 15 and 13
-        //are no longer affected by b-tag efficiency uncertainty
-        //Currently using full b-tag definition in this control region
-        //so they are back in
+
         cb.cp().AddSyst(cb,
           "CMS_eff_b_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"mt"},  {10}, {"TTT"}, 1.03, 0.97)
-          ({"mt"},  {10}, {"TTJ"}, 1.02, 0.97)
-          ({"mt"},  {10}, {"VVT","VVJ"}, 1.01, 0.99)
-          ({"mt"},  {11}, {"TTT"}, 1.03, 0.98)
-          ({"mt"},  {11}, {"TTJ"}, 1.02, 0.98)
-          ({"mt"},  {12}, {"TTT","TTJ"}, 1.02, 0.97)
-          ({"mt"},  {12}, {"VVJ"}, 1.01, 0.99)
-          ({"mt"},  {13}, {"TTT","TTJ"}, 0.99, 1.02)
-          ({"mt"},  {13}, {"VVT","VVJ"}, 0.99, 1.03)
-          ({"mt"},  {14}, {"TTT","TTJ"}, 0.98, 1.03)
-          ({"mt"},  {14}, {"VVT"}, 1.01, 1.00)
-          ({"mt"},  {15}, {"TTT"}, 0.99, 1.01)
-          ({"mt"},  {15}, {"TTJ"}, 0.98, 1.02)
-          ({"mt"},  {15}, {"VVT"}, 1.03, 1.00)
-          ({"mt"},  {15}, {"VVJ"}, 0.98, 1.02) 
-          ({"et"},  {10}, {"TTT"}, 1.03, 0.97)
-          ({"et"},  {10}, {"TTJ"}, 1.02, 0.97)
-          ({"et"},  {10}, {"VVT"}, 1.01, 0.99)
-          ({"et"},  {10}, {"VVJ"}, 1.01, 1.00)
-          ({"et"},  {11}, {"TTT"}, 1.03, 0.96)
-          ({"et"},  {11}, {"TTJ"}, 1.02, 0.98)
-          ({"et"},  {11}, {"VVJ"}, 1.01, 0.99)
-          ({"et"},  {12}, {"TTT"}, 1.04, 0.97)
-          ({"et"},  {12}, {"TTJ"}, 1.02, 0.98)
-          ({"et"},  {12}, {"VVJ"}, 1.01, 0.998)
-          ({"et"},  {13}, {"TTT","TTJ"}, 0.99, 1.02)
-          ({"et"},  {13}, {"VVT","VVJ"}, 0.99, 1.02)
-          ({"et"},  {14}, {"TTJ"}, 0.99, 1.022)
-          ({"et"},  {15}, {"TTJ"}, 0.98, 1.02)
-          ({"et"},  {15}, {"VVJ"}, 0.96, 1.01));
-      }
+          ({"mt"},  {14}, {"TTT"}, 1.03, 0.97)
+          ({"mt"},  {14}, {"TTJ"}, 1.02, 0.97)
+          ({"mt"},  {14}, {"VVT","VVJ"}, 1.01, 0.99)
+          ({"mt"},  {15}, {"TTT"}, 1.03, 0.98)
+          ({"mt"},  {15}, {"TTJ"}, 1.02, 0.98)
+          ({"mt"},  {16}, {"TTT","TTJ"}, 1.02, 0.97)
+          ({"mt"},  {16}, {"VVJ"}, 1.01, 0.99)
+          ({"mt"},  {21}, {"TTT"}, 1.03, 0.98)
+          ({"mt"},  {21}, {"TTJ"}, 1.02, 0.98)
+          ({"mt"},  {26}, {"TTT"}, 1.03, 0.97)
+          ({"mt"},  {26}, {"TTJ"}, 1.02, 0.97)
+          ({"mt"},  {26}, {"VVT","VVJ"}, 1.01, 0.99)
+          ({"mt"},  {27}, {"TTT"}, 1.03, 0.98)
+          ({"mt"},  {27}, {"TTJ"}, 1.02, 0.98)
+          ({"mt"},  {28}, {"TTT","TTJ"}, 1.02, 0.97)
+          ({"mt"},  {28}, {"VVJ"}, 1.01, 0.99)
+          ({"mt"},  {17}, {"TTT","TTJ"}, 0.99, 1.02)
+          ({"mt"},  {17}, {"VVT","VVJ"}, 0.99, 1.03)
+          ({"mt"},  {18}, {"TTT","TTJ"}, 0.98, 1.03)
+          ({"mt"},  {18}, {"VVT"}, 1.01, 1.00)
+          ({"mt"},  {19}, {"TTT"}, 0.99, 1.01)
+          ({"mt"},  {19}, {"TTJ"}, 0.98, 1.02)
+          ({"mt"},  {19}, {"VVT"}, 1.03, 1.00)
+          ({"mt"},  {19}, {"VVJ"}, 0.98, 1.02) 
+          ({"mt"},  {24}, {"TTT","TTJ"}, 0.98, 1.03)
+          ({"mt"},  {24}, {"VVT"}, 1.01, 1.00)
+          ({"mt"},  {29}, {"TTT","TTJ"}, 0.99, 1.02)
+          ({"mt"},  {29}, {"VVT","VVJ"}, 0.99, 1.03)
+          ({"mt"},  {30}, {"TTT","TTJ"}, 0.98, 1.03)
+          ({"mt"},  {30}, {"VVT"}, 1.01, 1.00)
+          ({"mt"},  {31}, {"TTT"}, 0.99, 1.01)
+          ({"mt"},  {31}, {"TTJ"}, 0.98, 1.02)
+          ({"mt"},  {31}, {"VVT"}, 1.03, 1.00)
+          ({"mt"},  {31}, {"VVJ"}, 0.98, 1.02) 
+          ({"et"},  {14}, {"TTT"}, 1.03, 0.97)
+          ({"et"},  {14}, {"TTJ"}, 1.02, 0.97)
+          ({"et"},  {14}, {"VVT"}, 1.01, 0.99)
+          ({"et"},  {14}, {"VVJ"}, 1.01, 1.00)
+          ({"et"},  {15}, {"TTT"}, 1.03, 0.96)
+          ({"et"},  {15}, {"TTJ"}, 1.02, 0.98)
+          ({"et"},  {15}, {"VVJ"}, 1.01, 0.99)
+          ({"et"},  {16}, {"TTT"}, 1.04, 0.97)
+          ({"et"},  {16}, {"TTJ"}, 1.02, 0.98)
+          ({"et"},  {16}, {"VVJ"}, 1.01, 0.998)
+          ({"et"},  {21}, {"TTT"}, 1.03, 0.96)
+          ({"et"},  {21}, {"TTJ"}, 1.02, 0.98)
+          ({"et"},  {26}, {"TTT"}, 1.03, 0.97)
+          ({"et"},  {26}, {"TTJ"}, 1.02, 0.97)
+          ({"et"},  {26}, {"VVT"}, 1.01, 0.99)
+          ({"et"},  {26}, {"VVJ"}, 1.01, 1.00)
+          ({"et"},  {27}, {"TTT"}, 1.03, 0.96)
+          ({"et"},  {27}, {"TTJ"}, 1.02, 0.98)
+          ({"et"},  {27}, {"VVJ"}, 1.01, 0.99)
+          ({"et"},  {28}, {"TTT"}, 1.04, 0.97)
+          ({"et"},  {28}, {"TTJ"}, 1.02, 0.98)
+          ({"et"},  {28}, {"VVJ"}, 1.01, 0.998)
+          ({"et"},  {17}, {"TTT","TTJ"}, 0.99, 1.02)
+          ({"et"},  {17}, {"VVT","VVJ"}, 0.99, 1.02)
+          ({"et"},  {18}, {"TTJ"}, 0.99, 1.022)
+          ({"et"},  {19}, {"TTJ"}, 0.98, 1.02)
+          ({"et"},  {19}, {"VVJ"}, 0.96, 1.01)
+          ({"et"},  {24}, {"TTJ"}, 0.99, 1.022)
+          ({"et"},  {29}, {"TTT","TTJ"}, 0.99, 1.02)
+          ({"et"},  {29}, {"VVT","VVJ"}, 0.99, 1.02)
+          ({"et"},  {30}, {"TTJ"}, 0.99, 1.022)
+          ({"et"},  {31}, {"TTJ"}, 0.98, 1.02)
+          ({"et"},  {31}, {"VVJ"}, 0.96, 1.01));
+
       // Should set a sensible range for our rateParams
       for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
         cb.GetParameter(sys)->set_range(0.0, 5.0);
@@ -717,9 +939,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     }
     if (zmm_fit) {
         cb.SetFlag("filters-use-regex", true);
-        cb.cp().bin({"mt_nobtag","et_nobtag","em_nobtag","tt_nobtag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().attr({"nobtag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"zmm_nobtag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"mt_btag","et_btag","em_btag","tt_btag"}).process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().attr({"btag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
         cb.cp().bin({"zmm_btag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
         cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.8, 1.2);
         cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.95, 1.05);
