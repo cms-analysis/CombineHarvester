@@ -192,7 +192,12 @@ namespace ch {
         //##############################################################################
         //  jet and met energy Scale
         //##############################################################################
-        
+ 
+        // MET Systematic shapes
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
+                                                  "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
+                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
         
         
         // Standard JES, factorized 27 JES implementation below
