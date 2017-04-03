@@ -194,9 +194,9 @@ namespace ch {
         //##############################################################################
  
         // MET Systematic shapes
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3}).AddSyst(cb,
                                                   "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3}).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
         
         
@@ -300,21 +300,27 @@ for (string uncert:uncertNames){
 //        }
 
 
+//        cb.cp().AddSyst(cb,
+//                        "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+//                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, all_mc_bkgs_no_W}), 1.01));
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, all_mc_bkgs_no_W}), 1.01));
-        cb.cp().AddSyst(cb,
-                        "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em","tt"}, {1, 2, 3}, {"W"}, 1.01));
+                        ({"ttbar"}, {1, 2, 3}, {all_mc_bkgs}, 1.01));
         
         if (control_region > 0) {
             // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
-            cb.cp().AddSyst(cb,
-                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                            ({"et", "mt"}, {10, 11, 12, 13, 14, 15}, JoinStr({all_mc_bkgs_no_W}), 1.01));
-            cb.cp().AddSyst(cb,
-                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                            ({"tt"}, {10, 11, 12}, JoinStr({all_mc_bkgs}), 1.01));
+            
+            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).{10, 11, 12, 13, 14, 15}.AddSyst(cb,
+                                                            "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).{10, 11, 12, 13, 14, 15}.AddSyst(cb,
+                                                            "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+            
+//            cb.cp().AddSyst(cb,
+//                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+//                            ({"et", "mt"}, {10, 11, 12, 13, 14, 15}, JoinStr({all_mc_bkgs_no_W}), 1.01));
+//            cb.cp().AddSyst(cb,
+//                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+//                            ({"tt"}, {10, 11, 12}, JoinStr({all_mc_bkgs}), 1.01));
         }
 
 
