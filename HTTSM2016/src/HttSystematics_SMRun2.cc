@@ -310,9 +310,9 @@ for (string uncert:uncertNames){
         if (control_region > 0) {
             // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
             
-            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).{10, 11, 12, 13, 14, 15}.AddSyst(cb,
+            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
                                                             "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).{10, 11, 12, 13, 14, 15}.AddSyst(cb,
+            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
                                                             "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
             
 //            cb.cp().AddSyst(cb,
@@ -730,7 +730,9 @@ for (string uncert:uncertNames){
 //            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
 //                                            "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
-            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt","et","mt","em"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt","et","mt"}).bin_id({3}).AddSyst(cb,
+                                            "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
 
