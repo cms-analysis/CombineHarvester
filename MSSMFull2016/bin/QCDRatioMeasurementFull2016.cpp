@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
   VString chns =
       //{"tt"};
-      {"mt","et"};
+      {"et","mt"};
    //   {"mt","et"};
 
 
@@ -84,10 +84,14 @@ int main(int argc, char** argv) {
  
   map<string, vector<double> > binning;
   binning["mt_inclusive"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,220,240,260,280,300/*,275,300*/};
-  binning["et_inclusive"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,220,240,260,280,300/*,275,300*/};
+//  binning["et_inclusive"] = {50,60,70,80,90};//,100,110,120,130,140,150,160,180,190,200,225,275,400};
+  //binning["et_inclusive"] = {110,120,130,140,150,160,180,190,200,225,275,400/*,275,300*/};
+  binning["et_inclusive"] = {110,120,130,140,150,170,200,250,400};
   
   binning["mt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,220,240,260,280,300/*,275,300*/};
-  binning["et_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,220,240,260,280,300/*,275,300*/};
+  //binning["et_nobtag"] = {110,120,130,140,180,225,400/*,275,300*/};
+//  binning["et_nobtag"] = {50,60,70,80,90};//,100,110,120,130,140,180,225,400};
+  binning["et_nobtag"] = {110,120,140,150,170,200,225,400};
 
   binning["mt_btag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,220,240,260,280,300/*,275,300*/};
   binning["et_btag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,220,240,260,280,300/*,275,300*/};
@@ -113,11 +117,21 @@ int main(int argc, char** argv) {
   cb.cp().process({"ZTT", "TTT","TTJ","VVT","VVJ","W"}).channel({"em","mt"})
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
+  cb.cp().process({"ZTT","VVT","TTT"}).channel({"et","mt"}).AddSyst(cb,
+    "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+
+
   cb.cp().process({"ZLL"}).channel({"em"})
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
   cb.cp().process({"ZL","ZJ"}).channel({"mt"})
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
+
+  cb.cp().process({"ZL"}).channel({"et"})
+      .AddSyst(cb,"CMS_eFakeTau_tight","lnN",SystMap<>::init(1.30));
+
+  cb.cp().process({"ZL"}).channel({"mt"})
+      .AddSyst(cb,"CMS_mFakeTau_tight","lnN",SystMap<>::init(1.30));
 
 
  // cb.cp().process(ch::JoinStr({signal, {"TT","VV","ZLL","ZTT","W"}})).channel({"em"})
@@ -160,6 +174,16 @@ int main(int argc, char** argv) {
         "$BIN/QCD",
         "$BIN/QCD_$SYSTEMATIC");
    }
+
+   cb.cp().process({"QCD"}).channel({"et"}).ForEachProc([&](ch::Process *proc){
+         proc->set_rate(proc->rate()*(1.0/1.02));
+   });
+
+   cb.cp().process({"QCD"}).channel({"mt"}).ForEachProc([&](ch::Process *proc){
+         proc->set_rate(proc->rate()*(1.00/1.18));
+   });
+
+
 
   auto bins = cb.cp().bin_set();
   bool manual_rebin = false;  
