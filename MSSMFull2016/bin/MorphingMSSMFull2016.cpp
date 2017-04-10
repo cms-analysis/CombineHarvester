@@ -111,8 +111,7 @@ int main(int argc, char** argv) {
   input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_tt+"/";
   input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_zmm+"/";
 
-  VString chns = {"mt","et","tt"};
-  //VString chns = {"mt","et","tt","em"};
+  VString chns = {"mt","et","tt"/*,"em"*/};
   if (zmm_fit) chns.push_back("zmm");
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
@@ -163,8 +162,12 @@ int main(int argc, char** argv) {
     };
 
   cats["em_13TeV"] = {
-    {8, "em_nobtag"},
-    {9, "em_btag"}
+    {8, "em_nobtag_lowPzeta"},
+    {9, "em_btag_lowPzeta"},
+    {10, "em_nobtag_mediumPzeta"},
+    {11, "em_btag_mediumPzeta"},
+    {12, "em_nobtag_mediumPzeta"},
+    {13, "em_btag_mediumPzeta"}
     };
 
   cats["tt_13TeV"] = {
@@ -230,7 +233,7 @@ int main(int argc, char** argv) {
 
     cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn+"_13TeV"], false);
 
-    //cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
+    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
     if(SM125==string("bkg_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
     if(SM125==string("signal_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
