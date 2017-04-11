@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"classch_1_1_combine_harvester.html#aff8e163ca0abe844603e676d142986a0":[16,0,0,5,87],
 "classch_1_1_fn_timer.html":[16,0,0,6],
 "classch_1_1_fn_timer.html#a4dc02384a997b93294cd083b107a673e":[16,0,0,6,5],
 "classch_1_1_fn_timer.html#a68814f0e60141ebf55f8138f7dbb597d":[16,0,0,6,3],
@@ -180,8 +181,8 @@ var NAVTREEINDEX2 =
 "functions_d.html":[16,2,0,3],
 "functions_e.html":[16,2,0,4],
 "functions_f.html":[16,2,0,5],
-"functions_func.html":[16,2,1],
 "functions_func.html":[16,2,1,0],
+"functions_func.html":[16,2,1],
 "functions_func_b.html":[16,2,1,1],
 "functions_func_c.html":[16,2,1,2],
 "functions_func_d.html":[16,2,1,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "intro_morph.html#MSSMMorph":[7,2],
 "intro_morph.html#SMMorph":[7,1],
 "introrun1_h_t_t.html":[8],
-"introrun1_h_t_t.html#run1HTTHhhAZh":[8,2],
-"introrun1_h_t_t.html#run1HTTMSSM":[8,3]
+"introrun1_h_t_t.html#run1HTTHhhAZh":[8,2]
 };

@@ -13,6 +13,7 @@ var searchData=
   ['removesmalldelta',['RemoveSmallDelta',['../namespaceplotting.html#a3e69cc55cda57a61149bf2b329fe1203',1,'plotting']]],
   ['renamegroup',['RenameGroup',['../classch_1_1_combine_harvester.html#a750a78b28b4ae6ca2d27a34b4ac32cc9',1,'ch::CombineHarvester']]],
   ['renameparameter',['RenameParameter',['../classch_1_1_combine_harvester.html#a2825b9eeec47f7b23f93520bf615b581',1,'ch::CombineHarvester']]],
+  ['renamesystematic',['RenameSystematic',['../classch_1_1_combine_harvester.html#afb997f5e694eaec9b99aeabe474185d9',1,'ch::CombineHarvester']]],
   ['restorebinning',['RestoreBinning',['../namespacech.html#a23cd9444931a49de080638458f722501',1,'ch']]],
   ['rezerotgraph',['ReZeroTGraph',['../_plotting_8h.html#af2524f9f02ac66a16164c87bfc149628',1,'ReZeroTGraph():&#160;Plotting.h'],['../namespaceplotting.html#a273bab5cfe205a69a469a86828ab3f3b',1,'plotting.ReZeroTGraph()']]],
   ['roccurvefrom1dhists',['RocCurveFrom1DHists',['../namespaceplotting.html#a0d8bc74b28155809f534df954fe60355',1,'plotting']]]

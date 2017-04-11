@@ -93,6 +93,7 @@ var classch_1_1_combine_harvester =
     [ "InsertObservation", "classch_1_1_combine_harvester.html#acd2aec5d4b862d3edc79399ae0801f4c", null ],
     [ "InsertProcess", "classch_1_1_combine_harvester.html#a8a4f3b4e71986fd61990e9a66e455f43", null ],
     [ "InsertSystematic", "classch_1_1_combine_harvester.html#ab6ba1e447ab5b290c22c23218ddf64cd", null ],
+    [ "RenameSystematic", "classch_1_1_combine_harvester.html#afb997f5e694eaec9b99aeabe474185d9", null ],
     [ "CreateParameterIfEmpty", "classch_1_1_combine_harvester.html#a2eefb78479b655130b6cf5710bdea33c", null ],
     [ "AddBinByBin", "classch_1_1_combine_harvester.html#a20c5575a1983fbd8ff1b4232128610ff", null ],
     [ "AddBinByBin", "classch_1_1_combine_harvester.html#aaf7c0e7a370d1a43290815e818058735", null ],
