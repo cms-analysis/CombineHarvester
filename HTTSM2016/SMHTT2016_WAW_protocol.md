@@ -1,6 +1,7 @@
 To perform exclusion limits and signal significance calculations perform following steps:
 
-Get HiggsAnalysis-CombinedLimit and CombineHarvester in a way described in Protocol_SM_Htt_2016.md, but you should get it from:
+Get HiggsAnalysis-CombinedLimit and CombineHarvester in a way described in Protocol_SM_Htt_2016.md.
+Some minor changes adapting the code to WAW analysis is in apyskir's repo. Get it from:
 git clone git@github.com:apyskir/CombineHarvester.git
 cd CombineHarvester
 git checkout SM2016-dev
@@ -23,8 +24,8 @@ Use CombineHarvester:
 
 Create datacards and workspace:
 cd $CMSSW_BASE/src/CombineHarvester/HTTSM2016/
-MorphingSM2016_WAW --output_folder="Blinded25112016" --postfix="-2D" --control_region=1 --manual_rebin=false --real_data=true --mm_fit=false --ttbar_fit=false
-cd output/Blinded25112016
+MorphingSM2016_WAW --output_folder="YourFavoriteFolderName" --postfix="-2D" --control_region=1 --manual_rebin=false --real_data=true --mm_fit=false --ttbar_fit=false
+cd output/YourFavoriteFolderNamebl
 combineTool.py -M T2W -i {cmb,mt,tt}/* -o workspace.root --parallel 8
 
 Calculate limits:
