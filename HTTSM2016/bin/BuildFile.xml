@@ -1,4 +1,5 @@
 <bin file="MorphingSM2016.cpp" name="MorphingSM2016"></bin>
+<bin file="MorphingSM2016_WAW.cpp" name="MorphingSM2016_WAW"></bin>
 <bin file="SBWeighted_HTT.cpp" name="SBWeighted_HTT"></bin>
 <use name="root"/>
 <use name="rootmath"/>

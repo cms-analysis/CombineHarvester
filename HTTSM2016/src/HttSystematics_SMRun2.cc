@@ -131,14 +131,14 @@ namespace ch {
         
         
         //######################## Tau Id shape uncertainty (added March 08)
-        
+        /*
         cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
                                                             "CMS_tauDMReco_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
                                                                           "CMS_tauDMReco_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
                                                                           "CMS_tauDMReco_3prong_$ERA", "shape", SystMap<>::init(1.00));
-        
+        */
         
         
         //##############################################################################
@@ -170,16 +170,16 @@ namespace ch {
         // This CR segment is temporary, just to check that the CRs work (needed to use old DCS
         // without scale_t on all shapes)
         // FIXME
-//        if (control_region == 1) {
-//            cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","VVT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
-//                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
-//        }
-//        else {
-//            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-//                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
-//        }
+        if (control_region == 1) {
+            cb.cp().process(JoinStr({sig_procs, {"ZTT","TTT","VV","VVT","EWKZ"}})).channel({"et","mt","tt"}).AddSyst(cb,
+                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+        }
+        else {
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
+                                             "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+        }
 
-
+/*
         // Decay Mode based TES Settings
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
@@ -187,29 +187,29 @@ namespace ch {
                                                   "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
-        
+*/        
 
         //##############################################################################
         //  jet and met energy Scale
         //##############################################################################
- 
+ /*
         // MET Systematic shapes
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
                                                   "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
-        
+*/
         
         // Standard JES, factorized 27 JES implementation below
         // only use 1 at a time.
         // full 27 JES...
-//        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).bin_id({1,2,3}).AddSyst(cb,
- //                                            "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
- //           cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3}).channel({"em"}).AddSyst(cb,
- //                                          "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).bin_id({1,2,3}).AddSyst(cb,
+                                            "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+           cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3}).channel({"em"}).AddSyst(cb,
+                                          "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
-//        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
-//                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
+                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
 
         // JES factorization test tautau        
         std::vector< std::string > uncertNames = {
@@ -271,7 +271,7 @@ namespace ch {
         }; // end uncertNames
         // Uncomment below for 27 JES
         //
-        
+/*
 for (string uncert:uncertNames){
             cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt"}).AddSyst(cb,
                                            "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
@@ -289,7 +289,7 @@ for (string uncert:uncertNames){
             
             
         }
-
+*/
 
 
 //        for (string uncert:uncertNames){
@@ -300,27 +300,21 @@ for (string uncert:uncertNames){
 //        }
 
 
-//        cb.cp().AddSyst(cb,
-//                        "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-//                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, all_mc_bkgs_no_W}), 1.01));
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"ttbar"}, {1, 2, 3}, {all_mc_bkgs}, 1.01));
+                        ({"et", "mt", "em", "tt","ttbar"}, {1, 2, 3}, JoinStr({sig_procs, all_mc_bkgs_no_W}), 1.01));
+        cb.cp().AddSyst(cb,
+                        "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em","tt"}, {1, 2, 3}, {"W"}, 1.01));
         
         if (control_region > 0) {
             // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
-            
-            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
-                                                            "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
-                                                            "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
-            
-//            cb.cp().AddSyst(cb,
-//                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-//                            ({"et", "mt"}, {10, 11, 12, 13, 14, 15}, JoinStr({all_mc_bkgs_no_W}), 1.01));
-//            cb.cp().AddSyst(cb,
-//                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-//                            ({"tt"}, {10, 11, 12}, JoinStr({all_mc_bkgs}), 1.01));
+            cb.cp().AddSyst(cb,
+                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                            ({"et", "mt"}, {10, 11, 12, 13, 14, 15}, JoinStr({all_mc_bkgs_no_W}), 1.01));
+            cb.cp().AddSyst(cb,
+                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                            ({"tt"}, {10, 11, 12}, JoinStr({all_mc_bkgs}), 1.01));
         }
 
 
@@ -418,12 +412,12 @@ for (string uncert:uncertNames){
         //##############################################################################
         // ZL shape  and electron/muon  to tau fake only in  mt and et channels (updated March 22)
         //##############################################################################
-        
+/*
         cb.cp().process( {"ZL"}).channel({"mt","et"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZL"}).channel({"mt","et"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        
+*/
         
         
         
@@ -435,11 +429,11 @@ for (string uncert:uncertNames){
 //        cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
 //                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
         
-        
+/*
         cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
                                                                      "CMS_mFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
-                                                                     "CMS_mFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+                                                                     "CMS_mFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));*/
         cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1,2,3}).AddSyst(cb,
                                                                      "CMS_eFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1,2,3}).AddSyst(cb,
@@ -730,9 +724,7 @@ for (string uncert:uncertNames){
 //            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
 //                                            "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
-            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt","et","mt"}).bin_id({3}).AddSyst(cb,
-                                            "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt","et","mt","em"}).bin_id({3}).AddSyst(cb,
                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
 
