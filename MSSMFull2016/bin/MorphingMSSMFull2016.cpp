@@ -79,6 +79,9 @@ int main(int argc, char** argv) {
   bool poisson_bbb = false;
   bool do_w_weighting = true;
   bool zmm_fit = true;
+  bool do_jetfakes = false;
+  bool do_loosecat = true;
+  string chan;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -96,11 +99,19 @@ int main(int argc, char** argv) {
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(true))
+    ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
+    ("loosecat", po::value<bool>(&do_loosecat)->default_value(true))
+    ("channel", po::value<string>(&chan)->default_value("all"))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
+
+  if (do_jetfakes && control_region){
+    std::cerr << "\n" << "ERROR: jetfakes and control_region flags cannot be true at the same time. Use --control-region=0 if you want to use the jet fake estimates." << "\n";
+    exit (EXIT_FAILURE);
+  }
 
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
@@ -111,7 +122,12 @@ int main(int argc, char** argv) {
   input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_tt+"/";
   input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_zmm+"/";
 
-  VString chns = {"mt","et","tt"/*,"em"*/};
+  VString chns;
+  if ( chan.find("mt") != std::string::npos ) chns.push_back("mt");
+  if ( chan.find("et") != std::string::npos ) chns.push_back("et");
+  if ( chan.find("tt") != std::string::npos ) chns.push_back("tt");
+  if ( chan=="all" ) chns = {"mt","et","tt"/*,"em"*/};
+
   if (zmm_fit) chns.push_back("zmm");
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
@@ -120,9 +136,15 @@ int main(int argc, char** argv) {
   RooRealVar mh("mh", "mh", 90., 3200.);
 
   map<string, VString> bkg_procs;
-  bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
-  bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
-  bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+  if (do_jetfakes){
+    bkg_procs["et"] = {"ZL", "TTT","VVT","ZTT","jetFakes"};
+    bkg_procs["mt"] = {"ZL", "TTT","VVT","ZTT","jetFakes"};
+    bkg_procs["tt"] = {"ZL", "TTT","VVT","ZTT","jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
+  }else{
+    bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+    bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+    bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+  }
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
   bkg_procs["zmm"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV", "ZTT"};
 
@@ -157,9 +179,11 @@ int main(int argc, char** argv) {
     {9, "et_btag_tight"},
     {10, "et_nobtag_loosemt"},
     {11, "et_btag_loosemt"},
-    {12, "et_nobtag_looseiso"},
-    {13, "et_btag_looseiso"}
     };
+  if (do_loosecat){
+    cats["et_13TeV"].insert(cats["et_13TeV"].end(),{12, "et_nobtag_looseiso"});
+    cats["et_13TeV"].insert(cats["et_13TeV"].end(),{13, "et_btag_looseiso"});
+  }
 
   cats["em_13TeV"] = {
     {8, "em_nobtag_lowPzeta"},
@@ -180,9 +204,13 @@ int main(int argc, char** argv) {
     {9, "mt_btag_tight"},
     {10, "mt_nobtag_loosemt"},
     {11, "mt_btag_loosemt"},
-    {12, "mt_nobtag_looseiso"},
-    {13, "mt_btag_looseiso"}
     };
+  if (do_loosecat){
+    cats["mt_13TeV"].insert(cats["mt_13TeV"].end(),{12, "mt_nobtag_looseiso"});
+    cats["mt_13TeV"].insert(cats["mt_13TeV"].end(),{13, "mt_btag_looseiso"});
+  }
+
+
 
   cats["zmm_13TeV"] = {
     {8, "zmm_nobtag"},
