@@ -108,6 +108,11 @@ int main(int argc, char** argv) {
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
+  if (do_jetfakes && control_region){
+    std::cerr << "\n" << "ERROR: jetfakes and control_region flags cannot be true at the same time. Use --control-region=0 if you want to use the jet fake estimates." << "\n";
+    exit (EXIT_FAILURE);
+  }
+
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   std::map<string, string> input_dir;

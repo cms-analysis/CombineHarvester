@@ -469,9 +469,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // Cross-sections and lumi
   // -----------------------
-  cb.cp().process(JoinStr({signal, {"TTT","TTJ","TT","VV","VVT","VVJ", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
-    "lumi_13TeV", "lnN", SystMap<>::init(1.062));
-  cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,
+  cb.cp().process(JoinStr({signal, {"TTT","TTJ","TT","VV","VVT","VVJ", "ZL", "ZJ", "ZTT", "ZLL", "W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}})).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
   //Add luminosity uncertainty for W in em, tt and the zmm region as norm is from MC
@@ -483,7 +481,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     // Add Z crosssection uncertainty on ZL, ZJ and ZLL (not ZTT due to taking into account the zmm control region).
     // Also don't add it for the zmm control region
     cb.SetFlag("filters-use-regex", true);
-    cb.cp().channel({"zmm"},false).process({"ZL", "ZJ", "ZLL"}).AddSyst(cb,
+    cb.cp().channel({"zmm"},false).process({"ZL", "ZJ", "ZLL", "ZJ_rest"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
     cb.cp().channel({"zmm"},false).bin({"_cr$"}).process({"ZTT"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
@@ -500,27 +498,18 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   }
   else
   {
-    cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL"}).AddSyst(cb,
+    cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL", "ZJ_rest"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
   }
-  cb.cp().process({"ZJ_rest"}).channel({"tt"}).AddSyst(cb,
-    "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
-
   // Diboson and ttbar Normalisation - fully correlated
-  cb.cp().process({"VV","VVT","VVJ"}).AddSyst(cb,
-    "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
-  cb.cp().process({"VVJ_rest"}).channel({"tt"}).AddSyst(cb,
+  cb.cp().process({"VV","VVT","VVJ","VVJ_rest"}).AddSyst(cb,
     "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
 
-  cb.cp().process({"TT","TTJ","TTT"}).AddSyst(cb,
-    "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
-  cb.cp().process({"TTJ_rest"}).channel({"tt"}).AddSyst(cb,
+  cb.cp().process({"TT","TTJ","TTT","TTJ_rest"}).AddSyst(cb,
     "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
   
   // W norm, just for em, tt and the zmm region where MC norm is from MC
-  cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
-    "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
-  cb.cp().process({"W_rest"}).channel({"tt"}).AddSyst(cb,
+  cb.cp().process({"W","W_rest"}).channel({"tt","em","zmm"}).AddSyst(cb,
     "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
   // Category-acceptance
@@ -551,12 +540,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   cb.cp().channel({"et", "mt", "tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
-    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"ZJ"},1.20)
-    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"TTJ","VVJ"},1.20));
-  cb.cp().channel({"tt"}).AddSyst(cb,
-    "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
-    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"ZJ_rest"},1.20)
-    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"TTJ_rest"},1.20));
+    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"ZJ","ZJ_rest"},1.20)
+    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"TTJ","VVJ","TTJ_rest","VVJ_rest"},1.20));
   
   cb.cp().process({"W","W_rest"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
