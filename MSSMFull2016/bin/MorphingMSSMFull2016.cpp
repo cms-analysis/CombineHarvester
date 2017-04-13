@@ -79,6 +79,7 @@ int main(int argc, char** argv) {
   bool poisson_bbb = false;
   bool do_w_weighting = true;
   bool zmm_fit = true;
+  bool do_jetfakes = false;
   bool do_loosecat = true;
   string chan;
   po::variables_map vm;
@@ -98,6 +99,7 @@ int main(int argc, char** argv) {
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(true))
+    ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
     ("loosecat", po::value<bool>(&do_loosecat)->default_value(true))
     ("channel", po::value<string>(&chan)->default_value("all"))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
@@ -129,9 +131,15 @@ int main(int argc, char** argv) {
   RooRealVar mh("mh", "mh", 90., 3200.);
 
   map<string, VString> bkg_procs;
-  bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
-  bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
-  bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+  if (do_jetfakes){
+    bkg_procs["et"] = {"ZL", "TTT","VVT","ZTT","jetFakes"};
+    bkg_procs["mt"] = {"ZL", "TTT","VVT","ZTT","jetFakes"};
+    bkg_procs["tt"] = {"ZL", "TTT","VVT","ZTT","jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
+  }else{
+    bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+    bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+    bkg_procs["tt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
+  }
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
   bkg_procs["zmm"] = {"W", "QCD", "ZL", "ZJ", "TT", "VV", "ZTT"};
 

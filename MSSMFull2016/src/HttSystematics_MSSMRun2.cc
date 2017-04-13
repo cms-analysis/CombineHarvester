@@ -471,6 +471,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // -----------------------
   cb.cp().process(JoinStr({signal, {"TTT","TTJ","TT","VV","VVT","VVJ", "ZL", "ZJ", "ZTT", "ZLL"}})).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.062));
+  cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,
+    "lumi_13TeV", "lnN", SystMap<>::init(1.062));
 
   //Add luminosity uncertainty for W in em, tt and the zmm region as norm is from MC
   cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
@@ -501,16 +503,24 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
   }
+  cb.cp().process({"ZJ_rest"}).channel({"tt"}).AddSyst(cb,
+    "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
   // Diboson and ttbar Normalisation - fully correlated
   cb.cp().process({"VV","VVT","VVJ"}).AddSyst(cb,
     "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
+  cb.cp().process({"VVJ_rest"}).channel({"tt"}).AddSyst(cb,
+    "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
 
   cb.cp().process({"TT","TTJ","TTT"}).AddSyst(cb,
+    "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
+  cb.cp().process({"TTJ_rest"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
   
   // W norm, just for em, tt and the zmm region where MC norm is from MC
   cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
+    "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+  cb.cp().process({"W_rest"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
   // Category-acceptance
@@ -543,8 +553,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
     ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"ZJ"},1.20)
     ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"TTJ","VVJ"},1.20));
+  cb.cp().channel({"tt"}).AddSyst(cb,
+    "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
+    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"ZJ_rest"},1.20)
+    ({8,9,10,11,12,13,14,15,16,17,18,19,21,24,26,27,28,29,30,31}, {"TTJ_rest"},1.20));
   
-  cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
+  cb.cp().process({"W","W_rest"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
 
   cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
@@ -577,6 +591,85 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     "CMS_htt_QCD_norm_syst_$BIN", "lnN", SystMap<bin_id>::init
     ({8}, 1.12)
     ({9}, 1.14));
+
+
+  //jet fakes -->
+  //shape uncertainties
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm0_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_dm1_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm0_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_dm1_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm0_njet0_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm0_njet1_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm1_njet0_stat", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_dm1_njet1_stat", "shape", SystMap<>::init(1.00));
+
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "norm_ff_qcd_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_w_syst", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_syst", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_w_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_tt_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+
+  //stat norm uncertainties
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_stat_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
+                                                                  ({"mt"}, {8}, 1.035)
+                                                                  ({"mt"}, {9}, 1.036)
+                                                                  ({"mt"}, {10}, 1.024)
+                                                                  ({"mt"}, {11}, 1.032)
+                                                                  ({"mt"}, {12}, 1.039)
+                                                                  ({"mt"}, {13}, 1.044)
+                                                                  ({"et"}, {8}, 1.04)
+                                                                  ({"et"}, {9}, 1.05)
+                                                                  ({"et"}, {10}, 1.065)
+                                                                  ({"et"}, {11}, 1.065)
+                                                                  ({"et"}, {12}, 1.065)
+                                                                  ({"et"}, {13}, 1.065)
+                                                                  ({"tt"}, {8}, 1.03)
+                                                                  ({"tt"}, {9}, 1.04)
+                                                                  );
+
+  //syst norm uncertainties: bin-correlated
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_syst_$CHANNEL", "lnN", SystMap<channel, bin_id>::init
+                                                                  ({"mt"}, {8}, 1.075)
+                                                                  ({"mt"}, {9}, 1.069)
+                                                                  ({"mt"}, {10}, 1.053)
+                                                                  ({"mt"}, {11}, 1.057)
+                                                                  ({"mt"}, {12}, 1.065)
+                                                                  ({"mt"}, {13}, 1.066)
+                                                                  ({"et"}, {8}, 1.073)
+                                                                  ({"et"}, {9}, 1.067)
+                                                                  ({"et"}, {10}, 1.083)
+                                                                  ({"et"}, {11}, 1.083)
+                                                                  ({"et"}, {12}, 1.083)
+                                                                  ({"et"}, {13}, 1.083)
+                                                                  ({"tt"}, {8}, 1.026)
+                                                                  ({"tt"}, {9}, 1.032)
+                                                                  );
+
+  //syst norm uncertainties: bin-specific
+  cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_sub_syst_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
+                                                                  ({"mt"}, {8}, 1.04)
+                                                                  ({"mt"}, {9}, 1.04)
+                                                                  ({"mt"}, {10}, 1.04)
+                                                                  ({"mt"}, {11}, 1.04)
+                                                                  ({"mt"}, {12}, 1.04)
+                                                                  ({"mt"}, {13}, 1.04)
+                                                                  ({"et"}, {8}, 1.04)
+                                                                  ({"et"}, {9}, 1.04)
+                                                                  ({"et"}, {10}, 1.04)
+                                                                  ({"et"}, {11}, 1.04)
+                                                                  ({"et"}, {12}, 1.04)
+                                                                  ({"et"}, {13}, 1.04)
+                                                                  ({"tt"}, {8}, 1.03)
+                                                                  ({"tt"}, {9}, 1.03)
+                                                                  );
+  //jet fakes <--
 
 
   if (control_region == 0) {
