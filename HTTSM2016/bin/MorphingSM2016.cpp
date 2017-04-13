@@ -350,7 +350,7 @@ int main(int argc, char** argv) {
     
     //! [part8]
     auto bbb = ch::BinByBinFactory()
-    .SetAddThreshold(0.1)
+    .SetAddThreshold(0.03)
     .SetMergeThreshold(0.5)
     .SetFixNorm(false);
     bbb.MergeBinErrors(cb.cp().backgrounds());

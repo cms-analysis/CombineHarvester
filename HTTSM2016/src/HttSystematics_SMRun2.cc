@@ -83,7 +83,10 @@ namespace ch {
                                              // hard coding channel here keeps "em" and "ttbar" correlated
                                              "CMS_eff_trigger_em_$ERA", "lnN", SystMap<>::init(1.02));
 
-        // "CMS_eff_trigger_tt_$ERA" is covered by tau ID
+        // New
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).AddSyst(cb,
+                                            "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
+
 
         
         
@@ -115,7 +118,7 @@ namespace ch {
 
         // TauTau - 2 real taus
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.12));
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.09));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VV","VVT","TTT","EWKZ"}})).channel({"tt"}).AddSyst(cb,
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
