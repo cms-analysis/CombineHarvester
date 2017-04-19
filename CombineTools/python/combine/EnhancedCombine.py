@@ -176,6 +176,7 @@ class EnhancedCombine(CombineToolBase):
                 self.args.split_points > 0 and
                 self.args.points is not None):
             points = int(self.args.points)
+            points = math.ceil(points**0.5)**2
             split = self.args.split_points
             start = 0
             ranges = []
