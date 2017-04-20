@@ -68,12 +68,10 @@ int main(int argc, char** argv) {
   //std::string proc_fakes = "fakes_mc";
   std::string proc_fakes = "fakes_data";
 
-  //vector<string> bkg_procs = {"TT", "TTW", "TTZ", "EWK", "Rares", proc_fakes};
-  //vector<string> bkg_procs = {"TTW", "TTZ", "EWK", proc_fakes};
-  vector<string> bkg_procs = {"TTW", "TTZ", "EWK", "Rares", proc_fakes};
+  vector<string> bkg_procs = {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau", proc_fakes};
   cb.AddProcesses({"*"}, {"*"}, {"13TeV"}, {"*"}, bkg_procs, cats, false);
 
-  vector<string> sig_procs = {"ttH_hww", "ttH_hzz", "ttH_htt"};
+  vector<string> sig_procs = {"ttH_hww_gentau", "ttH_hzz_gentau", "ttH_htt_gentau"};
   cb.AddProcesses(masses, {"*"}, {"13TeV"}, {"*"}, sig_procs, cats, true);
   //! [part4]
 
@@ -86,10 +84,8 @@ int main(int argc, char** argv) {
   using ch::syst::process;
 
   //! [part5]
-  cb.cp().signals()
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<era>::init
-	       //({"13TeV"}, 1.027));
-	       ({"13TeV_2016"}, 1.026));
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
+      .AddSyst(cb, "lumi_13TeV_2016", "lnN", SystMap<>::init(1.026));
   //! [part5]
 
   //! [part6]
@@ -111,32 +107,32 @@ int main(int argc, char** argv) {
   cb.cp().process({"TT"})
   .AddSyst(cb, "QCDscale_ttJets", "lnN", SystMap<>::init(1.04));*/
 
-  cb.cp().process({"TTW"})
+  cb.cp().process({"TTW_gentau"})
       .AddSyst(cb, "pdf_qqbar", "lnN", SystMap<>::init(1.04));
-  cb.cp().process({"TTW"})
+  cb.cp().process({"TTW_gentau"})
       .AddSyst(cb, "QCDscale_ttW", "lnN", SystMap<>::init(1.12));
   if ( add_shape_sys ) {
-    cb.cp().process({"TTW"})
+    cb.cp().process({"TTW_gentau"})
       .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_x1", "shape", SystMap<>::init(1.0));
-    cb.cp().process({"TTW"})
+    cb.cp().process({"TTW_gentau"})
       .AddSyst(cb, "CMS_ttHl_thu_shape_ttW_y1", "shape", SystMap<>::init(1.0));
   }
 
-  cb.cp().process({"TTZ"})
+  cb.cp().process({"TTZ_gentau"})
       .AddSyst(cb, "pdf_gg", "lnN", SystMap<>::init(0.966));
-  cb.cp().process({"TTZ"})
+  cb.cp().process({"TTZ_gentau"})
       .AddSyst(cb, "QCDscale_ttZ", "lnN", SystMap<>::init(1.11));
   if ( add_shape_sys ) {
-    cb.cp().process({"TTZ"})
+    cb.cp().process({"TTZ_gentau"})
       .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_x1", "shape", SystMap<>::init(1.0));
-    cb.cp().process({"TTZ"})
+    cb.cp().process({"TTZ_gentau"})
       .AddSyst(cb, "CMS_ttHl_thu_shape_ttZ_y1", "shape", SystMap<>::init(1.0));
   }
 
-  cb.cp().process({"EWK"})
-      .AddSyst(cb, "CMS_ttHl_EWK", "lnN", SystMap<>::init(1.5));
+  cb.cp().process({"EWK_gentau"})
+      .AddSyst(cb, "CMS_ttHl_EWK_4j", "lnN", SystMap<>::init(2.0));
   
-  cb.cp().process({"Rares"})
+  cb.cp().process({"Rares_gentau"})
       .AddSyst(cb, "CMS_ttHl_Rares", "lnN", SystMap<>::init(1.5));
 
   cb.cp().process({proc_fakes})
@@ -148,31 +144,32 @@ int main(int argc, char** argv) {
       .AddSyst(cb, "CMS_ttHl_FRjt_shape", "shape", SystMap<>::init(1.0));
   }    
 
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
+
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_trigger_uncorr", "lnN", SystMap<>::init(1.03));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_elloose", "lnN", SystMap<>::init(1.02));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_muloose", "lnN", SystMap<>::init(1.02));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_ttHl_lepEff_tight", "lnN", SystMap<>::init(1.03));
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
-      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.20));
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
+      .AddSyst(cb, "CMS_ttHl_tauID", "lnN", SystMap<>::init(1.10));
 
   if ( add_shape_sys ) {
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
         .AddSyst(cb, "CMS_ttHl_JES", "shape", SystMap<>::init(1.0));
   
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
         .AddSyst(cb, "CMS_ttHl_tauES", "shape", SystMap<>::init(1.0));
   }
 
-  cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares"}}))
+  cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
 
   if ( add_shape_sys ) {
     for ( auto s : {"HF", "HFStats1", "HFStats2", "LF", "LFStats1", "LFStats2", "cErr1", "cErr2"} ) {
-      cb.cp().process(ch::JoinStr({sig_procs, {"TT", "TTW", "TTZ", "EWK", "Rares"}}))
+      cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "Rares_gentau"}}))
           .AddSyst(cb, Form("CMS_ttHl_btag_%s", s), "shape", SystMap<>::init(1.0));
     }
   }
@@ -193,7 +190,7 @@ int main(int argc, char** argv) {
   //     with 2.3 corresponding to integrated luminosity of 2015 dataset
   if ( lumi > 0. ) {  
     std::cout << "scaling signal and background yields to L=" << lumi << "fb^-1 @ 13 TeV." << std::endl;
-    cb.cp().process(ch::JoinStr({sig_procs, {"TTW", "TTZ", "EWK", "Rares", proc_fakes}})).ForEachProc([&](ch::Process* proc) {
+    cb.cp().process(ch::JoinStr({sig_procs, {"TTW_gentau", "TTZ_gentau", "EWK_gentau", "Rares_gentau", proc_fakes}})).ForEachProc([&](ch::Process* proc) {
       proc->set_rate(proc->rate()*lumi/2.3);
     });
   }
