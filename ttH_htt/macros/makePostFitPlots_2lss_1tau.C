@@ -626,8 +626,8 @@ void makePostFitPlots_2lss_1tau()
   inputFileNames["ttH_2lss_1tau_prefit"]  = "ttH_2lss_1tau_mvaDiscr_2lss_2016_shapes.root";
   inputFileNames["ttH_2lss_1tau_postfit"] = "ttH_2lss_1tau_mvaDiscr_2lss_2016_shapes.root";
   
-  //bool doKeepBlinded = true;
-  bool doKeepBlinded = false;
+  bool doKeepBlinded = true;
+  //bool doKeepBlinded = false;
 
   for ( std::vector<std::string>::const_iterator category = categories.begin();
 	category != categories.end(); ++category ) {
