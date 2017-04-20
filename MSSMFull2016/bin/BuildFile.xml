@@ -1,5 +1,6 @@
 <bin file="MorphingMSSMFull2016.cpp" name="MorphingMSSMFull2016"></bin>
 <bin file="QCDRatioMeasurementFull2016.cpp" name="QCDRatioMeasurementFull2016"></bin>
+<bin file="FakeTauESMeasurement.cpp" name="FakeTauESMeasurement"></bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
