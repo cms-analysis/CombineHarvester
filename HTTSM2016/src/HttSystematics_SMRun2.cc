@@ -601,7 +601,7 @@ for (string uncert:uncertNames){
                         );
         
         
-        
+        /*
         cb.cp().AddSyst(cb, "CMS_ggH_mcComp", "lnN", SystMap<channel, bin_id, process>::init
                         ({"em"},{1},{"ggH"}, 0.95)
                         ({"et"},{1},{"ggH"}, 0.95)
@@ -637,7 +637,7 @@ for (string uncert:uncertNames){
                         ({"mt"},{3},{"qqH"}, 0.90)
                         ({"tt"},{3},{"qqH"}, 0.90)
                         );
-        
+        */
         
         //    Uncertainty on BR for HTT @ 125 GeV
         cb.cp().process(sig_procs).AddSyst(cb,"BR_htt_THU", "lnN", SystMap<>::init(1.017));

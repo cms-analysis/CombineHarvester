@@ -350,8 +350,8 @@ int main(int argc, char** argv) {
     
     //! [part8]
     auto bbb = ch::BinByBinFactory()
-    .SetAddThreshold(0.03)
-    .SetMergeThreshold(0.5)
+    .SetAddThreshold(0.05)
+    .SetMergeThreshold(0.8)
     .SetFixNorm(false);
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
@@ -362,7 +362,7 @@ int main(int argc, char** argv) {
     auto bbb_ctl = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
-    .SetMergeThreshold(0.4)
+    .SetMergeThreshold(0.8)
     .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
     .SetVerbosity(1);
     // Will merge but only for non W and QCD processes, to be on the safe side
