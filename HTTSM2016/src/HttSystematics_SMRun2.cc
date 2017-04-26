@@ -293,236 +293,480 @@ namespace ch {
          
          }*/
         for (string uncert:uncertNames){
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({1,2,10,11,12,14,15}).AddSyst(cb,
-                                                                                                                    "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(JoinStr({sig_procs, {"ZTT"}})).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                                               "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({10,11,14}).AddSyst(cb,
+                                                                                                "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+
             cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_TTJ})).channel({"et"}).bin_id({13}).AddSyst(cb,
-                                                                                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+                                                                                                "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
             
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt"}).bin_id({1,2,10,11,12,13,14,15}).AddSyst(cb,
-                                                                                                                       "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(JoinStr({sig_procs, {"ZTT"}})).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                                               "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt"}).bin_id({10,11,13,14}).AddSyst(cb,
+                                                                                                "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
             
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).bin_id({1,2}).AddSyst(cb,
-                                                                                                              "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(JoinStr({sig_procs, {"ZTT"}})).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                                               "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({1,2,10,11,12}).AddSyst(cb,
-                                                                                                              "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(JoinStr({sig_procs, {"ZTT"}})).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                                               "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({10,11,12}).AddSyst(cb,
+                                                                                                 "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
         }
         
-        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.99));
-        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpPtHF_$ERA", "lnN", SystMap<>::init(1.010));
-        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.966));
-        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.010));
-        cb.cp().process({"VV"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.976));
-        cb.cp().process({"QCD"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.013));
-        cb.cp().process({"QCD"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.99));
-        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.92));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.95));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.020));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.020));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.010));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtHF_$ERA", "lnN", SystMap<>::init(1.020));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.020));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(0.98));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.016));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.030));
-        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeStatHF_$ERA", "lnN", SystMap<>::init(1.020));
-        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.014));
-        
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.025));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.015));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpPtHF_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.94));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.04));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeStatFSR_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeStatHF_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"VV"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"VV"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"VV"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.98));
-        cb.cp().process({"VV"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.014));
-        cb.cp().process({"QCD"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.02));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.015));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtHF_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.96));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(0.99));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.02));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.95));
-        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(0.99));
-        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtHF_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.015));
-        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_SinglePionECAL_$ERA", "lnN", SystMap<>::init(0.985));
         
         
-        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.013));
-        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.013));
-        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.013));
-        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(1.013));
-        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.013));
-        cb.cp().process({"TTJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.016));
-        cb.cp().process({"TTJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.016));
-        cb.cp().process({"W"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.95));
-        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.016));
-        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.016));
-        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.013));
-        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"VVT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"VVT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.96));
-        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.05));
-        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.05));
         
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.94));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.97));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.03));
-        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                   "CMS_scale_j_TimePtEta_$ERA", "lnN", SystMap<>::init(0.97));
-        cb.cp().process({"VV"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"VV"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.01));
-        cb.cp().process({"VV"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(0.96));
-        cb.cp().process({"VV"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.02));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.10));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.06));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.06));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.94));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.06));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.97));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.06));
-        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                    "CMS_scale_j_TimePtEta_$ERA", "lnN", SystMap<>::init(0.94));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.02));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.015));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.06));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(0.99));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
-                                                                     "CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.98));
+        
+        //JES for tt
+        cb.cp().process({"WH125"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.984040861582));
+        cb.cp().process({"ZH125"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.983412519208));
+        cb.cp().process({"ZTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01961480886));
+        cb.cp().process({"ZTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.968785018213));
+        cb.cp().process({"ZTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.01778152211));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01324266977));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.01324266977));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.01324266977));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(1.01324266977));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.01145848957));
+        cb.cp().process({"TTJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01601456021));
+        cb.cp().process({"TTJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.01601456021));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.978152281977));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.01605523932));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.957481826367));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01563010796));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.01563010796));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.01304150742));
+        cb.cp().process({"VVT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.970464556154));
+        cb.cp().process({"VVT"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.0127700062));
+        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.04978898077));
+        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.04978898077));
+        cb.cp().process({"WH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.962168177775));
+        cb.cp().process({"ZH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.973000067032));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.930682290098));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.03206293817));
+        cb.cp().process({"TTT"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.976739002514));
+        cb.cp().process({"TTJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.936103550246));
+        cb.cp().process({"TTJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.985502638586));
+        cb.cp().process({"TTJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.95060091166));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.944578399679));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.961525208044));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(0.984098986063));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "lnN", SystMap<>::init(0.974130055161));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.06359277713));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.955642098242));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeStatHF_$ERA", "lnN", SystMap<>::init(0.974321168649));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.01616751148));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.946981211794));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.979131977658));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(0.986311663591));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(0.983314350593));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(1.01386808651));
+        cb.cp().process({"VVT"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.976012239375));
+        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.0083821342));
+        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"tt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.979467710722));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VVJ"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.990937653045));
+        cb.cp().process({"ZJ"}).channel({"tt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01781285153));
+        
+        
+        //JES for mt
+        cb.cp().process({"WH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.989422208727));
+        cb.cp().process({"WH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.971191744164));
+        cb.cp().process({"TTT"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTT"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01713360958));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.964501009216));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.01636407755));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_TimePtEta_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.966078565099));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.976932854818));
+        cb.cp().process({"VV"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.02023064736));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.02023064736));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "lnN", SystMap<>::init(1.02023064736));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.02023064736));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.947513030852));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(0.979769352641));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.03289938497));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatHF_$ERA", "lnN", SystMap<>::init(1.02023064736));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01402620293));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.01402620293));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.01402620293));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.914534696061));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.01402620293));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.01470862451));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.01402620293));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_TimePtEta_$ERA", "lnN", SystMap<>::init(0.985973797065));
+        cb.cp().process({"QCD"}).channel({"mt"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.01313336657));
+        cb.cp().process({"WH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.964614284114));
+        cb.cp().process({"ZH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.981478076583));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.94087610903));
+        cb.cp().process({"TTT"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.981654272163));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "lnN", SystMap<>::init(0.980537482999));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "lnN", SystMap<>::init(0.98536457347));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "lnN", SystMap<>::init(0.98536457347));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.906233289684));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "lnN", SystMap<>::init(0.980537482999));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.975552383438));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "lnN", SystMap<>::init(0.980537482999));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(0.960243395266));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(0.975552383438));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(0.971884129202));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "lnN", SystMap<>::init(1.019462517));
+        cb.cp().process({"TTJ"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "lnN", SystMap<>::init(1.019462517));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.959325155195));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.963556592018));
+        cb.cp().process({"VV"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"mt"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"WH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"WH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeJERHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTT"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"mt"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
 
+
+        
+        //JES for et
+        cb.cp().process({"WH125"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.978975501165));
+        cb.cp().process({"ZH125"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01378219704));
+        cb.cp().process({"ZH125"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.974333798522));
+        cb.cp().process({"ZTT"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.972907339731));
+        cb.cp().process({"ZTT"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTT"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.971413924559));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.02742016102));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.93919891208));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.03770578358));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatHF_$ERA", "lnN", SystMap<>::init(1.01530808176));
+        cb.cp().process({"VV"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.977113288947));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.02826481265));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.02099955212));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.946369075612));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.0304988994));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.03461762363));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.0159274809));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(1.01063778335));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.961972008201));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(1.01063778335));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.02361397854));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.01939374359));
+        cb.cp().process({"QCD"}).channel({"et"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"WH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.970950114276));
+        cb.cp().process({"ZH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.974831683349));
+        cb.cp().process({"ZH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.00705979501));
+        cb.cp().process({"ZH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.9798539615));
+        cb.cp().process({"ZTT"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TTT"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.933106229849));
+        cb.cp().process({"TTT"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.983712850775));
+        cb.cp().process({"TTT"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(0.974301291569));
+        cb.cp().process({"TTT"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(0.978022065076));
+        cb.cp().process({"TTT"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.97561036182));
+        cb.cp().process({"TTT"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(0.981408189167));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.921806365519));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.98364887871));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC1_$ERA", "lnN", SystMap<>::init(0.971343272596));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.00209081445));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(0.987390543632));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(0.98398199789));
+        cb.cp().process({"TTJ"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.957524674036));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.979801605076));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(0.984633964176));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.05738740556));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.96457223392));
+        cb.cp().process({"qqH125"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "lnN", SystMap<>::init(1.01536603582));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeJERHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"et"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeJEREC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.02362595031));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZJ"}).channel({"et"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_TimePtEta_$ERA", "shape", SystMap<>::init(1.00));
+
+
+        //JES for em
+        cb.cp().process({"WH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.99518590626));
+        cb.cp().process({"WH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.02328861079));
+        cb.cp().process({"WH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.969793313569));
+        cb.cp().process({"WH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(1.0096011381));
+        cb.cp().process({"WH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.01580583282));
+        cb.cp().process({"WH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.00954217909));
+        cb.cp().process({"ZH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.00848545696));
+        cb.cp().process({"ZH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC1_$ERA", "lnN", SystMap<>::init(1.0181682496));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.0192949246));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.909240354708));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJERHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.04070986812));
+        cb.cp().process({"TT"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.979004019653));
+        cb.cp().process({"TT"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.981443072596));
+        cb.cp().process({"TT"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.923273562341));
+        cb.cp().process({"ggH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.0213666739));
+        cb.cp().process({"ggH125"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.02302756582));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.03310161245));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.0328056197));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.02919732423));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.0328056197));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.914088576968));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "lnN", SystMap<>::init(1.03081343036));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.02919732423));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.968099041941));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.02869090533));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_TimePtEta_$ERA", "lnN", SystMap<>::init(0.973431619713));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.961878881892));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.02205871779));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.1250269225));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.06465927863));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(1.06465927863));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.934567185869));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.06465927863));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "lnN", SystMap<>::init(1.06465927863));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_TimePtEta_$ERA", "lnN", SystMap<>::init(0.935340721368));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.03490901361));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(1.01482469063));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "lnN", SystMap<>::init(1.0159092729));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "lnN", SystMap<>::init(1.01975163403));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.982839597096));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_RelativeStatFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,"CMS_scale_j_TimePtEta_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"WH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.972916821539));
+        cb.cp().process({"ZH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.978813815429));
+        cb.cp().process({"ZH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.0094640226));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"TT"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.951479862871));
+        cb.cp().process({"TT"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeJEREC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "lnN", SystMap<>::init(0.978937278544));
+        cb.cp().process({"qqH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "lnN", SystMap<>::init(0.982384195265));
+        cb.cp().process({"qqH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"qqH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(0.979518107556));
+        cb.cp().process({"qqH125"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.984617787229));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.979864770635));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.02017063214));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(0.984008465348));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_PileUpPtRef_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZTT"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ggH125"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.01902591435));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.02113808791));
+        cb.cp().process({"W"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtEC2_$ERA", "lnN", SystMap<>::init(1.016727463));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteMPFBias_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteScale_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_AbsoluteStat_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_Fragmentation_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpPtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeFSR_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtBB_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatEC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionECAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"VV"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_SinglePionHCAL_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(1.05068930688));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(0.945504599973));
+        cb.cp().process({"ZL"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativePtHF_$ERA", "lnN", SystMap<>::init(1.04386625676));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_FlavorQCD_$ERA", "lnN", SystMap<>::init(0.97850514428));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_PileUpDataMC_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "lnN", SystMap<>::init(1.02316158807));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeJEREC1_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeJEREC2_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeJERHF_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,"CMS_scale_j_RelativeStatFSR_$ERA", "shape", SystMap<>::init(1.00));
 
 
 //        for (string uncert:uncertNames){
