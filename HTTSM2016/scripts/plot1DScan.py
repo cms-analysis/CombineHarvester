@@ -574,7 +574,8 @@ if args.upper_cl:
     textfit = '%s < %.2f (%i%% CL)' % (
         fixed_name, val_nom[0] + val_nom[1], int(args.upper_cl * 100))
 
-pt = ROOT.TPaveText(0.59, 0.82 - len(other_scans) * 0.08, 0.95, 0.78, 'NDCNB')
+tmpLen = 2
+pt = ROOT.TPaveText(0.59, 0.82 - tmpLen * 0.08, 0.95, 0.78, 'NDCNB')
 if args.envelope:
     pt.SetY2(0.78)
 if args.envelope:
@@ -746,7 +747,7 @@ if 'cms_' in args.output:
 if 'atlas_' in args.output:
     collab = 'ATLAS'
 
-subtext = '{#bf{Run II Internal}}'
+subtext = '{#bf{Preliminary}}'
 if args.pub:
     subtext = '{#it{LHC} #bf{Run 1}}'
     # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
@@ -775,7 +776,7 @@ if args.POI_line is not None:
 
 
 if not args.no_input_label:
-    plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
+    plot.DrawTitle(pads[0], '#bf{H#rightarrow#tau#tau 35.9 fb^{-1} (13 TeV)}', 3)
 # legend_l = 0.70 if len(args) >= 4 else 0.73
 
 
