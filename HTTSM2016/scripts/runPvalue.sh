@@ -1,4 +1,4 @@
-for M in 110, 120, 125, 130, 140; do
+for M in 110 120 125 130 140; do
   echo "Starting from mass = " $M
   combine -M ProfileLikelihood --significance --pvalue cmb/$M/workspace.root -t -1 --toysFrequentist --expectSignal=1 -m $M -n _Exp
   combine -M ProfileLikelihood --significance --pvalue cmb/$M/workspace.root -m $M -n _Obs
