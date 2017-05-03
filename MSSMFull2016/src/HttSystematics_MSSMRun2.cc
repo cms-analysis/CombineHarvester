@@ -514,19 +514,35 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   // Category-acceptance
   // -------------------
-  // For ZTT use 5% run 1 value for now, should be replaced based
-  // on Z->mumu calibration. Also only apply this to signal-region
+  // Using uncertainties derived from the Z->mumu calibration:
+  // https://indico.cern.ch/event/628825/contributions/2561717/attachments/1446912/2242418/zmumu_ztautau_extrapolation.pdf
+  // Only apply this to signal-region
   // categories for now, using cb_sig instead of cb
   // In case we use the zmm region in the fit this uncertainty is currently a placeholder for the uncertainty on the Z->mumu/Z->tautau uncertainty
+  // Numbers will be updated again as soon as the final categorisation is frozen
   // THIS IS TO BE CHECKED
   cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
-  "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id>::init
-  ({8}, 1.03)
-  ({9}, 1.05)
-  ({10}, 1.03)
-  ({11}, 1.05)
-  ({12}, 1.03)
-  ({13}, 1.05));
+  "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id,channel>::init
+  ({8},{"tt"}, 1.07)
+  ({9},{"tt"}, 1.04)
+  ({8},{"mt"}, 1.01)
+  ({9},{"mt"}, 1.02)
+  ({10},{"mt"}, 1.02)
+  ({11},{"mt"}, 1.01)
+  ({12},{"mt"}, 1.01)
+  ({13},{"mt"}, 1.01)
+  ({8},{"et"}, 1.02)
+  ({9},{"et"}, 1.01)
+  ({10},{"et"}, 1.02)
+  ({11},{"et"}, 1.02)
+  ({12},{"et"}, 1.02)
+  ({13},{"et"}, 1.01)
+  ({8},{"em"}, 1.01)
+  ({9},{"em"}, 1.01)
+  ({10},{"em"}, 1.01)
+  ({11},{"em"}, 1.01)
+  ({12},{"em"}, 1.01)
+  ({13},{"em"}, 1.01));
 
   // Should also add something for ttbar
 
