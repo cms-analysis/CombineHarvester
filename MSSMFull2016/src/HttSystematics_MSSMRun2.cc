@@ -470,11 +470,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // Cross-sections and lumi
   // -----------------------
   cb.cp().process(JoinStr({signal, {"TTT","TTJ","TT","VV","VVT","VVJ", "ZL", "ZJ", "ZTT", "ZLL", "W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}})).AddSyst(cb,
-    "lumi_13TeV", "lnN", SystMap<>::init(1.062));
+    "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
   //Add luminosity uncertainty for W in em, tt and the zmm region as norm is from MC
   cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
-    "lumi_13TeV", "lnN", SystMap<>::init(1.062));
+    "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
   if(zmm_fit)
   {
