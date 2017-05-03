@@ -190,8 +190,8 @@ int main(int argc, char** argv) {
     {9, "em_btag_lowPzeta"},
     {10, "em_nobtag_mediumPzeta"},
     {11, "em_btag_mediumPzeta"},
-    {12, "em_nobtag_mediumPzeta"},
-    {13, "em_btag_mediumPzeta"}
+    {12, "em_nobtag_highPzeta"},
+    {13, "em_btag_highPzeta"}
     };
 
   cats["tt_13TeV"] = {
