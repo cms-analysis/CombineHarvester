@@ -87,7 +87,7 @@ if debug is not None:
         debug.WriteTObject(cont, 'cont_2sigma_%i' % i)
 
 if args.sm_exp or args.bg_exp:
-    legend = plot.PositionedLegend(0.5, 0.25, 3, 0.015)
+    legend = plot.PositionedLegend(0.47, 0.25, 3, 0.015)
 else:
     legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
 
@@ -138,6 +138,11 @@ if args.sm_exp:
     overlayLegend,overlayGraphs = plot.getOverlayMarkerAndLegend(legend, {legend.GetNRows()-1 : best_sm}, {legend.GetNRows()-1 : {"MarkerColor" : 2}}, markerStyle="P")
 
 plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.035, 1.2, '', 1.0)
+pads[0].cd()
+lumi = ROOT.TLatex(.7,1.05,"X fb^{-1} (13 TeV)")
+lumi.SetTextSize(0.03)
+lumi.DrawTextNDC(.7,.96,"35.9 / fb (13 TeV)" )
+
 plot.DrawTitle(pads[0], args.title_right, 3)
 plot.DrawTitle(pads[0], args.title_left, 1)
 plot.FixOverlay()
