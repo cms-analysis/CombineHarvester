@@ -199,16 +199,25 @@ def BuildScan(scan, param, files, color, yvals, chop,
     bestfit = graph.GetX()[min_i]
     if envelope:
         plot.RemoveGraphYAll(graph, 0.)
-    graph.SetMarkerColor(color)
-    spline = ROOT.TSpline3("spline3", graph)
+
     global NAMECOUNTER
+    print "NAMECOUNTER:",NAMECOUNTER
+    colorMap = {
+    0 : ROOT.kBlack,
+    1 : ROOT.kBlue,
+    2 : ROOT.kRed,
+    }
+
+    graph.SetMarkerColor(colorMap[NAMECOUNTER])
+    spline = ROOT.TSpline3("spline3", graph)
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER),
                     partial(Eval, spline),
                     graph.GetX()[0],
                     graph.GetX()[graph.GetN() - 1], 1)
     func.SetNpx(NPX)
+
+    func.SetLineColor(colorMap[NAMECOUNTER])
     NAMECOUNTER += 1
-    func.SetLineColor(color)
     func.SetLineWidth(3)
     assert(bestfit is not None)
     if not envelope:
@@ -832,13 +841,24 @@ if len(other_scans) >= 3 and args.legend_pos == 1:
         legend = ROOT.TLegend(0.46, 0.83 - y_sub, 0.95, 0.93 - y_sub, '', 'NBNDC')
         legend.SetNColumns(2)
 
+print "\n\n"
+names = {
+    'Freeze all' : 'Stat. only',
+    'Freeze theory' : 'No theory err.',
+    'Freeze BinByBin' : 'No bkg stat. err.',
+    }
 legend.AddEntry(main_scan['func'], args.main_label, 'L')
 if args.breakdown and args.envelope:
     for i in xrange(n_env):
+        print new_others[i]['func'], other_scans_opts[i][1]
         legend.AddEntry(new_others[i]['func'], other_scans_opts[i][1], 'L')
 else:
     for i, other in enumerate(other_scans):
-        legend.AddEntry(other['func'], other_scans_opts[i][1], 'L')
+        sampName = other_scans_opts[i][1]
+        if sampName in names :
+            sampName = names[sampName]
+        print i, other['func'], other_scans_opts[i][1]
+        legend.AddEntry(other['func'], sampName, 'L')
 # if len(args) >= 4: legend.AddEntry(syst_scan['func'], 'Stat. Only', 'L')
 legend.Draw()
 
@@ -859,6 +879,8 @@ for i, other in enumerate(other_scans):
 
 outfile.Close()
 canv.Print('.pdf')
+canv.Print('.root')
+canv.Print('.C')
 canv.Print('.png')
 
 meta = {}
