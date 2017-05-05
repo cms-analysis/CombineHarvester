@@ -202,8 +202,8 @@ for MH in options.MHtext:
 
 # make canvas and dummy hist
 #canv = r.TCanvas("c","c",int(options.canv.split(',')[0]),int(options.canv.split(',')[1]))
-#canv = r.TCanvas("c","c",900,750) # use the default canvas style
-canv = r.TCanvas("c","c") # use the default canvas style
+canv = r.TCanvas("c","c",800,800) # use the default canvas style
+#canv = r.TCanvas("c","c") # use the default canvas style
 canv.SetTicks(1,1)
 
 if options.xaxis :
@@ -237,7 +237,7 @@ def drawGlobals(canv,shifted="False"):
    #lat.SetTextSize(0.07)
    lat.DrawLatex(0.129+0.085,0.93,"#bf{CMS} #scale[0.75]{#it{Preliminary}}")
    lat.SetTextSize(0.045)
-   lat.DrawLatex(0.129+0.085+0.04,0.85,"H#rightarrow#tau#tau")
+#   lat.DrawLatex(0.129+0.085+0.04,0.85,"H#rightarrow#tau#tau")
    #lat.DrawLatex(0.71,0.92,options.text)
    lat.DrawLatex(0.7,0.93,options.text)
 
@@ -260,7 +260,7 @@ def drawGlobals(canv,shifted="False"):
    lat.SetTextSize(0.05)
    lat.DrawLatex(0.1,0.92,"#bf{CMS} #scale[0.75]{#it{Preliminary}}")
    #lat.DrawLatex(0.129+0.04,0.85,"H#rightarrow#tau#tau")
-   lat.DrawLatex(0.13,0.83,"H#rightarrow#tau#tau")
+#   lat.DrawLatex(0.13,0.83,"H#rightarrow#tau#tau")
    #lat.SetTextSize(0.07)
    lat.SetTextSize(0.045)
    lat.DrawLatex(0.69,0.92,options.text)
@@ -328,7 +328,7 @@ def pvalPlot(allVals):
   if options.verbose: print 'Plotting pvalue...'
   canv.SetLogy(True)
   mg = r.TMultiGraph()
-  if not options.legend: leg = r.TLegend(0.14,0.30,0.4,0.7)
+  if not options.legend: leg = r.TLegend(0.14,0.65,0.4,0.8)
   #if not options.legend: leg = r.TLegend(0.6,0.35,0.89,0.45)
   else:
     options.legend[-1]=options.legend[-1].replace("\n","")
@@ -404,7 +404,7 @@ def pvalPlot(allVals):
     lines[i].SetLineWidth(2)
     lines[i].SetLineStyle(2)
     lines[i].SetLineColor(13) # greay Lines 
-    labels.append(r.TLatex(132+1, y * 1.1, "%d #sigma" % (i+1)))
+    labels.append(r.TLatex(140, y * 1.1, "%d #sigma" % (i+1)))
     labels[i].SetTextColor(13)
     labels[i].SetTextAlign(11);
     if not options.yaxis:
