@@ -226,7 +226,10 @@ canv = ROOT.TCanvas(args.output, args.output)
 pads = plot.OnePad()
 if args.pub: main_scan['graph'].SetMarkerSize(0)
 main_scan['graph'].SetMarkerColor(1)
-main_scan['graph'].Draw('AP')
+main_scan['graph'].SetLineColor(ROOT.kBlue)
+main_scan['graph'].SetLineStyle(2)
+main_scan['graph'].SetLineWidth(3)
+main_scan['graph'].Draw('APL')
 # main_scan['graph'].Fit('pol4')
 # polfunc = main_scan['graph'].GetFunction('pol4')
 # print 'Function min at %f' % polfunc.GetMinimumX(0.05, 0.25)
@@ -273,7 +276,8 @@ for yval in yvals:
             if cr['valid_lo']: line.DrawLine(cr['lo'], 0, cr['lo'], yval)
             if cr['valid_hi']: line.DrawLine(cr['hi'], 0, cr['hi'], yval)
 
-main_scan['func'].Draw('Csame')
+main_scan['func'].Draw('same')
+main_scan['graph'].Draw('PLSAME')
 for other in other_scans:
     if args.breakdown is not None:
         other['func'].SetLineStyle(2)
