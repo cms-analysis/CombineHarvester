@@ -58,15 +58,15 @@ namespace ch {
         //##############################################################################
         
         cb.cp().process(JoinStr({sig_procs, {"VV","VVT","VVJ","HWW_gg125","HWW_qq125"}})).AddSyst(cb,
-                                            "lumi_13TeV", "lnN", SystMap<>::init(1.026));
-        cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.026));
+                                            "lumi_13TeV", "lnN", SystMap<>::init(1.025));
+        cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.025));
         
         //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
         cb.cp().process({"W"}).channel({"tt","em","mm","ttbar"}).AddSyst(cb,
-                                            "lumi_13TeV", "lnN", SystMap<>::init(1.026));
+                                            "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
 	if (!ttbar_fit){
-          cb.cp().process({"TTT","TTJ"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.026));
+          cb.cp().process({"TTT","TTJ"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.025));
 	}
         
         //##############################################################################
@@ -153,8 +153,8 @@ namespace ch {
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
                         ({"em"}, {2,3}, {"TTJ","TTT","TT"}, 1.05));
 
-        cb.cp().AddSyst(cb, "CMS_htt_mistag_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"}, {2, 3}, {"VV","VVT","VVJ"}, 1.015));
+        cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em"}, {2, 3}, {"VV","VVT","VVJ"}, 1.015)); // Mainly SingleTop
         
         
         //##############################################################################
@@ -1382,8 +1382,15 @@ namespace ch {
 					  "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));}
 
         // W norm, just for em, tt and the mm region where MC norm is from MC
-        cb.cp().process({"W","W_rest"}).channel({"tt","em","mm"}).AddSyst(cb,
-                                             "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.20));
+//        cb.cp().process({"W","W_rest"}).channel({"tt","em","mm"}).AddSyst(cb,
+//                                             "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.20)); // splitted to two uncertainties as following
+        
+        cb.cp().process({"W"}).channel({"em"}).AddSyst(cb,
+                                                       "CMS_htt_jetFakeLep_13TeV", "lnN", SystMap<>::init(1.20));
+        
+        cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
+                                                       "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+        
         
         // QCD norm, just for em  decorrelating QCD BG for differenet categories
 //        cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
@@ -1426,11 +1433,11 @@ namespace ch {
         
         // based on the Ersatz study in Run1
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
-                                             "WHighMTtoLowMT_$CHANNEL_0jet_$ERA", "lnN", SystMap<>::init(1.10));
+                                             "WHighMTtoLowMT_0jet_$ERA", "lnN", SystMap<>::init(1.10));
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
-                                             "WHighMTtoLowMT_$CHANNEL_boosted_$ERA", "lnN", SystMap<>::init(1.05));
+                                             "WHighMTtoLowMT_boosted_$ERA", "lnN", SystMap<>::init(1.05));
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                             "WHighMTtoLowMT_$CHANNEL_vbf_$ERA", "lnN", SystMap<>::init(1.10));
+                                             "WHighMTtoLowMT_vbf_$ERA", "lnN", SystMap<>::init(1.10));
         
         
 
@@ -1694,7 +1701,7 @@ namespace ch {
         cb.cp().process({"ZH"}).AddSyst(cb,"QCDScale_VH", "lnN", SystMap<>::init(1.038));
         
         cb.cp().process({"ggH","HWW_gg125"}).AddSyst(cb,"pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
-        cb.cp().process({"ggH","HWW_gg125"}).AddSyst(cb,"pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
+        cb.cp().process({"qqH","HWW_qq125"}).AddSyst(cb,"pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
         cb.cp().process({"WH"}).AddSyst(cb,"pdf_Higgs_VH", "lnN", SystMap<>::init(1.019));
         cb.cp().process({"ZH"}).AddSyst(cb,"pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
         

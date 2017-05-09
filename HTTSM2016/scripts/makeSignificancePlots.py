@@ -263,7 +263,7 @@ def drawGlobals(canv,shifted="False"):
 #   lat.DrawLatex(0.13,0.83,"H#rightarrow#tau#tau")
    #lat.SetTextSize(0.07)
    lat.SetTextSize(0.045)
-   lat.DrawLatex(0.69,0.92,options.text)
+   lat.DrawLatex(0.6,0.92,options.text)
 
   for mi,MH in enumerate(MHtexts):
     if mhTextSize[mi]>0:

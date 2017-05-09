@@ -1,7 +1,7 @@
 # This macro makes the muValue v.s. different final state or v.s. different categories.
 # The input to this macro is mu_XXX.json which XXX could be either channels or categories
-#  python muValuePlotter.py  -o out -t category
-#  python muValuePlotter.py  -o out -t channel
+#  python muValuePlotter.py  -o Mu_Category -t category
+#  python muValuePlotter.py  -o Mu_Channel -t channel
 
 #Before that one need to run the maxlikelihoodfit for each category and then collect the output such as the following:
 #
@@ -13,6 +13,17 @@
 #combineTool.py -M CollectLimits  higgsCombineTest.MaxLikelihoodFit.mH120_et.root    -o Mu_et.json
 #combineTool.py -M CollectLimits  higgsCombineTest.MaxLikelihoodFit.mH120_mt.root     -o Mu_mt.json
 #combineTool.py -M CollectLimits  higgsCombineTest.MaxLikelihoodFit.mH120_cmb.root   -o Mu_cmb.json
+
+
+
+#combineTool.py -M CollectLimits  higgsCombine_Mur_0jet.MaxLikelihoodFit.mH120.root  -o Mu_0jet.json
+#combineTool.py -M CollectLimits  higgsCombine_Mur_boosted.MaxLikelihoodFit.mH120.root   -o Mu_boosted.json
+#combineTool.py -M CollectLimits  higgsCombine_Mur_vbf.MaxLikelihoodFit.mH120.root   -o Mu_vbf.json
+#
+#combineTool.py -M CollectLimits  higgsCombine_Mur_em.MaxLikelihoodFit.mH120.root  -o Mu_em.json
+#combineTool.py -M CollectLimits  higgsCombine_Mur_et.MaxLikelihoodFit.mH120.root   -o Mu_et.json
+#combineTool.py -M CollectLimits  higgsCombine_Mur_mt.MaxLikelihoodFit.mH120.root    -o Mu_mt.json
+#combineTool.py -M CollectLimits  higgsCombine_Mur_tt.MaxLikelihoodFit.mH120.root   -o Mu_tt.json
 
 
 
@@ -46,7 +57,7 @@ canv = ROOT.TCanvas(args.output, args.output)
 pads = plot.OnePad()
 pads[0].SetTicks(1, -1)
 
-axis = ROOT.TH2F('axis', '', 1, -.5, 2.5, 10, 0, 10)
+axis = ROOT.TH2F('axis', '', 1, -.5, 3, 10, 0, 10)
 plot.Set(axis.GetYaxis(), LabelSize=0)
 plot.Set(axis.GetXaxis(), Title='Best fit #mu = #sigma/#sigma_{SM}')
 axis.Draw()
@@ -70,9 +81,9 @@ Channel_Category_Name={
         'cmb': 'combined'
     },
     'channel' : {
-        'et': '#tau_{e}#tau_{h}',
-        'mt': '#tau_{#mu}#tau_{h}',
-        'em': '#tau_{e}#tau_{#mu}',
+        'et': 'e#tau_{h}',
+        'mt': '#mu#tau_{h}',
+        'em': 'e#mu',
         'tt': '#tau_{h}#tau_{h}',
         'cmb': 'combined'
     }
@@ -128,7 +139,7 @@ legend.Draw()
 # Go back and tidy up the axes and frame
 pads[0].cd()
 pads[0].GetFrame().Draw()
-#pads[0].RedrawAxis()
+pads[0].RedrawAxis()
 
 # CMS logo
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
