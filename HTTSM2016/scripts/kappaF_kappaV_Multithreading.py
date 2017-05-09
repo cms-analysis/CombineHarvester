@@ -14,8 +14,9 @@ import math
 
 
 
-nCores = 5 # Don't set this too high.  It can crash your machine
-points = 2000 # 2000 gives very nice contours
+nCores = 13 # Don't set this too high.  It can crash your machine
+points = 1000 # 2000 gives very nice contours
+cvMax = 10.0
 
 
 
@@ -34,13 +35,13 @@ def runFit(points, toys, j) :
     toRun.append('-m')
     toRun.append('125')
     toRun.append('--setPhysicsModelParameterRanges')
-    toRun.append('CV=0.0,3.5:CF=0.0,1.5')
+    toRun.append('CV=0.0,%s:CF=0.0,2.0' % cvMax)
     toRun.append('kappaWorkspace.root')
     toRun.append('--algo=grid')
     toRun.append('--points=%i' % points)
-    toRun.append('-t')
-    toRun.append('-1')
-    toRun.append('--expectSignal=1')
+    #toRun.append('-t')
+    #toRun.append('-1')
+    #toRun.append('--expectSignal=1')
     toRun.append('--minimizerAlgoForMinos=Minuit2,Migrad')
     toRun.append('--firstPoint')
     toRun.append('%i' % bottom)
@@ -83,8 +84,9 @@ for process in processes :
 print "\n\n"
 print "Now Run:"
 print "hadd higgsCombineCvCf.MultiDimFit.mH125.root higgsCombineCvCf.*.MultiDimFit.mH125.root"
-print "root -l higgsCombineCvCf.MultiDimFit.mH125.root ../../../../scripts/contours2D.cxx"
-print 'contour2D("CV",%i,0.0,3.5,"CF",%i,0.0,1.5,1.,1.)' % (math.sqrt(nPoints), math.sqrt(nPoints))
+print "python ../../../../scripts/plotMultiDimFit.py higgsCombineCvCf.MultiDimFit.mH125.root --sm-exp X"
+#print "root -l higgsCombineCvCf.MultiDimFit.mH125.root ../../../../scripts/contours2D.cxx"
+#print 'contour2D("CV",%i,0.0,%s,"CF",%i,0.0,2.0,1.,1.)' % (math.sqrt(nPoints), cvMax, math.sqrt(nPoints))
 print "\n\n"
 
 
