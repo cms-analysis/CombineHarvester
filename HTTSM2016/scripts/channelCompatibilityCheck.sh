@@ -16,13 +16,13 @@
 # 3) By category: 0jet, boosted, vbf
 # 4) By channel by category
 
-newFolder=Blinded20170228_v3
+#newFolder=Blinded20170228_v3
 #FIXME set --control_region=1 when ready
-MorphingSM2016 --output_folder=${newFolder} --postfix="-2D" --control_region=0 --manual_rebin=false --real_data=false --mm_fit=false --ttbar_fit=true
-cd output/${newFolder}
+#MorphingSM2016 --output_folder=${newFolder} --postfix="-2D" --control_region=0 --manual_rebin=false --real_data=false --mm_fit=false --ttbar_fit=true
+#cd output/${newFolder}
 
 # All combined for reference
-combineTool.py -M T2W -i {cmb,em,et,mt,tt}/* -o workspace.root --parallel 8
+#combineTool.py -M T2W -i {cmb,em,et,mt,tt}/* -o workspace.root --parallel 8
 
 # Per channel specific workspace
 text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose \
@@ -59,26 +59,26 @@ text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel -
 for SIGNAL in r_em r_et r_mt r_tt; do
     echo ""
     echo "group: Channel " ${SIGNAL}
-    combine -M ProfileLikelihood --significance workspace_channel_breakdown.root -t -1 --setPhysicsModelParameters r_em=1,r_et=1,r_mt=1,r_tt=1 --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
+    combine -M ProfileLikelihood --significance workspace_channel_breakdown.root --setPhysicsModelParameters r_em=1,r_et=1,r_mt=1,r_tt=1 --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
 done
 
 # Run for each category
 for SIGNAL in r_0jet r_boosted r_vbf; do
     echo ""
     echo "group: Category " ${SIGNAL}
-    combine -M ProfileLikelihood --significance workspace_category_breakdown.root -t -1 --setPhysicsModelParameters r_0jet=1,r_boosted=1,r_vbf=1 --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
+    combine -M ProfileLikelihood --significance workspace_category_breakdown.root  --setPhysicsModelParameters r_0jet=1,r_boosted=1,r_vbf=1 --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
 done
 
 # Run for each category
 for SIGNAL in r_em_1 r_em_2 r_em_3 r_et_1 r_et_2 r_et_3 r_mt_1 r_mt_2 r_mt_3 r_tt_1 r_tt_2 r_tt_3; do
     echo ""
     echo "group: Category " ${SIGNAL}
-    combine -M ProfileLikelihood --significance workspace_channel_and_category_breakdown.root -t -1 --setPhysicsModelParameters r_em_1=1,r_em_2=1,r_em_3=1,r_et_1=1,r_et_2=1,r_et_3=1,r_mt_1=1,r_mt_2=1,r_mt_3=1,r_tt_1=1,r_tt_2=1,r_tt_3=1, --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
+    combine -M ProfileLikelihood --significance workspace_channel_and_category_breakdown.root  --setPhysicsModelParameters r_em_1=1,r_em_2=1,r_em_3=1,r_et_1=1,r_et_2=1,r_et_3=1,r_mt_1=1,r_mt_2=1,r_mt_3=1,r_tt_1=1,r_tt_2=1,r_tt_3=1, --redefineSignalPOIs ${SIGNAL} -n _Sig${SIGNAL}
 done
 
 echo ""
 echo "group: Combined"
-combine -M ProfileLikelihood --significance cmb/125/workspace.root -t -1 --expectSignal=1 -n _SigCombined
+combine -M ProfileLikelihood --significance cmb/125/workspace.root  -n _SigCombined
 
 
 
