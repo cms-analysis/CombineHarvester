@@ -44,6 +44,19 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
       obj->set_attribute("cat","btag");
   });
 
+  cb.cp().bin_id({8,9,15,18}).ForEachObj([&](ch::Object *obj){
+      obj->set_attribute("mtsel","tight");
+  });
+  
+  cb.cp().bin_id({10,11,21,24}).ForEachObj([&](ch::Object *obj){
+     obj->set_attribute("mtsel","loose");
+  });
+
+  cb.cp().bin_id({14,16,17,19}).ForEachObj([&](ch::Object *obj){
+    obj->set_attribute("mtsel","high");
+  });
+
+
 
 
   std::vector<std::string> SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};

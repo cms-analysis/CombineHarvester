@@ -80,7 +80,6 @@ int main(int argc, char** argv) {
   bool do_w_weighting = true;
   bool zmm_fit = true;
   bool do_jetfakes = false;
-  bool do_loosecat = true;
   string chan;
   po::variables_map vm;
   po::options_description config("configuration");
@@ -100,7 +99,6 @@ int main(int argc, char** argv) {
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(true))
     ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
-    ("loosecat", po::value<bool>(&do_loosecat)->default_value(true))
     ("channel", po::value<string>(&chan)->default_value("all"))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
@@ -125,6 +123,7 @@ int main(int argc, char** argv) {
   VString chns;
   if ( chan.find("mt") != std::string::npos ) chns.push_back("mt");
   if ( chan.find("et") != std::string::npos ) chns.push_back("et");
+  if ( chan.find("em") != std::string::npos ) chns.push_back("em");
   if ( chan.find("tt") != std::string::npos ) chns.push_back("tt");
   if ( chan=="all" ) chns = {"mt","et","tt"/*,"em"*/};
 
@@ -153,14 +152,22 @@ int main(int argc, char** argv) {
   //Example - could fill this map with hardcoded binning for different
   //categories if manual_rebin is turned on
   map<string, vector<double> > binning;
-  binning["et_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,3900};
-  binning["et_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
-  binning["mt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,1100,3900};
-  binning["mt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
-  binning["tt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,900,3900};
-  binning["tt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,3900};
-  binning["em_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,1300,1700,3900};
-  binning["em_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,3900};
+  binning["et_nobtag_tight"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,3900};
+  binning["et_nobtag_loosemt"] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,700,900,1100,3900};
+  binning["et_btag_loosemt"] = {0,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
+  binning["et_btag_tight"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
+  binning["mt_nobtag_tight"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,3900};
+  binning["mt_nobtag_loosemt"] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,1100,3900};
+  binning["mt_btag_tight"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
+  binning["mt_btag_loosemt"] = {0,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
+  binning["tt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,900,1100,3900};
+  binning["tt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,900,3900};
+  binning["em_nobtag_lowPzeta"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,4000};
+  binning["em_nobtag_mediumPzeta"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,4000};
+  binning["em_nobtag_highPzeta"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,4000};
+  binning["em_btag_lowPzeta"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,4000};
+  binning["em_btag_mediumPzeta"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,4000};
+  binning["em_btag_highPzeta"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,4000};
 /*  binning["zmm_nobtag"] = {60,70,80,90,100,110,120};
   binning["zmm_btag"] = {60,70,80,90,100,110,120};*/
 
@@ -180,10 +187,6 @@ int main(int argc, char** argv) {
     {10, "et_nobtag_loosemt"},
     {11, "et_btag_loosemt"},
     };
-  if (do_loosecat){
-    cats["et_13TeV"].insert(cats["et_13TeV"].end(),{12, "et_nobtag_looseiso"});
-    cats["et_13TeV"].insert(cats["et_13TeV"].end(),{13, "et_btag_looseiso"});
-  }
 
   cats["em_13TeV"] = {
     {8, "em_nobtag_lowPzeta"},
@@ -205,11 +208,6 @@ int main(int argc, char** argv) {
     {10, "mt_nobtag_loosemt"},
     {11, "mt_btag_loosemt"},
     };
-  if (do_loosecat){
-    cats["mt_13TeV"].insert(cats["mt_13TeV"].end(),{12, "mt_nobtag_looseiso"});
-    cats["mt_13TeV"].insert(cats["mt_13TeV"].end(),{13, "mt_btag_looseiso"});
-  }
-
 
 
   cats["zmm_13TeV"] = {
@@ -243,7 +241,7 @@ int main(int argc, char** argv) {
       }
   }
 
-  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "350", "400", "450", "500", "700", "800", "900","1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
+  vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "350", "400", "450", "500"/*, "600"*/, "700", "800", "900","1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -314,9 +312,9 @@ int main(int argc, char** argv) {
  });
 
     //Scaling QCD in em btag by 1.45/2.2 
-   cb.cp().process({"QCD"}).channel({"em"}).bin_id({9}).ForEachProc([&](ch::Process *proc){
+   /*cb.cp().process({"QCD"}).channel({"em"}).bin_id({9}).ForEachProc([&](ch::Process *proc){
          proc->set_rate(proc->rate()*(1.45/2.2));
-   });
+   });*/
 
   if(SM125!=string("")) {
      cb.cp().process(SM_procs).ForEachProc([&](ch::Process * proc) {
@@ -576,13 +574,21 @@ int main(int argc, char** argv) {
     // per-channel
     writer.WriteCards(chn, cb.cp().channel({chn, "zmm"}));
     // And per-channel-category
-    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({8, 10, 11, 12}));
-    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({9, 13, 14, 15}));
+    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm"}).attr({"tight","high"},"mtsel").attr({"nobtag"},"cat"));
+    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm"}).attr({"tight","high"},"mtsel").attr({"btag"},"cat"));
+    if(chn != std::string("tt")){
+      writer.WriteCards("htt_"+chn+"_10_13TeV", cb.cp().channel({chn,"zmm"}).attr({"loose","high"},"mtsel").attr({"nobtag"},"cat"));
+      writer.WriteCards("htt_"+chn+"_11_13TeV", cb.cp().channel({chn,"zmm"}).attr({"loose","high"},"mtsel").attr({"btag"},"cat"));
+    }
+    if(chn == std::string("em")){
+        writer.WriteCards("htt_"+chn+"_12_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({12}));
+        writer.WriteCards("htt_"+chn+"_13_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({13}));
+    }
   }
   // For btag/nobtag areas want to include control regions. This will
   // work even if the extra categories aren't there.
-  writer.WriteCards("htt_cmb_8_13TeV", cb.cp().bin_id({8, 10, 11, 12}));
-  writer.WriteCards("htt_cmb_9_13TeV", cb.cp().bin_id({9, 13, 14, 15}));
+  writer.WriteCards("htt_cmb_btag_13TeV", cb.cp().attr({"btag"},"cat"));
+  writer.WriteCards("htt_cmb_nobtag_13TeV", cb.cp().attr({"nobtag"},"cat"));
 
   cb.PrintAll();
   cout << " done\n";
