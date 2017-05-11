@@ -716,19 +716,19 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     // Take same numbers as below, but this is probably conservative
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_stat_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
-      ({"mt"}, {8}, 1.02)
-      ({"mt"}, {9}, 1.03)
-      ({"et"}, {8}, 1.02)
-      ({"et"}, {9}, 1.03));
+      ({"mt"}, {8,10}, 1.018)
+      ({"mt"}, {9,11}, 1.022)
+      ({"et"}, {8,10}, 1.024)
+      ({"et"}, {9,11}, 1.029));
 
     // OS/SS W factor syst. uncertainty
     // Based of data/MC for OS/SS ratio in anti-tau iso high mT region
     cb.cp().process({"W"}).AddSyst(cb,
       "CMS_htt_W_OS_SS_syst_$BIN_$ERA", "lnN", SystMap<channel, bin_id>::init
-      ({"mt"}, {8}, 1.080)
-      ({"mt"}, {9}, 1.100)
-      ({"et"}, {8}, 1.080)
-      ({"et"}, {9}, 1.100));
+      ({"mt"}, {8,10}, 1.012)
+      ({"mt"}, {9,11}, 1.024)
+      ({"et"}, {8,10}, 1.019)
+      ({"et"}, {9,11}, 1.019));
 
     // low/high mT W factor stat. uncertainty
     // Should affect signal region and SS low mT
@@ -807,19 +807,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         // Should affect signal region and OS high mT
         // Should be correlated between the regions with tight tau iso
         cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
-          "CMS_htt_W_OS_SS_stat_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 14}, 1.02)
-          ({"mt"}, {10}, 1.02) //dummy value that will probably be different from 8 and 10
-          ({"mt"}, {9, 17}, 1.11)
-          ({"mt"}, {11}, 1.11)
-          ({"mt"}, {12, 26},1.02)
-          ({"mt"}, {13, 29},1.11)
-          ({"et"}, {8, 14}, 1.02)
-          ({"et"}, {10}, 1.02) //dummy value that will probably be different from 8 and 10
-          ({"et"}, {9, 17}, 1.14)
-          ({"et"}, {11}, 1.14)
-          ({"et"}, {12, 26},1.02)
-          ({"et"}, {13, 29},1.14));
+          "CMS_htt_W_OS_SS_stat_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init        
+          ({"mt"}, {8, 10, 14}, 1.018)
+          ({"mt"}, {9, 11, 17}, 1.022)
+          ({"et"}, {8, 10, 14}, 1.024)
+          ({"et"}, {9, 11, 17}, 1.029));
 
         // OS/SS W factor syst. uncertainty
         // Based on data/MC for OS/SS ratio in anti-tau iso high mT region
@@ -827,14 +819,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         // even if the uncert will end up being the same
         cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_systt_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 10, 14}, 1.08)
-          ({"mt"}, {9, 11, 17}, 1.10)
-          ({"mt"}, {12, 26},1.08)
-          ({"mt"}, {13, 29},1.10)
-          ({"et"}, {8, 10, 14}, 1.08)
-          ({"et"}, {9, 11, 17}, 1.10)
-          ({"et"}, {12, 26},1.08)
-          ({"et"}, {13, 29},1.10));
+          ({"mt"}, {8, 10, 14}, 1.012)
+          ({"mt"}, {9, 11, 17}, 1.024)
+          ({"et"}, {8, 10, 14}, 1.019)
+          ({"et"}, {9, 11, 17}, 1.019));
   
 
         // low/high mT W factor stat. uncertainty
