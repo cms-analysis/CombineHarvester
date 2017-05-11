@@ -7,10 +7,28 @@ CHN_DICT = {
     "tt": "#tau_{h}#tau_{h}"
 }
 
-CAT_DICT = {
+CAT_DICT_EMT = {
+    "8": "no b-tag tight",
+    "9": "b-tag tight",
+    "10": "no b-tag loose mT",
+    "11": "b-tag loose mT"
+}
+
+CAT_DICT_TT = {
     "8": "no b-tag",
     "9": "b-tag"
 }
+
+CAT_DICT_EM = {
+    "8": "no b-tag low D_{#zeta}",
+    "9": "b-tag low D_{#zeta}",
+    "10": "no b-tag medium D_{#zeta}",
+    "11": "b-tag medium D_{#zeta}",
+    "12": "no b-tag high D_{#zeta}",
+    "13": "b-tag high D_{#zeta}"
+}
+
+
 
 RANGE_DICT = {
     "em" : 1E-5 ,
@@ -28,25 +46,76 @@ PAD_DICT = {
 
 
 for MODE in ['prefit']:
-    for CHN in ['et', 'mt', 'em', 'tt']:
-        for CAT in ['8', '9']:
-            LABEL = "%s %s" % (CHN_DICT[CHN], CAT_DICT[CAT])
+    for CHN in ['mt','et']:
+        for CAT in ['8', '9', '10', '11']:
+            LABEL = "%s %s" % (CHN_DICT_EMT[CHN], CAT_DICT[CAT])
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
-            os.system(('python scripts/postFitPlot.py' \
-                  ' --file=shapes_300916.root --ratio --extra_pad="%(PAD)s" --mA=1000 --tanb=50 --model_dep ' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
+                  ' --file=shapes_test.root --ratio --extra_pad="%(PAD)s" --mA 1000 --tanb 50 --model_dep ' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
                   ' --ratio_range 0.4,1.6 ' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
                   ' --channel_label "%(LABEL)s"' % vars()))
 
 for MODE in ['prefit']:
-    for CHN in ['et', 'mt', 'em', 'tt']:
-        for CAT in ['8', '9']:
-            LABEL = "%s %s" % (CHN_DICT[CHN], CAT_DICT[CAT])
-            os.system(('python scripts/postFitPlot.py' \
-                  ' --file=shapes_300916.root --ratio --extra_pad=0.6 --no_signal' \
+    for CHN in ['mt','et']:
+        for CAT in ['8', '9', '10', '11']:
+            LABEL = "%s %s" % (CHN_DICT_EMT[CHN], CAT_DICT[CAT])
+            os.system(('python scripts/postFitPlotJetFakes.py' \
+                  ' --file=shapes_test.root --ratio --extra_pad=0.6 --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0 --x_axis_max 200' \
                   ' --ratio_range 0.4,1.6 ' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s' \
                   ' --channel_label "%(LABEL)s"' % vars()))
+
+
+
+for MODE in ['prefit']:
+    for CHN in ['em']:
+        for CAT in ['8', '9', '10', '11','12','13']:
+            LABEL = "%s %s" % (CHN_DICT_EM[CHN], CAT_DICT[CAT])
+            YMIN = "%s" % RANGE_DICT[CHN]
+            PAD = "%s" % PAD_DICT[CHN]
+            os.system(('python scripts/postFitPlotJetFakes.py' \
+                  ' --file=shapes_test.root --ratio --extra_pad="%(PAD)s" --mA 1000 --tanb 50 --model_dep ' \
+                  ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
+                  ' --ratio_range 0.4,1.6 ' \
+                  ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
+                  ' --channel_label "%(LABEL)s"' % vars()))
+
+for MODE in ['prefit']:
+    for CHN in ['em']:
+        for CAT in ['8', '9', '10', '11','12','13']:
+            LABEL = "%s %s" % (CHN_DICT_EM[CHN], CAT_DICT[CAT])
+            os.system(('python scripts/postFitPlotJetFakes.py' \
+                  ' --file=shapes_test.root --ratio --extra_pad=0.6 --no_signal' \
+                  ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0 --x_axis_max 200' \
+                  ' --ratio_range 0.4,1.6 ' \
+                  ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s' \
+                  ' --channel_label "%(LABEL)s"' % vars()))
+
+for MODE in ['prefit']:
+    for CHN in ['tt']:
+        for CAT in ['8', '9']:
+            LABEL = "%s %s" % (CHN_DICT_TT[CHN], CAT_DICT[CAT])
+            YMIN = "%s" % RANGE_DICT[CHN]
+            PAD = "%s" % PAD_DICT[CHN]
+            os.system(('python scripts/postFitPlotJetFakes.py' \
+                  ' --file=shapes_test.root --ratio --extra_pad="%(PAD)s" --mA 1000 --tanb 50 --model_dep ' \
+                  ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
+                  ' --ratio_range 0.4,1.6 ' \
+                  ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
+                  ' --channel_label "%(LABEL)s"' % vars()))
+
+for MODE in ['prefit']:
+    for CHN in ['tt']:
+        for CAT in ['8', '9']:
+            LABEL = "%s %s" % (CHN_DICT_TT[CHN], CAT_DICT[CAT])
+            os.system(('python scripts/postFitPlotJetFakes.py' \
+                  ' --file=shapes_test.root --ratio --extra_pad=0.6 --no_signal' \
+                  ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0 --x_axis_max 200' \
+                  ' --ratio_range 0.4,1.6 ' \
+                  ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s' \
+                  ' --channel_label "%(LABEL)s"' % vars()))
+
