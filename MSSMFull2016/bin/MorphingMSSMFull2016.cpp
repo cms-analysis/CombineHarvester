@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
   if (do_jetfakes){
     bkg_procs["et"] = {"ZL", "TTT","VVT","ZTT","jetFakes"};
     bkg_procs["mt"] = {"ZL", "TTT","VVT","ZTT","jetFakes"};
-    bkg_procs["tt"] = {"ZL", "TTT","VVT","ZTT","jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
+    bkg_procs["tt"] = {"ZL", "TTT","VVT","ZTT","jetFakes"};
   }else{
     bkg_procs["et"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
     bkg_procs["mt"] = {"W", "QCD", "ZL", "ZJ", "TTT","TTJ", "VVT","VVJ","ZTT"};
