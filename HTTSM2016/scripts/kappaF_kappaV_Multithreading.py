@@ -14,9 +14,9 @@ import math
 
 
 
-nCores = 13 # Don't set this too high.  It can crash your machine
-points = 1000 # 2000 gives very nice contours
-cvMax = 10.0
+nCores = 10 # Don't set this too high.  It can crash your machine
+points = 4000 # 2000 gives very nice contours
+cvMax = 2.0
 
 
 
