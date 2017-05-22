@@ -495,25 +495,21 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
   "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id,channel>::init
   ({8},{"tt"}, 1.07)
-  ({9},{"tt"}, 1.04)
+  ({9},{"tt"}, 1.05)
   ({8},{"mt"}, 1.01)
   ({9},{"mt"}, 1.02)
   ({10},{"mt"}, 1.02)
-  ({11},{"mt"}, 1.01)
-  ({12},{"mt"}, 1.01)
-  ({13},{"mt"}, 1.01)
+  ({11},{"mt"}, 1.02)
   ({8},{"et"}, 1.02)
-  ({9},{"et"}, 1.01)
+  ({9},{"et"}, 1.02)
   ({10},{"et"}, 1.02)
   ({11},{"et"}, 1.02)
-  ({12},{"et"}, 1.02)
-  ({13},{"et"}, 1.01)
   ({8},{"em"}, 1.01)
   ({9},{"em"}, 1.01)
   ({10},{"em"}, 1.01)
   ({11},{"em"}, 1.01)
-  ({12},{"em"}, 1.01)
-  ({13},{"em"}, 1.01));
+  ({12},{"em"}, 1.05)
+  ({13},{"em"}, 1.04));
 
   // Should also add something for ttbar
 
