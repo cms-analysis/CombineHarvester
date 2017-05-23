@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
   if ( chan.find("et") != std::string::npos ) chns.push_back("et");
   if ( chan.find("em") != std::string::npos ) chns.push_back("em");
   if ( chan.find("tt") != std::string::npos ) chns.push_back("tt");
-  if ( chan=="all" ) chns = {"mt","et","tt"/*,"em"*/};
+  if ( chan=="all" ) chns = {"mt","et","tt","em"};
 
   if (zmm_fit) chns.push_back("zmm");
 

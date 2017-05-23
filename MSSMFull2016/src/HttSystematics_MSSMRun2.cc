@@ -404,6 +404,13 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process(JoinStr({{"W"}})).channel({"et","mt"}).bin_id({8,9}).AddSyst(cb,
     "CMS_htt_wFakeShape_$ERA","shape",SystMap<>::init(1.00));
 
+  cb.cp().process(JoinStr({{"W","VV"}})).channel({"em"}).AddSyst(cb,
+   "CMS_htt_$CHANNEL_muFake_$ERA","shape",SystMap<>::init(1.00));
+
+  cb.cp().process(JoinStr({{"W","VV"}})).channel({"em"}).AddSyst(cb,
+   "CMS_htt_$CHANNEL_eFake_$ERA","shape",SystMap<>::init(1.00));
+
+
   // Electron energy scale
   // ---------------------
   cb.cp().process(JoinStr({signal, {"ZTT"}})).channel({"em"}).AddSyst(cb,

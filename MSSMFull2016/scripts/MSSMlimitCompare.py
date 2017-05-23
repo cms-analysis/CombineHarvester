@@ -25,7 +25,7 @@ parser.add_argument('--outname','-o', help='Name of output plot', default='limit
 parser.add_argument('--relative',help='Relative difference in limit',action='store_true', default=False)
 parser.add_argument('--absolute',help='Absolute difference in limit',action='store_true', default=False)
 parser.add_argument('--channel_label',default='#mu#tau_{h} no b-tag',help='Channel - category label')
-parser.add_argument('--title',help='Plot label', default='12.9 fb^{-1} (13 TeV)')
+parser.add_argument('--title',help='Plot label', default='35.9 fb^{-1} (13 TeV)')
 parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
 #parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
