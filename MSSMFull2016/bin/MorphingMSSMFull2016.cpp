@@ -79,6 +79,7 @@ int main(int argc, char** argv) {
   bool poisson_bbb = false;
   bool do_w_weighting = true;
   bool zmm_fit = true;
+  bool ttbar_fit = true;
   bool do_jetfakes = false;
   string chan;
   po::variables_map vm;
@@ -98,6 +99,7 @@ int main(int argc, char** argv) {
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(true))
+    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(false))
     ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
     ("channel", po::value<string>(&chan)->default_value("all"))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
@@ -119,6 +121,7 @@ int main(int argc, char** argv) {
   input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_et+"/";
   input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_tt+"/";
   input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_zmm+"/";
+  input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_em+"/";
 
   VString chns;
   if ( chan.find("mt") != std::string::npos ) chns.push_back("mt");
@@ -128,6 +131,7 @@ int main(int argc, char** argv) {
   if ( chan=="all" ) chns = {"mt","et","tt","em"};
 
   if (zmm_fit) chns.push_back("zmm");
+  if (ttbar_fit) chns.push_back("ttbar");
 
   RooRealVar mA(mass.c_str(), mass.c_str(), 90., 3200.);
   mA.setConstant(true);
@@ -146,6 +150,7 @@ int main(int argc, char** argv) {
   }
   bkg_procs["em"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
   bkg_procs["zmm"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
+  bkg_procs["ttbar"] = {"W", "QCD", "ZLL", "TT", "VV", "ZTT"};
 
   VString SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
 
@@ -215,12 +220,16 @@ int main(int argc, char** argv) {
     {9, "zmm_btag"}
     };
 
+ cats["ttbar_13TeV"] = {
+   {1, "ttbar_cr"}
+  };
+
   if (control_region > 0){
       // for each channel use the categories >= 10 for the control regions
       // the control regions are ordered in triples (10,11,12),(13,14,15)...
       for (auto chn : chns){
         // for em or tt do nothing
-        if (ch::contains({"em", "tt", "zmm"}, chn)) {
+        if (ch::contains({"em", "tt", "zmm","ttbar"}, chn)) {
           std::cout << " - Skipping extra control regions for channel " << chn << "\n";
           continue;
         }
@@ -264,7 +273,7 @@ int main(int argc, char** argv) {
     if(SM125==string("bkg_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
     if(SM125==string("signal_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
     }
-  if ((control_region > 0) || zmm_fit){
+  if ((control_region > 0) || zmm_fit ||ttbar_fit){
       // Since we now account for QCD in the high mT region we only
       // need to filter signal processes
       cb.FilterAll([](ch::Object const* obj) {
@@ -275,23 +284,25 @@ int main(int argc, char** argv) {
 
 
 
-  ch::AddMSSMRun2Systematics(cb, control_region, zmm_fit);
+  ch::AddMSSMRun2Systematics(cb, control_region, zmm_fit, ttbar_fit);
   //! [part7]
   for (string chn:chns){
+    std::string chn_label = chn;
+    if(chn==std::string("ttbar")) chn_label = "em";
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+        input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/$PROCESS",
         "$BIN/$PROCESS_$SYSTEMATIC");
     if(SM125==string("signal_SM125")) cb.cp().channel({chn}).process(SM_procs).ExtractShapes(
-         input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+         input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
          "$BIN/$PROCESS",
          "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
-        input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+        input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/ggH$MASS",
         "$BIN/ggH$MASS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
-        input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+        input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/bbH$MASS",
         "$BIN/bbH$MASS_$SYSTEMATIC");
   }
@@ -567,28 +578,39 @@ int main(int argc, char** argv) {
 
   writer.WriteCards("cmb", cb);
   for (auto chn : chns) {
-    if(chn == std::string("zmm"))
+    if(chn == std::string("zmm") || chn == std::string("ttbar"))
     {
         continue;
     }
     // per-channel
-    writer.WriteCards(chn, cb.cp().channel({chn, "zmm"}));
+    writer.WriteCards(chn, cb.cp().channel({chn, "zmm","ttbar"}));
     // And per-channel-category
-    writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm"}).attr({"tight","high"},"mtsel").attr({"nobtag"},"cat"));
-    writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm"}).attr({"tight","high"},"mtsel").attr({"btag"},"cat"));
-    if(chn != std::string("tt")){
-      writer.WriteCards("htt_"+chn+"_10_13TeV", cb.cp().channel({chn,"zmm"}).attr({"loose","high"},"mtsel").attr({"nobtag"},"cat"));
-      writer.WriteCards("htt_"+chn+"_11_13TeV", cb.cp().channel({chn,"zmm"}).attr({"loose","high"},"mtsel").attr({"btag"},"cat"));
+    if(chn == std::string("et") || chn ==std::string("mt")){
+      writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"tight","high","all"},"mtsel").attr({"nobtag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"tight","high","all"},"mtsel").attr({"btag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_10_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"loose","high","all"},"mtsel").attr({"nobtag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_11_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"loose","high","all"},"mtsel").attr({"btag","all"},"cat"));
+    }
+    if(chn == std::string("tt")){
+      writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"nobtag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"btag","all"},"cat"));
     }
     if(chn == std::string("em")){
-        writer.WriteCards("htt_"+chn+"_12_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({12}));
-        writer.WriteCards("htt_"+chn+"_13_13TeV", cb.cp().channel({chn,"zmm"}).bin_id({13}));
+      writer.WriteCards("htt_"+chn+"_8_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"low","all"},"pzeta").attr({"nobtag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_9_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"low","all"},"pzeta").attr({"btag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_10_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"medium","all"},"pzeta").attr({"nobtag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_11_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"medium","all"},"pzeta").attr({"btag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_12_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"high","all"},"pzeta").attr({"nobtag","all"},"cat"));
+      writer.WriteCards("htt_"+chn+"_13_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"high","all"},"pzeta").attr({"btag","all"},"cat"));
     }
+   //b-tag and no b-tag per channel:
+   writer.WriteCards("htt_"+chn+"_nobtag_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"nobtag","all"},"cat"));
+   writer.WriteCards("htt_"+chn+"_btag_13TeV", cb.cp().channel({chn,"zmm","ttbar"}).attr({"btag","all"},"cat"));
   }
   // For btag/nobtag areas want to include control regions. This will
   // work even if the extra categories aren't there.
-  writer.WriteCards("htt_cmb_btag_13TeV", cb.cp().attr({"btag"},"cat"));
-  writer.WriteCards("htt_cmb_nobtag_13TeV", cb.cp().attr({"nobtag"},"cat"));
+  writer.WriteCards("htt_cmb_btag_13TeV", cb.cp().attr({"btag","all"},"cat"));
+  writer.WriteCards("htt_cmb_nobtag_13TeV", cb.cp().attr({"nobtag","all"},"cat"));
 
   cb.PrintAll();
   cout << " done\n";
