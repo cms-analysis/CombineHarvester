@@ -597,38 +597,30 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
   //stat norm uncertainties
   cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_stat_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
-                                                                  ({"mt"}, {8}, 1.035)
-                                                                  ({"mt"}, {9}, 1.036)
-                                                                  ({"mt"}, {10}, 1.024)
-                                                                  ({"mt"}, {11}, 1.032)
-                                                                  ({"mt"}, {12}, 1.039)
-                                                                  ({"mt"}, {13}, 1.044)
-                                                                  ({"et"}, {8}, 1.04)
-                                                                  ({"et"}, {9}, 1.05)
-                                                                  ({"et"}, {10}, 1.065)
-                                                                  ({"et"}, {11}, 1.065)
-                                                                  ({"et"}, {12}, 1.065)
-                                                                  ({"et"}, {13}, 1.065)
-                                                                  ({"tt"}, {8}, 1.03)
-                                                                  ({"tt"}, {9}, 1.04)
+								  ({"mt"}, {8}, 1.039)
+								  ({"mt"}, {9}, 1.040)
+								  ({"mt"}, {10}, 1.038)
+								  ({"mt"}, {11}, 1.035)
+								  ({"et"}, {8}, 1.058)
+								  ({"et"}, {9}, 1.071)
+								  ({"et"}, {10}, 1.044)
+								  ({"et"}, {11}, 1.059)
+								  ({"tt"}, {8}, 1.023)
+								  ({"tt"}, {9}, 1.028)
                                                                   );
 
   //syst norm uncertainties: bin-correlated
   cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_syst_$CHANNEL", "lnN", SystMap<channel, bin_id>::init
-                                                                  ({"mt"}, {8}, 1.075)
-                                                                  ({"mt"}, {9}, 1.069)
-                                                                  ({"mt"}, {10}, 1.053)
-                                                                  ({"mt"}, {11}, 1.057)
-                                                                  ({"mt"}, {12}, 1.065)
-                                                                  ({"mt"}, {13}, 1.066)
-                                                                  ({"et"}, {8}, 1.073)
-                                                                  ({"et"}, {9}, 1.067)
-                                                                  ({"et"}, {10}, 1.083)
-                                                                  ({"et"}, {11}, 1.083)
-                                                                  ({"et"}, {12}, 1.083)
-                                                                  ({"et"}, {13}, 1.083)
-                                                                  ({"tt"}, {8}, 1.026)
-                                                                  ({"tt"}, {9}, 1.032)
+								  ({"mt"}, {8}, 1.075)
+								  ({"mt"}, {9}, 1.068)
+								  ({"mt"}, {10}, 1.063)
+								  ({"mt"}, {11}, 1.055)
+								  ({"et"}, {8}, 1.097)
+								  ({"et"}, {9}, 1.089)
+								  ({"et"}, {10}, 1.068)
+								  ({"et"}, {11}, 1.068)
+								  ({"tt"}, {8}, 1.099)
+								  ({"tt"}, {9}, 1.100)
                                                                   );
 
   //syst norm uncertainties: bin-specific
