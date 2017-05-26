@@ -396,12 +396,38 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_mssmHigh_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
+  //cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+  //  "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+  
   cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
-    "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
+    "CMS_scale_t_1prong0pi0_$ERA", "shape", SystMap<>::init(1.00));
+  
+  cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+    "CMS_scale_t_1prong1pi0_$ERA", "shape", SystMap<>::init(1.00));
+  
+  cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
+    "CMS_scale_t_3prong0pi0_$ERA", "shape", SystMap<>::init(1.00));
+  
+  cb.cp().process(JoinStr({"ZL","ZJ"})).channel({"et"}).AddSyst(cb,
+    "CMS_scale_t_efake_1prong0pi0_$ERA", "shape", SystMap<>::init(1.00));
+  
+  cb.cp().process(JoinStr({"ZL","ZJ"})).channel({"et"}).AddSyst(cb,
+    "CMS_scale_t_efake_1prong1pi0_$ERA", "shape", SystMap<>::init(1.00)); 
 
   //DY reweighting
+  //cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
+  //  "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
+  
   cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
-    "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
+    "CMS_htt_dyShape_scale_m_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
+    "CMS_htt_dyShape_tjXsec_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
+    "CMS_htt_dyShape_stat_m400pt0_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
+    "CMS_htt_dyShape_stat_m400pt40_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
+    "CMS_htt_dyShape_stat_m400pt80_$ERA", "shape", SystMap<>::init(1.00));
 
   //W jet->tau FR shape
   cb.cp().process(JoinStr({{"W"}})).channel({"et","mt"}).bin_id({8,9}).AddSyst(cb,
@@ -593,6 +619,11 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "norm_ff_tt_syst", "shape", SystMap<>::init(1.00));
   cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_w_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
   cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_tt_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+  
+  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb,"norm_ff_dy_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb,"norm_ff_w_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb,"norm_ff_tt_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
+
 
   //stat norm uncertainties
   cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_stat_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
