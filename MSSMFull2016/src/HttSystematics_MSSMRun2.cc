@@ -1002,10 +1002,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb,"norm_ff_tt_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
 
 
-  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_dy_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
-  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_w_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
-  cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb, "norm_ff_tt_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
-
   //stat norm uncertainties
   cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_norm_stat_$CHANNEL_$BIN", "lnN", SystMap<channel, bin_id>::init
 								  ({"mt"}, {8}, 1.039)
