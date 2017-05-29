@@ -45,6 +45,7 @@ parser.add_argument('--dir', '-d', help='Directory for plot (channel-category co
 parser.add_argument('--file', '-f',help='Input file if shape file has already been created')
 parser.add_argument('--r',default='0.1',help='Signal XS*BR to scale QCD')
 parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
+parser.add_argument('--channel', help='Channel label')
 parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio plot')
 parser.add_argument('--custom_x_range', help='Fix x axis range', action='store_true', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=0.0)
@@ -62,6 +63,7 @@ args = parser.parse_args()
 
 r = args.r
 mode = args.mode
+channel = args.channel
 extra_pad = float(args.extra_pad)
 custom_x_range = args.custom_x_range
 custom_y_range = args.custom_y_range
@@ -93,8 +95,7 @@ total_datahist.SetMarkerStyle(20)
 blind_datahist.SetMarkerStyle(20)
 blind_datahist.SetLineColor(1)
 
-#channel=binname[4:6]
-channel='mt'
+#channel='mt'
 
 #Create stacked plot for the backgrounds
 bkg_histos = []

@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
   po::options_description config("configuration");
   config.add_options()
     ("mass,m", po::value<string>(&mass)->default_value(mass))
-    ("input_folder", po::value<string>(&input_folder)->default_value("shapes/"))
+    ("input_folder", po::value<string>(&input_folder)->default_value("shapes/Imperial/"))
     ("output_folder", po::value<string>(&output_folder)->default_value("mssm_run2"))
     ("postfix", po::value<string>(&postfix)->default_value(""))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125));
@@ -120,6 +120,14 @@ int main(int argc, char** argv) {
   cb.cp().process({"ZTT","VVT","TTT"}).channel({"et","mt"}).AddSyst(cb,
     "CMS_scale_t_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
 
+  cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
+    "CMS_scale_t_efake_1prong0pi0_$ERA", "shape", SystMap<>::init(1.00));
+
+  cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
+    "CMS_scale_t_efake_1prong1pi0_$ERA", "shape", SystMap<>::init(1.00));
+
+  cb.cp().process({"TTT","TTJ","TT"}).AddSyst(cb,
+    "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp().process({"ZLL"}).channel({"em"})
       .AddSyst(cb, "CMS_eff_m", "lnN", SystMap<>::init(1.02));
@@ -175,13 +183,13 @@ int main(int argc, char** argv) {
         "$BIN/QCD_$SYSTEMATIC");
    }
 
-   cb.cp().process({"QCD"}).channel({"et"}).ForEachProc([&](ch::Process *proc){
+  /* cb.cp().process({"QCD"}).channel({"et"}).ForEachProc([&](ch::Process *proc){
          proc->set_rate(proc->rate()*(1.0/1.02));
    });
 
    cb.cp().process({"QCD"}).channel({"mt"}).ForEachProc([&](ch::Process *proc){
          proc->set_rate(proc->rate()*(1.00/1.18));
-   });
+   });*/
 
 
 
