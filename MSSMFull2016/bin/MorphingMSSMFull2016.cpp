@@ -44,16 +44,32 @@ void To1Bin(T* proc)
                                    // integral of the hist
 }
 
+//Treatment is different for single bin control regions than for multi-bin cr's
+//Introduce a BinIsSBControlRegion to filter out the single bin cr's and 
+//Let BinIsControlRegion filter all control regions
+
+bool BinIsSBControlRegion(ch::Object const* obj)
+{
+    return ((boost::regex_search(obj->bin(),boost::regex{"_cr$"})&&(obj->channel()!=std::string("ttbar"))) || (obj->channel() == std::string("zmm")));
+}
+
+// Useful to have the inverse sometimes too
+bool BinIsNotSBControlRegion(ch::Object const* obj)
+{
+    return !BinIsSBControlRegion(obj);
+}
+
+//BinIsControlRegion filters classic method cr's, z->mumu and ttbar control region
 bool BinIsControlRegion(ch::Object const* obj)
 {
     return (boost::regex_search(obj->bin(),boost::regex{"_cr$"}) || (obj->channel() == std::string("zmm")));
 }
 
-// Useful to have the inverse sometimes too
 bool BinIsNotControlRegion(ch::Object const* obj)
 {
     return !BinIsControlRegion(obj);
 }
+
 
 
 
@@ -310,7 +326,7 @@ int main(int argc, char** argv) {
 
  //Now delete processes with 0 yield
  cb.FilterProcs([&](ch::Process *p) {
-  bool null_yield = !(p->rate() > 0. || BinIsControlRegion(p));
+  bool null_yield = !(p->rate() > 0. || BinIsSBControlRegion(p));
   if (null_yield){
      std::cout << "[Null yield] Removing process with null yield: \n ";
      std::cout << ch::Process::PrintHeader << *p << "\n"; 
@@ -353,7 +369,7 @@ int main(int argc, char** argv) {
 
   // And convert any shapes in the CRs to lnN:
   // Convert all shapes to lnN at this stage
-  cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
+  cb.cp().FilterSysts(BinIsNotSBControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
     sys->set_type("lnN");
   });
 
@@ -373,8 +389,8 @@ int main(int argc, char** argv) {
 
 
   // Merge to one bin for control region bins
-  cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
-  cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
+  cb.cp().FilterAll(BinIsNotSBControlRegion).ForEachProc(To1Bin<ch::Process>);
+  cb.cp().FilterAll(BinIsNotSBControlRegion).ForEachObs(To1Bin<ch::Observation>);
 
   // Rebinning
   // --------------------
@@ -399,7 +415,7 @@ int main(int argc, char** argv) {
   if(auto_rebin) rebin.Rebin(cb, cb);
 
   if(manual_rebin) {
-    for(auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+    for(auto b : cb.cp().FilterAll(BinIsSBControlRegion).bin_set()) {
       std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
       cb.cp().bin({b}).VariableRebin(binning[b]);
     }
@@ -504,7 +520,7 @@ int main(int argc, char** argv) {
   for (auto chn : chns) {
     std::cout << " - Doing bbb for channel " << chn << "\n";
     bbb.MergeAndAdd(cb.cp().channel({chn}).process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTT","TTJ","VVT","VVJ", "WJets", "Dibosons"}).FilterAll([](ch::Object const* obj) {
-                return BinIsControlRegion(obj);
+                return BinIsSBControlRegion(obj);
                 }), cb);
   }
   // And now do bbb for the control region with a slightly different config:
@@ -515,8 +531,8 @@ int main(int argc, char** argv) {
     .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
     .SetVerbosity(1);
   // Will merge but only for non W and QCD processes, to be on the safe side
-  bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
-  bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
+  bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotSBControlRegion));
+  bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotSBControlRegion), cb);
   cout << " done\n";
 
   //Switch JES over to lnN:
