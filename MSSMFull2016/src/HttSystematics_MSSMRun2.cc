@@ -803,8 +803,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // top-quark pT reweighting
   // ------------------------
   if(ttbar_fit){
-    cb.cp().channel({"zmm"},false).process({"TTT","TTJ","TT"}).AddSyst(cb,
+    cb.cp().channel({"ttbar"}).process({"TTT","TTJ","TT"}).AddSyst(cb,
       "CMS_htt_ttbarShape_$ERA", "shapeU", SystMap<>::init(1.00));
+
+    cb_sig.cp().channel({"et","mt","tt","em"}).process({"TTT","TTJ","TT"}).AddSyst(cb,
+      "CMS_htt_ttbarShape_$ERA", "shapeU", SystMap<>::init(1.00));
+
   } else {
     cb.cp().channel({"zmm"},false).process({"TTT","TTJ","TT"}).AddSyst(cb,
       "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
