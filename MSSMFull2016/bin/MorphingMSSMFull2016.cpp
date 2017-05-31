@@ -540,6 +540,13 @@ int main(int argc, char** argv) {
   cb.cp().syst_name({"CMS_scale_b_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});
   cb.cp().syst_name({"CMS_fake_b_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});*/
 
+  //Need to rename norm_ff_tt_dm0_njet0_stat and norm_ff_tt_dm1_njet0_stat to contain the channel directives
+  cb.cp().channel({"mt"}).RenameSystematic(cb,"norm_ff_tt_dm0_njet0_stat","norm_ff_tt_dm0_mt_stat");
+  cb.cp().channel({"mt"}).RenameSystematic(cb,"norm_ff_tt_dm1_njet0_stat","norm_ff_tt_dm1_mt_stat");
+  cb.cp().channel({"et"}).RenameSystematic(cb,"norm_ff_tt_dm0_njet0_stat","norm_ff_tt_dm0_et_stat");
+  cb.cp().channel({"et"}).RenameSystematic(cb,"norm_ff_tt_dm1_njet0_stat","norm_ff_tt_dm1_et_stat");
+
+
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
   // which is commonly used in the htt analyses
