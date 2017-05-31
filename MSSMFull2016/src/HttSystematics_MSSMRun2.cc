@@ -27,7 +27,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   if (control_region == 1){
     // we only want to cosider systematic uncertainties in the signal region.
     // limit to only the btag and nobtag categories
-    cb_sig.bin_id({8,9,10,11,12,13});
+    cb_sig.bin_id({1,8,9,10,11,12,13});
   }
 
   cb.cp().bin_id({8,9,10,11,14,15,16,17,18,19,21,24}).ForEachObj([&](ch::Object *obj){
@@ -121,10 +121,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
     ({"zmm"}, {"ZTT", "TT", "VV", "ZL"},  1.04)
     ({"zmm"}, {"ZJ"},  1.02)
+    ({"ttbar"}, {"ZTT","TT","VV","W","ZLL"}, 1.02)
     ({"mt"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
   
   cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
+    ({"ttbar"}, {"ZTT","TT","VV","W","ZLL"}, 1.02)
     ({"et"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
 
@@ -406,8 +408,8 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // -----------------------
   cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_$ERA", "lnN", SystMap<channel>::init
-    ({"et", "mt"}, 1.05)
-    ({"tt"},       1.10));
+    ({"et", "mt"}, 1.04)
+    ({"tt"},       1.08));
 
   cb.cp().process(JoinStr({signal, {"ZTT","VVT","TTT"}})).channel({"et","mt","tt"}).AddSyst(cb,
     "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<channel>::init
@@ -820,7 +822,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
   //Add luminosity uncertainty for W in em, tt and the zmm region as norm is from MC
-  cb.cp().process({"W"}).channel({"tt","em","zmm"}).AddSyst(cb,
+  cb.cp().process({"W"}).channel({"tt","em","zmm","ttbar"}).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
   if(zmm_fit)
@@ -1478,7 +1480,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         cb.SetFlag("filters-use-regex", false);
     }
    if(ttbar_fit) {
-       cb.cp().attr({"nobtag","btag","all"},"cat").process({"TTT","TT"}).AddSyst(cb, "rate_TT","rateParam",SystMap<>::init(1.0));
+       cb_sig.cp().attr({"nobtag","btag","all"},"cat").process({"TTT","TT"}).AddSyst(cb, "rate_TT","rateParam",SystMap<>::init(1.0));
        cb.GetParameter("rate_TT")->set_range(0.0,5.0);
    }
   }
