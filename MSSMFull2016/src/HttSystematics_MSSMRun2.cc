@@ -910,10 +910,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // Fake-rates
   // ----------
   cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
-    "CMS_htt_eFakeTau_tight_13TeV", "lnN", SystMap<>::init(1.30));
+    "CMS_htt_eFakeTau_tight_13TeV", "lnN", SystMap<>::init(1.11)); //Uncertainty is 9% in barrel and 16% in endcaps, weighted average gives 11
 
   cb.cp().process({"ZL"}).channel({"tt"}).AddSyst(cb,
-    "CMS_htt_eFakeTau_loose_13TeV", "lnN", SystMap<>::init(1.10));
+    "CMS_htt_eFakeTau_loose_13TeV", "lnN", SystMap<>::init(1.03)); //Uncertainty is 3% both in barrel and endcaps
 
   cb.cp().channel({"et", "mt", "tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<bin_id,process>::init
@@ -923,11 +923,13 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process({"W","W_rest"}).channel({"tt"}).AddSyst(cb,
     "CMS_htt_jetFakeTau_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
 
+  //Uncertainty ranges from 11, 19,4, 31, 25% depending on eta bin
   cb.cp().process({"ZL"}).channel({"mt"}).AddSyst(cb,
-    "CMS_htt_mFakeTau_tight_13TeV", "lnN", SystMap<>::init(1.30)); //Uncertainty ranges from 7-35% depending on eta bin
+    "CMS_htt_mFakeTau_tight_13TeV", "lnN", SystMap<>::init(1.12)); //Uncertainty ranges from 4-31% depending on eta bin, this is the weighted average
+
 
   cb.cp().process({"ZL"}).channel({"tt"}).AddSyst(cb,
-    "CMS_htt_mFakeTau_loose_13TeV", "lnN", SystMap<>::init(1.20)); //Uncertainty ranges from 5-23% depending on eta bin
+    "CMS_htt_mFakeTau_loose_13TeV", "lnN", SystMap<>::init(1.05)); //Uncertainty ranges from 3-12% depending on eta bin, this is a rough weighted average
 
 
 
@@ -1249,8 +1251,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
          ({"mt"},{15},1.14));*/
     
         //W b-tag extrapolation factor syst uncertainty
+        //Covered later:
         //1) b-tag efficiency uncertainty
-        cb.cp().process({"W"}).AddSyst(cb,
+        /*cb.cp().process({"W"}).AddSyst(cb,
          "CMS_eff_b_13TeV","lnN", SystMapAsymm<channel, bin_id>::init
          ({"mt"},{9},0.96,1.01)
          ({"mt"},{13},0.98,1.04)
@@ -1259,7 +1262,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
          ({"et"},{9},0.95,1.02)
          ({"et"},{13},0.99,1.02)
          ({"et"},{14},0.90,1.00)
-         ({"et"},{15},0.97,1.00));
+         ({"et"},{15},0.97,1.00));*/
  
         //W b-tag extrapolation factor syst uncertainty
         //Only needed if fitting 1-jet selection at high mT which we're not doing now
@@ -1278,18 +1281,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         // Based on variation in fitted factor from different anti-iso sidebands
         cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
           "CMS_htt_QCD_OS_SS_syst_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 14}, 1.040)
-          ({"mt"}, {10}, 1.040)
-          ({"mt"}, {9, 17}, 1.600)
-          ({"mt"}, {11}, 1.600)
-          ({"mt"}, {12, 26}, 1.040)
-          ({"mt"}, {13, 29}, 1.600)
-          ({"et"}, {8, 14}, 1.120)
-          ({"et"}, {10}, 1.120)
-          ({"et"}, {9, 17}, 1.600)
-          ({"et"}, {11}, 1.600)
-          ({"et"}, {12, 26}, 1.120)
-          ({"et"}, {13, 29}, 1.600));
+          ({"mt"}, {8, 10,14}, 1.04)
+          ({"mt"}, {9, 11, 17}, 1.32)
+          ({"et"}, {8,10, 14}, 1.120)
+          ({"et"}, {9, 11,17}, 1.27));
 
         cb.cp().AddSyst(cb,
           "CMS_scale_j_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
