@@ -13,8 +13,8 @@
 
 
 # creating datacards
-newFolder=Blinded20170310_kappa
-MorphingSM2016 --output_folder=${newFolder} --postfix="-2D" --control_region=0 --manual_rebin=false --real_data=false --mm_fit=false --ttbar_fit=false
+newFolder=Blinded20170502_cv10cf2
+MorphingSM2016 --output_folder=${newFolder} --postfix="-2D" --control_region=1 --manual_rebin=false --real_data=true --mm_fit=false --ttbar_fit=true
 
 
 # Building the workspaces:
@@ -28,17 +28,19 @@ combineTool.py -M T2W -m 125 -P HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcFH
 
 # Run 1D fits for CV and CF using Hgg
 ###combine -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,5.0:CF=0.0,5.0 kappaWorkspace.root --algo=singles --robustFit=1 -t -1 # From Combine Tutorial
-combine -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,3.5:CF=0.0,1.5 kappaWorkspace.root --algo=singles --robustFit=1 -t -1  --expectSignal=1 --minimizerAlgoForMinos=Minuit2,Migrad
+combine -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,10.0:CF=0.0,2.0 kappaWorkspace.root --algo=singles --robustFit=1 --minimizerAlgoForMinos=Minuit2,Migrad
 
 # Perform 2D scan in CV vs. CF
 # Uncomment the following line to run this scan on 1 core.
 # This can be sped up by running multicored, see
 # scripts/kappaF_kappaV_Multithreading.py
 #
-#combineTool.py -n CvCf -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,3.5:CF=0.0,1.5 kappaWorkspace.root --algo=grid --points=2000 -t -1 --expectSignal=1 --minimizerAlgoForMinos=Minuit2,Migrad
-
+#combineTool.py -n CvCf -M MultiDimFit -m 125 --setPhysicsModelParameterRanges CV=0.0,3.5:CF=0.0,2.0 kappaWorkspace.root --algo=grid --points=200 -t -1 --expectSignal=1 --minimizerAlgoForMinos=Minuit2,Migrad
+#
+echo "python ../../../../scripts/kappaF_kappaV_Multithreading.py"
+python ../../../../scripts/kappaF_kappaV_Multithreading.py
 # Run this on the output root file
 #root -l higgsCombineCvCf.MultiDimFit.mH125.root ../../../../scripts/contours2D.cxx
-#contour2D("CV",10,0.0,3.5,"CF",10,0.0,1.5,1.,1.)
+#contour2D("CV",10,0.0,3.5,"CF",10,0.0,2.0,1.,1.)
 
 

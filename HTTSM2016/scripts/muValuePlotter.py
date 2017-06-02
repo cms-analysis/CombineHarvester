@@ -57,7 +57,9 @@ canv = ROOT.TCanvas(args.output, args.output)
 pads = plot.OnePad()
 pads[0].SetTicks(1, -1)
 
+
 axis = ROOT.TH2F('axis', '', 1, -.5, 3, 10, 0, 10)
+
 plot.Set(axis.GetYaxis(), LabelSize=0)
 plot.Set(axis.GetXaxis(), Title='Best fit #mu = #sigma/#sigma_{SM}')
 axis.Draw()
@@ -74,6 +76,13 @@ plot.Set(latexNum, TextAlign=12, TextSize=0.025)
 
 
 Channel_Category_Name={
+    'signal' : {
+        'ggH': 'ggH',
+        'qqH': 'qqH',
+        'WH': 'WH',
+        'ZH': 'ZH',
+        'cmb': 'combined'
+    },
     'category' : {
         '0jet': '0jet',
         'boosted': 'boosted',
@@ -96,7 +105,9 @@ chn = '120.0'
 
 if Type=='channel': proc = ['em','et', 'mt', 'tt','cmb']
 elif Type=='category': proc = ['0jet','boosted', 'vbf','cmb']
+elif Type=='signal': proc = ['ggH','qqH','WH','ZH','cmb']
 else:  print 'either select category or channel'
+
 
 gr = ROOT.TGraphAsymmErrors(len(proc))
 plot.Set(gr, LineWidth=2, LineColor=ROOT.kBlue)
