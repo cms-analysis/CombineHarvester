@@ -1709,6 +1709,68 @@ namespace ch {
         
         
         
+        
+        
+        //   Additonal uncertainties applied to the paper i.e. top mass 
+        cb.cp().process( {"ggH"}).channel({"et","mt","em","tt"}).AddSyst(cb,
+                                                                         "TopMassTreatment_$ERA", "shape", SystMap<>::init(1.00));
+        
+        
+        cb.cp().AddSyst(cb, "CMS_ggH_STXSmig01", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em"},{1},{"ggH"}, 0.959)
+                        ({"et"},{1},{"ggH"}, 0.959)
+                        ({"mt"},{1},{"ggH"}, 0.959)
+                        ({"tt"},{1},{"ggH"}, 0.959)
+                        
+                        ({"em"},{2},{"ggH"}, 1.079)
+                        ({"et"},{2},{"ggH"}, 1.079)
+                        ({"mt"},{2},{"ggH"}, 1.079)
+                        ({"tt"},{2},{"ggH"}, 1.079)
+                        
+                        ({"em"},{3},{"ggH"}, 1.039)
+                        ({"et"},{3},{"ggH"}, 1.039)
+                        ({"mt"},{3},{"ggH"}, 1.039)
+                        ({"tt"},{3},{"ggH"}, 1.039)
+                        );
+        
+        
+        cb.cp().AddSyst(cb, "CMS_ggH_STXSmig12", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em"},{1},{"ggH"}, 1.000)
+                        ({"et"},{1},{"ggH"}, 1.000)
+                        ({"mt"},{1},{"ggH"}, 1.000)
+                        ({"tt"},{1},{"ggH"}, 1.000)
+                        
+                        ({"em"},{2},{"ggH"}, 0.932)
+                        ({"et"},{2},{"ggH"}, 0.932)
+                        ({"mt"},{2},{"ggH"}, 0.932)
+                        ({"tt"},{2},{"ggH"}, 0.932)
+                        
+                        ({"em"},{3},{"ggH"}, 1.161)
+                        ({"et"},{3},{"ggH"}, 1.161)
+                        ({"mt"},{3},{"ggH"}, 1.161)
+                        ({"tt"},{3},{"ggH"}, 1.161)
+                        );
+        
+        cb.cp().AddSyst(cb, "CMS_ggH_STXSVBF2j", "lnN", SystMap<channel, bin_id, process>::init
+                        ({"em"},{1},{"ggH"}, 1.000)
+                        ({"et"},{1},{"ggH"}, 1.000)
+                        ({"mt"},{1},{"ggH"}, 1.000)
+                        ({"tt"},{1},{"ggH"}, 1.000)
+                        
+                        ({"em"},{2},{"ggH"}, 1.000)
+                        ({"et"},{2},{"ggH"}, 1.000)
+                        ({"mt"},{2},{"ggH"}, 1.000)
+                        ({"tt"},{2},{"ggH"}, 1.000)
+                        
+                        ({"em"},{3},{"ggH"}, 1.200)
+                        ({"et"},{3},{"ggH"}, 1.200)
+                        ({"mt"},{3},{"ggH"}, 1.200)
+                        ({"tt"},{3},{"ggH"}, 1.200)
+                        );
+        
+                        
+                        
+        
         //  // Recoil corrections
         //  // ------------------
         //  // These should not be applied to the W in all control regions becasuse we should

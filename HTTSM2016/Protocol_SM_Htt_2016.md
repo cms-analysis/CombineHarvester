@@ -43,17 +43,13 @@
 
 # Plotting the limit:
 
-    
-    plotLimits.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style -o lim_compare
-    plotLimits.py limits_cmb.json --auto-style   -o lim_expected_cmb 
-
-
+        
     python ../../../plotLimits_SM2.py limits_{cmb,em,et,mt,tt}.json:exp0 --auto-style --cms-sub Preliminary  -o lim_compare
-    python ../../../plotLimits_SM2.py limits_cmb.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_cmb
-    python ../../../plotLimits_SM2.py limits_tt.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_tt
-    python ../../../plotLimits_SM2.py limits_mt.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_mt
-    python ../../../plotLimits_SM2.py limits_et.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_et
-    python ../../../plotLimits_SM2.py limits_em.json  --auto-style --cms-sub Preliminary --show exp    -o lim_expected_em
+    python ../../../plotLimits_SM2.py limits_cmb.json  --auto-style --cms-sub Preliminary     -o lim_expected_cmb
+    python ../../../plotLimits_SM2.py limits_tt.json  --auto-style --cms-sub Preliminary     -o lim_expected_tt
+    python ../../../plotLimits_SM2.py limits_mt.json  --auto-style --cms-sub Preliminary     -o lim_expected_mt
+    python ../../../plotLimits_SM2.py limits_et.json  --auto-style --cms-sub Preliminary     -o lim_expected_et
+    python ../../../plotLimits_SM2.py limits_em.json  --auto-style --cms-sub Preliminary     -o lim_expected_em
 
 
 # run MaxLikelihoodFit
