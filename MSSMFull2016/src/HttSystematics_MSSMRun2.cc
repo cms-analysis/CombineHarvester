@@ -839,7 +839,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     cb.FilterSysts([](ch::Systematic *syst) {
       return syst->name() == "lumi_13TeV" &&
         (
-          (syst->channel() == "zmm" && syst->process() == "ZL") ||
+          (syst->channel() == "zmm" && syst->process() == "ZLL") ||
           (syst->channel() != "zmm" && syst->process() == "ZTT" &&
             (syst->bin_id() == 8 || syst->bin_id() == 9 || syst->bin_id() == 10 || syst->bin_id()==11||syst->bin_id()==12||syst->bin_id()==13))
         );
@@ -885,9 +885,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // https://indico.cern.ch/event/628825/contributions/2561717/attachments/1446912/2242418/zmumu_ztautau_extrapolation.pdf
   // Only apply this to signal-region
   // categories for now, using cb_sig instead of cb
-  // In case we use the zmm region in the fit this uncertainty is currently a placeholder for the uncertainty on the Z->mumu/Z->tautau uncertainty
-  // Numbers will be updated again as soon as the final categorisation is frozen
-  // THIS IS TO BE CHECKED
   cb_sig.cp().channel({"mt","et","em","tt"}).process({"ZTT"}).AddSyst(cb,
   "CMS_htt_zttAccept_$BIN_13TeV", "lnN", SystMap<bin_id,channel>::init
   ({8},{"tt"}, 1.07)
@@ -907,7 +904,29 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   ({12},{"em"}, 1.05)
   ({13},{"em"}, 1.04));
 
-  // Should also add something for ttbar
+  // Should also add something for ttbar - based on scale uncert studies from Alexei/Artur
+  cb_sig.cp().channel({"mt","et","em","tt"}).process({"TTT","TT"}).AddSyst(cb,
+  "CMS_htt_ttbarAccept_$BIN_13TeV","lnN", SystMap<bin_id,channel>::init
+  ({8},{"tt"}, 1.01)
+  ({9},{"tt"}, 1.004)
+  ({8},{"mt"}, 1.003)
+  ({9},{"mt"}, 1.003)
+  ({10},{"mt"}, 1.004)
+  ({11},{"mt"}, 1.002)
+  ({8},{"et"}, 1.003)
+  ({9},{"et"}, 1.003)
+  ({10},{"et"}, 1.002)
+  ({11},{"et"}, 1.002)
+  ({8},{"em"}, 1.002)
+  ({9},{"em"}, 1.002)
+  ({10},{"em"}, 1.004)
+  ({11},{"em"}, 1.002)
+  ({12},{"em"}, 1.02)
+  ({13},{"em"}, 1.02));
+
+  //Also add uncert due to definition of ttbar control region
+  cb_sig.cp().channel({"ttbar"}).process({"TT"}).AddSyst(cb,
+  "CMS_htt_ttbarControlVar_13TeV","lnN",SystMap<>::init(1.01));
 
   // Fake-rates
   // ----------
@@ -1471,10 +1490,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     }
     if (zmm_fit) {
         cb.SetFlag("filters-use-regex", true);
-        cb.cp().attr({"nobtag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_nobtag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().attr({"btag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_btag"}).process({"ZL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().channel({"et","mt","em","tt"}).attr({"nobtag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"zmm_nobtag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().channel({"et","mt","em","tt"}).attr({"btag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
         cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.8, 1.2);
         cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.95, 1.05);
         cb.SetFlag("filters-use-regex", false);
