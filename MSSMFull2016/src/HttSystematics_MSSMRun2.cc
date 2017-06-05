@@ -453,10 +453,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     "CMS_htt_wFakeShape_$ERA","shape",SystMap<>::init(1.00));
 
   //jet->lepton FR (emu)
-  cb.cp().process(JoinStr({{"W","VV"}})).channel({"em"}).AddSyst(cb,
+  cb.cp().process(JoinStr({{"W","VV","ZLL"}})).channel({"em"}).AddSyst(cb,
    "CMS_htt_$CHANNEL_muFake_$ERA","shape",SystMap<>::init(1.00));
 
-  cb.cp().process(JoinStr({{"W","VV"}})).channel({"em"}).AddSyst(cb,
+  cb.cp().process(JoinStr({{"W","VV","ZLL"}})).channel({"em"}).AddSyst(cb,
    "CMS_htt_$CHANNEL_eFake_$ERA","shape",SystMap<>::init(1.00));
 
 
