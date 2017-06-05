@@ -519,7 +519,7 @@ int main(int argc, char** argv) {
     .SetPoissonErrors(poisson_bbb);
   for (auto chn : chns) {
     std::cout << " - Doing bbb for channel " << chn << "\n";
-    bbb.MergeAndAdd(cb.cp().channel({chn}).process({"ZTT", "QCD", "W", "ZJ", "ZL", "TT", "VV", "Ztt", "ttbar", "EWK", "Fakes", "ZMM", "TTT","TTJ","VVT","VVJ", "WJets", "Dibosons"}).FilterAll([](ch::Object const* obj) {
+    bbb.MergeAndAdd(cb.cp().channel({chn}).backgrounds().FilterAll([](ch::Object const* obj) {
                 return BinIsSBControlRegion(obj);
                 }), cb);
   }
