@@ -90,6 +90,7 @@ int main(int argc, char** argv) {
   bool auto_rebin = false;
   bool manual_rebin = false;
   bool real_data = false;
+  bool bbH_nlo = false;
   int control_region = 0;
   bool check_neg_bins = false;
   bool poisson_bbb = false;
@@ -108,6 +109,7 @@ int main(int argc, char** argv) {
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Vienna"))
     ("input_folder_zmm", po::value<string>(&input_folder_zmm)->default_value("KIT"))
     ("postfix", po::value<string>(&postfix)->default_value(""))
+    ("bbH_nlo", po::value<bool>(&bbH_nlo)->default_value(false))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("real_data", po::value<bool>(&real_data)->default_value(false))
     ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
@@ -132,12 +134,20 @@ int main(int argc, char** argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   std::map<string, string> input_dir;
-  input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_em+"/";
-  input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_mt+"/";
-  input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_et+"/";
-  input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_tt+"/";
   input_dir["zmm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_zmm+"/";
   input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_em+"/";
+
+  if(!bbH_nlo){
+    input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_em+"/";
+    input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_mt+"/";
+    input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_et+"/";
+    input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_tt+"/";
+  } else {
+    input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_em+"/NLO/";
+    input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_mt+"/NLO/";
+    input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_et+"/NLO/";
+    input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/MSSMFull2016/shapes/"+input_folder_tt+"/NLO/";
+  }
 
   VString chns;
   if ( chan.find("mt") != std::string::npos ) chns.push_back("mt");
@@ -267,6 +277,8 @@ int main(int argc, char** argv) {
   }
 
   vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
+  vector<string> masses_bbH = masses;
+  if(bbH_nlo) masses_bbH = {"130", "200","350","700","1200","1800","3200"};
 
   map<string, VString> signal_types = {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
@@ -285,7 +297,7 @@ int main(int argc, char** argv) {
     cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn+"_13TeV"], false);
 
     cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["ggH"], cats[chn+"_13TeV"], true);
-    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
+    cb.AddProcesses(masses_bbH, {"htt"}, {"13TeV"}, {chn}, signal_types["bbH"], cats[chn+"_13TeV"], true);
     if(SM125==string("bkg_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], false);
     if(SM125==string("signal_SM125") && chn!="zmm") cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, SM_procs, cats[chn+"_13TeV"], true);
     }
