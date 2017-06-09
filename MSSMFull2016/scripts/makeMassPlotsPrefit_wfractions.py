@@ -38,10 +38,10 @@ RANGE_DICT = {
 }
 
 PAD_DICT = {
-    "em" : 0.42 ,
-    "et" : 0.45 ,
-    "mt" : 0.50 , 
-    "tt" : 0.50 
+    "em" : 0.47 ,
+    "et" : 0.47 ,
+    "mt" : 0.55 , 
+    "tt" : 0.55 
 }
 
 
@@ -55,7 +55,7 @@ for MODE in ['prefit']:
                   ' --file=shapes_070617.root --ratio --extra_pad="%(PAD)s" --mA 1000 --tanb 50 --model_dep ' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
                   ' --ratio_range 0.4,1.6 --manual_blind --x_blind_min=100 --x_blind_max=4000 ' \
-                  ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
+                  ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" --bkg_frac_ratios ' \
                   ' --channel_label "%(LABEL)s"' % vars()))
 
 for MODE in ['prefit']:
@@ -80,7 +80,7 @@ for MODE in ['prefit']:
             os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes_070617.root --ratio --extra_pad="%(PAD)s" --mA 1000 --tanb 50 --model_dep ' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
-                  ' --ratio_range 0.4,1.6 --manual_blind --x_blind_min=100 --x_blind_max=4000 ' \
+                  ' --ratio_range 0.4,1.6 --manual_blind --x_blind_min=100 --x_blind_max=4000 --bkg_frac_ratios ' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
                   ' --channel_label "%(LABEL)s"' % vars()))
 
@@ -104,7 +104,7 @@ for MODE in ['prefit']:
             os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes_070617.root --ratio --extra_pad="%(PAD)s" --mA 1000 --tanb 50 --model_dep ' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0.1 --x_axis_max 1E4' \
-                  ' --ratio_range 0.4,1.6 --manual_blind --x_blind_min=100 --x_blind_max=4000 ' \
+                  ' --ratio_range 0.4,1.6 --manual_blind --x_blind_min=100 --x_blind_max=4000 --bkg_frac_ratios ' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --log_x --log_y --custom_y_range --y_axis_min "%(YMIN)s" ' \
                   ' --channel_label "%(LABEL)s"' % vars()))
 

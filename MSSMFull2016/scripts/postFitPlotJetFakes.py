@@ -102,6 +102,8 @@ parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='',help='Optional string for start of output filename')
 parser.add_argument('--bkg_fractions', default=False, action='store_true', help='Instead of yields for each process plot fraction of total bkg in each bin')
+parser.add_argument('--bkg_frac_ratios', default=False, action='store_true', help='Instead of yields for each process plot fraction of total bkg in each bin')
+parser.add_argument('--uniform_binning', default=False, action='store_true', help='Make plots in which each bin has the same width') 
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.7,1.3")
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--x_title', default='m_{T}^{tot} (GeV)',help='Title for the x-axis')
@@ -139,9 +141,14 @@ model_dep = args.model_dep
 log_y=args.log_y
 log_x=args.log_x
 fractions=args.bkg_fractions
+frac_ratios=args.bkg_frac_ratios
+uniform=args.uniform_binning
 #If plotting bkg fractions don't want to use log scale on y axis
 if fractions:
   log_y = False
+if uniform:
+  log_y = False
+  log_x = False
 if(args.outname != ''):
   outname=args.outname + '_'
 else:
@@ -267,7 +274,7 @@ if manual_blind or auto_blind_check_only:
     low_edge = total_datahist.GetBinLowEdge(i+1)
     high_edge = low_edge+total_datahist.GetBinWidth(i+1)
     if ((low_edge > float(x_blind_min) and low_edge < float(x_blind_max)) or (high_edge > float(x_blind_min) and high_edge<float(x_blind_max))):
-      blind_datahist.SetBinContent(i+1,0)
+      blind_datahist.SetBinContent(i+1,-0.1)
       blind_datahist.SetBinError(i+1,0)
 
 #Automated blinding based on s/root b on bin by bin basis - use with caution!! Run with "check_only" mode first
@@ -317,9 +324,27 @@ if empty_bin_error:
     if blind_datahist.GetBinContent(i) == 0:
       blind_datahist.SetBinError(i,1.8)
 
+if uniform:
+  blind_datahist2 = ROOT.TH1F(blind_datahist.GetName(),blind_datahist.GetName(),blind_datahist.GetNbinsX(),0,blind_datahist.GetNbinsX())
+  total_datahist2 = ROOT.TH1F(total_datahist.GetName(),total_datahist.GetName(),total_datahist.GetNbinsX(),0,total_datahist.GetNbinsX())
+  bkghist2 = ROOT.TH1F(bkghist.GetName(),bkghist.GetName(),bkghist.GetNbinsX(),0,bkghist.GetNbinsX())
+  for i in range(0,blind_datahist.GetNbinsX()):
+    blind_datahist2.SetBinContent(i,blind_datahist.GetBinContent(i))
+    blind_datahist2.SetBinError(i,blind_datahist.GetBinError(i))
+    total_datahist2.SetBinContent(i,total_datahist.GetBinContent(i))
+    total_datahist2.SetBinError(i,total_datahist.GetBinError(i))
+  blind_datahist = blind_datahist2
+  total_datahist = total_datahist2
+  for i in range(0,bkghist.GetNbinsX()):
+    bkghist2.SetBinContent(i,bkghist.GetBinContent(i))
+    bkghist2.SetBinError(i,bkghist.GetBinError(i))
+  bkghist = bkghist2
+
+  
+
 #Normalise by bin width except in soverb_plot mode, where interpretation is easier without normalising
 #Also don't normalise by bin width if plotting fractional bkg contribution
-if not soverb_plot and not fractions:
+if not soverb_plot and not fractions and not uniform:
     blind_datahist.Scale(1.0,"width")
     total_datahist.Scale(1.0,"width")
     sighist.Scale(1.0,"width")
@@ -332,35 +357,65 @@ if channel == '':  channel=binname[4:6]
 
 #Create stacked plot for the backgrounds
 bkg_histos = []
+bkg_histos_fractions = []
 for i,t in enumerate(background_schemes[channel]):
   plots = t['plot_list']
   h = ROOT.TH1F()
   for j,k in enumerate(plots):
     if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode,logx=log_x) is not None:
-      h = getHistogram(histo_file,k, file_dir,mode, logx=log_x)[0]
+      if not uniform:
+        h = getHistogram(histo_file,k, file_dir,mode, logx=log_x)[0]
+      else :
+        htemp = getHistogram(histo_file,k,file_dir, mode,logx=log_x)[0]
+        h = ROOT.TH1F(k,k,htemp.GetNbinsX(),0,htemp.GetNbinsX())
+        for bp in range(0,htemp.GetNbinsX()):
+          h.SetBinContent(bp+1,htemp.GetBinContent(bp+1))
+          h.SetBinError(bp+1,htemp.GetBinError(bp+1))
       h.SetName(k)
     else:
       if getHistogram(histo_file,k, file_dir,mode, logx=log_x) is not None:
-        h.Add(getHistogram(histo_file,k, file_dir,mode,logx=log_x)[0])
+        if not uniform:
+          h.Add(getHistogram(histo_file,k, file_dir,mode,logx=log_x)[0])
+        else :
+          htemp = getHistogram(histo_file,k,file_dir, mode,logx=log_x)[0]
+          htemp2 = ROOT.TH1F(k,k,htemp.GetNbinsX(),0,htemp.GetNbinsX())
+          for bp in range(0,htemp.GetNbinsX()):
+            htemp2.SetBinContent(bp+1,htemp.GetBinContent(bp+1))
+            htemp2.SetBinError(bp+1,htemp.GetBinError(bp+1))
+          h.Add(htemp2)
   h.SetFillColor(t['colour'])
   h.SetLineColor(ROOT.kBlack)
   h.SetMarkerSize(0)
-  if not soverb_plot and not fractions : h.Scale(1.0,"width")
+  
+  if not soverb_plot and not fractions and not uniform : h.Scale(1.0,"width")
   if fractions:
     for i in range(1,h.GetNbinsX()+1) :
       h.SetBinContent(i,h.GetBinContent(i)/bkghist.GetBinContent(i))
+  if frac_ratios:
+    h_frac = h.Clone()
+    for i in range(1, h_frac.GetNbinsX()+1):
+      h_frac.SetBinContent(i,h_frac.GetBinContent(i)/bkghist.GetBinContent(i))
+    bkg_histos_fractions.append(h_frac)
   bkg_histos.append(h)
 
 stack = ROOT.THStack("hs","")
 for hists in bkg_histos:
   stack.Add(hists)
 
+if frac_ratios:
+  stack_frac = ROOT.THStack("hs_frac","")
+  for hists in bkg_histos_fractions:
+    stack_frac.Add(hists)
+
 
 #Setup style related things
 c2 = ROOT.TCanvas()
 c2.cd()
 if args.ratio:
-  pads=plot.TwoPadSplit(0.29,0.01,0.01)
+  if frac_ratios:
+    pads=plot.MultiRatioSplit([0.25,0.14],[0.01,0.01],[0.01,0.01])
+  else:
+    pads=plot.TwoPadSplit(0.29,0.01,0.01)
 else:
   pads=plot.OnePad()
 pads[0].cd()
@@ -369,26 +424,58 @@ if(log_x): pads[0].SetLogx(1)
 if custom_x_range:
     if x_axis_max > bkghist.GetXaxis().GetXmax(): x_axis_max = bkghist.GetXaxis().GetXmax()
 if args.ratio and not fractions:
-  if(log_x): pads[1].SetLogx(1)
-  axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
-  axish[1].GetXaxis().SetTitle(args.x_title)
-  axish[1].GetYaxis().SetNdivisions(4)
-  if not soverb_plot: axish[1].GetYaxis().SetTitle("Obs/Exp")
-  else: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
-  #axish[1].GetYaxis().SetTitleSize(0.04)
-  #axish[1].GetYaxis().SetLabelSize(0.04)
-  #axish[1].GetYaxis().SetTitleOffset(1.3)
-  #axish[0].GetYaxis().SetTitleSize(0.04)
-  #axish[0].GetYaxis().SetLabelSize(0.04)
-  #axish[0].GetYaxis().SetTitleOffset(1.3)
-  axish[0].GetXaxis().SetTitleSize(0)
-  axish[0].GetXaxis().SetLabelSize(0)
-  if custom_x_range:
-    axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
-    axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
-  if custom_y_range:
-    axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
-    axish[1].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
+  if not frac_ratios:
+    if(log_x): pads[1].SetLogx(1)
+    axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
+    axish[1].GetXaxis().SetTitle(args.x_title)
+    axish[1].GetYaxis().SetNdivisions(4)
+    if not soverb_plot: axish[1].GetYaxis().SetTitle("Obs/Exp")
+    else: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
+    #axish[1].GetYaxis().SetTitleSize(0.04)
+    #axish[1].GetYaxis().SetLabelSize(0.04)
+    #axish[1].GetYaxis().SetTitleOffset(1.3)
+    #axish[0].GetYaxis().SetTitleSize(0.04)
+    #axish[0].GetYaxis().SetLabelSize(0.04)
+    #axish[0].GetYaxis().SetTitleOffset(1.3)
+    axish[0].GetXaxis().SetTitleSize(0)
+    axish[0].GetXaxis().SetLabelSize(0)
+    axish[0].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
+    axish[1].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
+    if custom_x_range:
+      axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+      axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+    if custom_y_range:
+      axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
+      axish[1].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
+  else :
+    if(log_x):
+      pads[1].SetLogx(1)
+      pads[2].SetLogx(1) 
+    axish = createAxisHists(3,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
+    axish[1].GetXaxis().SetTitle(args.x_title)
+    axish[1].GetYaxis().SetNdivisions(4)
+    axish[2].GetXaxis().SetTitle(args.x_title)
+    axish[2].GetYaxis().SetNdivisions(4)
+    axish[1].GetYaxis().SetTitleSize(0.03)
+    axish[1].GetYaxis().SetLabelSize(0.03)
+    axish[1].GetYaxis().SetTitleOffset(1.7)
+    axish[2].GetYaxis().SetTitleOffset(1.7)
+    axish[2].GetYaxis().SetTitleSize(0.03)
+    axish[2].GetYaxis().SetLabelSize(0.03)
+    axish[1].GetYaxis().SetTitle("Bkg. frac.")
+    axish[2].GetYaxis().SetTitle("Obs/Exp")
+    axish[0].GetXaxis().SetTitleSize(0)
+    axish[0].GetXaxis().SetLabelSize(0)
+    axish[1].GetXaxis().SetTitleSize(0)
+    axish[1].GetXaxis().SetLabelSize(0)
+    axish[0].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
+    axish[1].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
+    if custom_x_range:
+      axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+      axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+      axish[2].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
+    if custom_y_range:
+      axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
 else:
   axish = createAxisHists(1,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
 #  axish[0].GetYaxis().SetTitleOffset(1.4)
@@ -415,7 +502,7 @@ bkghist.SetMarkerSize(0)
 
 stack.Draw("histsame")
 #Don't draw total bkgs/signal if plotting bkg fractions
-if not fractions:
+if not fractions and not uniform:
   bkghist.Draw("e2same")
   #Add signal, either model dependent or independent
   if not args.no_signal:
@@ -481,16 +568,32 @@ plot.DrawTitle(pads[0], args.lumi, 3)
 if args.ratio and not soverb_plot and not fractions:
   ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
   blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
-  pads[1].cd()
-  pads[1].SetGrid(0,1)
-  axish[1].Draw("axis")
-  axish[1].SetMinimum(float(args.ratio_range.split(',')[0]))
-  axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
-  ratio_bkghist.SetMarkerSize(0)
-  ratio_bkghist.Draw("e2same")
-  blind_datahist.DrawCopy("e0same")
-  pads[1].RedrawAxis("G")
-
+  if not frac_ratios:
+    pads[1].cd()
+    pads[1].SetGrid(0,1)
+    axish[1].Draw("axis")
+    axish[1].SetMinimum(float(args.ratio_range.split(',')[0]))
+    axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
+    ratio_bkghist.SetMarkerSize(0)
+    ratio_bkghist.Draw("e2same")
+    blind_datahist.DrawCopy("e0same")
+    pads[1].RedrawAxis("G")
+  else:
+    pads[1].cd()
+    axish[1].Draw("axis")
+    axish[1].SetMinimum(0)
+    axish[1].SetMaximum(1)
+    stack_frac.Draw("histsame")
+    pads[2].cd()
+    pads[2].SetGrid(0,1)
+    axish[2].Draw("axis")
+    axish[2].SetMinimum(float(args.ratio_range.split(',')[0]))
+    axish[2].SetMaximum(float(args.ratio_range.split(',')[1]))
+    ratio_bkghist.SetMarkerSize(0)
+    ratio_bkghist.Draw("e2same")
+    blind_datahist.DrawCopy("e0same")
+    pads[2].RedrawAxis("G")
+    pads[1].RedrawAxis("G")
 if soverb_plot:
   pads[1].cd()
   pads[1].SetGrid(0,1)
