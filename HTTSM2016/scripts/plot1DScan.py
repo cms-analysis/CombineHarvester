@@ -209,7 +209,7 @@ def BuildScan(scan, param, files, color, yvals, chop,
     # for 2 lines + obs
     #colorMap = {
     #0 : ROOT.kBlack,
-    #1 : ROOT.kGreen+,
+    #1 : ROOT.kGreen+1,
     #2 : ROOT.kRed}
     ## for 3 lines + obs
     colorMap = {

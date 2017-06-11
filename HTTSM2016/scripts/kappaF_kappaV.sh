@@ -8,6 +8,17 @@
 
 # Note that the version of this plot in the pass includes HWW as a signal higgs with
 # a coupling that is profiled here as well.
+# use scripts/renameHists.py to rename all HWW_qq125 --> qqH_hww125
+# and edit below to change name appropriately
+# - bin/MorphingSM2016.cpp
+# --- remove HWW_qq125 from bkg_procs["em"]
+# --- define new sig_procs: vector<string> sig_procs_em = {"ggH","qqH","WH","ZH","qqH_hww"};
+# --- only use 125 GeV signal masses
+# --- when doing AddProcesses, add sig_procs_em when chan == "em"
+# --- same for writting DCs using ExtractShapes
+# - src/HttSystematics_SMRun2.cc
+# --- add "qqH_hww" to sig_procs
+# --- then find and replace HWW_qq125 --> qqH_hww125
 
 
 # Before you run this the first time copy the below file and re 'scram b'
@@ -16,7 +27,7 @@
 
 
 # creating datacards
-newFolder=Blinded20170502_cv3cf2
+newFolder=Blinded20170607_cv2cf2_v1
 MorphingSM2016 --output_folder=${newFolder} --postfix="-2D" --control_region=1 --manual_rebin=false --real_data=true --mm_fit=false --ttbar_fit=true
 
 
