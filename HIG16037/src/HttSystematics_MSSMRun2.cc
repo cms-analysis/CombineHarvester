@@ -531,24 +531,19 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         // Should affect signal region and SS low mT
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8}, 1.02)
-          ({"mt"}, {9}, 1.08)
-          ({"mt"}, {10}, 1.02)
-          ({"mt"}, {11}, 1.07)
-          ({"et"}, {8}, 1.03)
-          ({"et"}, {9}, 1.09)
-          ({"et"}, {10}, 1.02)
-          ({"et"}, {11}, 1.11));
+          ({"mt"}, {8, 11}, 1.02)
+          ({"mt"}, {9, 14}, 1.14)
+          ({"et"}, {8, 11}, 1.02)
+          ({"et"}, {9, 14}, 1.17));
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"et", "mt"}, {8}, 1.06)
-          ({"et", "mt"}, {9}, 1.14)
-          ({"et", "mt"}, {10}, 1.02)
-          ({"et", "mt"}, {11}, 1.10));
-
+          ({"mt"}, {8, 11}, 1.20)
+          ({"mt"}, {9, 14}, 1.20)
+          ({"et"}, {8, 11}, 1.20)
+          ({"et"}, {9, 14}, 1.20));
 
         //W b-tag extrapolation factor stat. uncertainty - merged into low mT/high mT and W OS/SS uncertainties
         //which are now calculated for the full b-tag 
