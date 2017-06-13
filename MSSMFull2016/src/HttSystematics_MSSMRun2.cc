@@ -1148,7 +1148,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         // Correlated between regions with tight tau iso but otherwise uncorrelated
         // even if the uncert will end up being the same
         cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
-          "CMS_htt_W_OS_SS_systt_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
+          "CMS_htt_W_OS_SS_syst_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10, 14}, 1.012)
           ({"mt"}, {9, 11, 17}, 1.024)
           ({"et"}, {8, 10, 14}, 1.019)
@@ -1157,40 +1157,25 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
 
         // low/high mT W factor stat. uncertainty
         // Should affect signal region and SS low mT
-        // Should be uncorrelated between different tau isol regions now
-      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 15}, 1.02)
-          ({"mt"}, {9, 18}, 1.14)
+          ({"mt"}, {9, 18}, 1.08)
           ({"mt"}, {10, 21}, 1.02)
-          ({"mt"}, {11, 24}, 1.14)
-          ({"mt"}, {12, 27}, 1.02)
-          ({"mt"}, {13, 30}, 1.14)
-          ({"et"}, {8, 15}, 1.02)
-          ({"et"}, {9, 18}, 1.17)
+          ({"mt"}, {11, 24}, 1.07)
+          ({"et"}, {8, 15}, 1.03)
+          ({"et"}, {9, 8}, 1.09)
           ({"et"}, {10, 21}, 1.02)
-          ({"et"}, {11, 24}, 1.17)
-          ({"et"}, {12, 27}, 1.02)
-          ({"et"}, {13, 30}, 1.17));
+          ({"et"}, {11, 24}, 1.11));
 
         // low/high mT W factor syst. uncertainty
         // Currently to be determined, could be motivated by low vs high mT jet->tau FR
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
-          "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
-          ({"mt"}, {8, 15}, 1.20)
-          ({"mt"}, {9, 18}, 1.20)
-          ({"mt"}, {10, 21}, 1.20)
-          ({"mt"}, {11, 24}, 1.20)
-          ({"mt"}, {12, 27}, 1.20)
-          ({"mt"}, {13, 30}, 1.20)
-          ({"et"}, {8, 15}, 1.20)
-          ({"et"}, {9, 18}, 1.20)
-          ({"et"}, {10, 21}, 1.20)
-          ({"et"}, {11, 24}, 1.20)
-          ({"et"}, {12, 27}, 1.20)
-          ({"et"}, {13, 30}, 1.20));
-        }
+          "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
+          ({"et", "mt"}, {8, 15}, 1.07)
+          ({"et", "mt"}, {9, 18}, 1.16)
+          ({"et", "mt"}, {10, 21}, 1.02)
+          ({"et", "mt"}, {11, 24}, 1.10));
 
         //W b-tag extrapolation factor stat. uncertainty - merged into low mT/high mT and W OS/SS uncertainties
         //which are now calculated for the full b-tag 
