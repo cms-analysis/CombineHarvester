@@ -1148,15 +1148,16 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
         // Correlated between regions with tight tau iso but otherwise uncorrelated
         // even if the uncert will end up being the same
         cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
-          "CMS_htt_W_OS_SS_syst_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
+          "CMS_htt_W_OS_SS_systt_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10, 14}, 1.012)
           ({"mt"}, {9, 11, 17}, 1.024)
           ({"et"}, {8, 10, 14}, 1.019)
           ({"et"}, {9, 11, 17}, 1.019));
-  
 
         // low/high mT W factor stat. uncertainty
         // Should affect signal region and SS low mT
+        // Should be uncorrelated between different tau isol regions now
+      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
         cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 15}, 1.02)
@@ -1176,6 +1177,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
           ({"et", "mt"}, {9, 18}, 1.16)
           ({"et", "mt"}, {10, 21}, 1.02)
           ({"et", "mt"}, {11, 24}, 1.10));
+        }
 
         //W b-tag extrapolation factor stat. uncertainty - merged into low mT/high mT and W OS/SS uncertainties
         //which are now calculated for the full b-tag 
