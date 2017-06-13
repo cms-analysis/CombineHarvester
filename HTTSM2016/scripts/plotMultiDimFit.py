@@ -15,7 +15,7 @@ parser.add_argument(
 parser.add_argument(
     '--bg-exp', default=[], nargs="+", help="""Input files for the backgroud only expectation""")
 parser.add_argument(
-    '--cms-sub', default='Preliminary', help="""Text below the CMS logo""")
+    '--cms-sub', default='Supplementary', help="""Text below the CMS logo""")
 parser.add_argument(
     '--mass', default='', help="""Mass label on the plot""")
 parser.add_argument(
@@ -78,6 +78,12 @@ axis.GetYaxis().SetTitle(args.y_title)
 
 cont_1sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.68, 2), 10, frameValue=20)
 cont_2sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.95, 2), 10, frameValue=20)
+print cont_1sigma
+for item in cont_1sigma :
+    print item
+print cont_2sigma
+for item in cont_2sigma :
+    print item
 
 if debug is not None:
     debug.WriteTObject(hists, 'hist')
@@ -87,7 +93,7 @@ if debug is not None:
         debug.WriteTObject(cont, 'cont_2sigma_%i' % i)
 
 if args.sm_exp or args.bg_exp:
-    legend = plot.PositionedLegend(0.47, 0.25, 3, 0.015)
+    legend = plot.PositionedLegend(0.47, 0.20, 3, 0.015)
 else:
     legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
 
@@ -154,6 +160,7 @@ if args.sm_exp:
     overlayLegend.Draw("SAME")
 canv.Print('.pdf')
 canv.Print('.png')
+canv.Print('.C')
 canv.Close()
 
 if debug is not None:

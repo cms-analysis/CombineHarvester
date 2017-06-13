@@ -400,14 +400,17 @@ int main(int argc, char** argv) {
     
     
     // Add a theory group to the bottom of the DCs for use with CH Uncertainty Breakdown
-    cb.SetGroup("all", {".*"});
-    cb.SetGroup("nonThySyst", {".*"});
     string theoryUncertsString = "CMS_scale_gg_.*|CMS_qqH_QCDUnc.*|CMS_ggH_PDF.*|CMS_qqH_PDF.*|CMS_ggH_UEPS.*|CMS_qqH_UEPS.*|BR_htt_THU.*|BR_htt_PU_mq.*|BR_htt_PU_alphas.*|BR_hww_THU.*|BR_hww_PU_mq.*|BR_hww_PU_alphas.*|QCDScale_ggH.*|QCDScale_qqH.*|QCDScale_VH.*|QCDScale_VH.*|pdf_Higgs_gg.*|pdf_Higgs_qq.*|pdf_Higgs_VH.*|pdf_Higgs_VH.*|";
-    cb.SetGroup("theory", {theoryUncertsString});
-    cb.RemoveGroup("nonThySyst", {theoryUncertsString});
-    cb.SetGroup("JES", {"CMS_scale_j.*"});
+
+    //cb.SetGroup("NonThySyst", {".*"});
+    //cb.RemoveGroup("NonThySyst", {theoryUncertsString});
+    //cb.SetGroup("JES", {"CMS_scale_j.*"});
+    cb.SetGroup("all", {".*"});
     cb.SetGroup("BinByBin", {"CMS_htt_.*_bin_.*"});
-    
+
+    // 4 Component Breakdown
+    cb.SetGroup("Theory", {theoryUncertsString});
+    cb.SetGroup("TheoryAndBBB", {theoryUncertsString,"CMS_htt_.*_bin_.*"});
     
     
     

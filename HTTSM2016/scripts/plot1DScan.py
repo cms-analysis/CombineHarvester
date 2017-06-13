@@ -45,7 +45,7 @@ def read(scan, param, files, chop, remove_near_min, rezero,
                         graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
         func.SetNpx(NPX)
         NAMECOUNTER += 1
-        plot.ImproveMinimum(graph, func, True)
+        ##plot.ImproveMinimum(graph, func, True)
     # graph.Print()
     return graph
 
@@ -90,7 +90,7 @@ def ProcessEnvelope(main, others, relax_safety=0):
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
                     gr.GetX()[0], gr.GetX()[gr.GetN() - 1], 1)
     func.SetNpx(NPX)
-    min_x, min_y = plot.ImproveMinimum(gr, func)
+    ##min_x, min_y = plot.ImproveMinimum(gr, func)
     gr.Set(len(vals) + 1)
     gr.SetPoint(len(vals), min_x, min_y)
     gr.Sort()
@@ -142,7 +142,7 @@ def ProcessEnvelopeNew(main, others, relax_safety=0):
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, spline),
                     gr.GetX()[0], gr.GetX()[gr.GetN() - 1], 1)
     func.SetNpx(NPX)
-    min_x, min_y = plot.ImproveMinimum(gr, func)
+    ##min_x, min_y = plot.ImproveMinimum(gr, func)
     gr.Set(len(xvals) + 1)
     gr.SetPoint(len(xvals), min_x, min_y)
     gr.Sort()
@@ -202,12 +202,23 @@ def BuildScan(scan, param, files, color, yvals, chop,
 
     global NAMECOUNTER
     print "NAMECOUNTER:",NAMECOUNTER
+    ## for 1 lines + obs
+    #colorMap = {
+    #0 : ROOT.kBlack,
+    #1 : ROOT.kRed}
+    # for 2 lines + obs
+    #colorMap = {
+    #0 : ROOT.kBlack,
+    #1 : ROOT.kGreen+1,
+    #2 : ROOT.kRed}
+    ## for 3 lines + obs
     colorMap = {
     0 : ROOT.kBlack,
-    1 : ROOT.kBlue,
-    2 : ROOT.kRed,
-    }
+    2 : ROOT.kBlue,
+    3 : ROOT.kRed,
+    1 : ROOT.kGreen+1}
 
+    #graph.SetMarkerColor(color)
     graph.SetMarkerColor(colorMap[NAMECOUNTER])
     spline = ROOT.TSpline3("spline3", graph)
     func = ROOT.TF1('splinefn' + str(NAMECOUNTER),
@@ -216,12 +227,13 @@ def BuildScan(scan, param, files, color, yvals, chop,
                     graph.GetX()[graph.GetN() - 1], 1)
     func.SetNpx(NPX)
 
+    #func.SetLineColor(color)
     func.SetLineColor(colorMap[NAMECOUNTER])
     NAMECOUNTER += 1
     func.SetLineWidth(3)
     assert(bestfit is not None)
-    if not envelope:
-        plot.ImproveMinimum(graph, func)
+    ##if not envelope:
+    ##    plot.ImproveMinimum(graph, func)
     crossings = {}
     cross_1sig = None
     cross_2sig = None
@@ -467,7 +479,7 @@ main_scan['graph'].Draw('AP')
 
 
 axishist = plot.GetAxisHist(pads[0])
-# axishist.SetMinimum(1E-5)
+axishist.SetMinimum(1E-5)
 # pads[0].SetLogy(True)
 axishist.SetMaximum(args.y_max)
 # axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
@@ -843,9 +855,10 @@ if len(other_scans) >= 3 and args.legend_pos == 1:
 
 print "\n\n"
 names = {
-    'Freeze all' : 'Stat. only',
-    'Freeze theory' : 'No theory err.',
+    'Freeze All' : 'Stat. only',
+    'Freeze Theory' : 'No theory err.',
     'Freeze BinByBin' : 'No bkg stat. err.',
+    'Freeze TheoryAndBBB' : 'No bkg stat. or theory err.',
     }
 legend.AddEntry(main_scan['func'], args.main_label, 'L')
 if args.breakdown and args.envelope:
@@ -870,7 +883,7 @@ outfile.WriteTObject(save_graph, 'main')
 for i, other in enumerate(other_scans):
     save_graph = other['graph'].Clone()
     if args.envelope:
-        min_val = plot.ImproveMinimum(save_graph, other['func'])
+        ##min_val = plot.ImproveMinimum(save_graph, other['func'])
         save_graph.Set(save_graph.GetN() + 1)
         save_graph.SetPoint(save_graph.GetN() - 1, min_val[0], min_val[1])
         save_graph.Sort()
