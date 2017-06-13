@@ -142,7 +142,7 @@ combineTool.py -M CollectLimits output/mssm_070617_withSM/cmb/higgsCombine.bbH.*
 
 The usual Brazil band plots can be made using this script, for e.g. the mutau channel:
 
-python scripts/plotMSSMLimits.py --logy --logx mssm_120617_ggH_mt.json --cms-sub="Preliminary" -o mssm_120617_mt --process 'gg#phi' --title-right="35.9 fb^{-1}" --title-left="#mu#tau_{h}" --show 'exp'
+python scripts/plotMSSMLimits.py --logy --logx mssm_120617_ggH_mt.json --cms-sub="Preliminary" -o mssm_120617_mt --process 'gg#phi' --title-right="35.9 fb^{-1}" --title-left="#mu#tau_{h}" --show 'exp' --plot-exp-points
 
 Or comparison plots can be made using the following script:
 

@@ -44,8 +44,19 @@ parser.add_argument(
     '--higgs-bg', action='store_true', help="""Draw with style for higgs as bg (green bands)""")
 parser.add_argument(
     '--higgs-injected', action='store_true', help="""Draw with style for higgs injected (blue bands)""")
+parser.add_argument(
+    '--plot-exp-points', action='store_true', help="""Plot markers instead of just a line for the expected limit""")
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 args = parser.parse_args()
+
+style_dict_exponly = {
+        'style' : {
+            'exp0' : { 'MarkerColor' : ROOT.kRed}
+            },
+        'legend' : {
+            'exp0' : { 'DrawStyle' : 'PLSAME', 'LegendStyle' : 'PLSAME' }
+            }
+        }
 
 style_dict_bg = {
         'style' : {
@@ -73,6 +84,8 @@ if args.higgs_bg:
     style_dict = style_dict_bg
 if args.higgs_injected:
     style_dict = style_dict_inj
+if args.plot_exp_points:
+    style_dict = style_dict_exponly
 
 def DrawAxisHists(pads, axis_hists, def_pad=None):
     for i, pad in enumerate(pads):
@@ -144,7 +157,7 @@ for src in args.input:
         if axis is None:
             axis = plot.CreateAxisHists(len(pads), graph_sets[-1].values()[0], True)
             DrawAxisHists(pads, axis, pads[0])
-        if args.higgs_bg or args.higgs_injected:
+        if args.higgs_bg or args.higgs_injected or args.plot_exp_points:
             plot.StyleLimitBand(graph_sets[-1],overwrite_style_dict=style_dict["style"])
             plot.DrawLimitBand(pads[0], graph_sets[-1], legend=legend,legend_overwrite=style_dict["legend"])
         else:
