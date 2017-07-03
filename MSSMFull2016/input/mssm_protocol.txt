@@ -192,6 +192,8 @@ python scripts/makeMassPlotsPrefit.py
 
 First is a call to PostFitShapesFromWorkspace, which will generate the signal and background templates for the benchmark point of mA = 1 TeV, tanb=50 in the mhmodp scenario. The postFitPlotJetFakes 
 script, which is called from makeMassPlotsPrefit.py will  make a stacked plot. With the current settings the plots are blind above 100 GeV.
+
+To also create the yield tables, add --make_yield_tables as additional option to the PostFitShapesFromWorkspace call. For the data yield this prints '0' for now.
  
 6) Postfit plots - TO BE UPDATED
 
