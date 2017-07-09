@@ -13,6 +13,7 @@ using ch::syst::era;
 using ch::syst::channel;
 using ch::syst::bin_id;
 using ch::syst::process;
+using ch::syst::mass;
 using ch::syst::bin;
 using ch::JoinStr;
 
