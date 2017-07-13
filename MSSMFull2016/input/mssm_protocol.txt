@@ -3,9 +3,9 @@ http://cms-analysis.github.io/CombineHarvester/
 
 1a) Setting up datacards: for model independent limits
 
-MorphingMSSMFull2016 --output_folder="mssm_120617" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=false --zmm_fit=true --ttbar_fit=true --jetfakes=true  #FF method, for ggH limits
+MorphingMSSMFull2016 --output_folder="mssm_120717" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=false --zmm_fit=true --ttbar_fit=true --jetfakes=true  #FF method, for ggH limits
 
-MorphingMSSMFull2016 --output_folder="mssm_120617_NLO" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=false --zmm_fit=true --ttbar_fit=true --jetfakes=true  --bbH_nlo=true #FF method, for bbH limits
+MorphingMSSMFull2016 --output_folder="mssm_120717_NLO" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=false --zmm_fit=true --ttbar_fit=true --jetfakes=true  --bbH_nlo=true #FF method, for bbH limits
 
 [MorphingMSSMFull2016 --output_folder="mssm_070617" -m MH --postfix="-mttot" --control_region=1 --auto_rebin=true --real_data=false --zmm_fit=true --ttbar_fit=true        #classic methods]
 
@@ -39,9 +39,9 @@ MorphingMSSMFull2016 --output_folder="mssm_070617_SMHbkg" -m MH  --postfix="-mtt
 
 Workspaces can be setup using the combine tool text2workspace, but this is now implemented in combineTool.py for easy conversion of multiple datacards:
 
-combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_120617/* 
+combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_120717/*
 
-combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_120617_NLO/* 
+combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_120717_NLO/*
 
 Note that for this to work you will need to have the change to text2workspace from this commit:
 https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/336
@@ -61,21 +61,21 @@ This will perform the same recursive application of text2workspace, this time ap
 
 This can be done directly with combine, but again combineTool makes life a lot easier for us by allowing successive calls (with different choices of job submission, and parallelisation of calculations):
 
-combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -t -1 -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_ggH -d output/mssm_120617/*/ws.root --there -n ".ggH"
+combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -t -1 -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_ggH -d output/mssm_120717/*/ws.root --there -n ".ggH"
 
-combineTool.py -m "130,200,350,700,1200,1800,3200" -t -1 -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_bbH -d output/mssm_120617_NLO/*/ws.root --there -n ".bbH"
+combineTool.py -m "130,200,350,700,1200,1800,3200" -t -1 -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_bbH -d output/mssm_120717_NLO/*/ws.root --there -n ".bbH"
 
 [combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -t -1 -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_bbH -d output/mssm_070617/*/ws.root --there -n ".bbH"]
 
-This goes to each subdirectory of output/mssm_120617[_NLO]/ (--there) and performs the combine calculation for the masses listed on the workspace (either ggH or bbH workspace). The combine output files are stored in the directories alongside the datacards. Note the optin --parallel = X allows you to run the calculations interactively with X in parallel, and e.g.' --job-mode 'lxbatch' --task-name 'mssm_ggH' --sub-opts '-q 1nh' --merge=4 ' could be used to instead run on the lxbatch, merging 4 masspoints into 1 job and submitting to the 1 hour queue.
+This goes to each subdirectory of output/mssm_120717[_NLO]/ (--there) and performs the combine calculation for the masses listed on the workspace (either ggH or bbH workspace). The combine output files are stored in the directories alongside the datacards. Note the optin --parallel = X allows you to run the calculations interactively with X in parallel, and e.g.' --job-mode 'lxbatch' --task-name 'mssm_ggH' --sub-opts '-q 1nh' --merge=4 ' could be used to instead run on the lxbatch, merging 4 masspoints into 1 job and submitting to the 1 hour queue.
 
 Once all calculations are complete, the results are collected into json files using:
 
-combineTool.py -M CollectLimits output/mssm_120617/*/higgsCombine.ggH*.root --use-dirs -o "mssm_120617_ggH.json"
+combineTool.py -M CollectLimits output/mssm_120717/*/higgsCombine.ggH*.root --use-dirs -o "mssm_120717_ggH.json"
 
-combineTool.py -M CollectLimits output/mssm_120617_NLO/*/higgsCombine.bbH*.root --use-dirs -o "mssm_120617_bbH.json"
+combineTool.py -M CollectLimits output/mssm_120717_NLO/*/higgsCombine.bbH*.root --use-dirs -o "mssm_120717_bbH.json"
 
-This will place a json in the current directory, and append the string "mssm_120617_ggH" to them. One will be placed for every subdir, so every channel-cat, combination requested will be available then for plotting.
+This will place a json in the current directory, and append the string "mssm_120717_ggH" to them. One will be placed for every subdir, so every channel-cat, combination requested will be available then for plotting.
 
 when producing the limit with the SM higgs as BG simly change the datacards/directories to run for accordingly.
 
@@ -142,7 +142,7 @@ combineTool.py -M CollectLimits output/mssm_070617_withSM/cmb/higgsCombine.bbH.*
 
 The usual Brazil band plots can be made using this script, for e.g. the mutau channel:
 
-python scripts/plotMSSMLimits.py --logy --logx mssm_120617_ggH_mt.json --cms-sub="Preliminary" -o mssm_120617_mt --process 'gg#phi' --title-right="35.9 fb^{-1}" --title-left="#mu#tau_{h}" --show 'exp' --plot-exp-points
+python scripts/plotMSSMLimits.py --logy --logx mssm_120717_ggH_mt.json --cms-sub="Preliminary" -o mssm_120717_mt --process 'gg#phi' --title-right="35.9 fb^{-1}" --title-left="#mu#tau_{h}" --show 'exp' --plot-exp-points
 
 Or comparison plots can be made using the following script:
 
@@ -215,11 +215,15 @@ python scripts/makeMassPlots.py
 
 8) creating datacards for pulls and GOF tests - ALL GOF instructions to be updated
 
-MorphingMSSMRun2 --output_folder="mssm_071016_unblinding" -m MH  --postfix="-mttot" --control_region=1 --auto_rebin=true --real_data=true --zmm_fit=true
+The commands below needed to create a workspace are chosen consistently with the first two steps for model-independent limits 1a) and 2a) with the change --real_data=true for the Morphing step.
+
+MorphingMSSMFull2016 --output_folder="mssm_120717_unblinding" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true
 
 For creating the workspace from the datacards we use the default model. This allows easier handling for the b-only fit.
 
-combineTool.py -M T2W -o "ws.root" -i output/mssm_071016_unblinding/*
+combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_120717_unblinding/*
+
+You may parallelize the procedure by e.g. adding --parallel 20 to the command above
 
 8a) Running the GoF jobs
 
@@ -228,29 +232,31 @@ For the AD and KS it is sufficient to run the fits for the combined cards as the
 The choice of the mass value as 160 is arbitrary and not of any relevance here as we look at background only fits,
 
 ALGO=AD (or ALGO=KS, ALGO=saturated)
-combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_071016_unblinding/cmb/ws.root -n ".$ALGO.toys" --fixedSignalStrength=0 -t 500
-combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_071016_unblinding/cmb/ws.root -n ".$ALGO" --fixedSignalStrength=0
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_120717_unblinding/cmb/ws.root -n ".$ALGO.toys" --fixedSignalStrength=0 -t 500
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_120717_unblinding/cmb/ws.root -n ".$ALGO" --fixedSignalStrength=0
 
 ALGO=saturated
-combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_071016_unblinding/*_13TeV/ws.root -n ".$ALGO.toys" --fixedSignalStrength=0 -t 500
-combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_071016_unblinding/*_13TeV/ws.root -n ".$ALGO" --fixedSignalStrength=0
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_120717_unblinding/*_13TeV/ws.root -n ".$ALGO.toys" --fixedSignalStrength=0 -t 500
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 160 --there -d output/mssm_120717_unblinding/*_13TeV/ws.root -n ".$ALGO" --fixedSignalStrength=0
 
 The toys can also be split in multiple batches by adding e.g. -s 0:10:1 as option (setting the seed to be 0-10 in 11 jobs)
 
+To speed up the calculation, it's better to use more jobs with small amount of toys for example with the options -t 10 -s 0:99:1 --parallel 20
+
 8b) Collecting GoF outputs
 
-For the saturated model run for each category seperatly
+For the saturated model run for each category seperately
 
-combineTool.py -M CollectGoodnessOfFit --input output/mssm_071016_unblinding/htt_et_8_13TeV/higgsCombine.saturated.GoodnessOfFit.mH160.root output/mssm_071016_unblinding/htt_et_8_13TeV/higgsCombine.saturated.toys.GoodnessOfFit.mH160.*.root -o htt_et_8_13TeV_saturated.json
+combineTool.py -M CollectGoodnessOfFit --input output/mssm_120717_unblinding/htt_et_8_13TeV/higgsCombine.saturated.GoodnessOfFit.mH160.root output/mssm_120717_unblinding/htt_et_8_13TeV/higgsCombine.saturated.toys.GoodnessOfFit.mH160.*.root -o htt_et_8_13TeV_saturated.json
 
 For the AD and KS run
 
 ALGO=AD (or ALGO=KS)
-combineTool.py -M CollectGoodnessOfFit --input output/mssm_071016_unblinding/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH160.root output/mssm_071016_unblinding/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH160.*.root -o cmb_$ALGO.json
+combineTool.py -M CollectGoodnessOfFit --input output/mssm_120717_unblinding/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH160.root output/mssm_071016_unblinding/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH160.*.root -o cmb_$ALGO.json
 
 8c) Plotting the GoF results
 
-For the saturated model you again need to run the plotting once per cateogry like
+For the saturated model you again need to run the plotting once per category like
 
 python ../CombineTools/scripts/plotGof.py --statistic saturated --mass 160.0 -o htt_et_9_13TeV-saturated htt_et_9_13TeV_saturated.json  --title-right="12.9 fb^{-1} (13 TeV)" --title-left="e#tau_{h}, btag"
 
@@ -263,11 +269,11 @@ python ../CombineTools/scripts/plotGof.py --statistic $ALGO --mass 160.0 cmb_$AL
 
 For determining the pulls in the b-only fit we run
 
-combineTool.py -M MaxLikelihoodFit output/mssm_071016_unblinding/cmb/ws.root
+combineTool.py -M MaxLikelihoodFit output/mssm_120717_unblinding/cmb/ws.root
 
 Workaround for not unblinding fitted signal strength: can also set signal to only float within a very small range, e.g:
 
-combine -M MaxLikelihoodFit --setPhysicsModelParameters r_ggH=0,r_bbH=0 --freezeNuisances r_bbH --redefineSignalPOIs r_ggH -m 700  --setPhysicsModelParameterRanges r_ggH=-0.000001,0.000001 --minimizerTolerance 0.01 --minimizerStrategy 0 -d output/mssm_071016_unblinding/cmb/ws.root
+combine -M MaxLikelihoodFit --setPhysicsModelParameters r_ggH=0,r_bbH=0 --freezeNuisances r_bbH --redefineSignalPOIs r_ggH -m 700  --setPhysicsModelParameterRanges r_ggH=-0.000001,0.000001 --minimizerTolerance 0.01 --minimizerStrategy 0 -d output/mssm_120717_unblinding/cmb/ws.root
 
 From this point on the pulls can then be extracted using the script diffNuisances.py which is provided together with combine.
 python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f html mlfit.Test.root > mlfit.html
