@@ -195,21 +195,19 @@ script, which is called from makeMassPlotsPrefit.py will  make a stacked plot. W
 
 To also create the yield tables, add --make_yield_tables as additional option to the PostFitShapesFromWorkspace call. For the data yield this prints '0' for now.
  
-6) Postfit plots - TO BE UPDATED
+6) Postfit plots 
+Postfit plots require a sensible choice of fit. You can choose either the model independent or model dependent workspace, and simply need to set the appropriate parameters to soemthign sensible.
 
-Postfit plots require a sensible choice of fit. You can choose either the model independent or model dependent workspace, and simply need to set the appropriate parameters to soemthign sensible, e.g: 
+The plotting code can then be used in postfit mode and passed the output of the maximum likelihood fit.
+**for the plots in the docs:**
 
-combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters MH=700,r_ggH=0.1,r_bbH=0.1 -d output/mssm_310516_freezing/cmb/ws.root --redefineSignalPOIs r_ggH --there -m 700 --boundlist input/mssm_boundaries.json --minimizerTolerance 0.01 --minimizerStrategy 1
+MorphingMSSMFull2016 --output_folder="mssm_120717_unblinding_mhmodp" --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true --postfit_plot=true
 
-The plotting code can then be used in postfit mode and passed the output of the maximum likelihood fit, to make post fit plots instead of prefit:
+combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$PWD/shapes/Models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 -i output/mssm_120717_unblinding_mhmodp/*
 
-PostFitShapesFromWorkspace -d output/mssm_310516_freezing/cmb/combined.txt.cmb -w output/mssm_310516_freezing/cmb/ws.root -o shapes.root --print --freeze r_ggH=0.1,r_bbH=0.1,MH=700 --postfit --sampling -f output/mssm_310516_freezing/cmb/mlfit.Test.root:fit_s
+combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters mA=1000,tanb=50,x=1,r=0 -d output/mssm_120717_unblinding_mhmodp/cmb/mhmodp.root --there --minimizerTolerance 0.1 --minimizerStrategy 0 --freezeNuisances x --redefineSignalPOIs r --minos none
 
-**for the final plots in the docs:**
-
-combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters mA=1000,tanb=50 -d output/mssm_310516_freezing_mhmodp/cmb/mhmodp.root --there --minimizerTolerance 0.01 --minimizerStrategy 1
-
-PostFitShapesFromWorkspace -d output/mssm_310516_freezing/cmb/combined.txt.cmb -w output/mssm_310516_freezing_mhmodp/cmb/mhmodp.root -o shapes.root --print --freeze mA=1000,tanb=50,r=1,x=1 --postfit --sampling -f output/mssm_310516_freezing_mhmodp/cmb/mlfit.Test.root:fit_s
+PostFitShapesFromWorkspace -d output/mssm_120717_unblinding_mhmodp/cmb/combined.txt.cmb -w output/mssm_120717_unblinding_mhmodp/cmb/mhmodp.root -o shapes.root --print --freeze mA=1000,tanb=50,r=1,x=1 --postfit --sampling -f output/mssm_120717_unblinding_mhmodp/cmb/mlfit.Test.root:fit_b
 
 python scripts/makeMassPlots.py
 

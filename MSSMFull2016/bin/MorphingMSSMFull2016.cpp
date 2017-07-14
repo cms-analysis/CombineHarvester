@@ -98,6 +98,7 @@ int main(int argc, char** argv) {
   bool zmm_fit = true;
   bool ttbar_fit = true;
   bool do_jetfakes = false;
+  bool postfit_plot = false;
   string chan;
   po::variables_map vm;
   po::options_description config("configuration");
@@ -119,6 +120,7 @@ int main(int argc, char** argv) {
     ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(true))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(false))
     ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
+    ("postfit_plot",po::value<bool>(&postfit_plot)->default_value(false))
     ("channel", po::value<string>(&chan)->default_value("all"))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
@@ -545,6 +547,21 @@ int main(int argc, char** argv) {
   bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotSBControlRegion));
   bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotSBControlRegion), cb);
   cout << " done\n";
+
+  if(postfit_plot){
+    cb.ForEachSyst([](ch::Systematic *s) {
+      if (s->type().find("shape") == std::string::npos) return;
+      if (s->name().find("CMS_htt_tt_btag_13TeV_ZTT_bin_18") == std::string::npos) return;
+        std::cout<<"Adjusting down shape for nuisance "<<s->name()<<std::endl;
+        auto newhist_u = s->ClonedShapeU();
+        auto newhist_d = s->ClonedShapeD();
+        newhist_d.get()->SetBinContent(18,0.0003);
+        // Set the new shape but do not change the rate, we want the rate to still
+        // reflect the total integral of the events
+        s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
+    });
+  }
+
 
   //Switch JES over to lnN:
   /*cb.cp().syst_name({"CMS_scale_j_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});
