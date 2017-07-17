@@ -201,13 +201,21 @@ Postfit plots require a sensible choice of fit. You can choose either the model 
 The plotting code can then be used in postfit mode and passed the output of the maximum likelihood fit.
 **for the plots in the docs:**
 
-MorphingMSSMFull2016 --output_folder="mssm_120717_unblinding_mhmodp" --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true --postfit_plot=true
+---set up model dependent workspace---
+MorphingMSSMFull2016 --output_folder="mssm_120717_unblinding_mhmodp" --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true 
 
 combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$PWD/shapes/Models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 -i output/mssm_120717_unblinding_mhmodp/*
 
-combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters mA=1000,tanb=50,x=1,r=0 -d output/mssm_120717_unblinding_mhmodp/cmb/mhmodp.root --there --minimizerTolerance 0.1 --minimizerStrategy 0 --freezeNuisances x --redefineSignalPOIs r --minos none
+---set up model-independent workspace for max likelihood fit---
+MorphingMSSMFull2016 --output_folder="mssm_120717_unblinding" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true 
 
-PostFitShapesFromWorkspace -d output/mssm_120717_unblinding_mhmodp/cmb/combined.txt.cmb -w output/mssm_120717_unblinding_mhmodp/cmb/mhmodp.root -o shapes.root --print --freeze mA=1000,tanb=50,r=1,x=1 --postfit --sampling -f output/mssm_120717_unblinding_mhmodp/cmb/mlfit.Test.root:fit_b
+combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_120717_unblinding/*
+
+---Max likelihood fit (model independent ws)---
+combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters r_ggH=0,r_bbH=0 --freezeNuisances r_bbH --redefineSignalPOIs r_ggH -m 700  --setPhysicsModelParameterRanges r_ggH=-0.000001,0.000001 --minimizerTolerance 0.1 --minimizerStrategy 0 -d output/mssm_120717_unblinding/cmb/ws.root --there
+
+---Get the shapes, including signal shape from the model dependent ws---
+PostFitShapesFromWorkspace -d output/mssm_120717_unblinding_mhmodp/cmb/combined.txt.cmb -w output/mssm_120717_unblinding_mhmodp/cmb/mhmodp.root -o shapes.root --print --freeze mA=1000,tanb=50,r=1,x=1 --postfit --sampling -f output/mssm_120717_unblinding/cmb/mlfit.Test.root:fit_b
 
 python scripts/makeMassPlots.py
 
@@ -271,7 +279,7 @@ combineTool.py -M MaxLikelihoodFit output/mssm_120717_unblinding/cmb/ws.root
 
 Workaround for not unblinding fitted signal strength: can also set signal to only float within a very small range, e.g:
 
-combine -M MaxLikelihoodFit --setPhysicsModelParameters r_ggH=0,r_bbH=0 --freezeNuisances r_bbH --redefineSignalPOIs r_ggH -m 700  --setPhysicsModelParameterRanges r_ggH=-0.000001,0.000001 --minimizerTolerance 0.01 --minimizerStrategy 0 -d output/mssm_120717_unblinding/cmb/ws.root
+combine -M MaxLikelihoodFit --setPhysicsModelParameters r_ggH=0,r_bbH=0 --freezeNuisances r_bbH --redefineSignalPOIs r_ggH -m 700  --setPhysicsModelParameterRanges r_ggH=-0.000001,0.000001 --minimizerTolerance 0.1 --minimizerStrategy 0 -d output/mssm_120717_unblinding/cmb/ws.root
 
 From this point on the pulls can then be extracted using the script diffNuisances.py which is provided together with combine.
 python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f html mlfit.Test.root > mlfit.html
