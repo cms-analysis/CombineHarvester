@@ -99,6 +99,7 @@ int main(int argc, char** argv) {
   bool ttbar_fit = true;
   bool do_jetfakes = false;
   bool postfit_plot = false;
+  bool partial_unblinding = false;
   string chan;
   po::variables_map vm;
   po::options_description config("configuration");
@@ -124,7 +125,8 @@ int main(int argc, char** argv) {
     ("channel", po::value<string>(&chan)->default_value("all"))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
-    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
+    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false))
+    ("partial_unblinding", po::value<bool>(&partial_unblinding)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -613,6 +615,14 @@ int main(int argc, char** argv) {
   cb.AddWorkspace(ws);
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
 
+  if (partial_unblinding) {
+    cb.FilterAll([&](ch::Object *obj) {
+      if (obj->channel() == "et" || obj->channel() == "mt") return !ch::contains({10, 11}, obj->bin_id());
+      if (obj->channel() == "em") return !ch::contains({8, 9, 12 ,13}, obj->bin_id());
+      if (obj->channel() == "tt") return true;
+      return false;
+    });
+  }
 
  //Write out datacards. Naming convention important for rest of workflow. We
  //make one directory per chn-cat, one per chn and cmb. In this code we only
