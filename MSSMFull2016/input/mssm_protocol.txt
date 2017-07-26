@@ -225,11 +225,17 @@ The commands below needed to create a workspace are chosen consistently with the
 
 MorphingMSSMFull2016 --output_folder="mssm_120717_unblinding" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true
 
-For creating the workspace from the datacards we use the default model. This allows easier handling for the b-only fit.
+For creating the workspace for pulls from the datacards we use the multi-signal model.
 
 combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_120717_unblinding/*
 
-You may parallelize the procedure by e.g. adding --parallel 20 to the command above
+For creating the workspace for GoF tests from the datacards it's easier to use a single-signal model, since the GoodnessOfFit
+code assumes, that only one parameter of interest exists in order to fix it with '--fixedSignalStrength=0' option in step 8a). Otherwise you'll have to
+use additional options in 8a) to demote one of the POI's to a fixed nuisance parameter to achieve a signal-signal model from a multi-signal model.
+
+combineTool.py -M T2W -o "ws.root" -i output/mssm_120717_unblinding/*
+
+You may parallelize the procedure by e.g. adding --parallel 20 to the commands above
 
 8a) Running the GoF jobs
 
