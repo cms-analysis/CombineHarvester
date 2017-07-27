@@ -1632,6 +1632,15 @@ def fillTH2(hist2d, graph):
             val = graph.Interpolate(xc, yc)
             hist2d.SetBinContent(x, y, val)
 
+def fillInvertedTH2(hist2d, graph):
+    for x in xrange(1, hist2d.GetNbinsX() + 1):
+        for y in xrange(1, hist2d.GetNbinsY() + 1):
+            xc = hist2d.GetXaxis().GetBinCenter(x)
+            yc = hist2d.GetYaxis().GetBinCenter(y)
+            val = graph.Interpolate(xc, yc)
+            hist2d.SetBinContent(x, y, 1-val)
+
+
 
 # Functions 'NewInterpolate' and 'rebin' are taken, translated and modified into python from:
 # https://indico.cern.ch/event/256523/contribution/2/attachments/450198/624259/07JUN2013_cawest.pdf

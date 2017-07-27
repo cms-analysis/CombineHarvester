@@ -97,7 +97,7 @@ Like in AsymptoticGrid mode, points can be added or more toys can be generated f
 
 Note that mssm_hybrid_grid_mhmodp.json and mssm_hybrid_grid_hmssm.json are copied from the ICHEP analysis and the number of toys per cycle will probably have to be adjusted down as the fit is now more complex (lots of extra categories). Some points along the 2sigma contour will need 60 000 - 100 000 toys, so best to increase the number of cycles per submission as the number of points still to be scanned becomes smaller.
 
-3d) Running ggH-bbH 2D limits
+3d) Running ggH-bbH 2D limits (Asymptotic)
 
 The 2D limits are run using combineTool to take advantage of the possibilty to run for multiple masses and submission.
 
@@ -117,8 +117,28 @@ cp output/mssm_070617_SMHbkg/cmb/higgsCombine.2D.ToyDataset.SM1.MultiDimFit.mH12
 
 combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -M MultiDimFit --boundlist input/mssm_ggH_bbH_2D_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOI r_ggH,r_bbH -t -1 -d output/mssm_070617/cmb/ws.root --there -n ".2D.SM1.bestfit" --algo none --toysFile higgsCombine.2D.ToyDataset.SM1.MultiDimFit.mH125.123456.root
 
+3e) Running ggH-bbH 2D limits (Feldman-Cousins)
 
-3e) Running model independent limits with signal injected (blue band) - not been used for a long time, seek advice before trying this
+Feldman Cousins regions are produced using combineTool's HybridNewGrid. You'll need one config file per mass point, for example at mH=700 GeV:
+
+combineTool.py -M HybridNewGrid ./scripts/mssm_hybrid_grid_FCInterval.json --cycles 2 -d output/mssm_1207/cmb/ws.root  --job-mode 'crab3' --task-name 'mssm_FCIntervals700' --crab-area 'Jul27_Combine'
+
+This will submit 2*700 toys for each point
+
+After this is finished and you've retrieved and untarred all the output files, run, in the directory where you have all the output files:
+
+combineTool.py -M HybridNewGrid /FULL/PATH/TO/CH/AREA/scripts/mssm_hybrid_grid_FCInterval.json --cycles 0 -d /FULL/PATH/TO/CH/AREA/output/mssm_1207/cmb/ws.root  --output
+
+*notes*
+- Make sure the crab storage site is set correctly. This can be done e.g by creating a python file like CombineTools/scripts/custom_crab.py and adding, to the combineTool.py call
+above, --custom-crab ../CombineTools/scripts/custom_crab.py 
+- The grids to be scanned for each mass point still need to be determined. Easiest is probably to run Asymptotic version first to determine reasonable bounds
+- Make sure you do not try to submit more than 10000 jobs in one crab task - if you end up creating a grid with more than 5000 points, cannot submit two cycles in one go - in that case should submit in multiple stages; perhaps by splitting the grid into smaller, disjoint grids and launch them in separate crab tasks, or by waiting for the first task to complete and then submit a second cycle. Do not simply run the above command twice with a different task name, as you will just generate the exact same set of toys twice.
+
+Easiest way to get the best-fit value:
+combineTool.py -m "700" -M MultiDimFit --boundlist input/mssm_ggH_bbH_2D_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_ggH,r_bbH -d output/mssm_1207/cmb/ws.root --there -n ".ggH-bbH-bestfit" 
+
+3f) Running model independent limits with signal injected (blue band) - not been used for a long time, seek advice before trying this
 
 For generating the toys first of all a snapshot with the bestfit values for the BG+SM higgs hypothesis needs to be generated 
 
@@ -176,7 +196,14 @@ For also plotting the expectation for the SM Higgs you need to additionally prov
 
 python scripts/plotMultiDimFit.py --title-right="35.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass $MASS -o 2D_limit_mH${MASS} output/mssm_070617/cmb/higgsCombine.ggH-bbH.MultiDimFit.mH${MASS}.root --sm-exp output/mssm_070617/cmb/higgsCombine.2D.SM1.bestfit.MultiDimFiti.mH${MASS}.root
 
-4f) plotting model independent limits with signal injected (blue band)
+4f) Plotting ggH-bbH 2D limits (from HybridNewGrid output)
+
+python scripts/plotFCIntervals.py HybridNewGridFCInterval.root --output="2D_limit_FC_mH${MASS}" --title-right="35.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass 700 --best-fit output/mssm_1207/cmb/higgsCombine.ggH-bbH-bestfit.MultiDimFit.mH700.root
+
+Addition of the expectation for SM Higgs + bkg not yet implemented, but should be added in a similar fashion to scripts/plotMultiDimFit.py
+
+
+4g) plotting model independent limits with signal injected (blue band)
 
 For plotting the blue band limits the same script as for the Brazil band plots is used
 
