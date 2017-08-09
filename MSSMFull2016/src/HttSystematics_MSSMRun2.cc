@@ -379,6 +379,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     "CMS_htt_dyShape_stat_m400pt40_$ERA", "shape", SystMap<>::init(1.00));
   cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
     "CMS_htt_dyShape_stat_m400pt80_$ERA", "shape", SystMap<>::init(1.00));
+  
+  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt","em"}).AddSyst(cb,
+    "CMS_htt_QCDScale_$ERA", "shape", SystMap<>::init(1.00));
 
   //W jet->tau FR shape
   cb.cp().process(JoinStr({{"W"}})).channel({"et","mt"}).bin_id({8,9}).AddSyst(cb,
