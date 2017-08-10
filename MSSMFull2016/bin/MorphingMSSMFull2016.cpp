@@ -314,37 +314,7 @@ int main(int argc, char** argv) {
   }
 
 
-  // Produce scale uncertainty shape templates for ZTT
-  std::string up_name = "ZTT_CMS_htt_QCDScale_13TeVUp"; 
-  std::string down_name = "ZTT_CMS_htt_QCDScale_13TeVDown";
-  std::string infilename = string(getenv("CMSSW_BASE"))+"/src/CombineHarvester/MSSMFull2016/input/ztt_scale_uncerts.root";
-  TFile *dy_systs_infile = new TFile(infilename.c_str());
-  double cut_off=300.0; // mt_tot value after which the scale uncertainty is set to 0 - may need setting seperatly for each channel/category
-  for (auto a : chns){
-    if ( a == "ttbar" || a == "zmm" ) continue;
-    TFile *datacards_file = new TFile((input_dir[a] + "htt_"+a+".inputs-mssm-13TeV"+postfix+".root").c_str(),"UPDATE");
-    for (auto b : cats[a+"_13TeV"]){
-      std::string cat = b.second;
-      TH1D *h_nom = (TH1D*)datacards_file->Get((cat+"/ZTT").c_str());  
-      TH1D *h_up = (TH1D*)dy_systs_infile->Get((cat+"_up").c_str());
-      TH1D *h_down = (TH1D*)dy_systs_infile->Get((cat+"_down").c_str());
-      // after cut-off set uncertainty templates to the nominal
-      for(unsigned i=h_nom->FindBin(cut_off); i<=(unsigned)h_nom->GetNbinsX()+1; ++i){
-        h_up->SetBinContent(i,1.0);    
-        h_down->SetBinContent(i,1.0);
-      }
-      h_up->Multiply(h_nom);
-      h_down->Multiply(h_nom);
-      h_up->SetName(up_name.c_str());
-      h_down->SetName(down_name.c_str());
-      datacards_file->cd(cat.c_str());
-      h_up->Write("",TObject::kOverwrite);
-      h_down->Write("",TObject::kOverwrite);
-      datacards_file->cd();
-    }
-    datacards_file->Close();
-  }
-  dy_systs_infile->Close();
+
 
   ch::AddMSSMRun2Systematics(cb, control_region, zmm_fit, ttbar_fit);
   //! [part7]
