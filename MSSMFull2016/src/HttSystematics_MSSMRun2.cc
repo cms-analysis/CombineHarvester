@@ -210,8 +210,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // Electron and muon efficiencies
   // ------------------------------
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-    ({"zmm"}, {"ZTT", "TT", "VV", "ZL"},  1.04)
-    ({"zmm"}, {"ZJ"},  1.02)
+    ({"zmm"}, {"ZTT", "TT", "VV", "ZLL"},  1.04)
     ({"ttbar"}, {"ZTT","TT","VV","W","ZLL"}, 1.02)
     ({"mt"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
     ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
@@ -471,9 +470,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     "CMS_htt_dyShape_stat_m400pt40_$ERA", "shape", SystMap<>::init(1.00));
   cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt", "em"}).AddSyst(cb,
     "CMS_htt_dyShape_stat_m400pt80_$ERA", "shape", SystMap<>::init(1.00));
+  
+  cb.cp().process(JoinStr({{"ZTT"}})).channel({"et","mt","tt","em"}).bin_id({8,10,12}).AddSyst(cb,
+    "CMS_htt_QCDScale_$ERA", "shape", SystMap<>::init(1.00));
 
   //W jet->tau FR shape
-  cb.cp().process(JoinStr({{"W"}})).channel({"et","mt"}).bin_id({8,9}).AddSyst(cb,
+  cb.cp().process(JoinStr({{"W"}})).channel({"et","mt"}).bin_id({8,9,10,11}).AddSyst(cb,
     "CMS_htt_wFakeShape_$ERA","shape",SystMap<>::init(1.00));
 
   //jet->lepton FR (emu)
@@ -1441,10 +1443,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     }
     if (zmm_fit) {
         cb.SetFlag("filters-use-regex", true);
-        cb.cp().channel({"et","mt","em","tt"}).attr({"nobtag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_nobtag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().channel({"et","mt","em","tt"}).attr({"btag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
-        cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.0));
+        cb.cp().channel({"et","mt","em","tt"}).attr({"nobtag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.02));
+        cb.cp().bin({"zmm_nobtag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.02));
+        cb.cp().channel({"et","mt","em","tt"}).attr({"btag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.02));
+        cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.02));
         cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.8, 1.2);
         cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.95, 1.05);
         cb.SetFlag("filters-use-regex", false);

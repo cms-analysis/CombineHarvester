@@ -98,6 +98,8 @@ int main(int argc, char** argv) {
   bool zmm_fit = true;
   bool ttbar_fit = true;
   bool do_jetfakes = false;
+  bool postfit_plot = false;
+  bool partial_unblinding = false;
   string chan;
   po::variables_map vm;
   po::options_description config("configuration");
@@ -119,10 +121,12 @@ int main(int argc, char** argv) {
     ("zmm_fit", po::value<bool>(&zmm_fit)->default_value(true))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(false))
     ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
+    ("postfit_plot",po::value<bool>(&postfit_plot)->default_value(false))
     ("channel", po::value<string>(&chan)->default_value("all"))
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
-    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
+    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false))
+    ("partial_unblinding", po::value<bool>(&partial_unblinding)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -183,19 +187,20 @@ int main(int argc, char** argv) {
   //Example - could fill this map with hardcoded binning for different
   //categories if manual_rebin is turned on
   map<string, vector<double> > binning;
-  binning["et_nobtag_tight"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,3900};
-  binning["et_nobtag_loosemt"] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,700,900,1100,3900};
+  binning["et_nobtag_tight"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,1100,3900};
+  binning["et_nobtag_loosemt"] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,3900};
   binning["et_btag_loosemt"] = {0,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
   binning["et_btag_tight"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
-  binning["mt_nobtag_tight"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,3900};
-  binning["mt_nobtag_loosemt"] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,1100,3900};
-  binning["mt_btag_tight"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
-  binning["mt_btag_loosemt"] = {0,60,80,100,120,140,160,180,200,250,300,350,400,500,3900};
-  binning["tt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,900,1100,3900};
-  binning["tt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,900,3900};
+  binning["mt_nobtag_tight"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,3900};
+  binning["mt_nobtag_loosemt"] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,3900};
+  binning["mt_btag_tight"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,3900};
+  binning["mt_btag_loosemt"] = {0,60,80,100,120,140,160,180,200,250,300,350,400,500,700,3900};
+  binning["tt_nobtag"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,3900};
+  binning["tt_btag"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,3900};
   binning["em_nobtag_lowPzeta"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,4000};
   binning["em_nobtag_mediumPzeta"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,4000};
   binning["em_nobtag_highPzeta"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,4000};
+  binning["ttbar_cr"] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,900,4000};
   binning["em_btag_lowPzeta"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,4000};
   binning["em_btag_mediumPzeta"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,4000};
   binning["em_btag_highPzeta"] = {0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,4000};
@@ -546,6 +551,21 @@ int main(int argc, char** argv) {
   bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotSBControlRegion), cb);
   cout << " done\n";
 
+  if(postfit_plot){
+    cb.ForEachSyst([](ch::Systematic *s) {
+      if (s->type().find("shape") == std::string::npos) return;
+      if (s->name().find("CMS_htt_tt_btag_13TeV_ZTT_bin_18") == std::string::npos) return;
+        std::cout<<"Adjusting down shape for nuisance "<<s->name()<<std::endl;
+        auto newhist_u = s->ClonedShapeU();
+        auto newhist_d = s->ClonedShapeD();
+        newhist_d.get()->SetBinContent(18,0.0003);
+        // Set the new shape but do not change the rate, we want the rate to still
+        // reflect the total integral of the events
+        s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
+    });
+  }
+
+
   //Switch JES over to lnN:
   /*cb.cp().syst_name({"CMS_scale_j_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});
   cb.cp().syst_name({"CMS_scale_b_13TeV"}).ForEachSyst([](ch::Systematic *sys) { sys->set_type("lnN");});
@@ -596,6 +616,14 @@ int main(int argc, char** argv) {
   cb.AddWorkspace(ws);
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
 
+  if (partial_unblinding) {
+    cb.FilterAll([&](ch::Object *obj) {
+      if (obj->channel() == "et" || obj->channel() == "mt") return !ch::contains({10, 11}, obj->bin_id());
+      if (obj->channel() == "em") return !ch::contains({8, 9, 12 ,13}, obj->bin_id());
+      if (obj->channel() == "tt") return true;
+      return false;
+    });
+  }
 
  //Write out datacards. Naming convention important for rest of workflow. We
  //make one directory per chn-cat, one per chn and cmb. In this code we only
