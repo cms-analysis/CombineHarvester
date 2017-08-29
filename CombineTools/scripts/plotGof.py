@@ -89,10 +89,14 @@ if args.statistic in ["AD","KS"]:
     titles = {
             "htt_em_8_13TeV" : "e#mu, nobtag",
             "htt_em_9_13TeV" : "e#mu, btag",
-            "htt_et_8_13TeV" : "e#tau_{h}, nobtag",
-            "htt_et_9_13TeV" : "e#tau_{h}, btag",
-            "htt_mt_8_13TeV" : "#mu#tau_{h}, nobtag",
-            "htt_mt_9_13TeV" : "#mu#tau_{h}, btag",
+            "htt_et_8_13TeV" : "e#tau_{h}, nobtag tight",
+            "htt_et_9_13TeV" : "e#tau_{h}, btag tight",
+            "htt_et_10_13TeV" : "e#tau_{h}, nobtag loose-MT",
+            "htt_et_11_13TeV" : "e#tau_{h}, btag loose-MT",
+            "htt_mt_8_13TeV" : "#mu#tau_{h}, nobtag tight",
+            "htt_mt_9_13TeV" : "#mu#tau_{h}, btag tight",
+            "htt_mt_10_13TeV" : "#mu#tau_{h}, nobtag loose-MT",
+            "htt_mt_11_13TeV" : "#mu#tau_{h}, btag loose-MT",
             "htt_tt_8_13TeV" : "#tau_{h}#tau_{h}, nobtag",
             "htt_tt_9_13TeV" : "#tau_{h}#tau_{h}, btag"
             }
@@ -180,6 +184,15 @@ else:
     toy_hist = plot.makeHist1D("toys", 100, toy_graph)
     for i in range(toy_graph.GetN()):
         toy_hist.Fill(toy_graph.GetX()[i])
+
+    axis_max=toy_hist.GetNbinsX()+1
+    total_integral=toy_hist.Integral(-1,-1)
+    for i in range(1,toy_hist.GetNbinsX()+1):
+      rem_int=toy_hist.Integral(i,-1)
+      if rem_int/total_integral < 0.02:
+        axis_max=i
+        break
+    #toy_hist.GetXaxis().SetRange(1,axis_max)
     pValue = js[args.mass]["p"]
     obs = plot.ToyTGraphFromJSON(js, [args.mass,"obs"])
     arr = ROOT.TArrow(obs.GetX()[0], 0.001, obs.GetX()[0], toy_hist.GetMaximum()/8, 0.02, "<|");
@@ -193,7 +206,7 @@ else:
     arr.SetLineStyle(1);
     arr.SetAngle(60);
     toy_hist.Draw()
-    arr.Draw("<|same");
+    arr.Draw("<|same")
     pads[0].RedrawAxis()
     pads[0].RedrawAxis('g')
     pads[0].GetFrame().Draw()

@@ -194,11 +194,13 @@ for src in args.input:
             axis = plot.CreateAxisHists(len(pads), graphs[-1], True)
             DrawAxisHists(pads, axis, pads[0])
         graphs[-1].Draw('PLSAME')
-        legend.AddEntry(graphs[-1], '', 'PL')
+        
+        if graphs[-1].GetTitle(): legend.AddEntry(graphs[-1], '', 'PL')
 
 
 
 axis[0].GetYaxis().SetTitle('95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
+axis[0].GetYaxis().SetTitleSize(0.04)
 if args.process == "bb#phi":
     axis[0].GetYaxis().SetTitle('95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
 if args.y_title is not None:
@@ -228,6 +230,7 @@ if args.ratio_to is not None:
     pads[1].cd()
     plot.SetupTwoPadSplitAsRatio(pads, axis[0], axis[1], 'Ratio_{}', True, 0.1, 2.4)
     axis[1].SetNdivisions(506, 'Y')
+    axis[1].GetYaxis().SetTitleSize(0.04)
     splitsrc = args.ratio_to.split(':')
     ref = plot.LimitTGraphFromJSONFile(splitsrc[0], splitsrc[1])
     for gr_set in graph_sets:
