@@ -106,7 +106,7 @@ parser.add_argument('--bkg_frac_ratios', default=False, action='store_true', hel
 parser.add_argument('--uniform_binning', default=False, action='store_true', help='Make plots in which each bin has the same width') 
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.7,1.3")
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
-parser.add_argument('--y_splitted', action='store_true',help='Use splitted y axis with linear at top and log scale at bottom. Cannot be used together with bkg_frac_ratios')
+parser.add_argument('--y_splitted', default=0.0,type=float,help='Use splitted y axis with linear at top and log scale at bottom. Cannot be used together with bkg_frac_ratios')
 parser.add_argument('--x_title', default='m_{T}^{tot} (GeV)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='dN/dm_{T}^{tot} (1/GeV)',help='Title for the y-axis')
 parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
@@ -417,36 +417,12 @@ if frac_ratios:
 #Setup style related things
 c2 = ROOT.TCanvas()
 c2.cd()
-canvas_counter = 1 
-c2.SaveAs("{COUNTER}_canvas_initial.png".format(COUNTER=str(canvas_counter).zfill(3)))
 
 if args.ratio:
   if frac_ratios:
     pads=plot.MultiRatioSplit([0.25,0.14],[0.01,0.01],[0.01,0.01])
   elif y_splitted:
-    upper_split_point = 0.5
-    split_point = 0.29
-    gap_high = 0.01
-    gap_low = 0.01
-    upper2 = ROOT.TPad('upper2', 'upper2', 0., 0., 1., 1.)
-    upper2.SetTopMargin(1 - upper_split_point)
-    upper2.SetBottomMargin(split_point + gap_high)
-    upper2.SetFillStyle(4000)
-    upper2.SetFrameLineWidth(0)
-    upper2.GetFrame().SetLineWidth(0)
-    #upper2.Draw()
-    upper1 = ROOT.TPad('upper1', 'upper1', 0., 0., 1., 1.)
-    upper1.SetBottomMargin(upper_split_point)
-    upper1.SetFillStyle(4000)
-    upper1.SetFrameLineWidth(0)
-    upper1.GetFrame().SetLineWidth(0)
-    upper1.Draw()
-    lower = ROOT.TPad('lower', 'lower', 0., 0., 1., 1.)
-    lower.SetTopMargin(1 - split_point + gap_low)
-    lower.SetFillStyle(4000)
-    #lower.Draw()
-    upper1.cd()
-    pads = [upper1, lower, upper2]
+    pads=plot.ThreePadSplit(0.5,0.29,0.01,0.01)
   else:
     pads=plot.TwoPadSplit(0.29,0.01,0.01)
 else:
@@ -466,7 +442,6 @@ if custom_x_range:
     if x_axis_max > bkghist.GetXaxis().GetXmax(): x_axis_max = bkghist.GetXaxis().GetXmax()
 if args.ratio and not fractions:
   if not frac_ratios:
-    print "not frac_ratios"
     if(log_x): pads[1].SetLogx(1)
     axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
     axish[1].GetXaxis().SetTitle(args.x_title)
@@ -490,20 +465,17 @@ if args.ratio and not fractions:
       axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
       axish[1].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
     if y_splitted:
-      axistransit=1.0
+      axistransit=y_splitted
       axish.append(axish[0].Clone())
 
       axish[0].SetMinimum(axistransit)
       axish[0].SetTickLength(0)
-      axish[0].GetXaxis().SetAxisColor(3,0.0)
-
 
       axish[2].GetYaxis().SetRangeUser(y_axis_min, axistransit)
       axish[2].GetYaxis().SetTitle("")
-      axish[2].GetYaxis().SetNdivisions(3, False)
+      axish[2].GetYaxis().SetNdivisions(3)
 
   else :
-    print "frac ratios"
     if(log_x):
       pads[1].SetLogx(1)
       pads[2].SetLogx(1) 
@@ -533,7 +505,6 @@ if args.ratio and not fractions:
     if custom_y_range:
       axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
 else:
-  print "not ratio or fractions"
   axish = createAxisHists(1,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
 #  axish[0].GetYaxis().SetTitleOffset(1.4)
   if custom_x_range:
@@ -549,43 +520,28 @@ if not custom_y_range: axish[0].SetMaximum(extra_pad*bkghist.GetMaximum())
 if not custom_y_range: 
   if(log_y): axish[0].SetMinimum(0.0009)
   else: axish[0].SetMinimum(0)
-canvas_counter += 1
-c2.SaveAs("{COUNTER}_canvas_with_pads.png".format(COUNTER=str(canvas_counter).zfill(3)))
 
 
 hist_indices = [0,2] if y_splitted else [0]
 for i in hist_indices:
     pads[i].cd()
-    pads[i].GetFrame().SetLineWidth(0)
-    pads[i].SetFrameLineWidth(0)
     axish[i].Draw("AXIS")
-    canvas_counter += 1
-    c2.SaveAs("{COUNTER}_canvas_with_upper_pads_at_beginning_{}.png".format(str(i),COUNTER=str(canvas_counter).zfill(3)))
-    if i == 0:
-        c2.Print("canvas.root")
 
     #Draw uncertainty band
     bkghist.SetFillColor(plot.CreateTransparentColor(12,0.4))
     bkghist.SetLineColor(0)
     bkghist.SetMarkerSize(0)
 
-
     stack.Draw("histsame")
-    canvas_counter += 1
-    c2.SaveAs("{COUNTER}_canvas_with_upper_pads_after_stack_{}.png".format(str(i),COUNTER=str(canvas_counter).zfill(3)))
     #Don't draw total bkgs/signal if plotting bkg fractions
     if not fractions and not uniform:
       bkghist.Draw("e2same")
-      canvas_counter += 1
-      c2.SaveAs("{COUNTER}_canvas_with_upper_pads_after_bkg_uncertainty_{}.png".format(str(i),COUNTER=str(canvas_counter).zfill(3)))
       #Add signal, either model dependent or independent
       if not args.no_signal and ((y_splitted and i == 2) or (not y_splitted)):
         if model_dep is True: 
           sighist.SetLineColor(ROOT.kGreen+3)
           sighist.SetLineWidth(3)
           sighist.Draw("histsame")
-          canvas_counter += 1
-          c2.SaveAs("{COUNTER}_canvas_with_upper_pads_after_signal_{}.png".format(str(i),COUNTER=str(canvas_counter).zfill(3)))
         else: 
           sighist_ggH.SetLineColor(ROOT.kBlue)
           sighist_bbH.SetLineColor(ROOT.kBlue + 3)
@@ -595,8 +551,6 @@ for i in hist_indices:
           sighist_bbH.Draw("histsame")
     if not soverb_plot and not fractions: blind_datahist.DrawCopy("e0psame")
     axish[i].Draw("axissame")
-    canvas_counter += 1
-    c2.SaveAs("{COUNTER}_canvas_with_upper_pads_at_the_end_{}.png".format(str(i),COUNTER=str(canvas_counter).zfill(3)))
 
 pads[0].cd()
 #Setup legend
@@ -626,8 +580,6 @@ if not fractions:
   if not args.no_signal:
     if model_dep is True: 
         latex.DrawLatex(0.70,0.56,"#splitline{m_{h}^{mod+}, }{m_{A}=%(mA)s GeV, tan#beta=%(tb)s}"%vars())
-        canvas_counter += 1
-        c2.SaveAs("{COUNTER}_canvas_with_upper_pads_after_legend.png".format(COUNTER=str(canvas_counter).zfill(3)))
     else: 
         latex.DrawLatex(0.65,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
         latex.DrawLatex(0.65,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
@@ -636,18 +588,13 @@ latex2 = ROOT.TLatex()
 latex2.SetNDC()
 latex2.SetTextAngle(0)
 latex2.SetTextColor(ROOT.kBlack)
-latex2.SetTextSize(0.028)
+latex2.SetTextSize(0.04)
 latex2.DrawLatex(0.145,0.955,channel_label)
-canvas_counter += 1
-c2.SaveAs("{COUNTER}_canvas_with_upper_pads_after_channel_title.png".format(COUNTER=str(canvas_counter).zfill(3)))
-
 
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], args.lumi, 3)
-canvas_counter += 1
-c2.SaveAs("{COUNTER}_canvas_with_upper_pads_after_cms_and_lumi_title.png".format(COUNTER=str(canvas_counter).zfill(3)))
 
 #Add ratio plot if required
 if args.ratio and not soverb_plot and not fractions:
@@ -703,25 +650,27 @@ if soverb_plot:
     sighist_bbH_forratio.SetLineColor(ROOT.kBlue+3)
     sighist_bbH_forratio.Draw("same")
 
-canvas_counter += 1
-c2.SaveAs("{COUNTER}_canvas_with_upper_pads_after_ratio.png".format(COUNTER=str(canvas_counter).zfill(3)))
-
-print "Pad information"
-for i in [0,2]:
-    print "Pad number",i
-    print "Frame Line Style:",pads[i].GetFrameLineStyle()
-    print "Frame Line Color:",pads[i].GetFrameLineColor()
-    print "Frame Line Width:",pads[i].GetFrameLineWidth()
-    print "Frame Border Size:",pads[i].GetFrameBorderSize()
-
 pads[0].cd()
 pads[0].GetFrame().Draw()
-pads[0].RedrawAxis()
+if not y_splitted:
+    pads[0].RedrawAxis()
+
+
 
 if y_splitted:
     pads[2].cd()
     pads[2].GetFrame().Draw()
     pads[2].RedrawAxis()
+
+    pads[2].Update()
+    x_min = axish[2].GetXaxis().GetXmin()
+    x_max = axish[2].GetXaxis().GetXmax()
+    splitline = ROOT.TLine(x_min,y_splitted,x_max,y_splitted)
+    splitline.SetLineWidth(2)
+    splitline.Draw()
+    pads[0].cd()
+    splitline.Draw()
+
 
 #Save as png and pdf with some semi sensible filename
 shape_file_name = shape_file_name.replace(".root","_%(mode)s"%vars())

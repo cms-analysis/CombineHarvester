@@ -333,7 +333,7 @@ def ThreePadSplit(upper_split_point, split_point, gap_low, gap_high):
     upper2.SetTopMargin(1 - upper_split_point)
     upper2.SetBottomMargin(split_point + gap_high)
     upper2.SetFillStyle(4000)
-    #upper2.Draw()
+    upper2.Draw()
     upper1 = R.TPad('upper1', 'upper1', 0., 0., 1., 1.)
     upper1.SetBottomMargin(upper_split_point)
     upper1.SetFillStyle(4000)
@@ -341,7 +341,7 @@ def ThreePadSplit(upper_split_point, split_point, gap_low, gap_high):
     lower = R.TPad('lower', 'lower', 0., 0., 1., 1.)
     lower.SetTopMargin(1 - split_point + gap_low)
     lower.SetFillStyle(4000)
-    #lower.Draw()
+    lower.Draw()
     upper1.cd()
     result = [upper1, lower, upper2]
     return result
