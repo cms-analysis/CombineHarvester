@@ -10,6 +10,10 @@
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
     //Check the recommended tag on link above, a tag &gt;= v5.0.2 is sufficient
+    cd HiggsAnalysis/CombinedLimit
+    git fetch origin
+    git checkout v6.3.1
+    cd ../..
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
     cd CombineHarvester
     git checkout SM2016-dev
