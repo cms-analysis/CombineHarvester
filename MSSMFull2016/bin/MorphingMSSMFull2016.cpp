@@ -100,6 +100,7 @@ int main(int argc, char** argv) {
   bool do_jetfakes = false;
   bool postfit_plot = false;
   bool partial_unblinding = false;
+  bool ggHatNLO = false;
   string chan;
   po::variables_map vm;
   po::options_description config("configuration");
@@ -126,7 +127,8 @@ int main(int argc, char** argv) {
     ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
     ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false))
-    ("partial_unblinding", po::value<bool>(&partial_unblinding)->default_value(false));
+    ("partial_unblinding", po::value<bool>(&partial_unblinding)->default_value(false))
+    ("ggHatNLO", po::value<bool>(&ggHatNLO)->default_value(false));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -288,13 +290,26 @@ int main(int argc, char** argv) {
     {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
     {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
   };
-  if(mass=="MH"){
+  if(ggHatNLO){
     signal_types = {
-      {"ggH", {"ggH"}},
-      {"bbH", {"bbH"}}
+      {"ggH", {"ggh_t_htautau", "ggh_b_htautau", "ggh_i_htautau", "ggH_t_Htautau", "ggH_b_Htautau", "ggH_i_Htautau", "ggA_t_Atautau", "ggA_b_Atautau", "ggA_i_Atautau"}},
+      {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
     };
   }
-    vector<string> sig_procs = {"ggH","bbH"};
+  if(mass=="MH"){
+    if(ggHatNLO){
+      signal_types = {
+        {"ggH", {"ggh_t", "ggh_b", "ggh_i"}},
+        {"bbH", {"bbH"}}
+      };
+    }else{
+      signal_types = {
+        {"ggH", {"ggH"}},
+        {"bbH", {"bbH"}}
+      };
+    }
+  }
+  vector<string> sig_procs = {"ggH","bbH"};
   for(auto chn : chns){
     cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn+"_13TeV"]);
 
@@ -329,10 +344,22 @@ int main(int argc, char** argv) {
          input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
          "$BIN/$PROCESS",
          "$BIN/$PROCESS_$SYSTEMATIC");
-    cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
-        input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
-        "$BIN/ggH$MASS",
-        "$BIN/ggH$MASS_$SYSTEMATIC");
+    if(ggHatNLO){
+      for(VString::const_iterator partial_process = signal_types["ggH"].begin(); partial_process != signal_types["ggH"].end(); partial_process++){
+        VString ggH_type = {*partial_process};
+        string hist_name = *partial_process;
+        if (hist_name.length()>5) hist_name.erase(5,8);
+        cb.cp().channel({chn}).process(ggH_type).ExtractShapes(
+            input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+            "$BIN/"+hist_name+"$MASS",
+            "$BIN/"+hist_name+"$MASS_$SYSTEMATIC");
+      }
+    }else{
+      cb.cp().channel({chn}).process(signal_types["ggH"]).ExtractShapes(
+          input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+          "$BIN/ggH$MASS",
+          "$BIN/ggH$MASS_$SYSTEMATIC");
+    }
     cb.cp().channel({chn}).process(signal_types["bbH"]).ExtractShapes(
         input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
         "$BIN/bbH$MASS",
