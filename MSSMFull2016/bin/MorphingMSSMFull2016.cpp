@@ -620,7 +620,7 @@ int main(int argc, char** argv) {
 
   bool do_morphing = true;
   map<string, RooAbsReal *> mass_var = {
-    {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA},
+    {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA}, {"ggh_t_htautau", &mh}, {"ggH_t_Htautau", &mH}, {"ggA_t_Atautau", &mA}, {"ggh_b_htautau", &mh}, {"ggH_b_Htautau", &mH}, {"ggA_b_Atautau", &mA}, {"ggh_i_htautau", &mh}, {"ggH_i_Htautau", &mH}, {"ggA_i_Atautau", &mA},
     {"bbh_htautau", &mh}, {"bbH_Htautau", &mH}, {"bbA_Atautau", &mA}
   };
   if(mass=="MH"){
