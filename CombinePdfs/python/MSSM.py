@@ -263,8 +263,7 @@ class MSSMHiggsModel(PhysicsModel):
 	importstring = os.path.expandvars(self.ggHatNLO)+":w:gg{X}_{LC}_MSSM_frac" #import t,b,i fraction of xsec at NLO
         for loopcontrib in ['t','b','i']:
             #self.modelBuilder.out._import(importstring.format(X=X, LC=loopcontrib))
-            print importstring.format(X=X, LC=loopcontrib)
-            getattr(self.modelBuilder.out, 'import')(importstring.format(X=X, LC=loopcontrib))
+            getattr(self.modelBuilder.out, 'import')(importstring.format(X=X, LC=loopcontrib), ROOT.RooFit.RecycleConflictNodes())
             self.modelBuilder.out.factory('prod::%s(%s,%s)' % (name.format(X=X, LC=loopcontrib), name.replace("_{LC}","").format(X=X), "gg%s_%s_MSSM_frac" % (X,loopcontrib))) #multiply t,b,i fractions with xsec at NNLO
 
     def buildModel(self):
@@ -404,14 +403,11 @@ class MSSMHiggsModel(PhysicsModel):
         for bin in self.DC.bins:
             for proc in self.DC.exp[bin].keys():
                 if self.DC.isSignal[proc]:
-                    print self.ggHatNLO
-                    if self.ggHatNLO != None and 'gg' in process:
-                        (PD, L) = self.extractLoopContribution(process)
-                        print "3: " + PD
+                    if self.ggHatNLO != None and 'gg' in proc and not 'SM' in proc:
+                        (PD, L) = self.extractLoopContribution(proc)
                         (P, D, E) = self.getHiggsProdDecMode(bin, PD)
                         scaling = 'scaling_%s_%s_%s_%s' % (P, L, D, E)
                     else:
-                        print "2: " + proc
                         (P, D, E) = self.getHiggsProdDecMode(bin, proc)
                         scaling = 'scaling_%s_%s_%s' % (P, D, E)
                     params = self.modelBuilder.out.function(scaling).getParameters(ROOT.RooArgSet()).contentsString().split(',')
@@ -490,11 +486,11 @@ class MSSMHiggsModel(PhysicsModel):
         details = process.split("_")
         if len(details)!=3:
             raise RuntimeError, 'Expected signal process %s to be of the form PROD_LOOPTERM_DECAY' % process
-        return (details[0]+details[2], details[1])
+        return (details[0]+"_"+details[2], details[1])
 
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
-            if self.ggHatNLO != None and 'gg' in process:
+            if self.ggHatNLO != None and 'gg' in process and not 'SM' in process:
                 (PD, L) = self.extractLoopContribution(process)
                 (P, D, E) = self.getHiggsProdDecMode(bin, PD)
                 scaling = 'scaling_%s_%s_%s_%s' % (P, L, D, E)
