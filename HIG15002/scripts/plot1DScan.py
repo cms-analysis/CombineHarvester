@@ -25,7 +25,7 @@ def read(scan, param, files, chop, remove_near_min, rezero,
     goodfiles = [f for f in files if plot.TFileIsGood(f)]
     limit = plot.MakeTChain(goodfiles, 'limit')
     graph = plot.TGraphFromTree(
-        limit, param, '2*deltaNLL', 'quantileExpected > -0.5')
+        limit, param, '2*deltaNLL', 'quantileExpected > -1.5')
     # print 'INPUT'
     # graph.Print()
     graph.SetName(scan)
