@@ -109,7 +109,7 @@ class MSSMHiggsModel(PhysicsModel):
                 print 'Write debug output to: %s' % self.dbg_file.GetName()
             if po.startswith("makePlots"):
                 self.mk_plots = True
-            if po.startswith == "MSSM-NLO-Workspace=":
+            if po.startswith("MSSM-NLO-Workspace="):
                 self.ggHatNLO = po.replace('MSSM-NLO-Workspace=', '')
 
     def setModelBuilder(self, modelBuilder):
@@ -262,8 +262,10 @@ class MSSMHiggsModel(PhysicsModel):
     def add_ggH_at_NLO(self, name, X):
 	importstring = os.path.expandvars(self.ggHatNLO)+":w:gg{X}_{LC}_MSSM_frac" #import t,b,i fraction of xsec at NLO
         for loopcontrib in ['t','b','i']:
-            self.modelBuilder.out._import(importstring.format(X=X, LC=loopcontrib))
-            self.modelBuilder.out.factory('prod::%s(%s,%s)' % (name.format(X=X, LC=loopcontrib), name.replace("_{LC}","").format(X=X), "gg%s_%s_MSSM_xsec" % (X,loopcontrib))) #multiply t,b,i fractions with xsec at NNLO
+            #self.modelBuilder.out._import(importstring.format(X=X, LC=loopcontrib))
+            print importstring.format(X=X, LC=loopcontrib)
+            getattr(self.modelBuilder.out, 'import')(importstring.format(X=X, LC=loopcontrib))
+            self.modelBuilder.out.factory('prod::%s(%s,%s)' % (name.format(X=X, LC=loopcontrib), name.replace("_{LC}","").format(X=X), "gg%s_%s_MSSM_frac" % (X,loopcontrib))) #multiply t,b,i fractions with xsec at NNLO
 
     def buildModel(self):
         # It's best not to set ranges for the model parameters here.
@@ -402,8 +404,16 @@ class MSSMHiggsModel(PhysicsModel):
         for bin in self.DC.bins:
             for proc in self.DC.exp[bin].keys():
                 if self.DC.isSignal[proc]:
-                    (P, D, E) = self.getHiggsProdDecMode(bin, proc)
-                    scaling = 'scaling_%s_%s_%s' % (P, D, E)
+                    print self.ggHatNLO
+                    if self.ggHatNLO != None and 'gg' in process:
+                        (PD, L) = self.extractLoopContribution(process)
+                        print "3: " + PD
+                        (P, D, E) = self.getHiggsProdDecMode(bin, PD)
+                        scaling = 'scaling_%s_%s_%s_%s' % (P, L, D, E)
+                    else:
+                        print "2: " + proc
+                        (P, D, E) = self.getHiggsProdDecMode(bin, proc)
+                        scaling = 'scaling_%s_%s_%s' % (P, D, E)
                     params = self.modelBuilder.out.function(scaling).getParameters(ROOT.RooArgSet()).contentsString().split(',')
                     for param in params:
                         if param in self.NUISANCES:
@@ -484,7 +494,7 @@ class MSSMHiggsModel(PhysicsModel):
 
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
-            if self.ggHatNLO != None:
+            if self.ggHatNLO != None and 'gg' in process:
                 (PD, L) = self.extractLoopContribution(process)
                 (P, D, E) = self.getHiggsProdDecMode(bin, PD)
                 scaling = 'scaling_%s_%s_%s_%s' % (P, L, D, E)
