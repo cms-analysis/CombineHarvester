@@ -182,10 +182,14 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   // Electron and muon efficiencies
   // ------------------------------
   cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-    ({"zmm"}, {"ZTT", "TT", "VV", "ZLL"},  1.04)
+    ({"zmm"}, {"ZTT", "TT", "VV"},  1.04)
     ({"ttbar"}, {"ZTT","TT","VV","W","ZLL"}, 1.02)
-    ({"mt"}, JoinStr({signal, {"ZTT", "TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
-    ({"em"}, JoinStr({signal, {"ZTT", "TT", "VV", "ZLL"}}),       1.02));
+    ({"mt"},{"ZTT"}, 0.98)
+    ({"em"},{"ZTT"}, 0.98)
+    ({"tt"},{"ZTT"}, 0.96)
+    ({"et"},{"ZTT"}, 0.96)
+    ({"mt"}, JoinStr({signal, {"TTT","TTJ", "VVT","VVJ", "ZL", "ZJ"}}),  1.02)
+    ({"em"}, JoinStr({signal, {"TT", "VV", "ZLL"}}),       1.02));
   
   cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
     ({"ttbar"}, {"ZTT","TT","VV","W","ZLL"}, 1.02)
