@@ -311,7 +311,7 @@ class TaylorExpand(CombineToolBase):
         for p in xrange(points):
             a_r[0] = r
             nllf = self.TaylorExpand1D(devs, x0, r)
-            a_deltaNLL[0] = nllf / 2.
+            a_deltaNLL[0] = nllf
             print '%s = %f: %f' % (POI, r, nllf)
             if a_deltaNLL[0] > 0.:
                 tout.Fill()
