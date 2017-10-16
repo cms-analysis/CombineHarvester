@@ -107,6 +107,7 @@ parser.add_argument('--uniform_binning', default=False, action='store_true', hel
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.7,1.3")
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--y_splitted', default=0.0,type=float,help='Use splitted y axis with linear at top and log scale at bottom. Cannot be used together with bkg_frac_ratios')
+parser.add_argument('--sb_vs_b_ratio', action='store_true',help='Draw a Signal + Background / Background into the ratio plot')
 parser.add_argument('--x_title', default='m_{T}^{tot} (GeV)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='dN/dm_{T}^{tot} (1/GeV)',help='Title for the y-axis')
 parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
@@ -144,6 +145,7 @@ log_x=args.log_x
 fractions=args.bkg_fractions
 frac_ratios=args.bkg_frac_ratios
 y_splitted=args.y_splitted
+sb_vs_b_ratio = args.sb_vs_b_ratio
 uniform=args.uniform_binning
 #If plotting bkg fractions don't want to use log scale on y axis
 if fractions:
@@ -225,20 +227,20 @@ if not args.postfitshapes:
 histo_file = ROOT.TFile(shape_file)
 
 #Store plotting information for different backgrounds 
-background_schemes = {'mt':[backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrow#mu#mu",["ZL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104)),backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100))],
-'et':[backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowee",["ZL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104)),backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100))],
-'tt':[backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VVT","ZL"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104)),backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100))],
+background_schemes = {'mt':[backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrow#mu#mu",["ZL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))],
+'et':[backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowee",["ZL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))],
+'tt':[backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VVT","ZL"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))],
 'em':[backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))],
 'ttbar':[backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204))],
 'zmm':[backgroundComp("Misidentified #mu", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104)),backgroundComp("Z#rightarrow#mu#mu",["ZLL"],ROOT.TColor.GetColor(100,192,232))]}
-
-
-print "BG plotting info stored!"
 
 #Extract relevent histograms from shape file
 [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
 if not model_dep: sighist_ggH = getHistogram(histo_file,'ggH',file_dir, mode, args.no_signal, log_x)[0]
 if not model_dep: sighist_bbH = getHistogram(histo_file,'bbH',file_dir, mode, args.no_signal, log_x)[0]
+if sb_vs_b_ratio:
+    sbhist = getHistogram(histo_file,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
+    bkg_sb_vs_b_ratio_hist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
 for i in range(0,sighist.GetNbinsX()):
   if sighist.GetBinContent(i) < y_axis_min: sighist.SetBinContent(i,y_axis_min)
 bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
@@ -422,7 +424,7 @@ if args.ratio:
   if frac_ratios:
     pads=plot.MultiRatioSplit([0.25,0.14],[0.01,0.01],[0.01,0.01])
   elif y_splitted:
-    pads=plot.ThreePadSplit(0.5,0.29,0.01,0.01)
+    pads=plot.ThreePadSplit(0.53,0.29,0.01,0.01)
   else:
     pads=plot.TwoPadSplit(0.29,0.01,0.01)
 else:
@@ -446,18 +448,19 @@ if args.ratio and not fractions:
     axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
     axish[1].GetXaxis().SetTitle(args.x_title)
     axish[1].GetYaxis().SetNdivisions(4)
-    if not soverb_plot: axish[1].GetYaxis().SetTitle("Obs/Exp")
-    else: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
+    if soverb_plot: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
+    else: axish[1].GetYaxis().SetTitle("")
     #axish[1].GetYaxis().SetTitleSize(0.04)
     #axish[1].GetYaxis().SetLabelSize(0.04)
     #axish[1].GetYaxis().SetTitleOffset(1.3)
-    #axish[0].GetYaxis().SetTitleSize(0.04)
+    axish[0].GetYaxis().SetTitleSize(0.048)
     #axish[0].GetYaxis().SetLabelSize(0.04)
-    #axish[0].GetYaxis().SetTitleOffset(1.3)
+    axish[0].GetYaxis().SetTitleOffset(1.44)
     axish[0].GetXaxis().SetTitleSize(0)
     axish[0].GetXaxis().SetLabelSize(0)
     axish[0].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
     axish[1].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
+
     if custom_x_range:
       axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
       axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
@@ -474,6 +477,8 @@ if args.ratio and not fractions:
       axish[2].GetYaxis().SetRangeUser(y_axis_min, axistransit)
       axish[2].GetYaxis().SetTitle("")
       axish[2].GetYaxis().SetNdivisions(3)
+      width_sf = ((1-pads[0].GetTopMargin())-pads[0].GetBottomMargin())/((1-pads[2].GetTopMargin())-pads[2].GetBottomMargin())
+      axish[2].GetYaxis().SetTickLength(width_sf*axish[0].GetYaxis().GetTickLength())
 
   else :
     if(log_x):
@@ -521,6 +526,36 @@ if not custom_y_range:
   if(log_y): axish[0].SetMinimum(0.0009)
   else: axish[0].SetMinimum(0)
 
+hist_indices = [0,2] if y_splitted else [0]
+for i in hist_indices:
+    pads[i].cd()
+    axish[i].Draw("AXIS")
+
+    #Draw uncertainty band
+    bkghist.SetFillColor(plot.CreateTransparentColor(12,0.4))
+    bkghist.SetLineColor(0)
+    bkghist.SetMarkerSize(0)
+
+    stack.Draw("histsame")
+    #Don't draw total bkgs/signal if plotting bkg fractions
+    if not fractions and not uniform:
+      bkghist.Draw("e2same")
+      #Add signal, either model dependent or independent
+      if not args.no_signal and ((y_splitted and i == 2) or (not y_splitted)):
+        if model_dep is True: 
+          sighist.SetLineColor(ROOT.kGreen+3)
+          sighist.SetLineWidth(3)
+          sighist.Draw("histsame")
+        else: 
+          sighist_ggH.SetLineColor(ROOT.kBlue)
+          sighist_bbH.SetLineColor(ROOT.kBlue + 3)
+          sighist_ggH.SetLineWidth(3)
+          sighist_bbH.SetLineWidth(3)
+          sighist_ggH.Draw("histsame")
+          sighist_bbH.Draw("histsame")
+    if not soverb_plot and not fractions: 
+      blind_datahist.DrawCopy("e0x0same")
+    axish[i].Draw("axissame")
 
 hist_indices = [0,2] if y_splitted else [0]
 for i in hist_indices:
@@ -584,6 +619,8 @@ if not fractions:
         latex.DrawLatex(0.65,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
         latex.DrawLatex(0.65,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
 if not args.bkg_fractions: legend.Draw("same")
+
+# Channel & Category label
 latex2 = ROOT.TLatex()
 latex2.SetNDC()
 latex2.SetTextAngle(0)
@@ -600,9 +637,8 @@ plot.DrawTitle(pads[0], args.lumi, 3)
 if args.ratio and not soverb_plot and not fractions:
   ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
   blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
-  #sb_hist = bkghist.Clone()
-  #sb_hist.Add(sighist_ggH.Clone())
-  #sb_hist = plot.MakeRatioHist(sb_hist,bkghist,True,False)
+  if sb_vs_b_ratio:
+    ratio_sbhist = plot.MakeRatioHist(sbhist,bkg_sb_vs_b_ratio_hist,True,False)
   if not frac_ratios:
     pads[1].cd()
     pads[1].SetGrid(0,1)
@@ -611,11 +647,21 @@ if args.ratio and not soverb_plot and not fractions:
     axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
     ratio_bkghist.SetMarkerSize(0)
     ratio_bkghist.Draw("e2same")
-    #sb_hist.SetMarkerSize(1)
-    #sb_hist.SetMarkerColor(ROOT.kBlue)
-    #sb_hist.Draw("same")
-    blind_datahist.DrawCopy("e0same")
+    if sb_vs_b_ratio:
+      ratio_sbhist.SetMarkerSize(0)
+      ratio_sbhist.SetLineColor(ROOT.kGreen+3)
+      ratio_sbhist.SetLineWidth(3)
+      ratio_sbhist.Draw("histsame][")
+    blind_datahist.DrawCopy("e0x0same")
     pads[1].RedrawAxis("G")
+      # Add also a ratio legend, since two relevant ratios shown
+    rlegend = plot.PositionedLegend(0.45,0.045,4,0.002)
+    rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
+    if sb_vs_b_ratio:
+      rlegend.AddEntry(ratio_sbhist,"(Sig+Bkg)/Bkg","L")
+    rlegend.SetFillStyle(0)
+    rlegend.SetNColumns(2)
+    rlegend.Draw("same")
   else:
     pads[1].cd()
     axish[1].Draw("axis")
@@ -666,7 +712,7 @@ if y_splitted:
     x_min = axish[2].GetXaxis().GetXmin()
     x_max = axish[2].GetXaxis().GetXmax()
     splitline = ROOT.TLine(x_min,y_splitted,x_max,y_splitted)
-    splitline.SetLineWidth(2)
+    splitline.SetLineWidth(1)
     splitline.Draw()
     pads[0].cd()
     splitline.Draw()
