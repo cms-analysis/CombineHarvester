@@ -264,7 +264,7 @@ class MSSMHiggsModel(PhysicsModel):
         for loopcontrib in ['t','b','i']:
             #self.modelBuilder.out._import(importstring.format(X=X, LC=loopcontrib))
             getattr(self.modelBuilder.out, 'import')(importstring.format(X=X, LC=loopcontrib), ROOT.RooFit.RecycleConflictNodes())
-            self.modelBuilder.out.factory('prod::%s(%s,%s)' % (name.format(X=X, LC=loopcontrib), name.replace("_{LC}","").format(X=X), "gg%s_%s_MSSM_frac" % (X,loopcontrib))) #multiply t,b,i fractions with xsec at NNLO
+            self.modelBuilder.out.factory('prod::%s(%s,%s)' % (name.format(X=X, LC=loopcontrib), name.format(X=X, LC=""), "gg%s_%s_MSSM_frac" % (X,loopcontrib))) #multiply t,b,i fractions with xsec at NNLO
 
     def buildModel(self):
         # It's best not to set ranges for the model parameters here.
@@ -294,7 +294,7 @@ class MSSMHiggsModel(PhysicsModel):
             for X in ['h', 'H', 'A']:
                 self.doHistFunc('xs_gg%s_%s' % (X, era), f.Get(hd['xs_gg%s'%X]), pars)
                 if self.ggHatNLO != None:
-                    self.add_ggH_at_NLO('xs_gg{X}_{LC}_%s' %era, X)
+                    self.add_ggH_at_NLO('xs_gg{X}{LC}_%s' %era, X)
             #! [part3]
                 # QCD scale uncertainty
                 self.doAsymPow('systeff_xs_gg%s_scale_%s' % (X,era),
@@ -322,8 +322,8 @@ class MSSMHiggsModel(PhysicsModel):
                 self.SYST_DICT['xs_gg%s_%s' % (X, era)].append('systeff_xs_gg%s_pdf_%s' % (X,era))
                 if self.ggHatNLO != None:
                     for loopcontrib in ['t','b','i']:
-                        self.SYST_DICT['xs_gg%s_%s_%s' % (X, loopcontrib, era)].append('systeff_xs_gg%s_scale_%s' % (X,era))
-                        self.SYST_DICT['xs_gg%s_%s_%s' % (X, loopcontrib, era)].append('systeff_xs_gg%s_pdf_%s' % (X,era))
+                        self.SYST_DICT['xs_gg%s%s_%s' % (X, loopcontrib, era)].append('systeff_xs_gg%s_scale_%s' % (X,era))
+                        self.SYST_DICT['xs_gg%s%s_%s' % (X, loopcontrib, era)].append('systeff_xs_gg%s_pdf_%s' % (X,era))
 
                 # Build the Santander-matched bbX cross section. The matching depends
                 # on the mass of the Higgs boson in question, so for the h and H we
@@ -375,7 +375,7 @@ class MSSMHiggsModel(PhysicsModel):
                 # Make a note of what we've built, will be used to create scaling expressions later
                 self.PROC_SETS.append(([ 'gg%s'%X, 'bb%s'%X ], [ '%stautau'%X, '%sbb'%X], [era]))
                 if self.ggHatNLO != None:
-                    self.PROC_SETS.append(([ 'gg%s_t'%X, 'gg%s_b'%X, 'gg%s_i'%X ], [ '%stautau'%X, '%sbb'%X], [era]))
+                    self.PROC_SETS.append(([ 'gg%st'%X, 'gg%sb'%X, 'gg%si'%X ], [ '%stautau'%X, '%sbb'%X], [era]))
             # Do the BRs for the charged Higgs
             self.doHistFunc('br_tHpb_%s'%era, f.Get(hd['br_tHpb']), pars)
 
@@ -403,13 +403,8 @@ class MSSMHiggsModel(PhysicsModel):
         for bin in self.DC.bins:
             for proc in self.DC.exp[bin].keys():
                 if self.DC.isSignal[proc]:
-                    if self.ggHatNLO != None and 'gg' in proc and not 'SM' in proc:
-                        (PD, L) = self.extractLoopContribution(proc)
-                        (P, D, E) = self.getHiggsProdDecMode(bin, PD)
-                        scaling = 'scaling_%s_%s_%s_%s' % (P, L, D, E)
-                    else:
-                        (P, D, E) = self.getHiggsProdDecMode(bin, proc)
-                        scaling = 'scaling_%s_%s_%s' % (P, D, E)
+                    (P, D, E) = self.getHiggsProdDecMode(bin, proc)
+                    scaling = 'scaling_%s_%s_%s' % (P, D, E)
                     params = self.modelBuilder.out.function(scaling).getParameters(ROOT.RooArgSet()).contentsString().split(',')
                     for param in params:
                         if param in self.NUISANCES:
@@ -482,25 +477,12 @@ class MSSMHiggsModel(PhysicsModel):
                 raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
         return (P, D, E)
 
-    def extractLoopContribution(self, process):
-        details = process.split("_")
-        if len(details)!=3:
-            raise RuntimeError, 'Expected signal process %s to be of the form PROD_LOOPTERM_DECAY' % process
-        return (details[0]+"_"+details[2], details[1])
-
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
-            if self.ggHatNLO != None and 'gg' in process and not 'SM' in process:
-                (PD, L) = self.extractLoopContribution(process)
-                (P, D, E) = self.getHiggsProdDecMode(bin, PD)
-                scaling = 'scaling_%s_%s_%s_%s' % (P, L, D, E)
-                print 'Scaling %s/%s as %s' % (bin, process, scaling)
-                return scaling
-            else:
-                (P, D, E) = self.getHiggsProdDecMode(bin, process)
-                scaling = 'scaling_%s_%s_%s' % (P, D, E)
-                print 'Scaling %s/%s as %s' % (bin, process, scaling)
-                return scaling
+            (P, D, E) = self.getHiggsProdDecMode(bin, process)
+            scaling = 'scaling_%s_%s_%s' % (P, D, E)
+            print 'Scaling %s/%s as %s' % (bin, process, scaling)
+            return scaling
         else:
             return 1
 

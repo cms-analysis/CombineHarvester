@@ -292,14 +292,14 @@ int main(int argc, char** argv) {
   };
   if(ggHatNLO){
     signal_types = {
-      {"ggH", {"ggh_t_htautau", "ggh_b_htautau", "ggh_i_htautau", "ggH_t_Htautau", "ggH_b_Htautau", "ggH_i_Htautau", "ggA_t_Atautau", "ggA_b_Atautau", "ggA_i_Atautau"}},
+      {"ggH", {"gght_htautau", "gghb_htautau", "gghi_htautau", "ggHt_Htautau", "ggHb_Htautau", "ggHi_Htautau", "ggAt_Atautau", "ggAb_Atautau", "ggAi_Atautau"}},
       {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
     };
   }
   if(mass=="MH"){
     if(ggHatNLO){
       signal_types = {
-        {"ggH", {"ggh_t", "ggh_b", "ggh_i"}},
+        {"ggH", {"gght", "gghb", "gghi"}},
         {"bbH", {"bbH"}}
       };
     }else{
@@ -348,7 +348,8 @@ int main(int argc, char** argv) {
       for(VString::const_iterator partial_process = signal_types["ggH"].begin(); partial_process != signal_types["ggH"].end(); partial_process++){
         VString ggH_type = {*partial_process};
         string hist_name = *partial_process;
-        if (hist_name.length()>5) hist_name.erase(5,8);
+        if (hist_name.length()>4) hist_name.erase(4,8);
+	hist_name.insert(3,"_");
         cb.cp().channel({chn}).process(ggH_type).ExtractShapes(
             input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
             "$BIN/"+hist_name+"$MASS",
@@ -620,7 +621,7 @@ int main(int argc, char** argv) {
 
   bool do_morphing = true;
   map<string, RooAbsReal *> mass_var = {
-    {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA}, {"ggh_t_htautau", &mh}, {"ggH_t_Htautau", &mH}, {"ggA_t_Atautau", &mA}, {"ggh_b_htautau", &mh}, {"ggH_b_Htautau", &mH}, {"ggA_b_Atautau", &mA}, {"ggh_i_htautau", &mh}, {"ggH_i_Htautau", &mH}, {"ggA_i_Atautau", &mA},
+    {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA}, {"gght_htautau", &mh}, {"ggHt_Htautau", &mH}, {"ggAt_Atautau", &mA}, {"gghb_htautau", &mh}, {"ggHb_Htautau", &mH}, {"ggAb_Atautau", &mA}, {"gghi_htautau", &mh}, {"ggHi_Htautau", &mH}, {"ggAi_Atautau", &mA},
     {"bbh_htautau", &mh}, {"bbH_Htautau", &mH}, {"bbA_Atautau", &mA}
   };
   if(mass=="MH"){
