@@ -294,6 +294,10 @@ class MSSMHiggsModel(PhysicsModel):
             for X in ['h', 'H', 'A']:
                 self.doHistFunc('xs_gg%s_%s' % (X, era), f.Get(hd['xs_gg%s'%X]), pars)
                 if self.ggHatNLO != None:
+                    #import Yukawa coupling factors of given scenario
+                    self.doHistFunc('Yt_MSSM_%s' % (X), f.Get('rescale_gt_%s'%X), pars)
+                    self.doHistFunc('Yb_MSSM_%s' % (X), f.Get('rescale_gb_%s'%X), pars)
+                    #import xsec fractions keeping the Yukawa coupling factors from the step before
                     self.add_ggH_at_NLO('xs_gg{X}{LC}_%s' %era, X)
             #! [part3]
                 # QCD scale uncertainty
