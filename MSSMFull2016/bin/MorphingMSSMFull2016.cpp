@@ -626,7 +626,7 @@ int main(int argc, char** argv) {
   };
   if(mass=="MH"){
     mass_var = {
-      {"ggH", &mA},
+      {"ggH", &mA}, {"ggHt", &mA}, {"ggHb", &mA}, {"ggHi", &mA},
       {"bbH", &mA}
     };
   }
