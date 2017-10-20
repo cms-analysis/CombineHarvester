@@ -54,6 +54,16 @@ class AsymptoticGrid(CombineToolBase):
       else : blacklisted_points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1]), utils.split_vals(igrid[2])))
     POIs = cfg['POIs']
     opts = cfg['opts']
+    
+    # remove problematic points (points with NaN values)
+    points_to_remove = [];
+    grids_to_remove = cfg.get('grids_to_remove', None)
+    if grids_to_remove is not None :
+        for igrid in grids_to_remove:
+            assert(len(igrid) == 2)
+            points_to_remove.extend(itertools.product(utils.split_vals(igrid[0]),utils.split_vals(igrid[1])))
+    for p in points_to_remove:
+        points.remove(p)
 
     # Have to merge some arguments from both the command line and the "opts" in the json file
     to_freeze = []
