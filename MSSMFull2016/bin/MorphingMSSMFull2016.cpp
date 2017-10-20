@@ -45,7 +45,7 @@ void To1Bin(T* proc)
 }
 
 //Treatment is different for single bin control regions than for multi-bin cr's
-//Introduce a BinIsSBControlRegion to filter out the single bin cr's and 
+//Introduce a BinIsSBControlRegion to filter out the single bin cr's and
 //Let BinIsControlRegion filter all control regions
 
 bool BinIsSBControlRegion(ch::Object const* obj)
@@ -69,8 +69,6 @@ bool BinIsNotControlRegion(ch::Object const* obj)
 {
     return !BinIsControlRegion(obj);
 }
-
-
 
 
 int main(int argc, char** argv) {
@@ -364,7 +362,7 @@ int main(int argc, char** argv) {
          "$BIN/$PROCESS_$SYSTEMATIC");
     for (auto ggH_type : signal_types["ggH"]) {
       cb.cp().channel({chn}).process({ggH_type}).ExtractShapes(
-          input_dir[chn] + "htt_"+chn+".inputs-mssm-13TeV"+postfix+".root",
+          input_dir[chn] + "htt_"+chn_label+".inputs-mssm-13TeV"+postfix+".root",
           "$BIN/"+gg_shapes.at(ggH_type)+"$MASS",
           "$BIN/"+gg_shapes.at(ggH_type)+"$MASS_$SYSTEMATIC");
     }
@@ -378,7 +376,7 @@ int main(int argc, char** argv) {
  //Now delete processes with 0 yield
  cb.FilterProcs([&](ch::Process *p) {
   bool null_yield = !(p->rate() > 0. || BinIsSBControlRegion(p));
-  if (null_yield){
+  if (null_yield && !p->signal()){
      std::cout << "[Null yield] Removing process with null yield: \n ";
      std::cout << ch::Process::PrintHeader << *p << "\n";
      cb.FilterSysts([&](ch::Systematic *s){
@@ -519,10 +517,11 @@ int main(int argc, char** argv) {
   // }
 
   // At this point we can fix the negative bins
+  std::cout << "Fixing negative bins\n";
   cb.ForEachProc([](ch::Process *p) {
     if (ch::HasNegativeBins(p->shape())) {
-      std::cout << "[Negative bins] Fixing negative bins for " << p->bin()
-                << "," << p->process() << "\n";
+      // std::cout << "[Negative bins] Fixing negative bins for " << p->bin()
+      //           << "," << p->process() << "\n";
       // std::cout << "[Negative bins] Before:\n";
       // p->shape()->Print("range");
       auto newhist = p->ClonedShape();
@@ -538,8 +537,8 @@ int main(int argc, char** argv) {
   cb.ForEachSyst([](ch::Systematic *s) {
     if (s->type().find("shape") == std::string::npos) return;
     if (ch::HasNegativeBins(s->shape_u()) || ch::HasNegativeBins(s->shape_d())) {
-      std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
-                << "," << s->process() << "," << s->name() << "\n";
+      // std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
+      //           << "," << s->process() << "," << s->name() << "\n";
       // std::cout << "[Negative bins] Before:\n";
       // s->shape_u()->Print("range");
       // s->shape_d()->Print("range");
