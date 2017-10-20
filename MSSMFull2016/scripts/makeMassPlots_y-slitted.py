@@ -199,7 +199,7 @@ for MODE in ['prefit']:
             os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --custom_x_range --x_axis_min=0 --x_axis_max 1 --log_y' \
-                  ' --ratio_range=0.92,1.08 --channel zmm --x_title "counting experiment for ^{}m_{#mu#mu}"' \
+                  ' --ratio_range=0.92,1.08 --channel zmm --x_title "counting experiment" --y_title "Events" ' \
                   ' --outname htt_%(CHN)s_%(CAT)s --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s"' \
                   ' --channel_label "%(LABEL)s" --empty_bin_error' % vars()))
 
