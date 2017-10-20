@@ -1468,8 +1468,8 @@ def isclose(a, b, rel_tol=1e-9, abs_tol=0.0):
 
 def StyleLimitBand(graph_dict, overwrite_style_dict=None):
     style_dict = {
-            'obs' : { 'LineWidth' : 2, 'LineColor' : R.kBlack, 'LineStyle' : 1},
-            'exp0' : { 'LineWidth' : 2, 'LineColor' : R.kBlack, 'LineStyle' : 2},
+            'obs' : { 'LineWidth' : 2},
+            'exp0' : { 'LineWidth' : 2, 'LineColor' : R.kRed},
             'exp1' : { 'FillColor' : R.kGreen},
             'exp2' : { 'FillColor' : R.kYellow}
             }
