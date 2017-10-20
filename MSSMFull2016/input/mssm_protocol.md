@@ -60,7 +60,7 @@ This will apply the text2workspace step recursively, setting up for every subdir
 
 ### Model dependent limits (MSSMvsSM or MSSMvsBkg)
 
-`combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$PWD/shapes/Models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 --PO MSSM-NLO-Workspace=$PWD/shapes/Models/higgs_pt_v3.root [--PO debugOutput="mhmodp_mu200_13TeV_debug.root" --PO makePlots ] -i output/mssm_201017_mhmodp/*`
+`combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$PWD/shapes/Models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 --PO MSSM-NLO-Workspace=$PWD/shapes/Models/higgs_pt_v3_mssm_mode.root [--PO debugOutput="mhmodp_mu200_13TeV_debug.root" --PO makePlots ] -i output/mssm_201017_mhmodp/*`
 
 This will perform the same recursive application of text2workspace, this time applying the mhmodp physics model.
 
