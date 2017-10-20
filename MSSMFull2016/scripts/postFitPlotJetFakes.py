@@ -449,7 +449,8 @@ if args.ratio and not fractions:
     axish[1].GetXaxis().SetTitle(args.x_title)
     axish[1].GetYaxis().SetNdivisions(4)
     if soverb_plot: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
-    else: axish[1].GetYaxis().SetTitle("")
+    elif y_splitted or sb_vs_b_ratio: axish[1].GetYaxis().SetTitle("")
+    else: axish[1].GetYaxis().SetTitle("Obs/Exp")
     #axish[1].GetYaxis().SetTitleSize(0.04)
     #axish[1].GetYaxis().SetLabelSize(0.04)
     #axish[1].GetYaxis().SetTitleOffset(1.3)
@@ -624,14 +625,15 @@ if args.ratio and not soverb_plot and not fractions:
       ratio_sbhist.Draw("histsame][")
     blind_datahist.DrawCopy("e0x0same")
     pads[1].RedrawAxis("G")
-      # Add also a ratio legend, since two relevant ratios shown
-    rlegend = plot.PositionedLegend(0.45,0.045,4,0.002)
-    rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
-    if sb_vs_b_ratio:
-      rlegend.AddEntry(ratio_sbhist,"(Sig+Bkg)/Bkg","L")
-    rlegend.SetFillStyle(0)
-    rlegend.SetNColumns(2)
-    rlegend.Draw("same")
+    if y_splitted or sb_vs_b_ratio:
+      # Add a ratio legend for y-splitted plots or plots with sb vs b ratios
+      rlegend = plot.PositionedLegend(0.45,0.045,4,0.002)
+      rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
+      if sb_vs_b_ratio:
+        rlegend.AddEntry(ratio_sbhist,"(Sig+Bkg)/Bkg","L")
+      rlegend.SetFillStyle(0)
+      rlegend.SetNColumns(2)
+      rlegend.Draw("same")
   else:
     pads[1].cd()
     axish[1].Draw("axis")
