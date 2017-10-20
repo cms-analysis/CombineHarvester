@@ -557,36 +557,6 @@ for i in hist_indices:
       blind_datahist.DrawCopy("e0x0same")
     axish[i].Draw("axissame")
 
-hist_indices = [0,2] if y_splitted else [0]
-for i in hist_indices:
-    pads[i].cd()
-    axish[i].Draw("AXIS")
-
-    #Draw uncertainty band
-    bkghist.SetFillColor(plot.CreateTransparentColor(12,0.4))
-    bkghist.SetLineColor(0)
-    bkghist.SetMarkerSize(0)
-
-    stack.Draw("histsame")
-    #Don't draw total bkgs/signal if plotting bkg fractions
-    if not fractions and not uniform:
-      bkghist.Draw("e2same")
-      #Add signal, either model dependent or independent
-      if not args.no_signal and ((y_splitted and i == 2) or (not y_splitted)):
-        if model_dep is True: 
-          sighist.SetLineColor(ROOT.kGreen+3)
-          sighist.SetLineWidth(3)
-          sighist.Draw("histsame")
-        else: 
-          sighist_ggH.SetLineColor(ROOT.kBlue)
-          sighist_bbH.SetLineColor(ROOT.kBlue + 3)
-          sighist_ggH.SetLineWidth(3)
-          sighist_bbH.SetLineWidth(3)
-          sighist_ggH.Draw("histsame")
-          sighist_bbH.Draw("histsame")
-    if not soverb_plot and not fractions: blind_datahist.DrawCopy("e0psame")
-    axish[i].Draw("axissame")
-
 pads[0].cd()
 #Setup legend
 legend = plot.PositionedLegend(0.30,0.30,3,0.03)
@@ -675,9 +645,6 @@ if args.ratio and not soverb_plot and not fractions:
     axish[2].SetMaximum(float(args.ratio_range.split(',')[1]))
     ratio_bkghist.SetMarkerSize(0)
     ratio_bkghist.Draw("e2same")
-    #sb_hist.SetMarkerSize(1)
-    #sb_hist.SetMarkerColor(ROOT.kBlue)
-    #sb_hist.Draw("same")
     blind_datahist.DrawCopy("e0same")
     pads[2].RedrawAxis("G")
     pads[1].RedrawAxis("G")
