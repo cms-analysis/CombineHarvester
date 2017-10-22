@@ -94,9 +94,15 @@ When producing the limit with the SM Higgs as BG simply change the datacards/dir
 
 ### Model dependent limits (asymptotic)
 
-**UPDATE ME with instructions for MSSMvsBkg and MSSMvsSig**
+To run limits in MSSMvsBkg mode run the following command:
 
-`combineTool.py -M AsymptoticGrid ./scripts/mssm_asymptotic_grid.json -d output/mssm_201017_mhmodp/cmb/mhmodp.root  --job-mode 'interactive' --task-name 'mssm_mhmodp'`
+`combineTool.py -M AsymptoticGrid ./scripts/mssm_asymptotic_grid_mhmodp.json -d output/mssm_201017_mhmodp/cmb/mhmodp.root  --job-mode 'interactive' --task-name 'mssm_mhmodp'`
+
+To run limits in MSSMvsSig mode run the additional options `--redefineSignalPOI x --setPhysicsModelParameters r=1 --freezeNuisances r` are required:
+
+`combineTool.py -M AsymptoticGrid ./scripts/mssm_asymptotic_grid_mhmodp.json -d output/mssm_201017_mhmodp/cmb/mhmodp.root  --job-mode 'interactive' --task-name 'mssm_mhmodp' --redefineSignalPOI x --setPhysicsModelParameters r=1 --freezeNuisances r'`
+
+(To run hMSSM scenario instead of mhmodp use mssm_asymptotic_grid_hMSSM.json)
 
 The asymptotic grid mode reads in an input json to define a set of mA-tanb points to scan and perform the limit calculation for. This time the calculation is done once per workspace, since the script has a nice feature which is that if you call it multiple times with the same workspace and asymptotic grid it will check which points have already completed successfully and only run those remaining. This makes it really easy to top up the grid for a finer scan for example. Once all points are complete, on the final call the script will create asymptotic_grid.root file containing the results.
 
