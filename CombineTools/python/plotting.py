@@ -328,6 +328,23 @@ def TwoPadSplit(split_point, gap_low, gap_high):
     result = [upper, lower]
     return result
 
+def ThreePadSplit(upper_split_point, split_point, gap_low, gap_high):
+    upper2 = R.TPad('upper2', 'upper2', 0., 0., 1., 1.)
+    upper2.SetTopMargin(1 - upper_split_point)
+    upper2.SetBottomMargin(split_point + gap_high)
+    upper2.SetFillStyle(4000)
+    upper2.Draw()
+    upper1 = R.TPad('upper1', 'upper1', 0., 0., 1., 1.)
+    upper1.SetBottomMargin(upper_split_point)
+    upper1.SetFillStyle(4000)
+    upper1.Draw()
+    lower = R.TPad('lower', 'lower', 0., 0., 1., 1.)
+    lower.SetTopMargin(1 - split_point + gap_low)
+    lower.SetFillStyle(4000)
+    lower.Draw()
+    upper1.cd()
+    result = [upper1, lower, upper2]
+    return result
 
 def MultiRatioSplit(split_points, gaps_low, gaps_high):
     """Create a set of TPads split vertically on the TCanvas

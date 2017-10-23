@@ -248,7 +248,7 @@ int main() {
       for (auto bin : bins) {
         for (auto p : sig_procs) {
           ch::BuildRooMorphing(ws, cb, bin, p, mh, "norm",
-                               can_morph[chn], true, nullptr /*&demo*/);
+                               can_morph[chn], true, false, nullptr /*&demo*/);
         }
       }
     }
