@@ -71,9 +71,17 @@ This will perform the same recursive application of text2workspace, this time ap
 This can be done directly with combine, but again combineTool makes life a lot easier for us by allowing successive calls (with different choices of job submission, and parallelisation of calculations):
 
 ***ggPhi limits***
+
 `combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_ggH -d output/mssm_201017/*/ws.root --there -n ".ggH"`
 
+For the ggH limits we also add two additional lines for t-only and b-only coupling, using the datacards where the `-- mod_indep_use_sm 0` option was used as described above:
+
+`combineTool.py -m "90,100,110,120,130" -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0,ggHt_frac=1,ggHb_frac=0 --redefineSignalPOIs r_ggH -d output/mssm_201017_custom/cmb/ws.root --there -n ".ggH.tonly"`
+
+`combineTool.py -m "90,100,110,120,130" -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json --setPhysicsModelParameters r_ggH=0,r_bbH=0,ggHt_frac=0,ggHb_frac=1 --redefineSignalPOIs r_ggH -d output/mssm_201017_custom/cmb/ws.root --there -n ".ggH.bonly"`
+
 ***bbPhi limits***
+
 `combineTool.py -m "90,100,110,120,130,140,160,180,200,250,350,400,450,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2300,2600,2900,3200" -M Asymptotic --rAbsAcc 0 --rRelAcc 0.0005 --boundlist input/mssm_boundaries.json  --setPhysicsModelParameters r_ggH=0,r_bbH=0 --redefineSignalPOIs r_bbH -d output/mssm_201017/*/ws.root --there -n ".bbH"`
 
 This goes to each subdirectory of output/mssm_120717/ (--there) and performs the combine calculation for the masses listed on the workspace. The combine output files are stored in the directories alongside the datacards. Note the option `--parallel X` allows you to run the calculations interactively with `X` in parallel, and e.g. `--job-mode 'lxbatch' --task-name 'mssm_ggH' --sub-opts '-q 1nh' --merge=4` could be used to instead run on  lxbatch, merging 4 masspoints into 1 job and submitting to the 1 hour queue.
@@ -197,6 +205,14 @@ The options --absolute and --relative can be used to make ratio plots as well. N
 To get the color scheme for the treatment of the SM higgs as BG the option --higgs-bg is implemented
 
 `python scripts/plotMSSMLimits.py --logy --logx mssm_201017_withSMBG_ggH_mt.json --cms-sub="Preliminary" -o mssm_201017_SMHbg_mt --higgs-bg`
+
+**Final plots for the paper**
+
+ggH limits with lines added for t-only and b-only:
+`python scripts/plotMSSMLimits.py --logy --logx mssm_201017_ggH_smfracs_cmb.json 'mssm_201017_ggH_bonly_cmb.json:exp0:MarkerSize=0,LineStyle=1,LineWidth=2,LineColor=4,Title="Expected b-only"' 'mssm_201017_ggH_tonly_cmb.json:exp0:MarkerSize=0,LineStyle=1,LineWidth=2,LineColor=2,Title="Expected t-only"' --cms-sub="Preliminary" -o mssm_201017_ggH_cmb --process 'gg#phi' --title-right="35.9 fb^{-1} (13 TeV)" --do-new-ggH`
+
+bbH limits:
+`python scripts/plotMSSMLimits.py --logy --logx mssm_201017_bbH_smfracs_cmb.json --cms-sub="Preliminary" -o mssm_201017_ggH_cmb --process 'bb#phi' --title-right="35.9 fb^{-1} (13 TeV)"`
 
 ### Limit comparisons for sync purposes
 
