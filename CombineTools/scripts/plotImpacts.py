@@ -107,6 +107,7 @@ for page in xrange(n):
     g_pulls = ROOT.TGraphAsymmErrors(n_params)
     g_impacts_hi = ROOT.TGraphAsymmErrors(n_params)
     g_impacts_lo = ROOT.TGraphAsymmErrors(n_params)
+    g_impacts_hi2 = ROOT.TGraphAsymmErrors(n_params)
     max_impact = 0.
 
     text_entries = []
@@ -144,11 +145,20 @@ for page in xrange(n):
             redo_boxes.append(i)
         g_impacts_hi.SetPoint(i, 0, float(i) + 0.5)
         g_impacts_lo.SetPoint(i, 0, float(i) + 0.5)
+        g_impacts_hi2.SetPoint(i, 0, float(i) + 0.5)
         imp = pdata[p][POIs[0]]
-        g_impacts_hi.SetPointError(i, 0, imp[2] - imp[1], 0.5, 0.5)
-        g_impacts_lo.SetPointError(i, imp[1] - imp[0], 0, 0.5, 0.5)
-        max_impact = max(
-            max_impact, abs(imp[1] - imp[0]), abs(imp[2] - imp[1]))
+        diff_hi = imp[2] - imp[1]
+        diff_lo = imp[1] - imp[0]
+        g_impacts_hi.SetPointError(i, 0, diff_hi, 0.5, 0.5)
+        g_impacts_lo.SetPointError(i, diff_lo, 0, 0.5, 0.5)
+
+        # hi is drawn first so it might get covered by lo when their impacts are on the same side
+        # in that case, fill hi2 which is drawn after lo
+        if (diff_hi > 0 and diff_lo < 0 and -diff_lo > diff_hi) or \
+                (diff_hi < 0 and diff_lo > 0 and diff_lo > -diff_hi):
+            g_impacts_hi2.SetPointError(i, 0, diff_hi, 0.5, 0.5)
+
+        max_impact = max(max_impact, abs(diff_lo), abs(diff_lo))
         col = colors.get(tp, 2)
         if args.color_groups is not None and len(pdata[p]['groups']) == 1:
             col = color_groups.get(pdata[p]['groups'][0], 1)
@@ -200,6 +210,8 @@ for page in xrange(n):
     g_impacts_hi.Draw('2SAME')
     g_impacts_lo.SetFillColor(plot.CreateTransparentColor(38, alpha))
     g_impacts_lo.Draw('2SAME')
+    g_impacts_hi2.SetFillColor(plot.CreateTransparentColor(46, alpha))
+    g_impacts_hi2.Draw('2SAME')
     pads[1].RedrawAxis()
 
     legend = ROOT.TLegend(0.02, 0.02, 0.40, 0.06, '', 'NBNDC')
