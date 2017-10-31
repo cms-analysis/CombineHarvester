@@ -221,8 +221,8 @@ class TaylorExpand(CombineToolBase):
         x0vars = []
         xvec = ROOT.RooArgList()
         x0vec = ROOT.RooArgList()
-        for POI in POIs:
-            xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], -100, 100))
+        for i, POI in enumerate(POIs):
+            xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], js[POI]["Val"] - 20 * hvec[i], js[POI]["Val"] + 20 * hvec[i]))
             x0vars.append(ROOT.RooRealVar(POI+'_In', '', js[POI]["Val"], -100, 100))
             x0vars[-1].setConstant(True)
             xvec.add(xvars[-1])
@@ -240,8 +240,12 @@ class TaylorExpand(CombineToolBase):
             for i in xrange(pow(N, n)):
                 sorted_tracker = tuple(sorted(tracker))
                 if sorted_tracker in diffres:
-                    te_terms[pos] = ROOT.Double(diffres[sorted_tracker])
+                    val = ROOT.Double(diffres[sorted_tracker])
+                    te_terms[pos] = val
                     print '%i -- %s --> %s: %f' % (pos, tracker, sorted_tracker, te_terms[pos])
+                    if abs(val) > 1000:
+                        print '%i -- %s --> %s: %f <ERROR LARGE VALUE>' % (pos, tracker, sorted_tracker, te_terms[pos])
+                        te_terms[pos] = ROOT.Double(0.)
                 else:
                     te_terms[pos] = ROOT.Double(0.)
                     print '%i -- %s --> %s: <not found>' % (pos, tracker, sorted_tracker)

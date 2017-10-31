@@ -25,8 +25,8 @@ if type is None:
 w = fin.Get('w')
 # w.Print()
 
-pdf = w.pdf('pdf')
-data = w.data('global_obs')
+pdf = w.function('nll')
+#data = w.data('global_obs')
 
 wfinal = w
 
@@ -189,7 +189,7 @@ if type == 'B1ZZ_THtoA1_mu':
     wnew.factory('mu_BR_gamgam_r_BR_ZZ[1]')
     wnew.factory('mu_BR_tautau_r_BR_ZZ[1]')
     getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
-    pdf = wnew.pdf('pdf')
+    pdf = wnew.function('nll')
     pdf.Print('tree')
     wfinal = wnew
 
@@ -305,13 +305,15 @@ if type == 'A1_5PDtoA1_5D':
     # pdf.Print('tree')
     wfinal = wnew
 
-nll = pdf.createNLL(data)
+#nll = pdf.createNLL(data)
+nll = pdf
 
 minim = ROOT.RooMinimizer(nll)
 minim.setVerbose(False)
 minim.minimize('Minuit2', 'migrad')
 minim.setPrintLevel(-1)
 wfinal.allFunctions().Print('v')
+wfinal.allVars().Print('v')
 
 nll0 = nll.getVal()
 
@@ -319,7 +321,7 @@ param = wfinal.var(POI)
 param.setConstant()
 
 # Figure out the other floating parameters
-params = pdf.getParameters(data)
+params = pdf.getParameters(ROOT.RooArgSet())
 param_it = params.createIterator()
 var = param_it.Next()
 float_params = set()
@@ -366,6 +368,7 @@ for p in xrange(points):
     param.setVal(r)
     a_r[0] = r
     minim.minimize('Minuit2', 'migrad')
+    #wfinal.allVars().Print('v')
     for i, var in enumerate(float_params):
         float_arrs[i][0] = wfinal.var(var).getVal()
     nllf = nll.getVal()
