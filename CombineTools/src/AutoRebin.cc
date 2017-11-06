@@ -24,8 +24,14 @@ void AutoRebin::Rebin(CombineHarvester &src, CombineHarvester &dest) {
     //Build histogram containing total of all backgrounds, avoid using
     //GetShapeWithUncertainty so that possible negative bins are retained
     TH1F data_obs = src.cp().bin({bin}).GetObservedShape();
-    TH1F total_bkg("","",data_obs.GetNbinsX(), 
-                data_obs.GetXaxis()->GetXbins()->GetArray()) ;
+    TH1F total_bkg;
+    if (data_obs.GetXaxis()->GetXbins()->GetArray()){
+      total_bkg = TH1F("","",data_obs.GetNbinsX(), 
+                  data_obs.GetXaxis()->GetXbins()->GetArray()) ;
+    } else {
+      total_bkg = TH1F("","",data_obs.GetNbinsX(),
+                  data_obs.GetXaxis()->GetBinLowEdge(1),data_obs.GetXaxis()->GetBinLowEdge(data_obs.GetNbinsX()+1));
+    }
     src.cp().bin({bin}).backgrounds().ForEachProc([&](ch::Process *proc) {
         total_bkg.Add((proc->ClonedScaledShape()).get());
     });
@@ -58,7 +64,7 @@ void AutoRebin::Rebin(CombineHarvester &src, CombineHarvester &dest) {
                                    ? (init_bins[i_old + 1] - init_bins[i_old])
                                    : 0.;
           std::cout << (
-            boost::format("%-10.0f %-10.0f %-10.2g") % init_bins[i_old] % i_old_width % total_bkg.GetBinContent(i_old+1));
+            boost::format("%-10.1f %-10.1f %-10.2g") % init_bins[i_old] % i_old_width % total_bkg.GetBinContent(i_old+1));
           bool new_aligned = (i_new < new_bins.size()) ? std::fabs(init_bins[i_old] - new_bins[i_new]) < 1E-8 : false;
           if (new_aligned) {
             double i_new_width = (i_new < (new_bins.size() - 1))
@@ -66,7 +72,7 @@ void AutoRebin::Rebin(CombineHarvester &src, CombineHarvester &dest) {
                                      : 0.;
 
             std::cout << (
-              boost::format("%-10.0f %-10.0f\n") % new_bins[i_new] % i_new_width);
+              boost::format("%-10.1f %-10.1f\n") % new_bins[i_new] % i_new_width);
             ++i_new;
           } else {
             std::cout << (
@@ -97,7 +103,6 @@ void AutoRebin::Rebin(CombineHarvester &src, CombineHarvester &dest) {
 
 void AutoRebin::FindNewBinning(TH1F &total_bkg, std::vector<double> &new_bins, 
                 double bin_condition, double bin_uncert_fraction, int mode) {
-    
   bool all_bins = true;
   //Find the maximum bin
   int hbin_idx = total_bkg.GetMaximumBin();
