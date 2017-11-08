@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import CombineHarvester.CombineTools.ch as ch
-#import CombineHarvester.HIG16044.systematics as systs
+import CombineHarvester.HIG16044.systematics as systs
 import ROOT as R
 import glob
 import os
@@ -28,23 +28,15 @@ chns = []
 if args.channel=="all":
   chns = ['Wen','Wmn','Znn','Zee','Zmm']
 if 'Zll' in args.channel or 'Zmm' in args.channel:
-  print "appending Zmm"
   chns.append('Zmm')
 if 'Zll' in args.channel  or 'Zee' in args.channel:
-  print "appending Zee"
   chns.append('Zee')
 if 'Wln' in args.channel or 'Wmn' in args.channel:
-  print "appending Wmn"
   chns.append('Wmn')
 if 'Wln' in args.channel or 'Wen' in args.channel:
-  print "appending Wen"
   chns.append('Wen')
 if 'Znn' in args.channel:
   chns.append('Znn')
-
-print chns
-
-
 
 input_folders = {
   'Wen' : 'Example',
@@ -99,6 +91,8 @@ for chn in chns:
   cb.cp().channel([chn]).signals().ExtractShapes(
     file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
     #file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
+
+systs.AddSystematics(cb)
 
 rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMode(1).SetPerformRebin(True).SetVerbosity(1)
 
