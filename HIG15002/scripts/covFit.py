@@ -262,6 +262,16 @@ if type == 'A1_5PDtoA1_mu':
     pdf.Print('tree')
     wfinal = wnew
 
+if type == 'A1_5PtoA1_mu':
+    wnew = ROOT.RooWorkspace()
+    wnew.factory('mu[1,0.0,2.0]')
+    for P in ['ggFbbH', 'VBF', 'WH', 'ZH', 'ttHtH']:
+        wnew.factory('expr::mu_XS_%s("@0", mu)' % (P))
+    getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
+    pdf = wnew.function('nll')
+    pdf.Print('tree')
+    wfinal = wnew
+
 # A1_5PD --> A1_5P
 if type == 'A1_5PDtoA1_5P':
     wnew = ROOT.RooWorkspace()

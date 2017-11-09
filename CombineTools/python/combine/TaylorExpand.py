@@ -24,6 +24,7 @@ from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBas
 class PartialFD:
     def __init__(self, pars, d, stencils, coeffs, hvec):
         self.pars = list(pars)
+        #self.pars = [float('%f' % p) for p in pars]
         self.d = list(d)
         uniques = sorted(set(d))
         freq = []
@@ -33,17 +34,20 @@ class PartialFD:
         self.terms = list()
         if len(freq):
             self.fundamental = False
-            stencil = stencils[freq[0]]
-            coeff = coeffs[freq[0]]
+            stencil = stencils[uniques[0]][freq[0]]
+            coeff = coeffs[uniques[0]][freq[0]]
             scale_coeff = 1. / pow(hvec[uniques[0]], freq[0])
             for i in range(len(stencil)):
                 remainder = list(filter(lambda a: a != uniques[0], self.d))
                 newpars = list(self.pars)
-                newpars[uniques[0]] = stencil[i] * hvec[uniques[0]]
+                newpars[uniques[0]] += (stencil[i] * hvec[uniques[0]])
                 # print (stencil[i], coeff[i], remainder)
                 self.terms.append((stencil[i], coeff[i] * scale_coeff, remainder, PartialFD(newpars, remainder, stencils, coeffs, hvec)))
         else:
             self.fundamental = True
+    
+    def FormattedPars(self):
+        return [float('%f' % p) for p in self.pars]
 
     def Eval(self):
         if self.fundamental:
@@ -58,7 +62,7 @@ class PartialFD:
         sp = ' ' * indent
         extra = ''
         if self.fundamental:
-            extra = ' %s' % self.pars
+            extra = ' %s' % self.FormattedPars()
         if coeff is None:
             print '%s%s%s' % (sp, self.d, extra)
         else:
@@ -113,6 +117,12 @@ class TaylorExpand(CombineToolBase):
                            help=('Explict list POIs to expand in'))
         group.add_argument('--do-fits', action='store_true',
             help=('Actually do the fits'))
+        group.add_argument('--step-size', choices=['1sigma', '2sigma'], default='1sigma',
+            help=('Take the one or two sigma interval as step size for calculation derivatives'))
+        group.add_argument('--override-ranges', default=None,
+                           help=('Explict list POIs to expand in'))
+        group.add_argument('--override-sigmas', default=None,
+                           help=('Explict list POIs to expand in'))
 
         # group.add_argument('--do-fits', action='store_true',
         #     help=('Actually do the fits'))
@@ -138,28 +148,62 @@ class TaylorExpand(CombineToolBase):
 
         print 'Taylor expand with N = %i up to order %i' % (N, self.args.order)
 
+
+        hvec_overrides = {}
+        if self.args.override_sigmas is not None:
+            new_ranges = [x.split("=") for x in self.args.override_sigmas.split(',')]
+            for new_range in new_ranges:
+                hvec_overrides[new_range[0]] = float(new_range[1])
+ 
         xvec = np.zeros((N))
         hvec = []
         valvec = []
-        for P in POIs:
+        for i, P in enumerate(POIs):
             valvec.append(js[P]["Val"])
-            hvec.append((js[P]["ErrorHi"] - js[P]["ErrorLo"]) / 2.)
+            xvec[i] = js[P]["Val"]
+            if P in hvec_overrides:
+                hvec.append(hvec_overrides[P])
+            elif self.args.step_size == '2sigma' and js[P]["2sig_ValidErrorHi"] and js[P]["2sig_ValidErrorLo"]:
+                hvec.append((js[P]["2sig_ErrorHi"] - js[P]["2sig_ErrorLo"]) / 2.)
+            else: 
+                hvec.append((js[P]["ErrorHi"] - js[P]["ErrorLo"]) / 2.)
 
 
-        stencils = {}
-        coeffs = {}
+        stencil_ranges = {}
+        if self.args.override_ranges is not None:
+            new_ranges = [x.split("=") for x in self.args.override_ranges.split(':')]
+            for new_range in new_ranges:
+                stencil_ranges[new_range[0]] = [float(x) for x in new_range[1].split(',')]
 
-        for i in xrange(self.args.order + 1):
-            print '>> Order %i' % i
-            if i == 0:
-                continue
-            stencil_size = (i + 1) / 2
-            stencil = [0]
-            for s in range(1, stencil_size + 1):
-                stencil.append((+1. * s) / float(stencil_size))
-                stencil.append((-1. * s) / float(stencil_size))
-            stencils[i] = sorted(stencil)
-            coeffs[i] = self.generate_fd(i, 1, stencils[i])
+        stencils = []
+        coeffs = []
+
+
+
+        for i,P in enumerate(POIs):
+            stencil_item = {}
+            coeff_item = {}
+            if P in stencil_ranges:
+                s_min = stencil_ranges[P][0] - valvec[i]
+                s_max = stencil_ranges[P][1] - valvec[i]
+                hvec[i] = 1.
+            else:
+                s_min = -hvec[i]
+                s_max = +hvec[i]
+                hvec[i] = 1.
+            for i in xrange(self.args.order + 1):
+                print '>> Order %i' % i
+                if i == 0:
+                    continue
+                stencil_size = max(3, 1 + ((i + 1) / 2) * 2)
+                stencil = list()
+                stencil_spacing = (s_max - s_min) / (stencil_size - 1)
+                for s in range(stencil_size):
+                    stencil.append(s_min + float(s) * stencil_spacing)
+                stencil_item[i] = sorted(stencil)
+                coeff_item[i] = self.generate_fd(i, 1, stencil_item[i])
+            stencils.append(stencil_item)
+            coeffs.append(coeff_item)
 
         print stencils
         print coeffs
@@ -177,14 +221,13 @@ class TaylorExpand(CombineToolBase):
                 termlist[item].GatherTerms(evallist)
             print len(termlist)
 
-        unique_evallist = [list(x) for x in set(tuple(x.pars) for x in evallist)]
-        print 'Actual number of evaluations: %i' % len(unique_evallist)
+        unique_evallist = [list(x) for x in set(tuple(x.FormattedPars()) for x in evallist)]
 
         filelist = []
         for i, vals in enumerate(unique_evallist):
             set_vals = []
             for POI, val, shift in zip(POIs, valvec, vals):
-                set_vals.append('%s=%f' % (POI, val + shift))
+                set_vals.append('%s=%f' % (POI, shift))
             set_vals_str = ','.join(set_vals)
             hash_id = hashlib.sha1(set_vals_str).hexdigest()
             filename = 'higgsCombine.TaylorExpand.%s.MultiDimFit.mH%s.root' % (hash_id, mass)
@@ -194,10 +237,12 @@ class TaylorExpand(CombineToolBase):
             if self.args.do_fits and not os.path.isfile(filename):
                 self.job_queue.append('combine %s %s' % (arg_str, ' '.join(self.passthru)))
 
+        n_todo = len(self.job_queue)
         self.flush_queue()
+
         print 'Raw number of evaluations: %i' % len(evallist)
         print 'Actual number of evaluations: %i' % len(unique_evallist)
-
+        print 'Actual number of evaluations to do: %i' % n_todo 
         if self.args.do_fits:
             return
 
@@ -205,10 +250,12 @@ class TaylorExpand(CombineToolBase):
         for i, vals in enumerate(unique_evallist):
             fnresults[tuple(vals)] = self.get_results(filelist[i])
             print ('%s %s %f' % (vals, filelist[i], fnresults[tuple(vals)]))
+            if fnresults[tuple(vals)] < 0. or fnresults[tuple(vals)] > 100:
+                print 'ODD VALUE'
         # print fnresults
 
         for x in evallist:
-            x.fnval = fnresults[tuple(x.pars)]
+            x.fnval = fnresults[tuple(x.FormattedPars())]
 
         diffres = {}
         for key, val in termlist.items():
@@ -222,7 +269,7 @@ class TaylorExpand(CombineToolBase):
         xvec = ROOT.RooArgList()
         x0vec = ROOT.RooArgList()
         for i, POI in enumerate(POIs):
-            xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], js[POI]["Val"] - 20 * hvec[i], js[POI]["Val"] + 20 * hvec[i]))
+            xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], max(0.01, js[POI]["Val"] + 1 * js[POI]["ErrorLo"]), js[POI]["Val"] + 1 * js[POI]["ErrorHi"]))
             x0vars.append(ROOT.RooRealVar(POI+'_In', '', js[POI]["Val"], -100, 100))
             x0vars[-1].setConstant(True)
             xvec.add(xvars[-1])
@@ -267,9 +314,9 @@ class TaylorExpand(CombineToolBase):
         getattr(wsp, 'import')(nllfn, ROOT.RooCmdArg())
         wsp.Write()
         fout.Close()
+        print hvec
 
 
-        self.QuickTestOneVar(POIs[0], valvec[0], valvec[0] - 6 * hvec[0], valvec[0] + 6, 50, diffres)
 
     def generate_fd(self, d, h, s):
         N = len(s)
