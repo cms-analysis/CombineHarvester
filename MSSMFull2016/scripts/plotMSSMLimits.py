@@ -90,6 +90,19 @@ style_dict_hig_17_020 = {
         'legend' : {
             }
         }
+        
+style_dict_hig_17_020_noHbkg = {
+        'style' : {
+            'exp0' : { 'LineColor' : ROOT.kBlack, 'LineStyle' : 2},
+            'exp1' : { 'FillColor' : ROOT.kGreen+2},
+            'exp2' : { 'FillColor' : ROOT.kSpring+5}
+            },
+        'legend' : {
+            'exp0' : { 'Label' : 'Expected for no H(125 GeV) in BG'},
+            'exp1' : { 'Label' : '#pm1#sigma no H(125 GeV) in BG'},
+            'exp2' : { 'Label' : '#pm2#sigma no H(125 GeV) in BG'}
+            }
+        }
 
 style_dict=None
 if args.higgs_bg:
@@ -100,7 +113,8 @@ if args.plot_exp_points:
     style_dict = style_dict_exponly
 if args.use_hig_17_020_style:
     style_dict = style_dict_hig_17_020
-
+if args.use_hig_17_020_style and args.higgs_bg:
+    style_dict = style_dict_hig_17_020_noHbkg
 def DrawAxisHists(pads, axis_hists, def_pad=None):
     for i, pad in enumerate(pads):
         pad.cd()
@@ -211,7 +225,13 @@ for src in args.input:
             settings['MarkerColor'] = defcols[i]
             settings['LineStyle'] = j
             icol[nm] = (i+1) if (i+1) < len(defcols) else 0
-        graphs.append(plot.LimitTGraphFromJSONFile(file, splitsrc[1]))
+        graph = plot.LimitTGraphFromJSONFile(file, splitsrc[1])
+        if args.do_new_ggH: 
+          for i in range(graph.GetN()-1,-1, -1): 
+              x=ROOT.Double(); y=ROOT.Double()
+              graph.GetPoint(i,x,y)
+              if x > 130: graph.RemovePoint(i) 
+        graphs.append(graph)
         if len(splitsrc) >= 3:
             settings.update({x.split('=')[0]: eval(x.split('=')[1]) for x in splitsrc[2].split(',')})
         plot.Set(graphs[-1], **settings)
@@ -254,12 +274,12 @@ if args.do_new_ggH:
     line.SetLineColor(13)
     line.SetLineStyle(7)
     line.SetLineWidth(2)
-    line.DrawLine(130, axis[0].GetMinimum(), 130, 70)
+    line.DrawLine(130, axis[0].GetMinimum(), 130, plot.GetPadYMax(pads[0])*1.2)
     latex = ROOT.TLatex()
     latex.SetTextAngle(90)
-    latex.SetTextSize(0.02)
+    latex.SetTextSize(0.03)
     latex.SetTextColor(13)
-    latex.DrawLatex(125, 0.001, 'Coupling-dependent region')
+    latex.DrawLatex(125, axis[0].GetMinimum()*1.2, 'Coupling-dependent region')
 
 if args.ratio_to is not None:
     pads[1].cd()
