@@ -649,12 +649,15 @@ if args.ratio and not soverb_plot and not fractions:
     pads[1].RedrawAxis("G")
     if y_splitted or sb_vs_b_ratio:
       # Add a ratio legend for y-splitted plots or plots with sb vs b ratios
-      rlegend = plot.PositionedLegend(0.45,0.045,4,0.002)
+      rlegend = plot.PositionedLegend(0.35,0.04,4,0.015,0.01)
+      rlegend.SetTextFont(42)
+      rlegend.SetTextSize(0.025)
+      rlegend.SetFillStyle(1001)
+      rlegend.SetFillColor(plot.CreateTransparentColor(3,0.2))
+      rlegend.SetNColumns(2)
       rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
       if sb_vs_b_ratio:
         rlegend.AddEntry(ratio_sbhist,"(Sig+Bkg)/Bkg","L")
-      rlegend.SetFillStyle(0)
-      rlegend.SetNColumns(2)
       rlegend.Draw("same")
   else:
     pads[1].cd()
