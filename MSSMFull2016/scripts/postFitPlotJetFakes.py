@@ -575,6 +575,14 @@ legend = plot.PositionedLegend(0.30,0.30,3,0.03)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
 legend.SetFillStyle(0)
+
+signal_legend = None
+if not args.no_signal and model_dep:
+    signal_legend = plot.PositionedLegend(0.16,0.04,2,0.03,0.07)
+    signal_legend.SetTextFont(42)
+    signal_legend.SetTextSize(0.025)
+    signal_legend.SetFillStyle(0)
+
 if not soverb_plot and not fractions: legend.AddEntry(total_datahist,"Observation","PE")
 #Drawn on legend in reverse order looks better
 bkg_histos.reverse()
@@ -585,22 +593,25 @@ legend.AddEntry(bkghist,"Background uncertainty","f")
 if not fractions:
   if not args.no_signal:
     if model_dep is True: 
-        legend.AddEntry(sighist,"h,H,A#rightarrow#tau#tau"%vars(),"l")
+        signal_legend.AddEntry(sighist,"h,H,A#rightarrow#tau#tau"%vars(),"l")
     else: 
         legend.AddEntry(sighist_ggH,"gg#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
         legend.AddEntry(sighist_bbH,"bb#phi("+mPhi+")#rightarrow#tau#tau"%vars(),"l")
   latex = ROOT.TLatex()
   latex.SetNDC()
   latex.SetTextAngle(0)
+  latex.SetTextAlign(11)
+  latex.SetTextFont(42)
+  latex.SetTextSize(0.025)
   latex.SetTextColor(ROOT.kBlack)
-  latex.SetTextSize(0.026)
   if not args.no_signal:
     if model_dep is True: 
-        latex.DrawLatex(0.70,0.56,"#splitline{m_{h}^{mod+}, }{m_{A}=%(mA)s GeV, tan#beta=%(tb)s}"%vars())
+        latex.DrawLatex(0.477,0.80,"#splitline{#splitline{m_{h}^{mod+}}{#mu = 200 GeV}}{#splitline{m_{A} = %(mA)s GeV}{tan#beta = %(tb)s}}"%vars())
     else: 
         latex.DrawLatex(0.65,0.56,"#sigma(gg#phi)=%(r_ggH)s pb,"%vars())
         latex.DrawLatex(0.65,0.52,"#sigma(bb#phi)=%(r_bbH)s pb"%vars())
 if not args.bkg_fractions: legend.Draw("same")
+if not args.no_signal and model_dep: signal_legend.Draw("same")
 
 # Channel & Category label
 latex2 = ROOT.TLatex()
