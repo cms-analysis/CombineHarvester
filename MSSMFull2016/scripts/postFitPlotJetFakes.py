@@ -705,11 +705,27 @@ if y_splitted:
     pads[2].Update()
     x_min = axish[2].GetXaxis().GetXmin()
     x_max = axish[2].GetXaxis().GetXmax()
-    splitline = ROOT.TLine(x_min,y_splitted,x_max,y_splitted)
-    splitline.SetLineWidth(1)
+    splitline = ROOT.TLine(x_min*0.995,y_splitted,x_max*1.5,y_splitted)
+    splitline.SetLineWidth(2)
+    splitline.SetLineColor(ROOT.kGray+2)
     splitline.Draw()
     pads[0].cd()
     splitline.Draw()
+
+    linear_latex = ROOT.TLatex()
+    linear_latex.SetNDC()
+    linear_latex.SetTextAngle(-90)
+    linear_latex.SetTextColor(ROOT.kGray+2)
+    linear_latex.SetTextSize(0.03)
+    linear_latex.DrawLatex(0.973,0.70,"linear scale")
+
+
+    log_latex = ROOT.TLatex()
+    log_latex.SetNDC()
+    log_latex.SetTextAngle(-90)
+    log_latex.SetTextColor(ROOT.kGray+2)
+    log_latex.SetTextSize(0.03)
+    linear_latex.DrawLatex(0.973,0.51,"log scale")
 
 
 #Save as png and pdf with some semi sensible filename
