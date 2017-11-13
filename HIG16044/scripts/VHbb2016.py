@@ -51,7 +51,7 @@ bkg_procs = {
   'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
   'Zmm' : ['s_Top','TT','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
   'Zee' : ['s_Top','TT','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b']
+  'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
 }
 
 sig_procs = {
@@ -73,10 +73,15 @@ cats = {
   ],
   'Znn' : [
     (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
+  ],
+ 'Wen' : [
+    (1, 'WenHighPt'), (3,'wlfWen'), (5,'whfWenHigh'), (6,'whfWenLow'), (7,'ttWen')
+  ],
+ 'Wmn' : [
+    (1, 'WmnHighPt'), (3,'wlfWmn'), (5,'whfWmnHigh'), (6,'whfWmnLow'), (7,'ttWmn')
   ]
-#Wln still to follow
-}
 
+}
 
 for chn in chns:
   cb.AddObservations( ['*'], ['vhbb'], ['13TeV'], [chn], cats[chn])
@@ -86,11 +91,18 @@ for chn in chns:
 
 for chn in chns:
   file = shapes + input_folders[chn] + "/vhbb_"+chn+".root"
-  cb.cp().channel([chn]).backgrounds().ExtractShapes(
-    file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
-  cb.cp().channel([chn]).signals().ExtractShapes(
-    file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
-    #file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
+  if not chn =='Wen' and not chn =='Wmn':
+    cb.cp().channel([chn]).backgrounds().ExtractShapes(
+      file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    cb.cp().channel([chn]).signals().ExtractShapes(
+      file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+      #file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
+  else:
+    cb.cp().channel([chn]).backgrounds().ExtractShapes(
+      file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
+    cb.cp().channel([chn]).signals().ExtractShapes(
+      file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
+
 
 systs.AddSystematics(cb)
 
