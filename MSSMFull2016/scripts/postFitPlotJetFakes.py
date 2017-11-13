@@ -106,7 +106,7 @@ parser.add_argument('--bkg_frac_ratios', default=False, action='store_true', hel
 parser.add_argument('--uniform_binning', default=False, action='store_true', help='Make plots in which each bin has the same width') 
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.7,1.3")
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
-parser.add_argument('--y_splitted', default=0.0,type=float,help='Use splitted y axis with linear at top and log scale at bottom. Cannot be used together with bkg_frac_ratios')
+parser.add_argument('--split_y_scale', default=0.0,type=float,help='Use split y axis with linear scale at top and log scale at bottom. Cannot be used together with bkg_frac_ratios')
 parser.add_argument('--sb_vs_b_ratio', action='store_true',help='Draw a Signal + Background / Background into the ratio plot')
 parser.add_argument('--x_title', default='m_{T}^{tot} (GeV)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='dN/dm_{T}^{tot} (1/GeV)',help='Title for the y-axis')
@@ -144,7 +144,7 @@ log_y=args.log_y
 log_x=args.log_x
 fractions=args.bkg_fractions
 frac_ratios=args.bkg_frac_ratios
-y_splitted=args.y_splitted
+split_y_scale=args.split_y_scale
 sb_vs_b_ratio = args.sb_vs_b_ratio
 uniform=args.uniform_binning
 #If plotting bkg fractions don't want to use log scale on y axis
@@ -423,7 +423,7 @@ c2.cd()
 if args.ratio:
   if frac_ratios:
     pads=plot.MultiRatioSplit([0.25,0.14],[0.01,0.01],[0.01,0.01])
-  elif y_splitted:
+  elif split_y_scale:
     pads=plot.ThreePadSplit(0.53,0.29,0.01,0.01)
   else:
     pads=plot.TwoPadSplit(0.29,0.01,0.01)
@@ -431,13 +431,13 @@ else:
   pads=plot.OnePad()
 pads[0].cd()
 if(log_y):
-  if y_splitted:
+  if split_y_scale:
     pads[2].SetLogy(1)
   else:
     pads[0].SetLogy(1)
 if(log_x):
   pads[0].SetLogx(1)
-  if(y_splitted):
+  if(split_y_scale):
     pads[2].SetLogx(1)
 
 if custom_x_range:
@@ -449,7 +449,7 @@ if args.ratio and not fractions:
     axish[1].GetXaxis().SetTitle(args.x_title)
     axish[1].GetYaxis().SetNdivisions(4)
     if soverb_plot: axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
-    elif y_splitted or sb_vs_b_ratio: axish[1].GetYaxis().SetTitle("")
+    elif split_y_scale or sb_vs_b_ratio: axish[1].GetYaxis().SetTitle("")
     else: axish[1].GetYaxis().SetTitle("Obs/Exp")
     #axish[1].GetYaxis().SetTitleSize(0.04)
     axish[1].GetYaxis().SetLabelSize(0.033)
@@ -473,8 +473,8 @@ if args.ratio and not fractions:
     if custom_y_range:
       axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
       axish[1].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
-    if y_splitted:
-      axistransit=y_splitted
+    if split_y_scale:
+      axistransit=split_y_scale
       axish.append(axish[0].Clone())
 
       axish[0].SetMinimum(axistransit)
@@ -533,7 +533,7 @@ if not custom_y_range:
   if(log_y): axish[0].SetMinimum(0.0009)
   else: axish[0].SetMinimum(0)
 
-hist_indices = [0,2] if y_splitted else [0]
+hist_indices = [0,2] if split_y_scale else [0]
 for i in hist_indices:
     pads[i].cd()
     axish[i].Draw("AXIS")
@@ -548,7 +548,7 @@ for i in hist_indices:
     if not fractions and not uniform:
       bkghist.Draw("e2same")
       #Add signal, either model dependent or independent
-      if not args.no_signal and ((y_splitted and i == 2) or (not y_splitted)):
+      if not args.no_signal and ((split_y_scale and i == 2) or (not split_y_scale)):
         if model_dep is True: 
           sighist.SetLineColor(ROOT.kGreen+3)
           sighist.SetLineWidth(3)
@@ -647,7 +647,7 @@ if args.ratio and not soverb_plot and not fractions:
       ratio_sbhist.Draw("histsame][")
     blind_datahist.DrawCopy("e0x0same")
     pads[1].RedrawAxis("G")
-    if y_splitted or sb_vs_b_ratio:
+    if split_y_scale or sb_vs_b_ratio:
       # Add a ratio legend for y-splitted plots or plots with sb vs b ratios
       rlegend = plot.PositionedLegend(0.35,0.04,4,0.015,0.01)
       rlegend.SetTextFont(42)
@@ -692,12 +692,12 @@ if soverb_plot:
 
 pads[0].cd()
 pads[0].GetFrame().Draw()
-if not y_splitted:
+if not split_y_scale:
     pads[0].RedrawAxis()
 
 
 
-if y_splitted:
+if split_y_scale:
     pads[2].cd()
     pads[2].GetFrame().Draw()
     pads[2].RedrawAxis()
@@ -705,7 +705,7 @@ if y_splitted:
     pads[2].Update()
     x_min = axish[2].GetXaxis().GetXmin()
     x_max = axish[2].GetXaxis().GetXmax()
-    splitline = ROOT.TLine(x_min*0.995,y_splitted,x_max*1.5,y_splitted)
+    splitline = ROOT.TLine(x_min*0.995,split_y_scale,x_max*1.5,split_y_scale)
     splitline.SetLineWidth(2)
     splitline.SetLineColor(ROOT.kGray+2)
     splitline.Draw()

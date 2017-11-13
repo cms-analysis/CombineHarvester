@@ -108,8 +108,8 @@ for MODE in ['postfit']:
             os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --model_dep --mA 700 --tanb 20' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
-                  ' --ratio_range=%(RRANGE)s --y_splitted %(SPLIT)s --sb_vs_b_ratio' \
-                  ' --outname htt_%(CHN)s_%(CAT)s_splitted --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E15' \
+                  ' --ratio_range=%(RRANGE)s --split_y_scale %(SPLIT)s --sb_vs_b_ratio' \
+                  ' --outname htt_%(CHN)s_%(CAT)s_split_y_scale --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E15' \
                   ' --channel_label "%(LABEL)s" --empty_bin_error' % vars()))
 
 for MODE in ['postfit']:
@@ -122,8 +122,8 @@ for MODE in ['postfit']:
             os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --model_dep --mA 700 --tanb 20' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
-                  ' --ratio_range=0.4,1.6 --y_splitted %(SPLIT)s --sb_vs_b_ratio' \
-                  ' --outname htt_%(CHN)s_%(CAT)s_splitted --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
+                  ' --ratio_range=0.4,1.6 --split_y_scale %(SPLIT)s --sb_vs_b_ratio' \
+                  ' --outname htt_%(CHN)s_%(CAT)s_split_y_scale --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
                   ' --channel_label "%(LABEL)s" --empty_bin_error' % vars()))
 
 for MODE in ['postfit']:
@@ -137,8 +137,8 @@ for MODE in ['postfit']:
             os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --model_dep --mA 700 --tanb 20' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
-                  ' --ratio_range=%(RRANGE)s --y_splitted %(SPLIT)s --sb_vs_b_ratio' \
-                  ' --outname htt_%(CHN)s_%(CAT)s_splitted --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
+                  ' --ratio_range=%(RRANGE)s --split_y_scale %(SPLIT)s --sb_vs_b_ratio' \
+                  ' --outname htt_%(CHN)s_%(CAT)s_split_y_scale --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
                   ' --channel_label "%(LABEL)s" --empty_bin_error' % vars()))
 
 
@@ -154,8 +154,8 @@ for MODE in ['prefit']:
             os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
-                  ' --ratio_range=%(RRANGE)s --y_splitted %(SPLIT)s' \
-                  ' --outname htt_%(CHN)s_%(CAT)s_splitted --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E15' \
+                  ' --ratio_range=%(RRANGE)s --split_y_scale %(SPLIT)s' \
+                  ' --outname htt_%(CHN)s_%(CAT)s_split_y_scale --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E15' \
                   ' --channel_label "%(LABEL)s" --empty_bin_error' % vars()))
 
 for MODE in ['prefit']:
@@ -168,8 +168,8 @@ for MODE in ['prefit']:
             os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
-                  ' --ratio_range=0.4,1.6 --y_splitted %(SPLIT)s' \
-                  ' --outname htt_%(CHN)s_%(CAT)s_splitted --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
+                  ' --ratio_range=0.4,1.6 --split_y_scale %(SPLIT)s' \
+                  ' --outname htt_%(CHN)s_%(CAT)s_split_y_scale --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
                   ' --channel_label "%(LABEL)s" --empty_bin_error' % vars()))
 
 for MODE in ['prefit']:
@@ -183,8 +183,8 @@ for MODE in ['prefit']:
             os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
-                  ' --ratio_range=%(RRANGE)s --y_splitted %(SPLIT)s' \
-                  ' --outname htt_%(CHN)s_%(CAT)s_splitted --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
+                  ' --ratio_range=%(RRANGE)s --split_y_scale %(SPLIT)s' \
+                  ' --outname htt_%(CHN)s_%(CAT)s_split_y_scale --mode %(MODE)s --custom_y_range --y_axis_min "%(YMIN)s" --y_axis_max 1E20' \
                   ' --channel_label "%(LABEL)s" --empty_bin_error' % vars()))
 
 for MODE in ['prefit']:
