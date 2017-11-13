@@ -552,7 +552,12 @@ for i in hist_indices:
         if model_dep is True: 
           sighist.SetLineColor(ROOT.kGreen+3)
           sighist.SetLineWidth(3)
-          sighist.Draw("histsame")
+          # A trick to remove vertical lines for the signal histogram at the borders while preventing the lines to end in the middle of the plot.
+          for j in range(1,sighist.GetNbinsX()+1):
+            entry = sighist.GetBinContent(j)
+            if entry < axish[2].GetMinimum():
+              sighist.SetBinContent(j,axish[2].GetMinimum()*1.00001)
+          sighist.Draw("histsame][") # removing vertical lines at the borders of the pad; possible with the trick above
         else: 
           sighist_ggH.SetLineColor(ROOT.kBlue)
           sighist_bbH.SetLineColor(ROOT.kBlue + 3)
