@@ -106,6 +106,8 @@ if args.sm_exp or args.bg_exp:
 else:
      legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
 
+legend.SetFillStyle(0)
+
 pads[0].cd()
 axis.Draw()
 for i, p in enumerate(cont_2sigma):
