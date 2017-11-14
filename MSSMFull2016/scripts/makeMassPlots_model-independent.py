@@ -104,7 +104,7 @@ for MODE in ['postfit']:
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
             RRANGE = "%s" % CAT_RATIO_RANGE_DICT_EMT[CHN][CAT]
-            os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --mPhi 700 --r_ggH 10 --r_bbH 10' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
                   ' --ratio_range=%(RRANGE)s' \
@@ -118,7 +118,7 @@ for MODE in ['postfit']:
             SPLIT = "%s" % CAT_SPLIT_DICT_EM[CAT]
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
-            os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --mPhi 700 --r_ggH 10 --r_bbH 10' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
                   ' --ratio_range=0.4,1.6' \
@@ -133,7 +133,7 @@ for MODE in ['postfit']:
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
             RRANGE = "%s" % CAT_RATIO_RANGE_DICT_TT[CAT]
-            os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --mPhi 700 --r_ggH 10 --r_bbH 10' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
                   ' --ratio_range=%(RRANGE)s' \
@@ -150,7 +150,7 @@ for MODE in ['prefit']:
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
             RRANGE = "%s" % CAT_RATIO_RANGE_DICT_EMT[CHN][CAT]
-            os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
                   ' --ratio_range=%(RRANGE)s' \
@@ -164,7 +164,7 @@ for MODE in ['prefit']:
             SPLIT = "%s" % CAT_SPLIT_DICT_EM[CAT]
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
-            os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
                   ' --ratio_range=0.4,1.6' \
@@ -179,7 +179,7 @@ for MODE in ['prefit']:
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT[CHN]
             RRANGE = "%s" % CAT_RATIO_RANGE_DICT_TT[CAT]
-            os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_x --log_y' \
                   ' --ratio_range=%(RRANGE)s' \
@@ -192,7 +192,7 @@ for MODE in ['prefit']:
             LABEL = "%s %s" % (CHN_DICT[CHN], CAT_DICT_TT[CAT])
             YMIN = "%s" % RANGE_DICT[CHN]
             PAD = "%s" % PAD_DICT["tt"]
-            os.system(('python CombineHarvester/MSSMFull2016/scripts/postFitPlotJetFakes.py' \
+            os.system(('python scripts/postFitPlotJetFakes.py' \
                   ' --file=shapes.root --ratio --extra_pad="%(PAD)s" --no_signal' \
                   ' --file_dir="htt_%(CHN)s_%(CAT)s" --log_y' \
                   ' --ratio_range=0.92,1.08 --channel zmm --x_title "counting experiment" --y_title "Events" ' \
