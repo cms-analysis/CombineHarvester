@@ -77,13 +77,13 @@ def AddSystematics(cb):
        (['Zee','Zmm','Znn'], [1,2,3,4,5,6,7,8], ['ZH_hbb','WH_hbb'], 1.023) 
        (['Zee','Zmm'], [1,2,3,4,5,6,7,8], ['Zj0b','Zj1b','Zj2b','VVLF','VVHF'], 1.01)
        (['Znn'],[1,3,5,7],['VVLF','VVHF'],1.01)
-       (['Wen','Wmn'],[1,3,5,6,7],['ZH_hbb','WH_hbb','VVLF','VVHF',1.01)) 
+       (['Wen','Wmn'],[1,3,5,6,7],['ZH_hbb','WH_hbb','VVLF','VVHF'],1.01)) 
 
   src.cp().AddSyst(cb,
       'pdf_gg', 'lnN', ch.SystMap('channel','bin_id','process')
       (['Zee','Zmm','Znn'],[1,2,3,4,5,6,7,8],['ggZH_hbb'], 1.18)
       (['Zee','Zmm','Znn'],[1,2,3,4,5,6,7,8],['TT','s_Top','QCD'], 1.01)
-      (['Wen','Wmn', [1,3,5,6,7], ['s_Top'],1.01))
+      (['Wen','Wmn'], [1,3,5,6,7], ['s_Top'],1.01))
   
   src.cp().AddSyst(cb,
       'QCDScale_VH', 'lnN', ch.SystMap('channel','bin_id','process') 
@@ -344,7 +344,7 @@ def AddSystematics(cb):
       'CMS_vhbb_eff_e_tracker_Zll_13TeV','shape',ch.SystMap('channel','bin_id','process')
       (['Zee'],[1,2,3,4,5,6,7,8],['ZH_hbb','ggZH_hbb','Zj0b','Zj1b','Zj2b','TT','VVLF'],1.0))
 
-  src.cp().AddSys5,t(cb,
+  src.cp().AddSyst(cb,
       'CMS_vhbb_eff_m_trigger_Zll_13TeV','shape',ch.SystMap('channel','bin_id','process')
       (['Zmm'],[1,2,3,4,5,6,7,8],['ZH_hbb','ggZH_hbb','Zj0b','Zj1b','Zj2b','TT','VVLF'],1.0))
 

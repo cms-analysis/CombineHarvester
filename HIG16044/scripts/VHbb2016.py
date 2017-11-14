@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
  '--channel', default='all', help="""Which channels to run? Supported options: 'all', 'Znn', 'Zee', 'Zmm', 'Zll', 'Wen', 'Wmn','Wln'""")
 parser.add_argument(
+ '--output_folder', default='vhbb2016', help="""Subdirectory of ./output/ where the cards are written out to""")
+parser.add_argument(
  '--auto_rebin', action='store_true', help="""Rebin automatically?""")
 
 args = parser.parse_args()
@@ -88,14 +90,15 @@ for chn in chns:
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], bkg_procs[chn], cats[chn], False)
   cb.AddProcesses( mass, ['vhbb'], ['13TeV'], [chn], sig_procs[chn], cats[chn], True)
 
+systs.AddSystematics(cb)
 
 for chn in chns:
   file = shapes + input_folders[chn] + "/vhbb_"+chn+".root"
   if not chn =='Wen' and not chn =='Wmn':
     cb.cp().channel([chn]).backgrounds().ExtractShapes(
-      file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+      file, '$BIN/$PROCESS', '$BIN/$PROCESS$SYSTEMATIC')
     cb.cp().channel([chn]).signals().ExtractShapes(
-      file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+      file, '$BIN/$PROCESS', '$BIN/$PROCESS$SYSTEMATIC')
       #file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
   else:
     cb.cp().channel([chn]).backgrounds().ExtractShapes(
@@ -104,15 +107,15 @@ for chn in chns:
       file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
 
 
-systs.AddSystematics(cb)
+
 
 rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMode(1).SetPerformRebin(True).SetVerbosity(1)
 
 if args.auto_rebin:
   rebin.Rebin(cb, cb)
 
-writer=ch.CardWriter("output/" + "/$TAG/$BIN.txt",
-                      "output/" + "/$TAG/vhbb_input.root")
+writer=ch.CardWriter("output/" + args.output_folder + "/$TAG/$BIN.txt",
+                      "output/" + args.output_folder + "/$TAG/vhbb_input.root")
 writer.SetWildcardMasses([])
 writer.SetVerbosity(1);
                 
