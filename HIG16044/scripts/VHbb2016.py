@@ -88,7 +88,7 @@ cats = {
 for chn in chns:
   cb.AddObservations( ['*'], ['vhbb'], ['13TeV'], [chn], cats[chn])
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], bkg_procs[chn], cats[chn], False)
-  cb.AddProcesses( mass, ['vhbb'], ['13TeV'], [chn], sig_procs[chn], cats[chn], True)
+  cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], sig_procs[chn], cats[chn], True)
 
 systs.AddSystematics(cb)
 
@@ -126,3 +126,9 @@ writer.WriteCards("cmb",cb);
 for chn in chns:
   writer.WriteCards(chn,cb.cp().channel([chn]))
 
+#Zll and Wln:
+if 'Wen' in chns and 'Wmn' in chns:
+  writer.WriteCards("Wln",cb.cp().channel(['Wen','Wmn']))
+
+if 'Zee' in chns and 'Zmm' in chns:
+  writer.WriteCards("Zll",cb.cp().channel(['Zee','Zmm']))
