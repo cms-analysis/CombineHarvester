@@ -176,10 +176,10 @@ if type == 'L1toK3':
     wfinal = wnew
 
 # B1ZZ_TH --> A1_mu
-if type == 'B1ZZ_THtoA1_mu':
+if type == 'B1ZZtoA1_mu':
     wnew = ROOT.RooWorkspace()
-    wnew.factory('mu[1,0.0,2.0]')
-    wnew.factory('expr::mu_XS_ggF_x_BR_ZZ("@0", mu)')
+    wnew.factory('mu_XS_ggF_x_BR_ZZ[1,0.0,2.0]')
+    # wnew.factory('expr::mu_XS_ggF_x_BR_ZZ("@0", mu)')
     wnew.factory('mu_XS_VBF_r_XS_ggF[1]')
     wnew.factory('mu_XS_WH_r_XS_ggF[1]')
     wnew.factory('mu_XS_ZH_r_XS_ggF[1]')
@@ -371,6 +371,8 @@ tout.Branch('quantileExpected', a_quantileExpected, 'quantileExpected/f')
 for i, var in enumerate(float_params):
     float_arrs[i][0] = wfinal.var(var).getVal()
 tout.Fill()
+
+# nll.Print('v')
 
 for p in xrange(points):
     for key,val in snapshot.iteritems():
