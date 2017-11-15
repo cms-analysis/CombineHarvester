@@ -64,6 +64,15 @@ sig_procs = {
   'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
 }
 
+sig_procs_ren = {
+  'Wen' : ['WH_lep','ZH_hbb'],
+  'Wmn' : ['WH_lepb','ZH_hbb'],
+  'Zmm' : ['ZH_hbb','ggZH_hbb'],
+  'Zee' : ['ZH_hbb','ggZH_hbb'],
+  'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
+}
+
+
 cats = {
   'Zee' : [
     (1, 'ZeeHighPt_13TeV'), (2, 'ZeeLowPt_13TeV'), (3, 'Zlf_high_Zee'), (4,'Zlf_low_Zee'),
@@ -91,6 +100,8 @@ for chn in chns:
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], sig_procs[chn], cats[chn], True)
 
 systs.AddSystematics(cb)
+systs.AddBinByBinSystematics(cb)
+
 
 for chn in chns:
   file = shapes + input_folders[chn] + "/vhbb_"+chn+".root"
@@ -107,7 +118,8 @@ for chn in chns:
       file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
 
 
-
+#To rename processes:
+#cb.cp().ForEachObj(lambda x: x.set_process("WH_lep") if x.process()=='WH_hbb' else None)
 
 rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMode(1).SetPerformRebin(True).SetVerbosity(1)
 

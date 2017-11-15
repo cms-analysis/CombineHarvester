@@ -52,23 +52,36 @@ def AddSystematics(cb):
   src.cp().channel(['Znn']).process(['Zj2b']).AddSyst(cb,
      'SF_Zj2b_Znn', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,7],1.0))
-
-  src.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
+  
+ #In the official cards these rateParams are also applied to Z->nn, why?
+  src.cp().channel(['Wen','Wmn','Znn']).process(['TT']).AddSyst(cb,
      'SF_TT_Wln', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,6,7],1.0))
 
-  src.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
+  src.cp().channel(['Wen','Wmn','Znn']).process(['Wj0b']).AddSyst(cb,
      'SF_Wj0b_Wln', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,6,7],1.0))
 
-  src.cp().channel(['Wen','Wmn']).process(['Wj1b']).AddSyst(cb,
+  src.cp().channel(['Wen','Wmn','Znn']).process(['Wj1b']).AddSyst(cb,
      'SF_Wj1b_Wln', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,6,7],1.0))
 
-  src.cp().channel(['Wen','Wmn']).process(['Wj2b']).AddSyst(cb,
+  src.cp().channel(['Wen','Wmn','Znn']).process(['Wj2b']).AddSyst(cb,
      'SF_Wj2b_Wln', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,6,7],1.0))
 
+
+  #Set a sensible default for Z->ee/Z->mumu rate params....
+  for syst in src.cp().channel(['Zee','Zmm']).syst_type(["rateParam"]).syst_name_set():
+    src.GetParameter(syst).set_range(0.0,5.0)
+
+  #... and take the ranges from the cards for the other channels
+  for syst in src.cp().channel(['Znn']).syst_type(["rateParam"]).syst_name_set():
+    if 'Znn' in syst.name():
+      src.GetParameter(syst).set_range(0.3,3.0)
+
+  for syst in src.cp().channel(['Wen','Wmn']).syst_type(["rateParam"]).syst_name_set():
+    src.GetParameter(syst).set_range(0.2,5.0)
 
 
   #Theory uncertainties
@@ -1617,3 +1630,223 @@ def AddSystematics(cb):
       (['Wen','Wmn'],[3,5,6,7],['ZH_hbb','WH_hbb','s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],1.0)
       (['Znn'],[1],['ZH_hbb','ggZH_hbb','WH_hbb','Zj0b','Zj1b','Zj2b','TT','QCD'],1.0)
       (['Znn'], [3,5,7], signal+['Zj0b','Zj1b','Zj2b','VVHF','VVLF','Wj0b','Wj1b','Wj2b','TT','s_Top','QCD'],1.0))
+
+def AddBinByBinSystematics(cb):
+  src = cb.cp()
+
+  for i in range(1,8):
+    src.cp().process(['TT']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statTT_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['VVHF']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_statVVHF_WenHighPt_bin10_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [4,6]:
+    src.cp().process(['VVLF']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statVVLF_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,4,5,6,9,10]:
+    src.cp().process(['Wj0b']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statWj0b_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['Wj1b']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_statWj1b_WenHighPt_bin1_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [9,10]:
+    src.cp().process(['ZH_hbb']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statZH_hbb_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,5]:
+    src.cp().process(['Zj0b']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statZj0b_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,9]:
+    src.cp().process(['Zj1b']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statZj1b_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,5]:
+    src.cp().process(['Zj2b']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statZj2b_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [3,4,5,7,8,9]:
+    src.cp().process(['s_Top']).channel(['Wen']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_Top_WenHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,10):
+    src.cp().process(['TT']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statTT_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [7,8,10]:
+    src.cp().process(['VVHF']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statVVHF_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,3,4,5,9]:
+    src.cp().process(['VVLF']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statVVLF_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,11):
+    src.cp().process(['Wj0b']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statWj0b_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['Wj1b']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_statWj1b_WmnHighPt_bin2_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['Wj2b']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_statWj2b_WmnHighPt_bin1_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [9,10]:
+    src.cp().process(['ZH_hbb']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statZH_hbb_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['Zj0b']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_statZj0b_WmnHighPt_bin3_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,3]:
+    src.cp().process(['Zj1b']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statZj1b_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,4):
+    src.cp().process(['Zj2b']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_statZj2b_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,4,7,8]:
+    src.cp().process(['s_Top']).channel(['Wmn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_Top_WmnHighPt_bin'+str(i)+'_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['ggZH_hbb']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_stats_bin1_ggZH_hbb_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,15):
+    src.cp().process(['Zj0b']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj0b_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [4,5,6,7,8,9,10,12]:
+    src.cp().process(['Zj1b']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj1b_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [2,3,4,5,6,7]:
+    src.cp().process(['Zj2b']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj2b_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(3,13):
+    src.cp().process(['TT']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_TT_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,4,6,9,12,14]:
+    src.cp().process(['VVLF']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_VVLF_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [2,3,14]:
+    src.cp().process(['VVHF']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_VVHF_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(6,12):
+    src.cp().process(['s_Top']).channel(['Zee']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_s_Top_ZeeHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,14):
+    src.cp().process(['Zj0b']).channel(['Zee']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj0b_ZeeLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,15):
+    src.cp().process(['Zj1b']).channel(['Zee']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj1b_ZeeLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,14):
+    src.cp().process(['Zj2b']).channel(['Zee']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj2b_ZeeLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,15):
+    src.cp().process(['TT']).channel(['Zee']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_TT_ZeeLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [2,3,4,5,6,7,8,14]:
+    src.cp().process(['VVLF']).channel(['Zee']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_VVLF_ZeeLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['VVHF']).channel(['Zee']).bin_id([2]).AddSyst(cb,
+    'CMS_vhbb_stats_bin1_VVHF_ZeeLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,12):
+    src.cp().process(['s_Top']).channel(['Zee']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_s_Top_ZeeLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['ZH_hbb']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_stats_bin1_ZH_hbb_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['ggZH_hbb']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_stats_bin1_ggZH_hbb_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,4,5,6,7,8,9,10,11,12,14]:
+    src.cp().process(['Zj0b']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj0b_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(2,11):
+    src.cp().process(['Zj1b']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj1b_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(4,7):
+    src.cp().process(['Zj2b']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj2b_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(2,13):
+    src.cp().process(['TT']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_TT_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,4,5,7,13,14]:
+    src.cp().process(['VVLF']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_VVLF_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['VVHF']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_stats_bin2_VVHF_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(3,12):
+    src.cp().process(['s_Top']).channel(['Zmm']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_s_Top_ZuuHighPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,15):
+    src.cp().process(['Zj0b']).channel(['Zmm']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj0b_ZuuLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,15):
+    src.cp().process(['Zj1b']).channel(['Zmm']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj1b_ZuuLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(2,14):
+    src.cp().process(['Zj2b']).channel(['Zmm']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Zj2b_ZuuLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,15):
+    src.cp().process(['TT']).channel(['Zmm']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_TT_ZuuLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [3,4,5,6,13,14]:
+    src.cp().process(['VVLF']).channel(['Zmm']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_VVLF_ZuuLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['VVHF']).channel(['Zmm']).bin_id([2]).AddSyst(cb,
+    'CMS_vhbb_stats_bin1_VVHF_ZuuLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in range(1,14):
+    src.cp().process(['s_Top']).channel(['Zmm']).bin_id([2]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_s_Top_ZuuLowPt_13TeV','shape',ch.SystMap()(1.0))
+
+  for i in [20,25,27,28]:
+    src.cp().process(['VVLF']).channel(['Znn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_VVLF_Znn_13TeV_Signal','shape',ch.SystMap()(1.0))
+
+  src.cp().process(['Zj1b']).channel(['Znn']).bin_id([1]).AddSyst(cb,
+    'CMS_vhbb_stats_bin35_Zj1b_Znn_13TeV_Signal','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,4,6,7,8,9,10,11,12,13,14,15,17,18,20,22,24,25,26,27,28,31,32]:
+    src.cp().process(['Wj0b']).channel(['Znn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Wj0b_Znn_13TeV_Signal','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,4,5,7,9,10,11,14,15,19,21,24,26,28,29,31,32]:
+    src.cp().process(['Wj1b']).channel(['Znn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Wj1b_Znn_13TeV_Signal','shape',ch.SystMap()(1.0))
+
+  for i in [1,2,3,4,5,6,8,9,10,11,12,13,14,15,17,18,19,20,22,23,24,27,31,32,33,35]:
+    src.cp().process(['Wj2b']).channel(['Znn']).bin_id([1]).AddSyst(cb,
+      'CMS_vhbb_stats_bin'+str(i)+'_Wj2b_Znn_13TeV_Signal','shape',ch.SystMap()(1.0))
+
