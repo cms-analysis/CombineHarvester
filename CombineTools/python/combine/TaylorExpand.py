@@ -44,6 +44,7 @@ def GenerateStencils(d, h, s):
     res = (1. / pow(h, d)) * np.dot(np.linalg.inv(smatrix), dvec)
     return res
 
+
 # Calculate partial derivatives using finite differences
 class ExpansionTerm:
     def __init__(self, parameter_values, derivatives, stencils):
@@ -78,7 +79,7 @@ class ExpansionTerm:
             self.fundamental = True
 
     def FormattedPars(self):
-        return [float('%f' % p) for p in self.parameter_values]
+        return tuple([float('%f' % p) for p in self.parameter_values])
 
     def Eval(self, with_permutations=False, with_factorial=False):
         if self.fundamental:
@@ -106,18 +107,12 @@ class ExpansionTerm:
         for i in xrange(len(self.terms)):
             self.terms[i].Print(indent + 2, self.coeffs[i])
 
-    def GatherTerms(self, termlist):
+    def GatherFundamentalTerms(self, termlist):
         if self.fundamental:
             termlist.append(self)
         else:
             for t in self.terms:
-                t.GatherTerms(termlist)
-
-# Should report:
-#
-#  Order  nTerms nEvals nNewEvals  nFoundNegTerms  nExpNegTerms  nActualEvals nNewActualEvals
-#    2       X       Y         Z                         T
-#
+                t.GatherFundamentalTerms(termlist)
 
 
 class TaylorExpand(CombineToolBase):
@@ -126,6 +121,7 @@ class TaylorExpand(CombineToolBase):
 
     def __init__(self):
         CombineToolBase.__init__(self)
+        self.nll = None
 
     def attach_intercept_args(self, group):
         CombineToolBase.attach_intercept_args(self, group)
@@ -166,6 +162,29 @@ class TaylorExpand(CombineToolBase):
                            help=('Add additional points to each stencil'))
         group.add_argument('--stencil-min', type=int, default=3,
                            help=('Minimum number of points in stencil'))
+        group.add_argument('--drop-threshold', type=float, default=0.,
+                           help=('Drop contributions below this threshold'))
+
+    def load_workspace(self, file, POIs, data='data_obs', snapshot='MultiDimFit'):
+        if self.nll is not None:
+            return
+        print 'Loading NLL...'
+        self.infile = ROOT.TFile(file)
+        self.loaded_wsp = self.infile.Get('w')
+        # infile.Close()
+        mc = self.loaded_wsp.genobj('ModelConfig')
+        pdf = mc.GetPdf()
+        data = self.loaded_wsp.data(data)
+        ll = ROOT.RooLinkedList()
+        self.nll = pdf.createNLL(data, ll)
+        self.loaded_wsp.loadSnapshot('MultiDimFit')
+        print '...NLL loaded'
+        # nll.Print()
+        self.nll0 = self.nll.getVal()
+        self.wsp_vars = {}
+        for POI in POIs:
+            self.wsp_vars[POI] = self.loaded_wsp.var(POI)
+
     def run_method(self):
         mass = self.args.mass
         dc = self.args.datacard
@@ -186,18 +205,17 @@ class TaylorExpand(CombineToolBase):
         print '>> Taylor expansion in %i variables up to order %i:' % (Nx, self.args.order)
         pprint(cfg)
 
-        x = np.zeros(Nx, dtype=np.float32)
+        xvec = np.zeros(Nx, dtype=np.float32)
         # hvec = []
         valvec = []
         for i, P in enumerate(POIs):
             valvec.append(cfg[P]["BestFit"])
-            x[i] = cfg[P]["BestFit"]
+            xvec[i] = cfg[P]["BestFit"]
 
         ######################################################################
         # Step 2 - generate stencils
         ######################################################################
         stencils = {}
-
         validity = []
 
         for i, P in enumerate(POIs):
@@ -222,41 +240,67 @@ class TaylorExpand(CombineToolBase):
 
         pprint(stencils)
 
-        evallist = []
-        termlist = {}
+        cached_terms = {}
+        cached_evals = {}
 
-        diffres = {}
         can_skip = []
 
-        drop_thresh = 0.
+        drop_thresh = self.args.drop_threshold
+
+        stats = {}
+        # Should report:
+        #
+        #  Order  nTerms nEvals nNewEvals  nSmallTerms  nExpNegTerms  nActualEvals nNewActualEvals
+        #    2       X       Y         Z                         T
+        #
 
         ######################################################################
-        # Step 3 - load pre-existing terms
+        # Step 3 - load pre-existing terms and evals
         ######################################################################
-        if self.args.load is not None and os.path.isfile(self.args.load):
-            with open(self.args.load) as jsonfile:
-                diffres = pickle.load(jsonfile)
+        if self.args.load is not None:
+            term_cachefile = self.args.load + '_terms.pkl'
+            eval_cachefile = self.args.load + '_evals.pkl'
+            if os.path.isfile(term_cachefile):
+                with open(term_cachefile) as pkl_file:
+                    cached_terms = pickle.load(pkl_file)
+            if os.path.isfile(eval_cachefile):
+                with open(eval_cachefile) as pkl_file:
+                    cached_evals = pickle.load(pkl_file)
 
         for i in xrange(self.args.order + 1):
             print '>> Order %i' % i
             if i == 0 or i == 1:
                 continue
+
+            evallist = []
+            termlist = []
+            to_check_list = []
+
+            stats[i] = {}
+            stats[i]['nTerms'] = 0
+            stats[i]['nCachedTerms'] = 0
+            stats[i]['nSmallTerms'] = 0
+            stats[i]['nAllNewTerms'] = 0
+            stats[i]['nActualNewTerms'] = 0
+            stats[i]['nEvals'] = 0
+            stats[i]['nUniqueEvals'] = 0
             for item in itertools.combinations_with_replacement(range(Nx), i):
                 if len(set(item)) != 1 and i > self.args.cross_order:
                     continue
 
-                if item in diffres:
-                    # print 'Skipping already loaded: %s = %f' % (str(item), diffres[item])
-                    # estimate max contribution
-                    estimate = diffres[item]
-                    for index in item:
-                        estimate *= validity[index]
-                    if abs(estimate) < drop_thresh:
-                        can_skip.append((item, {x: item.count(x) for x in set(item)}, estimate))
-                        # can_skip.add(item)
+                stats[i]['nTerms'] += 1
+
+                # If already in the cache we can skip evaluating this term, but first check
+                # if it's small enough to be used added to the list of 'can_skip' terms
+                if item in cached_terms:
+                    stats[i]['nCachedTerms'] += 1
+                    to_check_list.append((item, cached_terms[item]))
                     continue
-                skip_me = False
-                # Be careful: [0, 0, 1] is not a subset of [0, 1, 2, 3]
+
+                stats[i]['nAllNewTerms'] += 1
+
+                # Check if this new term can be skipped
+                skip_term = False
                 for skip_item in can_skip:
                     has_all_terms = True
                     for x, freq in skip_item[1].iteritems():
@@ -264,110 +308,95 @@ class TaylorExpand(CombineToolBase):
                             has_all_terms = False
                             break
                     if has_all_terms:
-                        print 'Skipping %s containing %s' % (str(item), str(skip_item))
+                        # print 'Skipping %s containing %s' % (str(item), str(skip_item))
                         perm_ratio = float(Permutations(item)) / float(Permutations(skip_item[0]))
                         fact_ratio = float(math.factorial(len(skip_item[0]))) / float(math.factorial(len(item)))
-                        expected = diffres[skip_item[0]] * perm_ratio * fact_ratio
+                        expected = cached_terms[skip_item[0]] * perm_ratio * fact_ratio
                         for index in item:
                             expected *= validity[index]
-                        print 'Original = %g, permutations ratio = %g, factorial ratio = %g, final = %g' % (
-                            skip_item[2],
-                            perm_ratio,
-                            fact_ratio,
-                            expected)
+                        # print 'Original = %g, permutations ratio = %g, factorial ratio = %g, final = %g' % (
+                        #     skip_item[2],
+                        #     perm_ratio,
+                        #     fact_ratio,
+                        #     expected)
                         # print 'Original estimate was %g, scaling with missing %s = %g' % (skip_item[2], str(remainder_terms), expected)
                         if abs(expected) < drop_thresh:
-                            skip_me = True
+                            skip_term = True
                             break
-                        else:
-                            print 'Expectation too large...'
-                if skip_me:
+                if skip_term:
                     # print 'Skipping negligible: %s' % str(item)
                     continue
 
-                termlist[item] = ExpansionTerm(
-                    x, item, stencils)
-                # termlist[item].Print()
-                termlist[item].GatherTerms(evallist)
-            # print len(termlist)
+                stats[i]['nActualNewTerms'] += 1
 
-        unique_evallist = [list(x) for x in set(
-            tuple(x.FormattedPars()) for x in evallist)]
+                termlist.append(ExpansionTerm(
+                    xvec, item, stencils))
+                termlist[-1].GatherFundamentalTerms(evallist)
 
-        print 'Raw number of evaluations: %i' % len(evallist)
-        print 'Actual number of evaluations: %i' % len(unique_evallist)
-        filelist = []
+            stats[i]['nEvals'] = len(evallist)
+            unique_evallist = [x for x in set(x.FormattedPars() for x in evallist)]
+            stats[i]['nUniqueEvals'] = len(unique_evallist)
+            actual_evallist = [x for x in unique_evallist if x not in cached_evals]
+            stats[i]['nActualUniqueEvals'] = len(actual_evallist)
 
-        wsp_vars = {}
-        if self.args.test_mode > 0 and len(unique_evallist) > 0:
-            print 'Loading NLL...'
-            infile = ROOT.TFile(dc)
-            wsp = infile.Get('w')
-            mc = wsp.genobj('ModelConfig')
-            pdf = mc.GetPdf()
-            data = wsp.data('data_obs')
-            ll = ROOT.RooLinkedList()
-            nll = pdf.createNLL(data, ll)
-            wsp.loadSnapshot('MultiDimFit')
-            print '...NLL loaded'
-            nll.Print()
-            nll0 = nll.getVal()
+            if len(actual_evallist) > 0 and self.args.test_mode > 0:
+                self.load_workspace(dc, POIs)
 
-            for POI in POIs:
-                wsp_vars[POI] = wsp.var(POI)
+            for idx, vals in enumerate(actual_evallist):
+                set_vals = []
+                for POI, val in zip(POIs, vals):
+                    set_vals.append('%s=%f' % (POI, val))
+                    if self.args.test_mode > 0:
+                        self.wsp_vars[POI].setVal(val)
+                set_vals_str = ','.join(set_vals)
+                hash_id = hashlib.sha1(set_vals_str).hexdigest()
+                filename = 'higgsCombine.TaylorExpand.%s.MultiDimFit.mH%s.root' % (
+                    hash_id, mass)
+                arg_str = '-M MultiDimFit -n .TaylorExpand.%s --algo fixed --redefineSignalPOIs %s --fixedPointPOIs ' % (
+                    hash_id, ','.join(POIs))
+                arg_str += set_vals_str
+                if self.args.do_fits:
+                    if self.args.test_mode == 0 and not os.path.isfile(filename):
+                        self.job_queue.append('combine %s %s' % (arg_str, ' '.join(self.passthru)))
+                    if self.args.test_mode > 0:
+                        if idx % 10000 == 0:
+                            print 'Done %i/%i NLL evaluations...' % (idx, len(actual_evallist))
+                        cached_evals[vals] = self.nll.getVal() - self.nll0
+                else:
+                    if self.args.test_mode == 0:
+                        cached_evals[vals] = self.get_results(filename)
 
-        vallist = []
-        for i, vals in enumerate(unique_evallist):
-            set_vals = []
-            for POI, val, shift in zip(POIs, valvec, vals):
-                set_vals.append('%s=%f' % (POI, shift))
-                if self.args.test_mode > 0:
-                    wsp_vars[POI].setVal(shift)
-            set_vals_str = ','.join(set_vals)
-            hash_id = hashlib.sha1(set_vals_str).hexdigest()
-            filename = 'higgsCombine.TaylorExpand.%s.MultiDimFit.mH%s.root' % (
-                hash_id, mass)
-            filelist.append(filename)
-            arg_str = '-M MultiDimFit -n .TaylorExpand.%s --algo fixed --redefineSignalPOIs %s --fixedPointPOIs ' % (
-                hash_id, ','.join(POIs))
-            arg_str += set_vals_str
-            if self.args.do_fits and not os.path.isfile(filename) and not self.args.test_mode > 0:
-                self.job_queue.append('combine %s %s' %
-                                      (arg_str, ' '.join(self.passthru)))
-            if self.args.test_mode > 0:
-                if i % 10000 == 0:
-                    print 'Done %i NLL evaluations...' % i
-                vallist.append(nll.getVal() - nll0)
-        n_todo = len(self.job_queue)
-        self.flush_queue()
+            # print 'Raw number of evaluations: %i' % len(evallist)
+            # print 'Actual number of evaluations: %i' % len(unique_evallist)
+            if self.args.do_fits and len(self.job_queue):
+                self.flush_queue()
+                return
 
-        print 'Raw number of evaluations: %i' % len(evallist)
-        print 'Actual number of evaluations: %i' % len(unique_evallist)
-        if self.args.do_fits:
-            return
+            for x in evallist:
+                x.fnval = cached_evals[x.FormattedPars()]
 
-        fnresults = {}
-        for i, vals in enumerate(unique_evallist):
-            if self.args.test_mode > 0:
-                fnresults[tuple(vals)] = vallist[i]
-            else:
-                fnresults[tuple(vals)] = self.get_results(filelist[i])
-            # print ('%s %s %f' % (vals, filelist[i], fnresults[tuple(vals)]))
-            # if fnresults[tuple(vals)] < 0. or fnresults[tuple(vals)] > 100:
-            #     print 'ODD VALUE'
-        # print fnresults
+            for term in termlist:
+                item = tuple(term.derivatives)
+                cached_terms[item] = term.Eval(with_permutations=True, with_factorial=True)
+                to_check_list.append((item, cached_terms[item]))
 
-        for x in evallist:
-            x.fnval = fnresults[tuple(x.FormattedPars())]
+            for item, estimate in to_check_list:
+                for index in item:
+                    estimate *= validity[index]
+                if abs(estimate) < drop_thresh:
+                    can_skip.append((item, {x: item.count(x) for x in set(item)}, estimate))
+                    stats[i]['nSmallTerms'] += 1
 
-        for key, val in termlist.items():
-            diffres[key] = val.Eval(with_permutations=True, with_factorial=True)
-            # print key, val.Eval()
+            pprint(stats[i])
 
         if self.args.save is not None:
-            jsondata = pickle.dumps(
-                diffres)
-            with open(self.args.save, 'w') as out_file:
+            term_cachefile = self.args.save + '_terms.pkl'
+            eval_cachefile = self.args.save + '_evals.pkl'
+            jsondata = pickle.dumps(cached_terms)
+            with open(term_cachefile, 'w') as out_file:
+                out_file.write(jsondata)
+            jsondata = pickle.dumps(cached_evals)
+            with open(eval_cachefile, 'w') as out_file:
                 out_file.write(jsondata)
 
         # Build the taylor expansion object
@@ -387,9 +416,7 @@ class TaylorExpand(CombineToolBase):
         pos = 0
         te_tracker = ROOT.vector('std::vector<int>')()
 
-        n_terms = 0
-        n_below = 0
-        for tracker, val in diffres.iteritems():
+        for tracker, val in cached_terms.iteritems():
             # Check if this is a really big value
             # if abs(val) > 1E9:
             #     print '%i -- %s --> %s: %f <ERROR LARGE VALUE>' % (pos, tracker, tracker, val)
@@ -401,11 +428,6 @@ class TaylorExpand(CombineToolBase):
             for idx, tr in enumerate(tracker):
                 i_tracker[idx] = tr
             te_tracker.push_back(i_tracker)
-
-            # Keep track of the number of terms of order n
-            n_terms += 1
-            if abs(val) < drop_thresh:
-                n_below += 1
 
             # Print it
             if n <= 3:
@@ -424,6 +446,12 @@ class TaylorExpand(CombineToolBase):
         wsp.Write()
         fout.Close()
 
-        print 'Raw number of evaluations: %i' % len(evallist)
-        print 'Actual number of evaluations: %i' % len(unique_evallist)
-        print 'Actual number of evaluations to do: %i' % n_todo
+        print '%-10s %-20s %-20s %-20s %-20s %-20s' % ('Order', 'nTerms', 'nCachedTerms', 'nSmallTerms', 'nAllNewTerms', 'nActualNewTerms')
+        print '-' * 94
+        for i in stats:
+            print '%-10i %-20i %-20i %-20i %-20i %-20i' % (i, stats[i]['nTerms'], stats[i]['nCachedTerms'], stats[i]['nSmallTerms'], stats[i]['nAllNewTerms'], stats[i]['nActualNewTerms'])
+
+        print '\n%-10s %-20s %-20s %-20s' % ('Order', 'nEvals', 'nUniqueEvals', 'nActualUniqueEvals')
+        print '-' * 74
+        for i in stats:
+            print '%-10i %-20i %-20i %-20i' % (i, stats[i]['nEvals'], stats[i]['nUniqueEvals'], stats[i]['nActualUniqueEvals'])
