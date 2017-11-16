@@ -15,7 +15,14 @@ from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBas
 
 
 def Permutations(indicies):
-    indicies = list(indicies)
+    """Calculate the number of unique permutations of a set of indicies
+
+    Args:
+        indicies (list): A list of integer indicies, e.g [0, 1, 2, 3]
+
+    Returns:
+        int: number of unique permutations
+    """
     uniques = sorted(set(indicies))
     freqs = [indicies.count(x) for x in uniques]
     n_perms = math.factorial(len(indicies))
@@ -23,60 +30,69 @@ def Permutations(indicies):
         n_perms = n_perms / math.factorial(freq)
     return n_perms
 
-# parameter_values = [x1, x2, ..., xn]
-# derivatives = [0,1,1]
-# stencils = {
-#     1: {  <-- parameter 1
-#         2: [(dx1, c1), (dx2, c2), ...], <-- order 2
-#
-#     }
-# }
+
+def GenerateStencils(d, h, s):
+    N = len(s)
+    smatrix = np.zeros((N, N))
+    dvec = np.zeros((N))
+    for i in range(N):
+        for j in range(N):
+            smatrix[i, j] = pow(s[j], i)
+        dvec[i] = math.factorial(d) if i == d else 0.
+    # print smatrix
+    # print dvec
+    res = (1. / pow(h, d)) * np.dot(np.linalg.inv(smatrix), dvec)
+    return res
+
 # Calculate partial derivatives using finite differences
-class PartialDerivative:
+class ExpansionTerm:
     def __init__(self, parameter_values, derivatives, stencils):
         self.fnval = 0.
-        self.parameter_values = list(parameter_values)
-        self.derivatives = list(derivatives)
-        self.unique_derivatives = sorted(set(derivatives))
-        self.derivative_frequency = []
-        for i in self.unique_derivatives:
-            self.derivative_frequency.append(self.derivatives.count(i))
-        self.terms = list()
-        if len(self.derivative_frequency):
-            parameter = self.unique_derivatives[0]
-            order = self.derivative_frequency[0]
+        self.parameter_values = np.array(parameter_values, dtype=np.float32)
+        self.derivatives = np.array(derivatives, dtype=np.uint8)
+        unique_derivatives = np.array(sorted(set(derivatives)), dtype=np.uint8)
+        derivative_frequency = np.zeros(len(unique_derivatives), dtype=np.uint8)
+        for idx, i in enumerate(unique_derivatives):
+            derivative_frequency[idx] = np.count_nonzero(self.derivatives == i)
+        terms = list()
+        # self.terms = list()
+        if len(derivative_frequency):
+            parameter = unique_derivatives[0]
+            order = derivative_frequency[0]
             self.fundamental = False
             stencil = stencils[parameter][order]
-            for i in range(len(stencil)):
-                remaining_derivatives = list(
-                    filter(lambda a: a != parameter, self.derivatives))
+            self.coeffs = np.zeros(len(stencil), dtype=np.float64)
+            for i in xrange(len(stencil)):
+                remaining_derivatives = np.array(list(
+                    filter(lambda a: a != parameter, self.derivatives)), dtype=np.uint8)
                 # Make a copy of the current parameters and adjust the
                 # value for the current stencil point
-                new_parameter_values = list(self.parameter_values)
+                new_parameter_values = np.array(self.parameter_values, dtype=np.float32)
                 new_parameter_values[parameter] += stencil[i][0]
                 # Add this to the list of terms
-                self.terms.append((stencil[i][1], PartialDerivative(
-                    new_parameter_values, remaining_derivatives, stencils)))
+                self.coeffs[i] = stencil[i][1]
+                terms.append(ExpansionTerm(
+                    new_parameter_values, remaining_derivatives, stencils))
+            self.terms = np.array(terms)
         else:
             self.fundamental = True
 
     def FormattedPars(self):
         return [float('%f' % p) for p in self.parameter_values]
 
-    def Eval(self, with_permutations=False):
+    def Eval(self, with_permutations=False, with_factorial=False):
         if self.fundamental:
             return self.fnval
         else:
-            summed = 0
-            for t in self.terms:
-                summed += t[0] * t[1].Eval()
+            summed = 0.
+            for i in xrange(len(self.terms)):
+                summed += self.coeffs[i] * self.terms[i].Eval()
             if with_permutations:
-                n_perms = math.factorial(len(self.derivatives))
-                for freq in self.derivative_frequency:
-                    n_perms = n_perms / math.factorial(freq)
-                return summed * float(n_perms)
-            else:
-                return summed
+                n_perms = Permutations(list(self.derivatives))
+                summed *= float(n_perms)
+            if with_factorial:
+                summed *= 1. / float(math.factorial(len(self.derivatives)))
+            return summed
 
     def Print(self, indent=0, coeff=None):
         sp = ' ' * indent
@@ -87,15 +103,15 @@ class PartialDerivative:
             print '%s%s%s' % (sp, self.derivatives, extra)
         else:
             print '%s%+.1f*%s%s' % (sp, coeff, self.derivatives, extra)
-        for t in self.terms:
-            t[1].Print(indent + 2, t[0])
+        for i in xrange(len(self.terms)):
+            self.terms[i].Print(indent + 2, self.coeffs[i])
 
     def GatherTerms(self, termlist):
         if self.fundamental:
             termlist.append(self)
         else:
             for t in self.terms:
-                t[1].GatherTerms(termlist)
+                t.GatherTerms(termlist)
 
 # Should report:
 #
@@ -130,30 +146,26 @@ class TaylorExpand(CombineToolBase):
 
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
-        group.add_argument('--input-json',
-                           help=('json file and dictionary containing the fit values, of form file:key1:key2..'))
+        group.add_argument('--config',
+                           help=('json configuration file'))
         group.add_argument('--order', type=int, default=2,
                            help=('Taylor expand up to and including this order'))
         group.add_argument('--cross-order', type=int, default=2,
                            help=('Taylor expand up to and including this order for the cross-order terms'))
-        group.add_argument('--choosePOIs', default=None,
+        group.add_argument('--choose-POIs', default=None,
                            help=('Explict list POIs to expand in'))
         group.add_argument('--do-fits', action='store_true',
                            help=('Actually do the fits'))
-        group.add_argument('--step-size', choices=['1sigma', '2sigma'], default='1sigma',
-                           help=('Take the one or two sigma interval as step size for calculation derivatives'))
-        group.add_argument('--override-ranges', default=None,
-                           help=('Explict list POIs to expand in'))
-        group.add_argument('--override-sigmas', default=None,
-                           help=('Explict list POIs to expand in'))
         group.add_argument('--test-mode', type=int, default=0,
                            help=('Test on the workspace'))
         group.add_argument('--save', default=None,
                            help=('Save results to a json file'))
         group.add_argument('--load', default=None,
                            help=('Load results from a json file'))
-        group.add_argument('--validity', default=None,
-                           help=('Set the validity ranges'))
+        group.add_argument('--stencil-add', type=int, default=0,
+                           help=('Add additional points to each stencil'))
+        group.add_argument('--stencil-min', type=int, default=3,
+                           help=('Minimum number of points in stencil'))
     def run_method(self):
         mass = self.args.mass
         dc = self.args.datacard
@@ -163,48 +175,23 @@ class TaylorExpand(CombineToolBase):
         ######################################################################
         # Step 1 - establish parameter ranges
         ######################################################################
-        in_json = self.args.input_json.split(':')
-        with open(in_json[0]) as jsonfile:
-            js = json.load(jsonfile)
-        for key in in_json[1:]:
-            js = js[key]
-        if self.args.choosePOIs is None:
-            POIs = sorted([str(x) for x in js.keys()])
+        with open(self.args.config) as jsonfile:
+            cfg = json.load(jsonfile)
+        if self.args.choose_POIs is None:
+            POIs = sorted([str(x) for x in cfg.keys()])
         else:
             POIs = self.args.choosePOIs.split(',')
-        print POIs
-        N = len(POIs)
 
-        print 'Taylor expand with N = %i up to order %i' % (N, self.args.order)
+        Nx = len(POIs)
+        print '>> Taylor expansion in %i variables up to order %i:' % (Nx, self.args.order)
+        pprint(cfg)
 
-        hvec_overrides = {}
-        if self.args.override_sigmas is not None:
-            new_ranges = [x.split("=")
-                          for x in self.args.override_sigmas.split(',')]
-            for new_range in new_ranges:
-                hvec_overrides[new_range[0]] = float(new_range[1])
-
-        xvec = np.zeros((N))
-        hvec = []
+        x = np.zeros(Nx, dtype=np.float32)
+        # hvec = []
         valvec = []
         for i, P in enumerate(POIs):
-            valvec.append(js[P]["Val"])
-            xvec[i] = js[P]["Val"]
-            if P in hvec_overrides:
-                hvec.append(hvec_overrides[P])
-            elif self.args.step_size == '2sigma' and js[P]["2sig_ValidErrorHi"] and js[P]["2sig_ValidErrorLo"]:
-                hvec.append(
-                    min((js[P]["2sig_ErrorHi"] - js[P]["2sig_ErrorLo"]), js[P]['Val'] * 0.95))
-            else:
-                hvec.append((js[P]["ErrorHi"] - js[P]["ErrorLo"]) / 2.)
-
-        stencil_ranges = {}
-        if self.args.override_ranges is not None:
-            new_ranges = [x.split("=")
-                          for x in self.args.override_ranges.split(':')]
-            for new_range in new_ranges:
-                stencil_ranges[new_range[0]] = [
-                    float(x) for x in new_range[1].split(',')]
+            valvec.append(cfg[P]["BestFit"])
+            x[i] = cfg[P]["BestFit"]
 
         ######################################################################
         # Step 2 - generate stencils
@@ -215,41 +202,23 @@ class TaylorExpand(CombineToolBase):
 
         for i, P in enumerate(POIs):
             stencils[i] = {}
-            if P in stencil_ranges:
-                s_min = stencil_ranges[P][0] - valvec[i]
-                s_max = stencil_ranges[P][1] - valvec[i]
-            else:
-                s_min = -hvec[i]
-                s_max = +hvec[i]
-            validity.append(max(abs(s_min), abs(s_max)))
+            if 'StencilRange' in cfg[P]:
+                s_min = cfg[P]['StencilRange'][0] - valvec[i]
+                s_max = cfg[P]['StencilRange'][1] - valvec[i]
+            elif 'StencilSize' in cfg[P]:
+                s_min = -cfg[P]['StencilSize']
+                s_max = +cfg[P]['StencilSize']
+            validity.append(cfg[P]['Validity'])
             for n in xrange(self.args.order + 1):
                 if n == 0:
                     continue
-                stencil_size = max(7, 3 + ((n + 1) / 2) * 2)
-                # N  add1   add3    add5     add3min7   add5min7
-                # 2     3      5       7            7          7
-                # 3     5      7       9            7          9
-                # 4     5      7       9            7          9
-                # 5     7      9       11           9         11
-                # 6     7      9       11           9         11
-                # 7     9      11      13          11         13
-                # 8     9      11      13          11         13
-                # 9     11     13      15          13         11
-                # stencil_size = 5 + ((i + 1) / 2) * 2
+                stencil_size = max(self.args.stencil_min, 1 + (((n + 1) / 2) * 2) + self.args.stencil_add)
                 stencil = list()
                 stencil_spacing = (s_max - s_min) / (stencil_size - 1)
                 for s in range(stencil_size):
                     stencil.append(s_min + float(s) * stencil_spacing)
-                coefficients = self.generate_fd(n, 1, stencil)
+                coefficients = GenerateStencils(n, 1, stencil)
                 stencils[i][n] = zip(stencil, coefficients)
-
-        if self.args.validity is not None:
-            validity_dict = {x.split('=')[0]: float(x.split('=')[1]) for x in self.args.validity.split(',')}
-            for i, P in enumerate(POIs):
-                if P in validity_dict:
-                    print 'Updating valididty range of %s to %f' % (P, validity_dict[P])
-                    validity[i] = validity_dict[P]
-
 
         pprint(stencils)
 
@@ -259,7 +228,7 @@ class TaylorExpand(CombineToolBase):
         diffres = {}
         can_skip = []
 
-        drop_thresh = 1E-1
+        drop_thresh = 0.
 
         ######################################################################
         # Step 3 - load pre-existing terms
@@ -272,20 +241,16 @@ class TaylorExpand(CombineToolBase):
             print '>> Order %i' % i
             if i == 0 or i == 1:
                 continue
-            for item in itertools.combinations_with_replacement(range(N), i):
+            for item in itertools.combinations_with_replacement(range(Nx), i):
                 if len(set(item)) != 1 and i > self.args.cross_order:
                     continue
-                # if i == 3 and len(set(item)) == 2:
-                #     continue
-                # print item
+
                 if item in diffres:
                     # print 'Skipping already loaded: %s = %f' % (str(item), diffres[item])
                     # estimate max contribution
                     estimate = diffres[item]
                     for index in item:
                         estimate *= validity[index]
-                    estimate /= float(math.factorial(len(item)))
-                    # if abs(diffres[item]) < drop_thresh:
                     if abs(estimate) < drop_thresh:
                         can_skip.append((item, {x: item.count(x) for x in set(item)}, estimate))
                         # can_skip.add(item)
@@ -301,15 +266,14 @@ class TaylorExpand(CombineToolBase):
                     if has_all_terms:
                         print 'Skipping %s containing %s' % (str(item), str(skip_item))
                         perm_ratio = float(Permutations(item)) / float(Permutations(skip_item[0]))
-                        expected = diffres[skip_item[0]] * perm_ratio * (1. / math.factorial(len(item)))
+                        fact_ratio = float(math.factorial(len(skip_item[0]))) / float(math.factorial(len(item)))
+                        expected = diffres[skip_item[0]] * perm_ratio * fact_ratio
                         for index in item:
                             expected *= validity[index]
-                        print 'Original = %g, permutations ratio: %g/%g = %g, factorial term = %g, final = %g' % (
+                        print 'Original = %g, permutations ratio = %g, factorial ratio = %g, final = %g' % (
                             skip_item[2],
-                            Permutations(item),
-                            Permutations(skip_item[0]),
                             perm_ratio,
-                            (1. / math.factorial(len(item))),
+                            fact_ratio,
                             expected)
                         # print 'Original estimate was %g, scaling with missing %s = %g' % (skip_item[2], str(remainder_terms), expected)
                         if abs(expected) < drop_thresh:
@@ -321,8 +285,8 @@ class TaylorExpand(CombineToolBase):
                     # print 'Skipping negligible: %s' % str(item)
                     continue
 
-                termlist[item] = PartialDerivative(
-                    xvec, item, stencils)
+                termlist[item] = ExpansionTerm(
+                    x, item, stencils)
                 # termlist[item].Print()
                 termlist[item].GatherTerms(evallist)
             # print len(termlist)
@@ -372,7 +336,7 @@ class TaylorExpand(CombineToolBase):
                                       (arg_str, ' '.join(self.passthru)))
             if self.args.test_mode > 0:
                 if i % 10000 == 0:
-                    print 'Done %i evaluations...' % i
+                    print 'Done %i NLL evaluations...' % i
                 vallist.append(nll.getVal() - nll0)
         n_todo = len(self.job_queue)
         self.flush_queue()
@@ -397,7 +361,7 @@ class TaylorExpand(CombineToolBase):
             x.fnval = fnresults[tuple(x.FormattedPars())]
 
         for key, val in termlist.items():
-            diffres[key] = val.Eval(with_permutations=True)
+            diffres[key] = val.Eval(with_permutations=True, with_factorial=True)
             # print key, val.Eval()
 
         if self.args.save is not None:
@@ -412,10 +376,9 @@ class TaylorExpand(CombineToolBase):
         xvec = ROOT.RooArgList()
         x0vec = ROOT.RooArgList()
         for i, POI in enumerate(POIs):
-            xvars.append(ROOT.RooRealVar(POI, '', js[POI]["Val"], js[POI]["Val"] + 4 *
-                                         js[POI]["2sig_ErrorLo"], js[POI]["Val"] + 4 * js[POI]["2sig_ErrorHi"]))
+            xvars.append(ROOT.RooRealVar(POI, '', cfg[POI]["BestFit"], cfg[POI]['OutputRange'][0], cfg[POI]['OutputRange'][1]))
             x0vars.append(ROOT.RooRealVar(
-                POI + '_In', '', js[POI]["Val"], -100, 100))
+                POI + '_In', '', cfg[POI]["BestFit"], -100, 100))
             x0vars[-1].setConstant(True)
             xvec.add(xvars[-1])
             x0vec.add(x0vars[-1])
@@ -454,8 +417,8 @@ class TaylorExpand(CombineToolBase):
             'nll', '', xvec, x0vec, te_tracker, te_terms)
 
         fout = ROOT.TFile('taylor_expansion.root', 'RECREATE')
-        xvec.Print('v')
-        x0vec.Print('v')
+        # xvec.Print('v')
+        # x0vec.Print('v')
         wsp = ROOT.RooWorkspace('w', '')
         getattr(wsp, 'import')(nllfn, ROOT.RooCmdArg())
         wsp.Write()
@@ -464,57 +427,3 @@ class TaylorExpand(CombineToolBase):
         print 'Raw number of evaluations: %i' % len(evallist)
         print 'Actual number of evaluations: %i' % len(unique_evallist)
         print 'Actual number of evaluations to do: %i' % n_todo
-
-    def generate_fd(self, d, h, s):
-        N = len(s)
-        smatrix = np.zeros((N, N))
-        dvec = np.zeros((N))
-        for i in range(N):
-            for j in range(N):
-                smatrix[i, j] = pow(s[j], i)
-            dvec[i] = math.factorial(d) if i == d else 0.
-        # print smatrix
-        # print dvec
-        res = (1. / pow(h, d)) * np.dot(np.linalg.inv(smatrix), dvec)
-        return res
-
-    def TaylorExpand1D(self, devs, x0, x):
-        res = 0.
-        for i in xrange(self.args.order + 1):
-            if i == 1:
-                continue
-            term = pow(x - x0, i) / math.factorial(i)
-            if tuple([0] * i) in devs:
-                term *= devs[tuple([0] * i)]
-            else:
-                term *= 0.
-            res += term
-        return res
-
-    def QuickTestOneVar(self, POI, x0, r_min, r_max, points, devs):
-        fout = ROOT.TFile('scan_covariance_%s.root' %
-                          (POI), 'RECREATE')
-        tout = ROOT.TTree('limit', 'limit')
-        a_r = array('f', [x0])
-        a_deltaNLL = array('f', [0])
-        a_quantileExpected = array('f', [1])
-
-        tout.Branch(POI, a_r, '%s/f' % POI)
-        tout.Branch('deltaNLL', a_deltaNLL, 'deltaNLL/f')
-        tout.Branch('quantileExpected', a_quantileExpected,
-                    'quantileExpected/f')
-        tout.Fill()
-
-        width = (r_max - r_min) / points
-        r = r_min + 0.5 * width
-        for p in xrange(points):
-            a_r[0] = r
-            nllf = self.TaylorExpand1D(devs, x0, r)
-            a_deltaNLL[0] = nllf
-            print '%s = %f: %f' % (POI, r, nllf)
-            if a_deltaNLL[0] > 0.:
-                tout.Fill()
-            r += width
-
-        tout.Write()
-        fout.Close()
