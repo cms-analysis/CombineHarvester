@@ -52,11 +52,12 @@ def AddSystematics(cb):
      'SF_Zj2b_Znn', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,7],1.0))
   
- #In the official cards these rateParams are also applied to Z->nn, why?
-  cb.cp().channel(['Wen','Wmn','Znn']).process(['TT']).AddSyst(cb,
+
+  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
      'SF_TT_Wln', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,6,7],1.0))
 
+ #In the official cards these rateParams are also applied to Z->nn, why?
   cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj0b']).AddSyst(cb,
      'SF_Wj0b_Wln', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,6,7],1.0))
@@ -70,7 +71,7 @@ def AddSystematics(cb):
      ([1,3,5,6,7],1.0))
 
 
-  #Set a sensible default for Z->ee/Z->mumu rate params.... althought this doesn't work atm
+  #Set a sensible default for Z->ee/Z->mumu rate params
   for syst in cb.cp().channel(['Zee','Zmm']).syst_type(["rateParam"]).syst_name_set():
     cb.GetParameter(syst).set_range(0.0,5.0)
 
@@ -85,10 +86,13 @@ def AddSystematics(cb):
   #Theory uncertainties
   cb.cp().AddSyst(cb,
       'pdf_qqbar', 'lnN', ch.SystMap('channel','bin_id','process') 
-       (['Zee','Zmm','Znn'], [1,2,3,4,5,6,7,8], ['ZH_hbb','WH_hbb'], 1.023) 
        (['Zee','Zmm'], [1,2,3,4,5,6,7,8], ['Zj0b','Zj1b','Zj2b','VVLF','VVHF'], 1.01)
        (['Znn'],[1,3,5,7],['VVLF','VVHF'],1.01)
        (['Wen','Wmn'],[1,3,5,6,7],['ZH_hbb','WH_hbb','VVLF','VVHF'],1.01)) 
+
+ #This uncertainty is in the workspace/combined card in the HCG repo but *not* in the per-channel cards committed there
+  cb.cp().channel(['Zee','Zmm','Znn']).process(['WH_hbb','ZH_hbb']).AddSyst(cb,
+      'pdf_HIGGS_qqbar', 'lnN', ch.SystMap()(1.023))
 
   cb.cp().AddSyst(cb,
       'pdf_gg', 'lnN', ch.SystMap('channel','bin_id','process')
@@ -99,11 +103,7 @@ def AddSystematics(cb):
   #This uncertainty is in the workspace/combined card in the HCG repo but *not* in the per-channel cards committed there
   cb.cp().channel(['Zee','Zmm','Znn']).process(signal).AddSyst(cb,
       'BR_hbb', 'lnN', ch.SystMap()(1.024))
-
-  #This uncertainty is in the workspace/combined card in the HCG repo but *not* in the per-channel cards committed there
-  cb.cp().channel(['Zee','Zmm','Znn']).process(['WH_hbb','ZH_hbb']).AddSyst(cb,
-      'pdf_HIGGS_qqbar', 'lnN', ch.SystMap()(1.023))
-  
+   
   cb.cp().AddSyst(cb,
       'QCDscale_VH', 'lnN', ch.SystMap('channel','bin_id','process') 
       (['Zee','Zmm','Znn'],[1,2,3,4,5,6,7,8],['ZH_hbb','ggZH_hbb','WH_hbb'], 1.04)) 
