@@ -164,6 +164,8 @@ class TaylorExpand(CombineToolBase):
                            help=('Minimum number of points in stencil'))
         group.add_argument('--drop-threshold', type=float, default=0.,
                            help=('Drop contributions below this threshold'))
+        group.add_argument('--multiple', type=int, default=1.,
+                           help=('Run multiple fixed points in one combine job'))
 
     def load_workspace(self, file, POIs, data='data_obs', snapshot='MultiDimFit'):
         if self.nll is not None:
@@ -342,19 +344,38 @@ class TaylorExpand(CombineToolBase):
             if len(actual_evallist) > 0 and self.args.test_mode > 0:
                 self.load_workspace(dc, POIs)
 
+            multicount = 0
             for idx, vals in enumerate(actual_evallist):
-                set_vals = []
-                for POI, val in zip(POIs, vals):
-                    set_vals.append('%s=%f' % (POI, val))
-                    if self.args.test_mode > 0:
-                        self.wsp_vars[POI].setVal(val)
-                set_vals_str = ','.join(set_vals)
+                if self.args.multiple == 1:
+                    set_vals = []
+                    for POI, val in zip(POIs, vals):
+                        set_vals.append('%s=%f' % (POI, val))
+                        if self.args.test_mode > 0:
+                            self.wsp_vars[POI].setVal(val)
+                    set_vals_str = ','.join(set_vals)
+                else:
+                    if multicount == 0:
+                        multiargs = []
+                        for POI in POIs:
+                            multiargs.append('%s=' % POI)
+                    for ival, val in enumerate(vals):
+                        multiargs[ival] += ('%f' % val)
+                        if multicount < (self.args.multiple - 1) and idx < (len(actual_evallist) - 1):
+                            multiargs[ival] += ','
+                    if multicount == (self.args.multiple - 1) or idx == (len(actual_evallist) - 1):
+                        set_vals_str = ':'.join(multiargs)
+                        multicount = 0
+                    else:
+                        multicount += 1
+                        continue
+
                 hash_id = hashlib.sha1(set_vals_str).hexdigest()
                 filename = 'higgsCombine.TaylorExpand.%s.MultiDimFit.mH%s.root' % (
                     hash_id, mass)
                 arg_str = '-M MultiDimFit -n .TaylorExpand.%s --algo fixed --redefineSignalPOIs %s --fixedPointPOIs ' % (
                     hash_id, ','.join(POIs))
                 arg_str += set_vals_str
+
                 if self.args.do_fits:
                     if self.args.test_mode == 0 and not os.path.isfile(filename):
                         self.job_queue.append('combine %s %s' % (arg_str, ' '.join(self.passthru)))
@@ -367,9 +388,9 @@ class TaylorExpand(CombineToolBase):
                         cached_evals[vals] = self.get_results(filename)
 
             # print 'Raw number of evaluations: %i' % len(evallist)
-            # print 'Actual number of evaluations: %i' % len(unique_evallist)
             if self.args.do_fits and len(self.job_queue):
                 self.flush_queue()
+                print 'Actual number of evaluations: %i' % len(unique_evallist)
                 return
 
             for x in evallist:
