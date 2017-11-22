@@ -37,7 +37,9 @@ Or, for example, to just create a workspace for the Zee channel:
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder>/Zee/`
 
 ## Fits
-To be updated
+To run the maximum likelihood fit:
+combineTool.py -M MaxLikelihoodFit -m 125 -d output/<output_folder>/cmb/ws.root --there --minimizerTolerance 0.1 --minimizerStrategy 0
+
 
 ## Pre- and post-fit plots
 To be updated
