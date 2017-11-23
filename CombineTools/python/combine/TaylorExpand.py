@@ -76,6 +76,7 @@ class ExpansionTerm:
                     new_parameter_values, remaining_derivatives, stencils))
             self.terms = np.array(terms)
         else:
+            self.terms = []
             self.fundamental = True
 
     def FormattedPars(self):
@@ -99,7 +100,7 @@ class ExpansionTerm:
         sp = ' ' * indent
         extra = ''
         if self.fundamental:
-            extra = ' %s' % self.FormattedPars()
+            extra = ' %s = %f' % (list(self.FormattedPars()), self.fnval)
         if coeff is None:
             print '%s%s%s' % (sp, self.derivatives, extra)
         else:
@@ -130,14 +131,16 @@ class TaylorExpand(CombineToolBase):
         group.add_argument('-d', '--datacard', required=True)
 
     def get_results(self, file):
+        res = []
         f = ROOT.TFile(file)
         if f is None or f.IsZombie():
             return None
         t = f.Get("limit")
         for i, evt in enumerate(t):
-            if i != 1:
+            if i == 0:
                 continue
-            res = getattr(evt, 'deltaNLL')
+            res.append(getattr(evt, 'deltaNLL'))
+        print res
         return res
 
     def attach_args(self, group):
@@ -288,6 +291,8 @@ class TaylorExpand(CombineToolBase):
             stats[i]['nUniqueEvals'] = 0
             for item in itertools.combinations_with_replacement(range(Nx), i):
                 if len(set(item)) != 1 and i > self.args.cross_order:
+                    if item in cached_terms:
+                      del cached_terms[item]
                     continue
 
                 stats[i]['nTerms'] += 1
@@ -345,6 +350,7 @@ class TaylorExpand(CombineToolBase):
                 self.load_workspace(dc, POIs)
 
             multicount = 0
+            multivars = []
             for idx, vals in enumerate(actual_evallist):
                 if self.args.multiple == 1:
                     set_vals = []
@@ -354,6 +360,7 @@ class TaylorExpand(CombineToolBase):
                             self.wsp_vars[POI].setVal(val)
                     set_vals_str = ','.join(set_vals)
                 else:
+                    multivars.append(vals)
                     if multicount == 0:
                         multiargs = []
                         for POI in POIs:
@@ -385,12 +392,20 @@ class TaylorExpand(CombineToolBase):
                         cached_evals[vals] = self.nll.getVal() - self.nll0
                 else:
                     if self.args.test_mode == 0:
-                        cached_evals[vals] = self.get_results(filename)
+                        if self.args.multiple == 1:
+                            cached_evals[vals] = self.get_results(filename)[0]
+                        else:
+                            results = self.get_results(filename)
+                            for xidx, xvals in enumerate(multivars):
+                                cached_evals[xvals] = results[xidx]
+                            multivars = list()
 
-            # print 'Raw number of evaluations: %i' % len(evallist)
             if self.args.do_fits and len(self.job_queue):
+                njobs = len(self.job_queue)
                 self.flush_queue()
-                print 'Actual number of evaluations: %i' % len(unique_evallist)
+                pprint(stats[i])
+                print 'Number of jobs = %i' % njobs
+                print 'Raw number of evaluations: %i' % len(evallist)
                 return
 
             for x in evallist:
@@ -398,6 +413,7 @@ class TaylorExpand(CombineToolBase):
 
             for term in termlist:
                 item = tuple(term.derivatives)
+                term.Print()
                 cached_terms[item] = term.Eval(with_permutations=True, with_factorial=True)
                 to_check_list.append((item, cached_terms[item]))
 
@@ -437,7 +453,14 @@ class TaylorExpand(CombineToolBase):
         pos = 0
         te_tracker = ROOT.vector('std::vector<int>')()
 
-        for tracker, val in cached_terms.iteritems():
+        sorted_terms = []
+        for i in xrange(self.args.order + 1):
+            sorted_tmp = []
+            for tracker, val in cached_terms.iteritems():
+                if len(tracker) == i:
+                    sorted_tmp.append((tracker, val))
+            sorted_terms.extend(sorted(sorted_tmp, key=lambda x: x[0]))
+        for tracker, val in sorted_terms:
             # Check if this is a really big value
             # if abs(val) > 1E9:
             #     print '%i -- %s --> %s: %f <ERROR LARGE VALUE>' % (pos, tracker, tracker, val)
@@ -451,8 +474,7 @@ class TaylorExpand(CombineToolBase):
             te_tracker.push_back(i_tracker)
 
             # Print it
-            if n <= 3:
-                print '%i -- %s --> %s: %f' % (pos, tracker, tracker, val)
+            print '%i -- %s --> %s: %f' % (pos, tracker, tracker, val)
 
         # print 'NEGLIGIBLE TERMS AT ORDER %i: %i/%i' % (n, n_below, n_terms)
 

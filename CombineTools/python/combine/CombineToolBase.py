@@ -7,6 +7,7 @@ DRY_RUN = False
 
 JOB_PREFIX = """#!/bin/sh
 ulimit -s unlimited
+set -e
 cd %(CMSSW_BASE)s/src
 export SCRAM_ARCH=%(SCRAM_ARCH)s
 eval `scramv1 runtime -sh`
@@ -22,6 +23,13 @@ arguments = $(ProcId)
 output                = %(TASK)s.$(ClusterId).$(ProcId).out
 error                 = %(TASK)s.$(ClusterId).$(ProcId).err
 log                   = %(TASK)s.$(lusterId).log
+
+# Send the job to Held state on failure. 
+on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
+
+# Periodically retry the jobs every 10 minutes, up to a maximum of 5 retries.
+periodic_release =  (NumJobStarts < 3) && ((CurrentTime - EnteredCurrentStatus) > 600)
+
 %(EXTRA)s
 queue %(NUMBER)s
 
