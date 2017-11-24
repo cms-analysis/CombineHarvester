@@ -14,6 +14,8 @@ parser.add_argument(
  '--output_folder', default='vhbb2016', help="""Subdirectory of ./output/ where the cards are written out to""")
 parser.add_argument(
  '--auto_rebin', action='store_true', help="""Rebin automatically?""")
+parser.add_argument(
+ '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats """)
 
 args = parser.parse_args()
 
@@ -100,7 +102,9 @@ for chn in chns:
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], sig_procs[chn], cats[chn], True)
 
 systs.AddSystematics(cb)
-systs.AddBinByBinSystematics(cb)
+
+if args.bbb_mode==1:
+  systs.AddBinByBinSystematics(cb)
 
 
 for chn in chns:
@@ -125,6 +129,20 @@ rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMod
 
 if args.auto_rebin:
   rebin.Rebin(cb, cb)
+
+if args.bbb_mode==2 or args.bbb_mode==3:
+  print "Generating bbb uncertainties..."
+  bbb = ch.BinByBinFactory()
+  bbb.SetAddThreshold(0.).SetMergeThreshold(0.4)
+  for chn in chns:
+    print " - Doing bbb for channel ", chn
+    bbb.AddBinByBin(cb.cp().channel([chn]).process(['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']),cb)
+  if args.bbb_mode==3:
+    cb.AddDatacardLineAtEnd("* autoMCStats -1")
+    
+if args.bbb_mode==4:
+  cb.AddDatacardLineAtEnd("* autoMCStats 0")
+
 
 writer=ch.CardWriter("output/" + args.output_folder + "/$TAG/$BIN.txt",
                       "output/" + args.output_folder + "/$TAG/vhbb_input.root")
