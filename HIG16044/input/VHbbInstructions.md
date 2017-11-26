@@ -54,10 +54,12 @@ To be updated
 
 ## Pre- and post-fit plots
 First run the maximum likelihood fit:
+
 `combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
 
 create the post-fit shapes with uncertainties from the datacard and the MLFit:
-*Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsens.
+*Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense.
+
 `PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --freeze r=1 --postfit --sampling -f output/<output_folder>/cmb/fitdiagnostics.Test.root:fit_s`
 
 <Need to add plotting scrit here>
