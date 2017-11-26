@@ -4,6 +4,18 @@ This file collects instructions for producing the statistical results for the VH
 
 http://cms-analysis.github.io/CombineHarvester/
 
+## Setting up the area
+
+`export SCRAM_ARCH=slc6_amd64_gcc530
+scram project CMSSW CMSSW_8_1_0
+cd CMSSW_8_1_0
+cmsenv
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+git checkout v7.0.4
+git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+git checkout -b HIG16044-dev-fast-postfitshapes origin/HIG16044-dev-fast-postfitshapes
+scram b`
+
 ## Getting the input root files
 
 The input shape files are stored in an external repository. On a machine with a kerberos token for CERN access (e.g. lxplus) the repository can be checked out as:
@@ -24,6 +36,7 @@ This creates .txt datacards in the 'output' directory, both combined and per cha
 At the moment the options are
 - `--channel`: set to 'all' by default, can specify individual channels to run here (e.g. `--channel=Zee,Zmm`)
 - `--output_folder`: subdirectory of 'output' where the cards are written. Set to 'vhbb2016' by default.
+- `--bbb_mode`: toggle to set the bin-by-bin inclusion options. mode 0: do not add bin-by-bins, 1 (default): add bin-by-bins as in official 2016 cards, 2: add bin-by-bins for all backgrounds in SR and CRs, merging some of the uncertainties to keep the number of nuisance parameters manageable, 3: same as 2, but using the new CMSHistFunc classes, 4: using the autoMCStat mode of combine.
 - `--auto_rebin`: switches on automated rebinning of the input histograms. Off by default.
 
 ## Setting up workspaces

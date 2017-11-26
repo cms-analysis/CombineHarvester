@@ -133,10 +133,11 @@ if args.auto_rebin:
 if args.bbb_mode==2 or args.bbb_mode==3:
   print "Generating bbb uncertainties..."
   bbb = ch.BinByBinFactory()
-  bbb.SetAddThreshold(0.).SetMergeThreshold(0.4)
+  bbb.SetAddThreshold(0.).SetMergeThreshold(0.4).SetFixNorm(False)
   for chn in chns:
     print " - Doing bbb for channel ", chn
-    bbb.AddBinByBin(cb.cp().channel([chn]).process(['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']),cb)
+    bbb.MergeAndAdd(cb.cp().channel([chn]).process(['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']),cb)
+#    bbb.MergeAndAdd(cb.cp().channel([chn]).bin_id([1,2]).process(['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']),cb)
   if args.bbb_mode==3:
     cb.AddDatacardLineAtEnd("* autoMCStats -1")
     
