@@ -6,15 +6,15 @@ http://cms-analysis.github.io/CombineHarvester/
 
 ## Setting up the area
 
-`export SCRAM_ARCH=slc6_amd64_gcc530
-scram project CMSSW CMSSW_8_1_0
-cd CMSSW_8_1_0
-cmsenv
-git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-git checkout v7.0.4
-git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
-git checkout -b HIG16044-dev-fast-postfitshapes origin/HIG16044-dev-fast-postfitshapes
-scram b`
+    export SCRAM_ARCH=slc6_amd64_gcc530
+    scram project CMSSW CMSSW_8_1_0
+    cd CMSSW_8_1_0
+    cmsenv
+    git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+    git checkout v7.0.4
+    git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+    git checkout -b HIG16044-dev-fast-postfitshapes origin/HIG16044-dev-fast-postfitshapes
+    scram b
 
 ## Getting the input root files
 
@@ -50,12 +50,18 @@ Or, for example, to just create a workspace for the Zee channel:
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder>/Zee/`
 
 ## Fits
-To run the maximum likelihood fit:
-combineTool.py -M MaxLikelihoodFit -m 125 -d output/<output_folder>/cmb/ws.root --there --minimizerTolerance 0.1 --minimizerStrategy 0
-
+To be updated
 
 ## Pre- and post-fit plots
-To be updated
+First run the maximum likelihood fit:
+`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
+
+create the post-fit shapes with uncertainties from the datacard and the MLFit:
+*Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsens.
+`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --freeze r=1 --postfit --sampling -f output/<output_folder>/cmb/fitdiagnostics.Test.root:fit_s`
+
+<Need to add plotting scrit here>
+
 
 ## Other plots
 To be updated
