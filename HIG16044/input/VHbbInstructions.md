@@ -50,7 +50,14 @@ Or, for example, to just create a workspace for the Zee channel:
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder>/Zee/`
 
 ## Fits
-To be updated
+###Signal strength (without accurate uncertainty):
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
+
+###Significance:
+Pre-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`
+Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist`
+Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there`
+
 
 ## Pre- and post-fit plots
 First run the maximum likelihood fit:
@@ -60,9 +67,12 @@ First run the maximum likelihood fit:
 create the post-fit shapes with uncertainties from the datacard and the MLFit:
 *Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense.
 
-`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --freeze r=1 --postfit --sampling -f output/<output_folder>/cmb/fitdiagnostics.Test.root:fit_s`
+`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s`
 
-<Need to add plotting scrit here>
+To make pre- and post fit plots of the BDT distributions in the SR:
+`python scripts/makePostFitPlots.py`
+
+The underlying plotting scripts is scripts/postFitPlot.py. Some small adaptations still need to be made to be able to plot post-fit plots of the CRs (in addition to cosmetic changes).
 
 
 ## Other plots
