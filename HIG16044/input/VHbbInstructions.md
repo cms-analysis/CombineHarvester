@@ -50,10 +50,10 @@ Or, for example, to just create a workspace for the Zee channel:
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder>/Zee/`
 
 ## Fits
-###Signal strength (without accurate uncertainty):
+### Signal strength (without accurate uncertainty):
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
 
-###Significance:
+### Significance:
 Pre-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`
 Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist`
 Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there`
