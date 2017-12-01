@@ -84,6 +84,7 @@ class CombineToolBase:
         self.dry_run = False
         self.bopts = ''  # batch submission options
         self.custom_crab = None
+        self.custom_crab_post = None
 
     def attach_job_args(self, group):
         group.add_argument('--job-mode', default=self.job_mode, choices=[
@@ -106,6 +107,8 @@ class CombineToolBase:
                            help='crab working area')
         group.add_argument('--custom-crab', default=self.custom_crab,
                            help='python file containing a function with name signature "custom_crab(config)" that can be used to modify the default crab configuration')
+        group.add_argument('--custom-crab-post', default=self.custom_crab_post,
+                           help='txt file containing command lines that can be used in the crab job script instead of the defaults.')
 
     def attach_intercept_args(self, group):
         pass
@@ -126,6 +129,7 @@ class CombineToolBase:
         self.custom_crab = self.args.custom_crab
         self.memory = self.args.memory
         self.crab_area = self.args.crab_area
+        self.custom_crab_post = self.args.custom_crab_post
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -237,7 +241,11 @@ class CombineToolBase:
                     wsp_files.add(wsp)
                     outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
                 outscript.write('fi')
-            outscript.write(CRAB_POSTFIX)
+            if self.custom_crab_post is not None:
+                with open(self.custom_crab_post, 'r') as postfile:
+                    outscript.write(postfile.read())
+            else:
+                outscript.write(CRAB_POSTFIX)
             outscript.close()
             from CombineHarvester.CombineTools.combine.crab import config
             config.General.requestName = self.task_name
