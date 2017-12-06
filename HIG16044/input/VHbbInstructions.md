@@ -72,7 +72,11 @@ create the post-fit shapes with uncertainties from the datacard and the MLFit:
 To make pre- and post fit plots of the BDT distributions in the SR:
 `python scripts/makePostFitPlots.py`
 
-The underlying plotting scripts is scripts/postFitPlot.py. Some small adaptations still need to be made to be able to plot post-fit plots of the CRs (in addition to cosmetic changes).
+To make pre- and post fit plots of the CMVA distributions in the CR:
+`python scripts/makePostFitPlotsCR.py`
+
+
+The underlying plotting scripts is scripts/postFitPlot.py. Cosmetic changes still needed.
 
 
 ## Other plots

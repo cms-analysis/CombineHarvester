@@ -135,7 +135,7 @@ background_schemes = {'Wen':[backgroundComp("Single top",["s_Top"],432),backgrou
 'Zmm':[backgroundComp("Single top",["s_Top"],432),backgroundComp("VV+LF",["VVLF"], ROOT.kGray+3),backgroundComp("VV+HF",["VVHF"],ROOT.kGray+1),backgroundComp("t#bar{t}",["TT"],600),backgroundComp("Z+udscg",["Zj0b"],394),backgroundComp("Z+b",["Zj1b"],398),backgroundComp("Z+b#bar{b}",["Zj2b"],400),backgroundComp("ZHb#bar{b}",["ZH_hbb"],ROOT.kRed),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],ROOT.kRed-7)],
 'Znn':[backgroundComp("Single top",["s_Top"],432),backgroundComp("VV+LF",["VVLF"], ROOT.kGray+3),backgroundComp("VV+HF",["VVHF"],ROOT.kGray+1),backgroundComp("t#bar{t}",["TT"],600),backgroundComp("Z+udscg",["Zj0b"],394),backgroundComp("Z+b",["Zj1b"],398),backgroundComp("Z+b#bar{b}",["Zj2b"],400),backgroundComp("W+udscg",["Wj0b"],418),backgroundComp("W+b",["Wj1b"],410),backgroundComp("W+b#bar{b}",["Wj2b"],416),backgroundComp("ZHb#bar{b}",["ZH_hbb"],ROOT.kRed),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],ROOT.kRed-7),backgroundComp("WHb#bar{b}",["WH_hbb"],ROOT.kRed+2)]}
 
-#Extract relevent histograms from shape file
+#Extract relevant histograms from shape file
 [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
 for i in range(0,sighist.GetNbinsX()):
   if sighist.GetBinContent(i) < y_axis_min: sighist.SetBinContent(i,y_axis_min)
@@ -176,15 +176,16 @@ for i,t in enumerate(background_schemes[channel]):
   h = ROOT.TH1F()
   for j,k in enumerate(plots):
     if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode,logx=log_x) is not None:
-      h = getHistogram(histo_file,k, file_dir,mode, logx=log_x)[0]
+      h = getHistogram(histo_file,k, file_dir,mode,logx=log_x)[0]
       h.SetName(k)
     else:
-      if getHistogram(histo_file,k, file_dir,mode, logx=log_x) is not None:
+      if getHistogram(histo_file,k, file_dir,mode,logx=log_x) is not None:
         h.Add(getHistogram(histo_file,k, file_dir,mode,logx=log_x)[0])
-  h.SetFillColor(t['colour'])
-  h.SetLineColor(ROOT.kBlack)
-  h.SetMarkerSize(0)
-  bkg_histos.append(h)
+  if h.GetEntries()!=0:
+    h.SetFillColor(t['colour'])
+    h.SetLineColor(ROOT.kBlack)
+    h.SetMarkerSize(0)
+    bkg_histos.append(h)
 
 stack = ROOT.THStack("hs","")
 for hists in bkg_histos:
@@ -251,10 +252,11 @@ splusbhist.SetMarkerSize(0)
 
 stack.Draw("histsame")
 splusbhist.Draw("e2same")
-#Add signal, either model dependent or independent
-sighist.SetLineColor(ROOT.kRed)
-sighist.SetLineWidth(3)
-sighist.Draw("histsame")
+#Add signal
+if not args.no_signal:
+  sighist.SetLineColor(ROOT.kRed)
+  sighist.SetLineWidth(3)
+  sighist.Draw("histsame")
 blind_datahist.DrawCopy("e0psame")
 axish[0].Draw("axissame")
 
