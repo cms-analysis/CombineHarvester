@@ -22,9 +22,9 @@ CONDOR_TEMPLATE = """executable = %(EXE)s
 arguments = $(ProcId)
 output                = %(TASK)s.$(ClusterId).$(ProcId).out
 error                 = %(TASK)s.$(ClusterId).$(ProcId).err
-log                   = %(TASK)s.$(lusterId).log
+log                   = %(TASK)s.$(ClusterId).log
 
-# Send the job to Held state on failure. 
+# Send the job to Held state on failure.
 on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
 
 # Periodically retry the jobs every 10 minutes, up to a maximum of 5 retries.
