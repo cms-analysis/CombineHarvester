@@ -13,7 +13,7 @@ http://cms-analysis.github.io/CombineHarvester/
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
     git checkout v7.0.4
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
-    git checkout -b HIG16044-dev-fast-postfitshapes origin/HIG16044-dev-fast-postfitshapes
+    git checkout -b HIG16044-dev origin/HIG16044-dev
     scram b
 
 ## Getting the input root files

@@ -7,7 +7,7 @@ Setting up a new release area:
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
     git checkout v7.0.4
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
-    git checkout -b HIG16044-dev-fast-postfitshapes origin/HIG16044-dev-fast-postfitshapes
+    git checkout -b HIG16044-dev origin/HIG16044-dev
     scram b
 
 The input shape files are stored in an external repository. On a machine with a kerberos token for CERN access (e.g. lxplus) the repository can be checked out as:
