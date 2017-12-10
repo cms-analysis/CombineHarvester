@@ -329,6 +329,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("ExtractPdfs", &CombineHarvester::ExtractPdfs)
       .def("SetAutoMCStats", &CombineHarvester::SetAutoMCStats, defaults_SetAutoMCStats())
       .def("RenameAutoMCStatsBin", &CombineHarvester::RenameAutoMCStatsBin)
+      .def("GetAutoMCStatsBins", &CombineHarvester::GetAutoMCStatsBins)
       ;
 
     py::class_<Object>("Object")
