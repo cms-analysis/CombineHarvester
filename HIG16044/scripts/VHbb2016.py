@@ -15,7 +15,7 @@ parser.add_argument(
 parser.add_argument(
  '--auto_rebin', action='store_true', help="""Rebin automatically?""")
 parser.add_argument(
- '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats """)
+ '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
 
 args = parser.parse_args()
 
@@ -103,8 +103,12 @@ for chn in chns:
 
 systs.AddSystematics(cb)
 
-if args.bbb_mode==1:
+if args.bbb_mode==1 or args.bbb_mode==5:
   systs.AddBinByBinSystematics(cb)
+
+  if args.bbb_mode==5:
+    cb.AddDatacardLineAtEnd("* autoMCStats -1")
+
 
 
 for chn in chns:
