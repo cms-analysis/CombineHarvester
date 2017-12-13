@@ -6,7 +6,6 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='input mlfit file')
-parser.add_argument('-p', '--parameter', help='parameter for listing correlations')
 parser.add_argument('-m', '--max', type=int, default=10, help='max number to print')
 
 args = parser.parse_args()
