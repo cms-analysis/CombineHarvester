@@ -56,15 +56,9 @@ bool BinIsNotControlRegion(ch::Object const* obj)
 }
 
 
-
 int main(int argc, char** argv) {
-    // First define the location of the "auxiliaries" directory where we can
-    // source the input files containing the datacard shapes
-    string SM125= "";
-    string mass = "mA";
+
     string output_folder = "sm_run2";
-    // TODO: option to pick up cards from different dirs depending on channel?
-    // ^ Something like line 90?
     string input_folder_em="USCMS/";
     string input_folder_et="USCMS/";
     string input_folder_mt="USCMS/";
@@ -72,46 +66,27 @@ int main(int argc, char** argv) {
     string input_folder_mm="USCMS/";
     string input_folder_ttbar="USCMS/";
     string postfix="";
-    bool auto_rebin = false;
-    bool manual_rebin = false;
-    bool real_data = false;
     int control_region = 0;
-    bool check_neg_bins = false;
-    bool poisson_bbb = false;
-    bool do_w_weighting = false;
     bool mm_fit = false;
     bool ttbar_fit = false;
     bool do_jetfakes = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("mass,m", po::value<string>(&mass)->default_value(mass))
-    
     ("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS"))
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("USCMS"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("USCMS"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("USCMS"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
-    
-    ("postfix", po::value<string>(&postfix)->default_value(""))
-    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
-    ("real_data", po::value<bool>(&real_data)->default_value(false))
-    ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
+    ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
-    ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("mm_fit", po::value<bool>(&mm_fit)->default_value(true))
-    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true))
-    ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
-    ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
-    ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
-    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
+    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
+
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
     po::notify(vm);
-    
-    
-    
     
     
     typedef vector<string> VString;
@@ -121,67 +96,54 @@ int main(int argc, char** argv) {
     // source the input files containing the datacard shapes
     //    string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/bin/AllROOT_20fb/";
     std::map<string, string> input_dir;
-    input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_em+"/";
-    input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_mt+"/";
-    input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_et+"/";
-    input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_tt+"/";
-    input_dir["mm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_mm+"/";
-    input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2016/shapes/"+input_folder_ttbar+"/";
-    
+    input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";
+    input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mt+"/";
+    input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_et+"/";
+    input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_tt+"/";
+    input_dir["mm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mm+"/";
+    input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_ttbar+"/";    
     
     
     VString chns = {"mt","et","tt","em"};
- //VString chns = {"tt"};
     if (mm_fit) chns.push_back("mm");
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
     if (do_jetfakes){
-      bkg_procs["et"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-      bkg_procs["mt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-      bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
+      bkg_procs["et"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes","qqH_htt125","WH_htt125","ZH_htt125"};
+      bkg_procs["mt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes","qqH_htt125","WH_htt125","ZH_htt125"};
+      bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest","qqH_htt125","WH_htt125","ZH_htt125"};
     }else{
-      bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
-      bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
-      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
+      bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ","qqH_htt125","WH_htt125","ZH_htt125"};
+      bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ","qqH_htt125","WH_htt125","ZH_htt125"};
+      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ","qqH_htt125","WH_htt125","ZH_htt125"};
     }
-    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
+    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125","qqH_htt125","WH_htt125","ZH_htt125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ"};
     
-    
-    
     ch::CombineHarvester cb;
-    
-    
     
     map<string,Categories> cats;
     cats["et"] = {
         {1, "et_0jet"},
         {2, "et_boosted"},
-        {3, "et_vbf"},
-        
-    };
+        {3, "et_vbf"}};
     
     cats["mt"] = {
         {1, "mt_0jet"},
         {2, "mt_boosted"},
-        {3, "mt_vbf"},
-        
-    };
+        {3, "mt_vbf"}};
     
     cats["em"] = {
         {1, "em_0jet"},
         {2, "em_boosted"},
         {3, "em_vbf"}};
     
-    
     cats["tt"] = {
-        
         {1, "tt_0jet"},
         {2, "tt_boosted"},
         {3, "tt_vbf"}};
-    
     
     cats["mm"] = {
         {1, "mm_0jet"},
@@ -235,10 +197,8 @@ int main(int argc, char** argv) {
     
     
     // Or equivalently, specify the mass points explicitly:
-    vector<string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt"};
+    vector<string> sig_procs = {"ggH_htt"};
     vector<string> masses = {"110","120","125","130","140"};
-//    vector<string> masses = {"120","125","130"};
-//            vector<string> masses = {"125"};
     
     using ch::syst::bin_id;
     
@@ -266,9 +226,6 @@ int main(int argc, char** argv) {
       cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
       cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
     }
-    //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},{10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}}, false);
-    //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},{10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}}, false);
-
     
     
     //! [part4]
@@ -444,18 +401,9 @@ int main(int argc, char** argv) {
         writer.WriteCards(chn, cb.cp().channel({chn, "mm"}));
         // And per-channel-category
         //  THERE IS A FLAW IN COMBINEHARVESTER
-        //        writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn,"mm"}).bin_id({1,10,13}));
-        //        writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn,"mm"}).bin_id({2,10,13}));
-        //        writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn,"mm"}).bin_id({3,11,14}));
-        //        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn,"mm"}).bin_id({4,11,14}));
-        //        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn,"mm"}).bin_id({5,12,15}));
-        //        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn,"mm"}).bin_id({6,12,15}));
         writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn}).bin_id({1}));
         writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn}).bin_id({2}));
         writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn}).bin_id({3}));
-//        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn}).bin_id({4}));
-//        writer.WriteCards("htt_"+chn+"_5_13TeV", cb.cp().channel({chn}).bin_id({5}));
-//        writer.WriteCards("htt_"+chn+"_6_13TeV", cb.cp().channel({chn}).bin_id({6}));
         
         
         for (auto mmm : masses){
@@ -526,8 +474,6 @@ int main(int argc, char** argv) {
     //    for (it=bins.begin(); it!=bins.end(); ++it){
     //        std::cout << " ==================>>>>>>>>   " << *it<<"\n\n\n\n";   //htt_et_10_13TeV
     //    }
-    
-    
     
     cb.PrintAll();
     cout << " done\n";
