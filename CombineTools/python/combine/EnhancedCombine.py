@@ -100,7 +100,10 @@ class EnhancedCombine(CombineToolBase):
                     self.passthru.extend(['%(' + header + ')s'])
                     key += (header,)
             for entry in gen_entries:
-                split_entry = entry.split(',')
+                if ',,' in entry:
+                    split_entry = entry.split(',,')
+                else:
+                    split_entry = entry.split(',')
                 final_arg = []
                 for header, e in zip(gen_headers, split_entry):
                     argname = '-%s' % header if len(header) == 1 else '--%s' % header
