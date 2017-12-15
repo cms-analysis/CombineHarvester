@@ -200,7 +200,7 @@ def ModTDRStyle(width=600, height=600, t=0.06, b=0.12, l=0.16, r=0.04):
     # 0.08, 0.12, 0.12, 0.04
 
     # Set number of axis tick divisions
-    R.gStyle.SetNdivisions(506, 'XYZ')  # default 510
+    R.gStyle.SetNdivisions(510, 'XYZ')  # default 510
 
     # Some marker properties not set in the default tdr style
     R.gStyle.SetMarkerColor(R.kBlack)
@@ -319,6 +319,7 @@ def TwoPadSplit(split_point, gap_low, gap_high):
     upper = R.TPad('upper', 'upper', 0., 0., 1., 1.)
     upper.SetBottomMargin(split_point + gap_high)
     upper.SetFillStyle(4000)
+    upper.SetTicks(1)
     upper.Draw()
     lower = R.TPad('lower', 'lower', 0., 0., 1., 1.)
     lower.SetTopMargin(1 - split_point + gap_low)
