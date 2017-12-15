@@ -7,6 +7,14 @@ import glob
 import os
 import argparse
 
+def adjust_shape(proc,nbins):
+  new_hist = proc.ShapeAsTH1F();
+  new_hist.Scale(proc.rate())
+  for i in range(1,new_hist.GetNbinsX()+1-nbins):
+    new_hist.SetBinContent(i,0.)
+  proc.set_shape(new_hist,True)
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
  '--channel', default='all', help="""Which channels to run? Supported options: 'all', 'Znn', 'Zee', 'Zmm', 'Zll', 'Wen', 'Wmn','Wln'""")
@@ -16,10 +24,10 @@ parser.add_argument(
  '--auto_rebin', action='store_true', help="""Rebin automatically?""")
 parser.add_argument(
  '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
+parser.add_argument(
+ '--zero_out_low', action='store_true', help="""Zero-out lowest SR bins (purely for the purpose of making yield tables""")
 
 args = parser.parse_args()
-
-print args.channel
 
 cb = ch.CombineHarvester()
 
@@ -148,6 +156,14 @@ if args.bbb_mode==2 or args.bbb_mode==3:
 if args.bbb_mode==4:
   cb.AddDatacardLineAtEnd("* autoMCStats 0")
 
+
+if args.zero_out_low:
+  nbins_to_keep = {'Wen':[[1,5]],'Wmn':[[1,5]],'Znn':[[1,5]],'Zee':[[1,5],[2,3]],'Zmm':[[1,5],[2,3]]}
+  for chn in chns:
+    for i in range(len(nbins_to_keep[chn])):
+      print nbins_to_keep[chn][i]
+      cb.cp().channel([chn]).bin_id([nbins_to_keep[chn][i][0]]).ForEachProc(lambda x: adjust_shape(x,nbins_to_keep[chn][i][1]))
+      cb.cp().channel([chn]).bin_id([nbins_to_keep[chn][i][0]]).ForEachObs(lambda x: adjust_shape(x,nbins_to_keep[chn][i][1]))
 
 writer=ch.CardWriter("output/" + args.output_folder + "/$TAG/$BIN.txt",
                       "output/" + args.output_folder + "/$TAG/vhbb_input.root")
