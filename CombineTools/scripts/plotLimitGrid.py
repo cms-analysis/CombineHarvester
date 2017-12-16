@@ -164,6 +164,7 @@ if args.x_range is not None:
     h_axis.GetXaxis().SetRangeUser(float(args.x_range.split(',')[0]),float(args.x_range.split(',')[1]))
 if args.y_range is not None:
     h_axis.GetYaxis().SetRangeUser(float(args.y_range.split(',')[0]),float(args.y_range.split(',')[1]))
+h_axis.GetXaxis().SetNdivisions(5,5,0)
 h_axis.Draw()
 
 if args.hist is not None:
@@ -284,14 +285,14 @@ plot.Set(legend, NColumns=2, Header='#bf{%.0f%% CL Excluded:}' % (args.CL*100.))
 if 'obs' in contours:
     legend.AddEntry(contours['obs'][0], "Observed", "F")
 if 'exp-1' in contours and 'exp+1' in contours:
-    legend.AddEntry(contours['exp-1'][0], "#pm 68% expected", "F")
+    legend.AddEntry(contours['exp-1'][0], "68% expected", "F")
 if 'exp0' in contours:
     if 'obs' in contours:
         legend.AddEntry(contours['exp0'][0], "Expected", "L")
     else:
         legend.AddEntry(contours['exp0'][0], "Expected", "F")
 if 'exp-2' in contours and 'exp+2' in contours:
-    legend.AddEntry(contours['exp-2'][0], "#pm 95% expected", "F")
+    legend.AddEntry(contours['exp-2'][0], "95% expected", "F")
 if extra_contours is not None:
     if args.extra_contour_title is not None: 
         contour_title = args.extra_contour_title.split(',')
