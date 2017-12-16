@@ -20,6 +20,10 @@ parser.add_argument(
 parser.add_argument(
     '--y-title', default=None, help="""Title for the y-axis""")
 parser.add_argument(
+    '--y-axis-min', default=None, help="""Minimum for y-axis range""")
+parser.add_argument(
+    '--y-axis-max', default=None, help="""Maximum for y-axis range""")
+parser.add_argument(
     '--process', help='The process on which a limit has been calculated. [gg#phi, bb#phi]', default="gg#phi")
 parser.add_argument(
     '--cms-sub', default='Internal', help="""Text below the CMS logo""")
@@ -85,10 +89,15 @@ style_dict_inj = {
 
 style_dict_hig_17_020 = {
         'style' : {
-            'exp0' : { 'LineColor' : ROOT.kBlack, 'LineStyle' : 2}
+            'exp0' : { 'LineColor' : ROOT.kBlack, 'LineStyle' : 2},
+            'exp1' : { 'FillColor' : ROOT.kGreen+1}, 
+            'exp2' : { 'FillColor' : ROOT.kOrange}
             },
         'legend' : {
+            'exp1' : { 'Label' : '68% expected'},
+            'exp2' : { 'Label' : '95% expected'}
             }
+
         }
         
 style_dict_hig_17_020_noHbkg = {
@@ -99,8 +108,8 @@ style_dict_hig_17_020_noHbkg = {
             },
         'legend' : {
             'exp0' : { 'Label' : 'Expected for no H(125 GeV) in BG'},
-            'exp1' : { 'Label' : '#pm1#sigma no H(125 GeV) in BG'},
-            'exp2' : { 'Label' : '#pm2#sigma no H(125 GeV) in BG'}
+            'exp1' : { 'Label' : '68% expected no H(125 GeV) in BG'},
+            'exp2' : { 'Label' : '95% expected no H(125 GeV) in BG'}
             }
         }
 
@@ -251,7 +260,6 @@ if args.y_title is not None:
 axis[0].GetXaxis().SetTitle(args.x_title)
 axis[0].GetXaxis().SetLabelOffset(axis[0].GetXaxis().GetLabelOffset()*2)
 
-
 if args.logy:
     axis[0].SetMinimum(0.1)  # we'll fix this later
     pads[0].SetLogy(True)
@@ -265,6 +273,11 @@ if args.logy:
 
 y_min, y_max = (plot.GetPadYMin(pads[0]), plot.GetPadYMax(pads[0]))
 plot.FixBothRanges(pads[0], y_min if args.logy else 0, 0.05 if args.logy else 0, y_max, 0.25)
+
+if args.y_axis_min is not None or args.y_axis_max is not None:
+  hobj = plot.GetAxisHist(pads[0])
+  if args.y_axis_min is not None: hobj.SetMinimum(float(args.y_axis_min))
+  if args.y_axis_max is not None: hobj.SetMaximum(float(args.y_axis_max))
 
 ratio_graph_sets = []
 ratio_graphs = []
