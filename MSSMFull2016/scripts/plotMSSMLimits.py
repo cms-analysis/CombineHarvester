@@ -258,6 +258,8 @@ if args.process == "bb#phi":
 if args.y_title is not None:
     axis[0].GetYaxis().SetTitle(args.y_title)
 axis[0].GetXaxis().SetTitle(args.x_title)
+axis[0].GetXaxis().SetNoExponent()
+axis[0].GetXaxis().SetMoreLogLabels()
 axis[0].GetXaxis().SetLabelOffset(axis[0].GetXaxis().GetLabelOffset()*2)
 
 if args.logy:
