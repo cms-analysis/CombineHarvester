@@ -285,8 +285,6 @@ if 'obs' in contours:
     legend.AddEntry(contours['obs'][0], "Observed", "F")
 if 'exp-1' in contours and 'exp+1' in contours:
     legend.AddEntry(contours['exp-1'][0], "#pm 1#sigma Expected", "F")
-if mh122_contours is not None and len(mh122_contours)>0:
-    legend.AddEntry(mh122_contours[0], "m_{h}^{MSSM} #neq 125 #pm 3 GeV","F")
 if 'exp0' in contours:
     if 'obs' in contours:
         legend.AddEntry(contours['exp0'][0], "Expected", "L")
@@ -311,6 +309,13 @@ plot.DrawTitle(pads[0], args.title_left, 1)
 pads[1].cd()
 pads[1].GetFrame().Draw()
 pads[1].RedrawAxis()
+
+if mh122_contours is not None and len(mh122_contours)>0:
+    legend2 = ROOT.TLegend(0.6, 0.18 , 0.92, 0.23, '', 'NBNDC')
+    #legend2 = plot.PositionedLegend(0.4, 0.11, 3, 0.015)
+    legend2.AddEntry(mh122_contours[0], "m_{h}^{MSSM} #neq 125 #pm 3 GeV","F")
+    legend2.Draw()
+
 
 # Draw the scenario label
 latex = ROOT.TLatex()
