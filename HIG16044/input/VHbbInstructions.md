@@ -38,6 +38,7 @@ At the moment the options are
 - `--output_folder`: subdirectory of 'output' where the cards are written. Set to 'vhbb2016' by default.
 - `--bbb_mode`: toggle to set the bin-by-bin inclusion options. mode 0: do not add bin-by-bins, 1 (default): add bin-by-bins as in official 2016 cards, 2: add bin-by-bins for all backgrounds in SR and CRs, merging some of the uncertainties to keep the number of nuisance parameters manageable, 3: same as 2, but using the new CMSHistFunc classes, 4: using the autoMCStat mode of combine.
 - `--auto_rebin`: switches on automated rebinning of the input histograms. Off by default.
+- `--zero_out_low`: sets the bin contents in some of the SR bins to 0 (for the purpose of making yield tables). Off by default.
 
 ## Setting up workspaces
 
@@ -77,6 +78,20 @@ To make pre- and post fit plots of the CMVA distributions in the CR:
 
 
 The underlying plotting scripts is scripts/postFitPlot.py. Cosmetic changes still needed.
+
+## Yield tables
+First run the maximum likelihood fit as described above for the post-fit plots.
+
+Set up new cards and workspace for which the contents of the bins we want to ignore are set to 0 (NOTE: this implementation in the datacard production script still to be improved)
+
+`python ./scripts/VHbb2016.py [options] --zero_out_low`
+`combineTool.py -M T2W -o "ws.root" -i output/<output_folder_zeroed_out>/cmb/`
+
+Create the pre- and postfit yield tables:
+`python scripts/printYieldTables.py --workspace output/<output_folder_zeroed_out>/cmb/ws.root --fit_file output/<output_folder>/cmb/fitDiagnostics.Test.root`
+
+It is *very* important to use fit results for the *full* model, otherwise the uncertainties on the yields will not be correct. <output_folder_zeroed_out> and <output_folder> are therefore explicitly different, unless yield tables are madefor the full model too.
+
 
 
 ## Other plots
