@@ -282,8 +282,12 @@ class CombineToolBase:
                     newline = line
                     if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
                     wsp = str(self.extract_workspace_arg(newline.split()))
-                    wsp_files.add(wsp)
-                    outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
+                    newline = newline.replace(wsp, os.path.basename(wsp))
+                    if wsp.startswith('root://'):
+                        newline = ('./copyRemoteWorkspace.sh %s ./%s; ' % (wsp, os.path.basename(wsp))) + newline
+                    else:
+                        wsp_files.add(wsp)
+                    outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
             if self.custom_crab_post is not None:
                 with open(self.custom_crab_post, 'r') as postfile:
