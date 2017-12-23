@@ -19,10 +19,11 @@ class CPMixture(PhysicsModel):
 	        
                 poiNames = []
                 
+                self.modelBuilder.doVar('alpha[0,0,1]') 
                 poiNames.append('alpha')
 		self.modelBuilder.doVar('muF[1,0,20]')
+                if not self.constrain_ggHYield: poiNames.append('muF')
 		self.modelBuilder.doVar('muV[1,0,20]')
-                if not self.constrain_ggHYield: poiNames.append('muF') 
                 poiNames.append('muV')
                 self.modelBuilder.doSet('POI', ','.join(poiNames))
 
@@ -45,7 +46,7 @@ class CPMixture(PhysicsModel):
                 for cp in cps:
                   self.modelBuilder.factory_('expr::muF_{cp}("@0*@1", muF, {cp})'.format(cp=cp)
                   if self.constrain_ggHYield:
-                    self.modelBuilder.factory_('expr::muF_{cp}("@0*@1*@2", muF, {cp}, xs_scaling)'.format(cp=cp) 
+                    self.modelBuilder.factory_('expr::muF_{cp}_xs_scaling("@0*@1*@2", muF, {cp}, xs_scaling)'.format(cp=cp) 
 
 	def getYieldScale(self, bin, process):
 		if self.DC.isSignal[process]:
