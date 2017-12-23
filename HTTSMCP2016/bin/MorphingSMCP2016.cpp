@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
 
     string output_folder = "sm_run2";
     string input_folder_em="USCMS/";
-    string input_folder_et="USCMS/";
-    string input_folder_mt="USCMS/";
-    string input_folder_tt="USCMS/";
+    string input_folder_et="Imperial/";
+    string input_folder_mt="Imperial/";
+    string input_folder_tt="Imperial/";
     string input_folder_mm="USCMS/";
     string input_folder_ttbar="USCMS/";
     string postfix="";
@@ -74,9 +74,9 @@ int main(int argc, char** argv) {
     po::options_description config("configuration");
     config.add_options()
     ("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("USCMS"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("USCMS"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("USCMS"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
@@ -110,15 +110,15 @@ int main(int argc, char** argv) {
     
     map<string, VString> bkg_procs;
     if (do_jetfakes){
-      bkg_procs["et"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes","qqH_htt125","WH_htt125","ZH_htt125"};
-      bkg_procs["mt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes","qqH_htt125","WH_htt125","ZH_htt125"};
-      bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest","qqH_htt125","WH_htt125","ZH_htt125"};
+      bkg_procs["et"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["mt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
     }else{
-      bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ","qqH_htt125","WH_htt125","ZH_htt125"};
-      bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ","qqH_htt125","WH_htt125","ZH_htt125"};
-      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ","qqH_htt125","WH_htt125","ZH_htt125"};
+      bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
+      bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
+      bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
     }
-    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125","qqH_htt125","WH_htt125","ZH_htt125"};
+    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ"};
     
@@ -127,14 +127,11 @@ int main(int argc, char** argv) {
     map<string,Categories> cats;
     cats["et"] = {
         {1, "et_0jet"},
-        {2, "et_boosted"},
-        {3, "et_vbf"}};
+        {2, "et_boosted"}};
     
     cats["mt"] = {
         {1, "mt_0jet"},
-        {2, "mt_boosted"},
-        {3, "mt_vbf"}};
-    
+        {2, "mt_boosted"}}; 
     cats["em"] = {
         {1, "em_0jet"},
         {2, "em_boosted"},
@@ -142,8 +139,7 @@ int main(int argc, char** argv) {
     
     cats["tt"] = {
         {1, "tt_0jet"},
-        {2, "tt_boosted"},
-        {3, "tt_vbf"}};
+        {2, "tt_boosted"}};
     
     cats["mm"] = {
         {1, "mm_0jet"},
@@ -154,6 +150,18 @@ int main(int argc, char** argv) {
         {1, "ttbar_all"}
     };
     
+    map<string,Categories> cats_cp;
+    cats_cp["et"] = {
+        {3, "et_dijet"}};
+
+    cats_cp["mt"] = {
+        {3, "mt_dijet"}};
+
+    //cats_cp["em"] = {
+    //    {3, "em_dijet"}}; // no cp categories for em channel yet
+
+    cats_cp["tt"] = {
+        {3, "tt_dijet"}};
     
     if (control_region > 0){
         // for each channel use the categories >= 10 for the control regions
@@ -186,7 +194,7 @@ int main(int argc, char** argv) {
                 
                 queue.push_back(make_pair(binid,chn+"_0jet_qcd_cr"));
                 queue.push_back(make_pair(binid+1,chn+"_boosted_qcd_cr"));
-                queue.push_back(make_pair(binid+2,chn+"_vbf_qcd_cr"));
+                queue.push_back(make_pair(binid+2,chn+"_dijet_qcd_cr"));
                 
                 cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
             }
@@ -195,10 +203,10 @@ int main(int argc, char** argv) {
 
     
     
-    
-    // Or equivalently, specify the mass points explicitly:
-    vector<string> sig_procs = {"ggH_htt"};
-    vector<string> masses = {"110","120","125","130","140"};
+    map<string, VString> sig_procs;
+    sig_procs["ggH"] = {"ggH_htt125"};
+    sig_procs["qqH"] = {"qqH_htt125","WH_htt125","ZH_htt125"};
+    sig_procs["ggHCP"] = {"ggHf0_htt125", "ggHf1_htt125", "ggHf0p5_htt125"};
     
     using ch::syst::bin_id;
     
@@ -206,7 +214,12 @@ int main(int argc, char** argv) {
     for (auto chn : chns) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
-        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs, cats[chn], true);
+        
+        // add signal processes here use usual ggH_htt   
+        cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], true);
+        cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
+        cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
+        
         //Needed to add ewkz and W as these are not not available/Negative in qcd cR
     }
     
@@ -216,15 +229,15 @@ int main(int argc, char** argv) {
 //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"EWKZ"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
 
     if (control_region > 0){
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},
+      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet"},
                                     {10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},
                                     {13, "et_antiiso_0jet_cr"},{14, "et_antiiso_boosted_cr"}}, false);
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},
+      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet"},
                                     {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
                                     {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
     }else if (!do_jetfakes){
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
+      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet"}}, false);
+      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet"}}, false);
     }
     
     
@@ -263,10 +276,20 @@ int main(int argc, char** argv) {
                                                            input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                            "$BIN/$PROCESS",
                                                            "$BIN/$PROCESS_$SYSTEMATIC");
-        cb.cp().channel({chn}).process(sig_procs).ExtractShapes(
+        cb.cp().channel({chn}).process(sig_procs["qqH"]).ExtractShapes(
                                                                 input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                                 "$BIN/$PROCESS$MASS",
                                                                 "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+        cb.cp().channel({chn}).process(sig_procs["ggH"]).ExtractShapes(
+                                                                input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                                "$BIN/$PROCESS$MASS",
+                                                                "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+        if (chn == "tt" || chn == "mt" || chn == "et"){
+          cb.cp().channel({chn}).process(sig_procs["ggHCP"]).ExtractShapes(
+                                                                  input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                                  "$BIN/$PROCESS$MASS",
+                                                                  "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+        }
     }
     
     
@@ -406,7 +429,7 @@ int main(int argc, char** argv) {
         writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn}).bin_id({3}));
         
         
-        for (auto mmm : masses){
+        for (auto mmm : {"125"}){
             
             if (mm_fit){
                 cb.cp().channel({"mm"}).bin_id({1}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_1_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm1.root");
