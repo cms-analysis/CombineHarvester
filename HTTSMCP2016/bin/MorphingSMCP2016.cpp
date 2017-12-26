@@ -215,12 +215,16 @@ int main(int argc, char** argv) {
     for (auto chn : chns) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
-        cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats_cp[chn]);
-        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
+        
+        if(chn == "tt" || chn == "mt" || chn == "et"){
+          cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats_cp[chn]);
+          cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
+        }
         
         // add signal processes here use usual ggH_htt   
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], true);
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
+        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats_cp[chn], true);
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
         
         //Needed to add ewkz and W as these are not not available/Negative in qcd cR
@@ -327,8 +331,46 @@ int main(int argc, char** argv) {
     //     //Merge to one bin for control region bins
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
-    
-    
+  
+  
+    // At this point we can fix the negative bins
+    std::cout << "Fixing negative bins\n";
+    cb.ForEachProc([](ch::Process *p) {
+      if (ch::HasNegativeBins(p->shape())) {
+         std::cout << "[Negative bins] Fixing negative bins for " << p->bin()
+                   << "," << p->process() << "\n";
+         std::cout << "[Negative bins] Before:\n";
+         p->shape()->Print("range");
+        auto newhist = p->ClonedShape();
+        ch::ZeroNegativeBins(newhist.get());
+        // Set the new shape but do not change the rate, we want the rate to still
+        // reflect the total integral of the events
+        p->set_shape(std::move(newhist), false);
+         std::cout << "[Negative bins] After:\n";
+         p->shape()->Print("range");
+      }
+    });
+  
+    cb.ForEachSyst([](ch::Systematic *s) {
+      if (s->type().find("shape") == std::string::npos) return;
+      if (ch::HasNegativeBins(s->shape_u()) || ch::HasNegativeBins(s->shape_d())) {
+         std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
+               << "," << s->process() << "," << s->name() << "\n";
+         std::cout << "[Negative bins] Before:\n";
+         s->shape_u()->Print("range");
+         s->shape_d()->Print("range");
+        auto newhist_u = s->ClonedShapeU();
+        auto newhist_d = s->ClonedShapeD();
+        ch::ZeroNegativeBins(newhist_u.get());
+        ch::ZeroNegativeBins(newhist_d.get());
+        // Set the new shape but do not change the rate, we want the rate to still
+        // reflect the total integral of the events
+        s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
+         std::cout << "[Negative bins] After:\n";
+         s->shape_u()->Print("range");
+         s->shape_d()->Print("range");
+      }
+  });
     
     
     //! [part8]

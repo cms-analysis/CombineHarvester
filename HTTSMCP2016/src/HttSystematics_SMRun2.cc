@@ -33,7 +33,7 @@ namespace ch {
         //}
         
         
-        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHf0_htt125", "ggHf1_htt125", "ggHf0p5_htt125"};
+        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHf0_htt", "ggHf1_htt", "ggHf0p5_htt"};
         
         // N.B. when adding this list of backgrounds to a nuisance, only
         // the backgrounds that are included in the background process
@@ -57,6 +57,7 @@ namespace ch {
         //  lumi
         //##############################################################################
         
+
         cb.cp().process(JoinStr({sig_procs, {"VV","VVT","VVJ","ggH_hww125","qqH_hww125"}})).AddSyst(cb,
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.025));
         cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.025));
@@ -183,14 +184,14 @@ namespace ch {
 //        }
 
 
-        // Decay Mode based TES Settings
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-                                                  "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-                                                  "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-                                                  "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
-        
+      // Decay Mode based TES Settings
+      cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
+                                                "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
+      cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
+                                                "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+      cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
+                                                "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
+      
 
         //##############################################################################
         //  jet and met energy Scale
@@ -1351,10 +1352,25 @@ namespace ch {
         if (control_region > 0) {
             // Add to all CRs, don't include QCD or WJets in et/mt which have CRs, or QCD in tt
             
-            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
+            cb.cp().process(all_mc_bkgs).channel({"mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
                                                             "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(all_mc_bkgs).channel({"et","mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
+            cb.cp().process(all_mc_bkgs).channel({"mt"}).bin_id({10, 11, 12, 13, 14, 15}).AddSyst(cb,
                                                             "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+            
+            cb.cp().process(all_mc_bkgs).channel({"et"}).bin_id({10, 11, 12, 13, 15}).AddSyst(cb,
+                                                            "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process(all_mc_bkgs).channel({"et"}).bin_id({10, 11, 12, 13, 15}).AddSyst(cb,
+                                                            "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+            
+            cb.cp().process(all_mc_bkgs_no_W).channel({"et"}).bin_id({14}).AddSyst(cb,
+                                                            "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
+            cb.cp().process(all_mc_bkgs_no_W).channel({"et"}).bin_id({14}).AddSyst(cb,
+                                                            "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+            // adding this as lnN uncertainy to void crash due to negative uncertinties
+            cb.cp().process({"W"}).channel({"et"}).bin_id({14}).AddSyst(cb,
+                                                            "CMS_scale_met_clustered_$ERA", "lnN", SystMap<>::init(1.1279));
+            cb.cp().process({"W"}).channel({"et"}).bin_id({14}).AddSyst(cb,
+                                                            "CMS_scale_met_unclustered_$ERA", "lnN", SystMap<>::init(1.1279));
             
 //            cb.cp().AddSyst(cb,
 //                            "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
@@ -1437,7 +1453,7 @@ namespace ch {
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
                                              "WHighMTtoLowMT_boosted_$ERA", "lnN", SystMap<>::init(1.05));
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                             "WHighMTtoLowMT_vbf_$ERA", "lnN", SystMap<>::init(1.10));
+                                             "WHighMTtoLowmt_dijet_$ERA", "lnN", SystMap<>::init(1.10));
         
         
 
@@ -1916,21 +1932,21 @@ namespace ch {
             
             
             cb.cp().bin({"mt_0jet","mt_wjets_0jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_0jet_mt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"mt_boosted","mt_wjets_boosted_cr","mt_vbf"}).process({"W"}).AddSyst(cb, "rate_W_cr_boosted_mt", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"mt_vbf","mt_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_boosted","mt_wjets_boosted_cr","mt_dijet"}).process({"W"}).AddSyst(cb, "rate_W_cr_boosted_mt", "rateParam", SystMap<>::init(1.0));
+//            cb.cp().bin({"mt_dijet","mt_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
             
             cb.cp().bin({"et_0jet","et_wjets_0jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"et_boosted","et_wjets_boosted_cr","et_vbf"}).process({"W"}).AddSyst(cb, "rate_W_cr_boosted_et", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"et_vbf","et_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_boosted","et_wjets_boosted_cr","tt_dijet"}).process({"W"}).AddSyst(cb, "rate_W_cr_boosted_et", "rateParam", SystMap<>::init(1.0));
+//            cb.cp().bin({"tt_dijet","et_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
             
             
             cb.cp().bin({"mt_0jet","mt_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_mt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"mt_boosted","mt_antiiso_boosted_cr","mt_vbf"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_mt", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"mt_vbf","mt_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_boosted","mt_antiiso_boosted_cr","mt_dijet"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_mt", "rateParam", SystMap<>::init(1.0));
+//            cb.cp().bin({"mt_dijet","mt_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
             
             cb.cp().bin({"et_0jet","et_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"et_boosted","et_antiiso_boosted_cr","et_vbf"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_et", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"et_vbf","et_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_boosted","et_antiiso_boosted_cr","tt_dijet"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_et", "rateParam", SystMap<>::init(1.0));
+//            cb.cp().bin({"tt_dijet","et_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
             
             
             //          cb.cp().bin({bin+"(|_0jet)$"}).process({"W"}).AddSyst(cb, "rate_QCD_cr_0jet_"+bin, "rateParam", SystMap<>::init(1.0));
@@ -1939,7 +1955,7 @@ namespace ch {
  
             cb.cp().bin({"tt_0jet","tt_0jet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_tt", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"tt_boosted","tt_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_tt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"tt_vbf","tt_vbf_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet","tt_dijet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_tt", "rateParam", SystMap<>::init(1.0));
             
             
             //        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,
@@ -1982,9 +1998,9 @@ namespace ch {
             cb.cp().bin({"em_boosted"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_boosted", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"mm_1jet"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_1jet", "rateParam", SystMap<>::init(1.0));
             
-            cb.cp().bin({"mt_vbf"}).process({"ZTT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"et_vbf"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"tt_vbf"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_dijet"}).process({"ZTT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"em_vbf"}).process({"ZTT"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"mm_vbf"}).process({"ZL"}).AddSyst(cb, "rate_mm_ZTT_vbf", "rateParam", SystMap<>::init(1.0));
             
@@ -2010,9 +2026,9 @@ namespace ch {
             cb.cp().bin({"em_boosted"}).process({"TT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
             
             
-            cb.cp().bin({"mt_vbf"}).process({"TTJ","TTT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"et_vbf"}).process({"TTJ","TTT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"tt_vbf"}).process({"TTJ","TTT","TTJ_rest"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_dijet"}).process({"TTJ","TTT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet"}).process({"TTJ","TTT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet"}).process({"TTJ","TTT","TTJ_rest"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"em_vbf"}).process({"TT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
             
             cb.cp().bin({"ttbar_all"}).process({"TT"}).AddSyst(cb, "rate_ttbar", "rateParam", SystMap<>::init(1.0));
