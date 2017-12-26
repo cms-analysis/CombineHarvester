@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
 
     string output_folder = "sm_run2";
     string input_folder_em="USCMS/";
-    string input_folder_et="Imperial/";
-    string input_folder_mt="Imperial/";
-    string input_folder_tt="Imperial/";
+    string input_folder_et="Imperial/CP/";
+    string input_folder_mt="Imperial/CP/";
+    string input_folder_tt="Imperial/CP/";
     string input_folder_mm="USCMS/";
     string input_folder_ttbar="USCMS/";
     string postfix="";
@@ -74,9 +74,9 @@ int main(int argc, char** argv) {
     po::options_description config("configuration");
     config.add_options()
     ("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
@@ -204,21 +204,24 @@ int main(int argc, char** argv) {
     
     
     map<string, VString> sig_procs;
-    sig_procs["ggH"] = {"ggH_htt125"};
-    sig_procs["qqH"] = {"qqH_htt125","WH_htt125","ZH_htt125"};
-    sig_procs["ggHCP"] = {"ggHf0_htt125", "ggHf1_htt125", "ggHf0p5_htt125"};
-    
+    sig_procs["ggH"] = {"ggH_htt"};
+    sig_procs["qqH"] = {"qqH_htt","WH_htt","ZH_htt"};
+    sig_procs["ggHCP"] = {"ggHf0_htt", "ggHf1_htt", "ggHf0p5_htt"};
+    vector<string> masses = {"125"};    
+
     using ch::syst::bin_id;
     
     //! [part2]
     for (auto chn : chns) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
+        cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats_cp[chn]);
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
         
         // add signal processes here use usual ggH_htt   
-        cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], true);
-        cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
-        cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
+        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], true);
+        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
+        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
         
         //Needed to add ewkz and W as these are not not available/Negative in qcd cR
     }

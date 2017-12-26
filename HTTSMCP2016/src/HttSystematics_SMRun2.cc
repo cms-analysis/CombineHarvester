@@ -1428,7 +1428,7 @@ namespace ch {
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
                                              "WSFUncert_$CHANNEL_boosted_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_vbf_$ERA", "shape", SystMap<>::init(1.00));
+                                             "WSFUncert_$CHANNEL_dijet_$ERA", "shape", SystMap<>::init(1.00));
         
         
         // based on the Ersatz study in Run1
