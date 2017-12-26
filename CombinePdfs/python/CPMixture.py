@@ -54,11 +54,11 @@ class CPMixture(PhysicsModel):
 			if 'ggH' in process: 
                           if not self.constrain_ggHYield: 
                             scalings.append('muF')
-                          if "f0" in process.lower():
+                          if "f0" in process and "f0p5" not in process:
     			    scalings.append('sm_scaling')
-			  elif "f1" in process.lower():
+			  elif "f1" in process:
 			    scalings.append('ps_scaling')
-			  elif "f0p5" in process.lower(): 
+			  elif "f0p5" in process: 
                             scalings.append('mm_scaling') 
                           if self.constrain_ggHYield: 
                             scalings.append('xs_scaling')
