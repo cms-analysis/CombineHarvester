@@ -70,6 +70,7 @@ int main(int argc, char** argv) {
     bool mm_fit = false;
     bool ttbar_fit = false;
     bool do_jetfakes = false;
+    bool real_data = true;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -82,6 +83,7 @@ int main(int argc, char** argv) {
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
     ("control_region", po::value<int>(&control_region)->default_value(0))
+    ("real_data", po::value<bool>(&real_data)->default_value(real_data))
     ("mm_fit", po::value<bool>(&mm_fit)->default_value(true))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
 
@@ -331,6 +333,15 @@ int main(int argc, char** argv) {
     //     //Merge to one bin for control region bins
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
+    
+    if(!real_data){
+      for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+          std::cout << " - Replacing data with asimov in bin " << b << "\n";
+          cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
+            obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
+          });
+        }
+    }
   
   
     // At this point we can fix the negative bins
