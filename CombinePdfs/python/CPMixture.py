@@ -39,19 +39,19 @@ class CPMixture(PhysicsModel):
 		self.modelBuilder.factory_('expr::ps_scaling("@1*@1-@0*@1*{b_tilde}/{a_tilde}", a, b)'.format(**maxmix))
                 self.modelBuilder.factory_('expr::mm_scaling("@0*@1/({a_tilde}*{b_tilde})", a, b)'.format(**maxmix))
 
-                if self.constrain_ggHYield:
-                  self.modelBuilder.factory_('expr::xs_scaling("@0*@0*{sm_xs} +@1*@1*{ps_xs}", a, b)'.format(sm_xs=self.sm_xs,ps_xs=self.ps_xs))
+                self.modelBuilder.factory_('expr::xs_scaling("@0*@0*{sm_xs} +@1*@1*{ps_xs}", a, b)'.format(sm_xs=self.sm_xs,ps_xs=self.ps_xs))
                 
                 cps = ['sm_scaling', 'ps_scaling', 'mm_scaling'] 
                 for cp in cps:
-                  self.modelBuilder.factory_('expr::muF_{cp}("@0*@1", muF, {cp})'.format(cp=cp)
-                  if self.constrain_ggHYield:
-                    self.modelBuilder.factory_('expr::muF_{cp}_xs_scaling("@0*@1*@2", muF, {cp}, xs_scaling)'.format(cp=cp) 
+                  
+                  self.modelBuilder.factory_('expr::muF_{cp}("@0*@1", muF, {cp})'.format(cp=cp))
+
+                  self.modelBuilder.factory_('expr::muF_{cp}_xs_scaling("@0*@1*@2", muF, {cp}, xs_scaling)'.format(cp=cp)) 
 
 	def getYieldScale(self, bin, process):
 		if self.DC.isSignal[process]:
 			scalings = []	
-			if 'ggh' in process.lower(): 
+			if 'ggH' in process: 
                           if not self.constrain_ggHYield: 
                             scalings.append('muF')
                           if "f0" in process.lower():
@@ -62,7 +62,7 @@ class CPMixture(PhysicsModel):
                             scalings.append('mm_scaling') 
                           if self.constrain_ggHYield: 
                             scalings.append('xs_scaling')
-                        elif any(x in process.lower() for x in ['qqH','WH','ZH']): scalings.append('muV')
+                        elif any(x in process for x in ['qqH','WH','ZH']): scalings.append('muV')
                         
                         scaling = '_'.join(scalings)
                         print 'Scaling %s/%s as %s' % (bin, process, scaling)  
