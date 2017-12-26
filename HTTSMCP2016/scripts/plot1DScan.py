@@ -309,7 +309,7 @@ parser.add_argument('--json', help='update this json file')
 parser.add_argument('--model', help='use this model identifier')
 parser.add_argument('--POI', help='use this parameter of interest')
 parser.add_argument('--POI-line', default=None)
-parser.add_argument('--translate', default='texName.json',
+parser.add_argument('--translate', default=None,
                     help='json file with POI name translation')
 parser.add_argument('--main-label', default='Observed',
                     type=str, help='legend label for the main scan')

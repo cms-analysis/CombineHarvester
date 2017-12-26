@@ -21,9 +21,9 @@ class CPMixture(PhysicsModel):
                 
                 self.modelBuilder.doVar('alpha[0,0,1]') 
                 poiNames.append('alpha')
-		self.modelBuilder.doVar('muF[1,0,20]')
+		self.modelBuilder.doVar('muF[1,0,4]')
                 if not self.constrain_ggHYield: poiNames.append('muF')
-		self.modelBuilder.doVar('muV[1,0,20]')
+		self.modelBuilder.doVar('muV[1,0,4]')
                 poiNames.append('muV')
                 self.modelBuilder.doSet('POI', ','.join(poiNames))
 
