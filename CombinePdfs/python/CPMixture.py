@@ -68,7 +68,9 @@ class CPMixture(PhysicsModel):
                         print 'Scaling %s/%s as %s' % (bin, process, scaling)  
 			return scaling
 		
-		else: return 1
+		else: 
+                  print 'Scaling %s/%s as 1' % (bin, process)
+                  return 1
 
 CPMixture = CPMixture()
 
