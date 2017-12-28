@@ -154,16 +154,30 @@ int main(int argc, char** argv) {
     
     map<string,Categories> cats_cp;
     cats_cp["et"] = {
-        {3, "et_dijet"}};
+        {3, "et_dijet_lowboost"},
+        {4, "et_dijet_lowM"},
+        {5, "et_dijet_highM"},
+        {6, "et_dijet_boosted"}
+        
+    };
 
     cats_cp["mt"] = {
-        {3, "mt_dijet"}};
+        {3, "mt_dijet_lowboost"},
+        {4, "mt_dijet_lowM"},
+        {5, "mt_dijet_highM"},
+        {6, "mt_dijet_boosted"}
+        
+    };
 
     //cats_cp["em"] = {
     //    {3, "em_dijet"}}; // no cp categories for em channel yet
 
     cats_cp["tt"] = {
-        {3, "tt_dijet"}};
+        {3, "tt_dijet_lowboost"},
+        {4, "tt_dijet_lowM"},
+        {5, "tt_dijet_highM"},
+        {6, "tt_dijet_boosted"}
+    };
     
     if (control_region > 0){
         // for each channel use the categories >= 10 for the control regions
@@ -196,7 +210,10 @@ int main(int argc, char** argv) {
                 
                 queue.push_back(make_pair(binid,chn+"_0jet_qcd_cr"));
                 queue.push_back(make_pair(binid+1,chn+"_boosted_qcd_cr"));
-                queue.push_back(make_pair(binid+2,chn+"_dijet_qcd_cr"));
+                queue.push_back(make_pair(binid+2,chn+"_dijet_lowboost_qcd_cr"));
+                queue.push_back(make_pair(binid+3,chn+"_dijet_lowM_qcd_cr"));
+                queue.push_back(make_pair(binid+4,chn+"_dijet_highM_qcd_cr"));
+                queue.push_back(make_pair(binid+5,chn+"_dijet_boosted_qcd_cr"));
                 
                 cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
             }
@@ -222,8 +239,7 @@ int main(int argc, char** argv) {
           cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats_cp[chn]);
           cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
         }
-        
-        // add signal processes here use usual ggH_htt   
+
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], true);
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats_cp[chn], true);
