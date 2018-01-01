@@ -85,11 +85,12 @@ class EnhancedCombine(CombineToolBase):
             self.passthru.extend(['-s', '%(SEED)s'])
 
         for i, generate in enumerate(self.args.generate):
-            gen_header, gen_content = generate.split('::')
+            split_char = ':' if '::' in generate else ';'
+            gen_header, gen_content = generate.split(split_char*2)
             print gen_header
             print gen_content
-            gen_headers = gen_header.split(':')
-            gen_entries = gen_content.split(':')
+            gen_headers = gen_header.split(split_char)
+            gen_entries = gen_content.split(split_char)
             key = tuple()
             arglist = []
             for header in gen_headers:
