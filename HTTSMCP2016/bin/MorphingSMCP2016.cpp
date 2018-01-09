@@ -70,7 +70,8 @@ int main(int argc, char** argv) {
     bool mm_fit = false;
     bool ttbar_fit = false;
     bool do_jetfakes = false;
-    bool real_data = true;
+    bool dijet_2d = false;
+    bool no_shape_systs = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -83,7 +84,8 @@ int main(int argc, char** argv) {
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
     ("control_region", po::value<int>(&control_region)->default_value(0))
-    ("real_data", po::value<bool>(&real_data)->default_value(real_data))
+    ("dijet_2d", po::value<bool>(&dijet_2d)->default_value(dijet_2d))
+    ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
     ("mm_fit", po::value<bool>(&mm_fit)->default_value(true))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
 
@@ -153,31 +155,52 @@ int main(int argc, char** argv) {
     };
     
     map<string,Categories> cats_cp;
-    cats_cp["et"] = {
-        {3, "et_dijet_lowboost"},
-        {4, "et_dijet_lowM"},
-        {5, "et_dijet_highM"},
-        {6, "et_dijet_boosted"}
-        
-    };
-
-    cats_cp["mt"] = {
-        {3, "mt_dijet_lowboost"},
-        {4, "mt_dijet_lowM"},
-        {5, "mt_dijet_highM"},
-        {6, "mt_dijet_boosted"}
-        
-    };
-
-    //cats_cp["em"] = {
-    //    {3, "em_dijet"}}; // no cp categories for em channel yet
-
-    cats_cp["tt"] = {
-        {3, "tt_dijet_lowboost"},
-        {4, "tt_dijet_lowM"},
-        {5, "tt_dijet_highM"},
-        {6, "tt_dijet_boosted"}
-    };
+    
+    if(!dijet_2d) {
+      cats_cp["et"] = {
+          {3, "et_dijet_lowMjj"},
+          {4, "et_dijet_lowM"},
+          {5, "et_dijet_highM"},
+          {6, "et_dijet_boosted"}
+          
+      };
+      
+      cats_cp["mt"] = {
+          {3, "mt_dijet_lowMjj"},
+          {4, "mt_dijet_lowM"},
+          {5, "mt_dijet_highM"},
+          {6, "mt_dijet_boosted"}
+      };
+      
+      //cats_cp["em"] = {
+      //    {3, "em_dijet"}}; // no cp categories for em channel yet
+      
+      cats_cp["tt"] = {
+          {3, "tt_dijet_lowMjj"},
+          {4, "tt_dijet_lowM"},
+          {5, "tt_dijet_highM"},
+          {6, "tt_dijet_boosted"}
+      };
+    } else {
+      cats_cp["et"] = {
+          {3, "et_dijet_lowM"},
+          {4, "et_dijet_highM"},
+          {5, "et_dijet_boosted"}
+          
+      };
+      
+      cats_cp["mt"] = {
+          {3, "mt_dijet_lowM"},
+          {4, "mt_dijet_highM"},
+          {5, "mt_dijet_boosted"}
+      };    
+      
+      cats_cp["tt"] = {
+          {3, "tt_dijet_lowM"},
+          {4, "tt_dijet_highM"},
+          {5, "tt_dijet_boosted"}
+      };    
+    }
     
     if (control_region > 0){
         // for each channel use the categories >= 10 for the control regions
@@ -210,10 +233,16 @@ int main(int argc, char** argv) {
                 
                 queue.push_back(make_pair(binid,chn+"_0jet_qcd_cr"));
                 queue.push_back(make_pair(binid+1,chn+"_boosted_qcd_cr"));
-                queue.push_back(make_pair(binid+2,chn+"_dijet_lowboost_qcd_cr"));
-                queue.push_back(make_pair(binid+3,chn+"_dijet_lowM_qcd_cr"));
-                queue.push_back(make_pair(binid+4,chn+"_dijet_highM_qcd_cr"));
-                queue.push_back(make_pair(binid+5,chn+"_dijet_boosted_qcd_cr"));
+                if(!dijet_2d){
+                  queue.push_back(make_pair(binid+2,chn+"_dijet_lowMjj_qcd_cr"));
+                  queue.push_back(make_pair(binid+3,chn+"_dijet_lowM_qcd_cr"));
+                  queue.push_back(make_pair(binid+4,chn+"_dijet_highM_qcd_cr"));
+                  queue.push_back(make_pair(binid+5,chn+"_dijet_boosted_qcd_cr"));
+                } else {
+                  queue.push_back(make_pair(binid+2,chn+"_dijet_lowM_qcd_cr"));
+                  queue.push_back(make_pair(binid+3,chn+"_dijet_highM_qcd_cr"));
+                  queue.push_back(make_pair(binid+4,chn+"_dijet_boosted_qcd_cr"));    
+                }
                 
                 cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
             }
@@ -254,15 +283,29 @@ int main(int argc, char** argv) {
 //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"EWKZ"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
 
     if (control_region > 0){
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet"},
-                                    {10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},
-                                    {13, "et_antiiso_0jet_cr"},{14, "et_antiiso_boosted_cr"}}, false);
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet"},
-                                    {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
-                                    {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
+      if(!dijet_2d){  
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowMjj"},{4, "et_dijet_lowM"},{5, "et_dijet_highM"}, {6, "et_dijet_boosted"},
+                                      {10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},
+                                      {13, "et_antiiso_0jet_cr"},{14, "et_antiiso_boosted_cr"}}, false);
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowMjj"},{4, "mt_dijet_lowM"},{5, "mt_dijet_highM"}, {6, "mt_dijet_boosted"},
+                                      {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
+                                      {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
+      } else {   
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowM"},{4, "et_dijet_highM"}, {5, "et_dijet_boosted"},
+                                      {10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},
+                                      {13, "et_antiiso_0jet_cr"},{14, "et_antiiso_boosted_cr"}}, false);
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowM"},{4, "mt_dijet_highM"}, {5, "mt_dijet_boosted"},
+                                      {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
+                                      {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
+      }
     }else if (!do_jetfakes){
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet"}}, false);
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet"}}, false);
+      if(!dijet_2d){  
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowMjj"},{4, "et_dijet_lowM"},{5, "et_dijet_highM"}, {6, "et_dijet_boosted"}}, false);
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowMjj"},{4, "mt_dijet_lowM"},{5, "mt_dijet_highM"}, {6, "mt_dijet_boosted"}}, false);
+      } else {
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowM"},{4, "et_dijet_highM"}, {5, "et_dijet_boosted"}}, false);
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowM"},{4, "mt_dijet_highM"}, {5, "mt_dijet_boosted"}}, false);  
+      }
     }
     
     
@@ -289,7 +332,7 @@ int main(int argc, char** argv) {
     }
     
     
-    ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit);
+    ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit, dijet_2d);
     
     
         
@@ -319,7 +362,11 @@ int main(int argc, char** argv) {
     
     
     
-    
+    //cb.FilterSysts([&](ch::Systematic *s){
+    //  std::cout << s->shape_u()->Integral() << std::endl;
+    //  return 1;
+      //return !(s->shape_u()->Integral()> 0. && s->shape_d()->Integral()>0.);
+    //});
     
     //Now delete processes with 0 yield
     cb.FilterProcs([&](ch::Process *p) {
@@ -335,7 +382,12 @@ int main(int argc, char** argv) {
         return null_yield;
     });
     
-    
+    if(no_shape_systs){
+      cb.FilterSysts([&](ch::Systematic *s){
+        return s->type().find("shape") != std::string::npos;
+      });
+    }
+        
     
     
     
@@ -349,15 +401,6 @@ int main(int argc, char** argv) {
     //     //Merge to one bin for control region bins
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
-    
-    if(!real_data){
-      for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
-          std::cout << " - Replacing data with asimov in bin " << b << "\n";
-          cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
-            obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape(), true);
-          });
-        }
-    }
   
   
     // At this point we can fix the negative bins
@@ -379,7 +422,7 @@ int main(int argc, char** argv) {
     });
   
     cb.ForEachSyst([](ch::Systematic *s) {
-      if (s->type().find("shape") == std::string::npos) return;
+      if (s->type().find("shape") == std::string::npos) return;            
       if (ch::HasNegativeBins(s->shape_u()) || ch::HasNegativeBins(s->shape_d())) {
          std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
                << "," << s->process() << "," << s->name() << "\n";
@@ -400,7 +443,7 @@ int main(int argc, char** argv) {
   });
     
     
-    //! [part8]
+    ////! [part8]
     auto bbb = ch::BinByBinFactory()
     .SetAddThreshold(0.05)
     .SetMergeThreshold(0.8)

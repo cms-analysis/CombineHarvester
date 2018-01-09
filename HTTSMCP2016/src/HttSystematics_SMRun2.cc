@@ -18,7 +18,7 @@ namespace ch {
     using ch::syst::bin;
     using ch::JoinStr;
     
-    void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit) {
+    void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit, bool dijet_2d) {
         // Create a CombineHarvester clone that only contains the signal
         // categories
         //
@@ -200,10 +200,12 @@ namespace ch {
         // MET Systematic shapes
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
                                                   "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","em"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
-        
-        
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({1,2,4,5,6}).AddSyst(cb,
+                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, {"ZL","ZJ","ZTT","TTJ","TTT","TT","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({3}).AddSyst(cb,
+                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
         // Standard JES, factorized 27 JES implementation below
         // only use 1 at a time.
         // full 27 JES...
@@ -277,14 +279,26 @@ namespace ch {
         //
         
         for (string uncert:uncertNames){
-         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt"}).AddSyst(cb,
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt"}).AddSyst(cb,
          "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
          cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
          "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
          
-         //Note:  TTJ is excluded from bin 13 of et channel as it was empty and causing error
-         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({1,2,3,4,5,6,10,11,12,14,15}).AddSyst(cb,
+         cb.cp().process(JoinStr({sig_procs, {"ZL","ZTT","TTJ","TTT","TT","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({12}).AddSyst(cb,
          "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({1,2,3,4,5,6,10,11,13,14,15}).AddSyst(cb,
+         "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+ 
+         //Note:  TTJ is excluded from bin 13 of et channel as it was empty and causing error
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({1,2,3,4,5,6,10,11,12,15}).AddSyst(cb,
+         "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_W})).channel({"et"}).bin_id({14}).AddSyst(cb,
+         "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+         if(uncert!="FlavorQCD") {
+           cb.cp().process(JoinStr({sig_procs, {"W"}})).channel({"et"}).bin_id({14}).AddSyst(cb,
+           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+         }
+
          cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_TTJ})).channel({"et"}).bin_id({13}).AddSyst(cb,
          "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
          
@@ -1439,14 +1453,23 @@ namespace ch {
                                              "WSFUncert_$CHANNEL_0jet_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
                                              "WSFUncert_$CHANNEL_boosted_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_dijet_lowboost_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_dijet_lowM_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({5}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_dijet_highM_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({6}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_dijet_boosted_$ERA", "shape", SystMap<>::init(1.00));
+        if(!dijet_2d){
+          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
+                                               "WSFUncert_$CHANNEL_dijet_lowMjj_$ERA", "shape", SystMap<>::init(1.00));
+          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
+                                               "WSFUncert_$CHANNEL_dijet_lowM_$ERA", "shape", SystMap<>::init(1.00));
+          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({5}).AddSyst(cb,
+                                               "WSFUncert_$CHANNEL_dijet_highM_$ERA", "shape", SystMap<>::init(1.00));
+          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({6}).AddSyst(cb,
+                                               "WSFUncert_$CHANNEL_dijet_boosted_$ERA", "shape", SystMap<>::init(1.00));
+        } else {
+          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
+                                               "WSFUncert_$CHANNEL_dijet_lowM_$ERA", "shape", SystMap<>::init(1.00));
+          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
+                                               "WSFUncert_$CHANNEL_dijet_highM_$ERA", "shape", SystMap<>::init(1.00));
+          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({5}).AddSyst(cb,
+                                               "WSFUncert_$CHANNEL_dijet_boosted_$ERA", "shape", SystMap<>::init(1.00));
+        }
         
         // based on the Ersatz study in Run1
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
@@ -1956,7 +1979,10 @@ namespace ch {
  
             cb.cp().bin({"tt_0jet","tt_0jet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_tt", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"tt_boosted","tt_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_tt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"tt_dijet","tt_dijet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_tt", "rateParam", SystMap<>::init(1.0));
+            if(!dijet_2d) cb.cp().bin({"tt_dijet_lowMjj","tt_dijet_lowMjj_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf1_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet_lowM","tt_dijet_lowM_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf2_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet_highM","tt_dijet_highM_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf3_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet_boosted","tt_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf4_tt", "rateParam", SystMap<>::init(1.0));
             
             
             //        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,
