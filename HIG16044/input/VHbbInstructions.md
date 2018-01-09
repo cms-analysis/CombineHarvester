@@ -41,6 +41,7 @@ At the moment the options are
 - `--zero_out_low`: sets the bin contents in some of the SR bins to 0 (for the purpose of making yield tables). Off by default.
 
 ## Setting up workspaces
+**Note: from this point on make sure to have called `ulimit -s unlimited` in your shell since logging in. Otherwise any of these manipulations might lead to a seg fault**
 
 To create workspaces for every combination of regions the cards have been written out for in the previous step:
 
@@ -90,11 +91,31 @@ Set up new cards and workspace for which the contents of the bins we want to ign
 Create the pre- and postfit yield tables:
 `python scripts/printYieldTables.py --workspace output/<output_folder_zeroed_out>/cmb/ws.root --fit_file output/<output_folder>/cmb/fitDiagnostics.Test.root`
 
-It is *very* important to use fit results for the *full* model, otherwise the uncertainties on the yields will not be correct. <output_folder_zeroed_out> and <output_folder> are therefore explicitly different, unless yield tables are madefor the full model too.
-
+It is *very* important to use fit results for the *full* model, otherwise the uncertainties on the yields will not be correct. <output_folder_zeroed_out> and <output_folder> are therefore explicitly different, unless yield tables are made for the full model too.
 
 
 ## Other plots
+### Channel compatibility
+
+### S-over-B ordered plot
+As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.
+First we need to set up some datacards with the bins re-ordered according to post-fit S/B
+
+`python scripts/prepareSoverBordered.py -w output/<original_output_folder>/cmb/ws.root -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root -d output/<original_output_folder>/cmb/combined.txt.cmb`
+
+This writes out S/B ordered datacards for the SR categories only to output/vhbb_sbordered/vhbb_2016.txt
+
+Make the workspace for these cards:
+`combineTool.py -M T2W -o "ws.root" -i output/vhbb_sbordered/ `
+
+Now we need to run PostFitShapesFromWorkspace on the new S/B ordered workspace we have just made, using the RooFit result we have been using all along:
+`PostFitShapesFromWorkspace -d output/vhbb_sbordered/vhbb_2016.txt -w output/vhbb_sbordered/ws.root -o shapes.root --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s`
+
+To make the plot:
+`python scripts/plotSoverBordered.py -f shapes.root --log_y --custom_y_range --ratio`
+
+*Some code cleanup and cosmetic changes still required*
+
 To be updated
 
 ## Diagnostic tools
@@ -108,6 +129,7 @@ To save and draw the correlation matrix for a given set of parameters:
 `python scripts/plotCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAM_NAME_1,PARAM_NAME_2,...,PARAM_NAME_3 -o <output_name_string>`
 This plots the correlation matrix as <output_name_string>.pdf/png and saves the TH2 in <output_name_string>.root 
 
+### FastScan 
 
 To be updated
 
