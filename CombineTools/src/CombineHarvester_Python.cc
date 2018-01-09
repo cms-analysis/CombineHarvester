@@ -357,6 +357,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("rate", &Observation::rate)
       .def("set_shape", Overload_Obs_set_shape)
       .def("ShapeAsTH1F", &Observation::ShapeAsTH1F)
+      .def("ClonedShape",&Observation::ClonedShape)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
@@ -368,6 +369,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("set_signal", &Process::set_signal)
       .def("signal", &Process::signal)
       .def("ShapeAsTH1F", &Process::ShapeAsTH1F)
+      .def("ClonedShape", &Process::ClonedShape)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
@@ -389,6 +391,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("set_asymm", &Systematic::set_asymm)
       .def("asymm", &Systematic::asymm)
       .def("set_shapes", Overload_Syst_set_shapes)
+      .def("ShapeUAsTH1F", &Systematic::ShapeUAsTH1F)
+      .def("ShapeDAsTH1F", &Systematic::ShapeDAsTH1F)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
