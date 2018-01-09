@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
   string data       = "data_obs";
   bool skip_prefit  = false;
   bool skip_proc_errs = false;
+  bool total_shapes = false;
 
   po::options_description help_config("Help");
   help_config.add_options()
@@ -79,7 +80,11 @@ int main(int argc, char* argv[]) {
       "Skip the pre-fit evaluation")
     ("skip-proc-errs",
       po::value<bool>(&skip_proc_errs)->default_value(skip_proc_errs)->implicit_value(true),
-      "Skip evaluation of errors on individual processes");
+      "Skip evaluation of errors on individual processes")
+    ("total-shapes",
+      po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
+      "Save signal- and background shapes added for all channels/categories");
+
 
   if (sampling && !postfit) {
     throw logic_error(
@@ -169,9 +174,41 @@ int main(int argc, char* argv[]) {
   // Create a map of maps for storing histograms in the form:
   //   pre_shapes[<bin>][<process>]
   map<string, map<string, TH1F>> pre_shapes;
+
+  // Also create a simple map for storing total histograms, summed 
+  // over all bins, in the form:
+  //   pre_shapes_tot[<process>]
+  map<string, TH1F> pre_shapes_tot;
+
   // We can always do the prefit version,
   // Loop through the bins writing the shapes to the output file
   if (!skip_prefit) {
+    if(total_shapes){
+      pre_shapes_tot["data_obs"] = cmb.GetObservedShape();
+      // Then fill total signal and total bkg hists
+      std::cout << ">> Doing prefit: TotalBkg" << std::endl;
+      pre_shapes_tot["TotalBkg"] =
+          cmb.cp().backgrounds().GetShapeWithUncertainty();
+      std::cout << ">> Doing prefit: TotalSig" << std::endl;
+      pre_shapes_tot["TotalSig"] =
+          cmb.cp().signals().GetShapeWithUncertainty();
+      std::cout << ">> Doing prefit: TotalProcs" << std::endl;
+      pre_shapes_tot["TotalProcs"] =
+          cmb.cp().GetShapeWithUncertainty();
+
+      if (datacard != "") {
+        TH1F ref = cmb_card.cp().GetObservedShape();
+        for (auto & it : pre_shapes_tot) {
+          it.second = ch::RestoreBinning(it.second, ref);
+        }
+      }
+
+      // Can write these straight into the output file
+      outfile.cd();
+      for (auto& iter : pre_shapes_tot) {
+        ch::WriteToTFile(&(iter.second), &outfile, "prefit/" + iter.first);
+      }
+    }
     for (auto bin : bins) {
       ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
       // This next line is a temporary fix for models with parameteric RooFit pdfs
@@ -244,6 +281,42 @@ int main(int argc, char* argv[]) {
     map<string, map<string, TH1F>> post_shapes;
     map<string, TH2F> post_yield_cov;
     map<string, TH2F> post_yield_cor;
+
+    map<string, TH1F> post_shapes_tot;
+
+    if(total_shapes){
+      post_shapes_tot["data_obs"] = cmb.GetObservedShape();
+      // Fill the total sig. and total bkg. hists
+      auto cmb_bkgs = cmb.cp().backgrounds();
+      auto cmb_sigs = cmb.cp().signals();
+      std::cout << ">> Doing postfit: TotalBkg" << std::endl;
+      post_shapes_tot["TotalBkg"] =
+          sampling ? cmb_bkgs.GetShapeWithUncertainty(res, samples)
+                   : cmb_bkgs.GetShapeWithUncertainty();
+      std::cout << ">> Doing postfit: TotalSig" << std::endl;
+      post_shapes_tot["TotalSig"] =
+          sampling ? cmb_sigs.GetShapeWithUncertainty(res, samples)
+                   : cmb_sigs.GetShapeWithUncertainty();
+      std::cout << ">> Doing postfit: TotalProcs" << std::endl;
+      post_shapes_tot["TotalProcs"] =
+          sampling ? cmb.cp().GetShapeWithUncertainty(res, samples)
+                   : cmb.cp().GetShapeWithUncertainty();
+
+      if (datacard != "") {
+        TH1F ref = cmb_card.cp().GetObservedShape();
+        for (auto & it : post_shapes_tot) {
+          it.second = ch::RestoreBinning(it.second, ref);
+        }
+      }
+
+      outfile.cd();
+      // Write the post-fit histograms
+      for (auto & iter : post_shapes_tot) {
+        ch::WriteToTFile(&(iter.second), &outfile,
+                         "postfit/" + iter.first);
+      }
+    }
+
 
     for (auto bin : bins) {
       ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
