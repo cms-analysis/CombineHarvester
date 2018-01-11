@@ -180,6 +180,7 @@ parser.add_argument('--breakdown', help='do quadratic error subtraction using --
 parser.add_argument('--meta', default='', help='Other metadata to save in format KEY:VAL,KEY:VAL')
 parser.add_argument('--logo', default='CMS')
 parser.add_argument('--logo-sub', default='Internal')
+parser.add_argument('--x_title', default=None)
 args = parser.parse_args()
 if args.pub: args.no_input_label = True
 
@@ -241,6 +242,8 @@ axishist = plot.GetAxisHist(pads[0])
 axishist.SetMaximum(args.y_max)
 axishist.GetYaxis().SetTitle("- 2 #Delta ln L")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
+axishist.GetXaxis().SetTitleOffset(0.97)
+if args.x_title: axishist.GetXaxis().SetTitle(args.x_title)
 
 # main_scan['graph'].Draw('PSAME')
 
@@ -500,7 +503,7 @@ for i, other in enumerate(other_scans):
 legend.Draw()
 
 save_graph = main_scan['graph'].Clone()
-save_graph.GetXaxis().SetTitle('%s = %.3f %+.3f/%+.3f' % (fixed_name, val_nom[0], val_nom[2], val_nom[1]))
+#save_graph.GetXaxis().SetTitle('%s = %.3f %+.3f/%+.3f' % (fixed_name, val_nom[0], val_nom[2], val_nom[1]))
 outfile = ROOT.TFile(args.output+'.root', 'RECREATE')
 outfile.WriteTObject(save_graph)
 outfile.Close()
