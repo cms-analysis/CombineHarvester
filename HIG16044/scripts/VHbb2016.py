@@ -165,6 +165,8 @@ if args.zero_out_low:
       cb.cp().channel([chn]).bin_id([nbins_to_keep[chn][i][0]]).ForEachProc(lambda x: adjust_shape(x,nbins_to_keep[chn][i][1]))
       cb.cp().channel([chn]).bin_id([nbins_to_keep[chn][i][0]]).ForEachObs(lambda x: adjust_shape(x,nbins_to_keep[chn][i][1]))
 
+ch.SetStandardBinNames(cb)
+
 writer=ch.CardWriter("output/" + args.output_folder + "/$TAG/$BIN.txt",
                       "output/" + args.output_folder + "/$TAG/vhbb_input.root")
 writer.SetWildcardMasses([])
