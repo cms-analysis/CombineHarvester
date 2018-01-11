@@ -61,9 +61,22 @@ class PrintFit(CombineToolBase):
               json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
         elif self.args.algo == 'singles':
             res = utils.get_singles_results(self.args.input, POIs, POIs)
+            js_out = {}
             for p in POIs:
+                js_out[p] = {}
                 val = res[p][p]
                 print '%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1])
+                if self.args.json is not None:
+                    js_out[p]['val'] = val[1]
+                    js_out[p]['ErrLo'] = val[1]-val[0]
+                    js_out[p]['ErrHi'] = val[2]-val[1]
+            if self.args.json is not None:
+                jsondata = json.dumps(
+                    js_out, sort_keys=True, indent=2, separators=(',', ': '))
+                with open(self.args.json, 'w') as out_file:
+                    out_file.write(jsondata)
+
+                
 
 
 class CollectLimits(CombineToolBase):
