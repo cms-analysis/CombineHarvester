@@ -23,9 +23,9 @@ parser.add_argument(
 parser.add_argument(
     '--title-left', default='', help="""Left header text above the frame""")
 parser.add_argument(
-    '--x-title', default='#kappa_{v}', help="""Title for the x-axis""")
+    '--x-title', default='#alpha (#frac{#pi}{2})', help="""Title for the x-axis""")
 parser.add_argument(
-    '--y-title', default='#kappa_{f}', help="""Title for the x-axis""")
+    '--y-title', default='#kappa_{ggH#rightarrow#tau#tau}', help="""Title for the x-axis""")
 parser.add_argument(
     '--debug-output', '-d', help="""If specified, write the contour TH2s and
     TGraphs into this output ROOT file""")
@@ -45,16 +45,16 @@ else:
 
 limit = plot.MakeTChain(args.files, 'limit')
 graph = plot.TGraph2DFromTree(
-    limit, "CV", "CF", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
+    limit, "alpha", "muF", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
 best = plot.TGraphFromTree(
-    limit, "CV", "CF", 'deltaNLL == 0')
+    limit, "alpha", "muF", 'deltaNLL == 0')
 plot.RemoveGraphXDuplicates(best)
 hists = plot.TH2FromTGraph2D(graph, method='BinCenterAligned')
 plot.fastFillTH2(hists, graph,interpolateMissing=True)
 if args.bg_exp:
     limit_bg = plot.MakeTChain(args.bg_exp, 'limit')
     best_bg = plot.TGraphFromTree(
-        limit_bg, "CV", "CF", 'deltaNLL == 0')
+        limit_bg, "alha", "muF", 'deltaNLL == 0')
     plot.RemoveGraphXDuplicates(best_bg)
 
 # If included just plot SM exp at 1,1
@@ -71,6 +71,7 @@ hists.SetContour(255)
 
 axis = ROOT.TH2D(hists.GetName(),hists.GetName(),hists.GetXaxis().GetNbins(),0,hists.GetXaxis().GetXmax(),hists.GetYaxis().GetNbins(),0,hists.GetYaxis().GetXmax())
 axis.Reset()
+axis.GetXaxis().SetTitleOffset(0.9)
 axis.GetXaxis().SetTitle(args.x_title)
 axis.GetXaxis().SetLabelSize(0.025)
 axis.GetYaxis().SetLabelSize(0.025)
@@ -98,6 +99,7 @@ else:
     legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
 
 pads[0].cd()
+pads[0].SetTicks(1)
 axis.Draw()
 for i, p in enumerate(cont_2sigma):
     p.SetLineStyle(1)
@@ -119,10 +121,17 @@ for i, p in enumerate(cont_1sigma):
     p.Draw("L SAME")
     legend.AddEntry(cont_2sigma[0], "95% CL", "F")
 
+func = ROOT.TF1 ("func","cos(pi/2*x)*cos(pi/2*x) +sin(pi/2*x)*sin(pi/2*x)*2.25",0,1)
+func.SetLineWidth(3)
+func.SetLineStyle(2)
+func.Draw("same")
+
 best.SetMarkerStyle(34)
 best.SetMarkerSize(3)
 best.Draw("P SAME")
 legend.AddEntry(best, "Best fit", "P")
+legend.AddEntry(func, "Exp with XS constraint", "L")
+
 if args.sm_exp:
     best_sm.SetMarkerStyle(33)
     best_sm.SetMarkerColor(1)
@@ -147,7 +156,7 @@ plot.DrawCMSLogo(pads[0], 'CMS', args.cms_sub, 11, 0.045, 0.035, 1.2, '', 1.0)
 pads[0].cd()
 lumi = ROOT.TLatex(.7,1.05,"X fb^{-1} (13 TeV)")
 lumi.SetTextSize(0.03)
-lumi.DrawTextNDC(.7,.96,"35.9 / fb (13 TeV)" )
+#lumi.DrawTextNDC(.7,.96,"35.9 / fb (13 TeV)" )
 
 plot.DrawTitle(pads[0], args.title_right, 3)
 plot.DrawTitle(pads[0], args.title_left, 1)

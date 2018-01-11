@@ -162,7 +162,7 @@ parser.add_argument('--pub', action='store_true', help='do not draw the input la
 parser.add_argument('--signif', action='store_true', help='do significance plot')
 parser.add_argument('--envelope', action='store_true', help='do envelope plot')
 parser.add_argument('--upper-cl', type=float, help='quote upper limit instead')
-parser.add_argument('--chop', type=float, default=7., help='remove vals above')
+parser.add_argument('--chop', type=float, default=100., help='remove vals above')
 parser.add_argument('--y-max', type=float, default=8., help='max y to draw')
 parser.add_argument('--remove-near-min', type=float, help='remove points with this fraction of the average x-spacing to the best-fit point')
 parser.add_argument('--rezero', action='store_true', help='correct y-values if a point with a lower minimum than zero is found')

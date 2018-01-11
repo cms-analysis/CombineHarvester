@@ -30,5 +30,5 @@ Then run the maximum liklihood scan using:
 
 # Run 2D fit
 
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0 --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp090118_aachen/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8`
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0 --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp090118/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8`
 
