@@ -59,7 +59,7 @@ bool BinIsNotControlRegion(ch::Object const* obj)
 int main(int argc, char** argv) {
 
     string output_folder = "sm_run2";
-    string input_folder_em="USCMS/";
+    string input_folder_em="Imperial/CP/";
     string input_folder_et="Imperial/CP/";
     string input_folder_mt="Imperial/CP/";
     string input_folder_tt="Imperial/CP/";
@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("USCMS"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP"))
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP"))
@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
       bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
       bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
     }
-    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
+    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ"};
     
@@ -138,8 +138,7 @@ int main(int argc, char** argv) {
         {2, "mt_boosted"}}; 
     cats["em"] = {
         {1, "em_0jet"},
-        {2, "em_boosted"},
-        {3, "em_vbf"}};
+        {2, "em_boosted"}};
     
     cats["tt"] = {
         {1, "tt_0jet"},
@@ -172,8 +171,13 @@ int main(int argc, char** argv) {
           {6, "mt_dijet_boosted"}
       };
       
-      //cats_cp["em"] = {
-      //    {3, "em_dijet"}}; // no cp categories for em channel yet
+      cats_cp["em"] = {
+          {3, "em_dijet_lowMjj"},
+          {4, "em_dijet_lowM"},
+          {5, "em_dijet_highM"},
+          {6, "em_dijet_boosted"}
+          
+      };
       
       cats_cp["tt"] = {
           {3, "tt_dijet_lowMjj"},
@@ -182,6 +186,13 @@ int main(int argc, char** argv) {
           {6, "tt_dijet_boosted"}
       };
     } else {
+      cats_cp["em"] = {
+          {3, "em_dijet_lowM"},
+          {4, "em_dijet_highM"},
+          {5, "em_dijet_boosted"}
+          
+      };
+      
       cats_cp["et"] = {
           {3, "et_dijet_lowM"},
           {4, "et_dijet_highM"},
