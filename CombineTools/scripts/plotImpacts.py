@@ -20,6 +20,7 @@ parser.add_argument('--cms-label', default='Internal', help='Label next to the C
 parser.add_argument('--transparent', action='store_true', help='Draw areas as hatched lines instead of solid')
 parser.add_argument('--checkboxes', action='store_true', help='Draw an extra panel with filled checkboxes')
 parser.add_argument('--color-groups', default=None, help='Comma separated list of GROUP=COLOR')
+parser.add_argument('--POI', default=None, help='Specify a POI to draw')
 args = parser.parse_args()
 
 
@@ -50,10 +51,19 @@ plot.ModTDRStyle(l=0.4, b=0.10, width=(900 if args.checkboxes else 700))
 
 # We will assume the first POI is the one to plot
 POIs = [ele['name'] for ele in data['POIs']]
-POI_fit = data['POIs'][0]['fit']
+POI = POIs[0]
+if args.POI:
+    POI = args.POI
+
+for ele in data['POIs']:
+    if ele['name'] == POI:
+        POI_info = ele
+        break
+
+POI_fit = POI_info['fit']
 
 # Sort parameters by largest absolute impact on this POI
-data['params'].sort(key=lambda x: abs(x['impact_%s' % POIs[0]]), reverse=True)
+data['params'].sort(key=lambda x: abs(x['impact_%s' % POI]), reverse=True)
 
 if args.checkboxes:
     cboxes = data['checkboxes']
@@ -171,7 +181,7 @@ for page in xrange(n):
                 cboxes.index(pbox)
                 g_check.SetPoint(g_check_i, cboxes.index(pbox) + 0.5, float(i) + 0.5)
                 g_check_i += 1
-        imp = pdata[p][POIs[0]]
+        imp = pdata[p][POI]
         g_impacts_hi.SetPointError(i, 0, imp[2] - imp[1], 0.5, 0.5)
         g_impacts_lo.SetPointError(i, imp[1] - imp[0], 0, 0.5, 0.5)
         max_impact = max(
@@ -211,7 +221,7 @@ for page in xrange(n):
     h_impacts = ROOT.TH2F(
         "impacts", "impacts", 6, -max_impact * 1.1, max_impact * 1.1, n_params, 0, n_params)
     plot.Set(h_impacts.GetXaxis(), LabelSize=0.03, TitleSize=0.04, Ndivisions=505, Title=
-        '#Delta#hat{%s}' % (Translate(POIs[0], translate)))
+        '#Delta#hat{%s}' % (Translate(POI, translate)))
     plot.Set(h_impacts.GetYaxis(), LabelSize=0, TickLength=0.0)
     h_impacts.Draw()
 
@@ -267,7 +277,7 @@ for page in xrange(n):
     plot.DrawCMSLogo(pads[0], 'CMS', args.cms_label, 0, 0.25, 0.00, 0.00)
     s_nom, s_hi, s_lo = GetRounded(POI_fit[1], POI_fit[2] - POI_fit[1], POI_fit[1] - POI_fit[0])
     plot.DrawTitle(pads[1], '#hat{%s} = %s^{#plus%s}_{#minus%s}%s' % (
-        Translate(POIs[0], translate), s_nom, s_hi, s_lo,
+        Translate(POI, translate), s_nom, s_hi, s_lo,
         '' if args.units is None else ' '+args.units), 3, 0.27)
     extra = ''
     if page == 0:
