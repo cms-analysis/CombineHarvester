@@ -222,10 +222,11 @@ class EnhancedCombine(CombineToolBase):
             #        # or if the file is empty because the previous job didn't finish
                 ranges.append((start, start + (split - 1)))
                 start += split
-            if start < points:
+            print start
+            if start <= points:
             #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(points - 1)+".MultiDimFit.mH"+str(self.args.mass)+".root"
             #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
-                ranges.append((start, points - 1))
+                ranges.append((start, points))
             #if (ranges == []):
             #    print "No jobs were created; All files already exist"
             #    exit()

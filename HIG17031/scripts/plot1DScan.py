@@ -379,7 +379,7 @@ if args.envelope and args.breakdown:
             oth['spline'] = ROOT.TSpline3("spline3", oth['graph'])
             oth['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, oth['spline']), oth[
                                      'graph'].GetX()[0], oth['graph'].GetX()[oth['graph'].GetN() - 1], 1)
-            func.SetNpx(NPX)
+            oth['func'].SetNpx(NPX)
             oth['func'].SetLineColor(color)
             NAMECOUNTER += 1
     new_others = []
@@ -400,7 +400,7 @@ if args.envelope and args.breakdown:
         other['spline'] = ROOT.TSpline3("spline3", other['graph'])
         other['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, other['spline']), other[
                                  'graph'].GetX()[0], other['graph'].GetX()[other['graph'].GetN() - 1], 1)
-        func.SetNpx(NPX)
+        other['func'].SetNpx(NPX)
         NAMECOUNTER += 1
         other['func'].SetLineColor(color)
         other['func'].SetLineWidth(2)
