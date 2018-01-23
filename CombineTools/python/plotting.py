@@ -379,6 +379,22 @@ def TwoPadSplitColumns(split_point, gap_left, gap_right):
     return result
 
 
+def MultiRatioSplitColumns(split_points, gaps_left, gaps_right):
+    pads = []
+    for i in xrange(len(split_points)+1):
+        pad = R.TPad('pad%i'%i, '', 0., 0., 1., 1.)
+        if i > 0:
+            pad.SetLeftMargin(sum(split_points[0:i])+gaps_left[i-1])
+        if i < len(split_points):
+            pad.SetRightMargin(1.-sum(split_points[0:i+1])+gaps_right[i])
+        pad.SetFillStyle(4000)
+        pad.Draw()
+        pads.append(pad)
+    pads[0].cd()
+    # pads.reverse()
+    return pads
+
+
 def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered,
                                y_min, y_max):
     if lower.GetXaxis().GetTitle() == '':
@@ -1399,7 +1415,7 @@ def DrawVerticalLine(pad, line, xval):
     line.DrawLine(xval, ymin, xval, ymax)
 
 
-def DrawTitle(pad, text, align):
+def DrawTitle(pad, text, align, textOffset=0.2):
     pad_backup = R.gPad
     pad.cd()
     t = pad.GetTopMargin()
@@ -1412,7 +1428,6 @@ def DrawTitle(pad, text, align):
         pad_ratio = 1.
 
     textSize = 0.6
-    textOffset = 0.2
 
     latex = R.TLatex()
     latex.SetNDC()

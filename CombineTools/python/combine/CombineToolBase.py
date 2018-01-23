@@ -290,8 +290,17 @@ class CombineToolBase:
                     newline = line
                     if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
                     wsp = str(self.extract_workspace_arg(newline.split()))
+
                     wsp_files.add(wsp)
                     outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
+
+                    newline = newline.replace(wsp, os.path.basename(wsp))
+                    if wsp.startswith('root://'):
+                        newline = ('./copyRemoteWorkspace.sh %s ./%s; ' % (wsp, os.path.basename(wsp))) + newline
+                    else:
+                        wsp_files.add(wsp)
+                    outscript.write('  ' + newline + '\n')
+
                     if (self.add_stat_only):
                         nameOut = newline.split("-n ")[1].split(" ")[0].rstrip(".POINTS")
                         if ("freezeParameters" in newline):
@@ -312,7 +321,6 @@ class CombineToolBase:
                             nothline = newline.replace(wsp, os.path.basename(wsp))+ " --freezeParameters 'rgx{.*THU.*}',QCDscale_qqH,QCDscale_VH,QCDscale_ggZH,QCDscale_ttH,pdf_Higgs_gg,pdf_Higgs_qqbar,pdf_Higgs_qg,CMS_vhbb_boost_EWK_13TeV,CMS_vhbb_boost_QCD_13TeV,QCDscale_VH_ggZHacceptance_highPt,param_alphaS,param_mB,param_mC,param_mt,HiggsDecayWidthTHU_hqq,HiggsDecayWidthTHU_hvv,HiggsDecayWidthTHU_hll,HiggsDecayWidthTHU_hgg,HiggsDecayWidthTHU_hzg,HiggsDecayWidthTHU_hgluglu" + '\n'
                             nothline = nothline.replace(nameOut,nameOut+".NoThUnc")
                             outscript.write('  ' + nothline)
-
                 outscript.write('fi')
             if self.custom_crab_post is not None:
                 with open(self.custom_crab_post, 'r') as postfile:

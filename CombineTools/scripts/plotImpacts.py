@@ -4,6 +4,7 @@ import math
 import json
 import argparse
 import CombineHarvester.CombineTools.plotting as plot
+import CombineHarvester.CombineTools.combine.rounding as rounding
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -17,12 +18,22 @@ parser.add_argument('--units', default=None, help='Add units to the best-fit par
 parser.add_argument('--per-page', type=int, default=30, help='Number of parameters to show per page')
 parser.add_argument('--cms-label', default='Internal', help='Label next to the CMS logo')
 parser.add_argument('--transparent', action='store_true', help='Draw areas as hatched lines instead of solid')
+parser.add_argument('--checkboxes', action='store_true', help='Draw an extra panel with filled checkboxes')
 parser.add_argument('--color-groups', default=None, help='Comma separated list of GROUP=COLOR')
+parser.add_argument('--POI', default=None, help='Specify a POI to draw')
 args = parser.parse_args()
 
 
 def Translate(name, ndict):
     return ndict[name] if name in ndict else name
+
+
+def GetRounded(nom, e_hi, e_lo):
+    rounded = rounding.PDGRoundAsym(nom, e_hi if e_hi != 0.0 else 1.0, e_lo if e_lo != 0.0 else 1.0)
+    s_nom = rounding.downgradePrec(rounded[0],rounded[2])
+    s_hi = rounding.downgradePrec(rounded[1][0][0],rounded[2]) if e_hi != 0.0 else '0'
+    s_lo = rounding.downgradePrec(rounded[1][0][1],rounded[2]) if e_lo != 0.0 else '0'
+    return (s_nom, s_hi, s_lo)
 
 # Dictionary to translate parameter names
 translate = {}
@@ -36,14 +47,26 @@ with open(args.input) as jsonfile:
     data = json.load(jsonfile)
 
 # Set the global plotting style
-plot.ModTDRStyle(l=0.4, b=0.10, width=700)
+plot.ModTDRStyle(l=0.4, b=0.10, width=(900 if args.checkboxes else 700))
 
 # We will assume the first POI is the one to plot
 POIs = [ele['name'] for ele in data['POIs']]
-POI_fit = data['POIs'][0]['fit']
+POI = POIs[0]
+if args.POI:
+    POI = args.POI
+
+for ele in data['POIs']:
+    if ele['name'] == POI:
+        POI_info = ele
+        break
+
+POI_fit = POI_info['fit']
 
 # Sort parameters by largest absolute impact on this POI
-data['params'].sort(key=lambda x: abs(x['impact_%s' % POIs[0]]), reverse=True)
+data['params'].sort(key=lambda x: abs(x['impact_%s' % POI]), reverse=True)
+
+if args.checkboxes:
+    cboxes = data['checkboxes']
 
 # Set the number of parameters per page (show) and the number of pages (n)
 show = args.per_page
@@ -97,7 +120,11 @@ for page in xrange(n):
         boxes.append(box)
 
     # Crate and style the pads
-    pads = plot.TwoPadSplitColumns(0.7, 0., 0.)
+    if args.checkboxes:
+        pads = plot.MultiRatioSplitColumns([0.54, 0.24], [0., 0.], [0., 0.])
+        pads[2].SetGrid(1, 0)
+    else:
+        pads = plot.MultiRatioSplitColumns([0.7], [0.], [0.])
     pads[0].SetGrid(1, 0)
     pads[0].SetTickx(1)
     pads[1].SetGrid(1, 0)
@@ -107,6 +134,9 @@ for page in xrange(n):
     g_pulls = ROOT.TGraphAsymmErrors(n_params)
     g_impacts_hi = ROOT.TGraphAsymmErrors(n_params)
     g_impacts_lo = ROOT.TGraphAsymmErrors(n_params)
+    g_check = ROOT.TGraphAsymmErrors()
+    g_check_i = 0
+
     max_impact = 0.
 
     text_entries = []
@@ -139,12 +169,19 @@ for page in xrange(n):
             x1 = ROOT.gStyle.GetPadLeftMargin()
             h = (y2 - y1) / float(n_params)
             y1 = y1 + ((float(i)+0.5) * h)
-            x1 = x1 + (0.7-x1)/2.
-            text_entries.append((x1, y1, '%.3g^{#plus%-.3g}_{#minus%-.3g}' % (fit[1], fit[2]-fit[1], fit[1]-fit[0])))
+            x1 = x1 + (1 - pads[0].GetRightMargin() -x1)/2.
+            s_nom, s_hi, s_lo = GetRounded(fit[1], fit[2] - fit[1], fit[1] - fit[0])
+            text_entries.append((x1, y1, '%s^{#plus%s}_{#minus%s}' % (s_nom, s_hi, s_lo)))
             redo_boxes.append(i)
         g_impacts_hi.SetPoint(i, 0, float(i) + 0.5)
         g_impacts_lo.SetPoint(i, 0, float(i) + 0.5)
-        imp = pdata[p][POIs[0]]
+        if args.checkboxes:
+            pboxes = pdata[p]['checkboxes']
+            for pbox in pboxes:
+                cboxes.index(pbox)
+                g_check.SetPoint(g_check_i, cboxes.index(pbox) + 0.5, float(i) + 0.5)
+                g_check_i += 1
+        imp = pdata[p][POI]
         g_impacts_hi.SetPointError(i, 0, imp[2] - imp[1], 0.5, 0.5)
         g_impacts_lo.SetPointError(i, imp[1] - imp[0], 0, 0.5, 0.5)
         max_impact = max(
@@ -184,9 +221,22 @@ for page in xrange(n):
     h_impacts = ROOT.TH2F(
         "impacts", "impacts", 6, -max_impact * 1.1, max_impact * 1.1, n_params, 0, n_params)
     plot.Set(h_impacts.GetXaxis(), LabelSize=0.03, TitleSize=0.04, Ndivisions=505, Title=
-        '#Delta#hat{%s}' % (Translate(POIs[0], translate)))
+        '#Delta#hat{%s}' % (Translate(POI, translate)))
     plot.Set(h_impacts.GetYaxis(), LabelSize=0, TickLength=0.0)
     h_impacts.Draw()
+
+    if args.checkboxes:
+        pads[2].cd()
+        h_checkboxes = ROOT.TH2F(
+            "checkboxes", "checkboxes", len(cboxes), 0, len(cboxes), n_params, 0, n_params)
+        for i, cbox in enumerate(cboxes):
+            h_checkboxes.GetXaxis().SetBinLabel(i+1, Translate(cbox, translate))
+        plot.Set(h_checkboxes.GetXaxis(), LabelSize=0.03, LabelOffset=0.002)
+        h_checkboxes.GetXaxis().LabelsOption('v')
+        plot.Set(h_checkboxes.GetYaxis(), LabelSize=0, TickLength=0.0)
+        h_checkboxes.Draw()
+        # g_check.SetFillColor(ROOT.kGreen)
+        g_check.Draw('PSAME')
 
     # Back to the first pad to draw the pulls graph
     pads[0].cd()
@@ -209,14 +259,15 @@ for page in xrange(n):
     legend.AddEntry(g_impacts_lo, '-1#sigma Impact', 'F')
     legend.Draw()
 
+    leg_width = pads[0].GetLeftMargin() - 0.01
     if args.color_groups is not None:
-        legend2 = ROOT.TLegend(0.01, 0.94, 0.30, 0.99, '', 'NBNDC')
+        legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
         for name, h in color_group_hists.iteritems():
             legend2.AddEntry(h, Translate(name, translate), 'F')
         legend2.Draw()
     elif len(seen_types) > 1:
-        legend2 = ROOT.TLegend(0.01, 0.94, 0.30, 0.99, '', 'NBNDC')
+        legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
         for name, h in color_hists.iteritems():
             if name == 'Unrecognised': continue
@@ -224,9 +275,10 @@ for page in xrange(n):
         legend2.Draw()
 
     plot.DrawCMSLogo(pads[0], 'CMS', args.cms_label, 0, 0.25, 0.00, 0.00)
-    plot.DrawTitle(pads[1], '#hat{%s} = %.3g #pm %.3g%s' % (
-        Translate(POIs[0], translate), POI_fit[1], (POI_fit[2] - POI_fit[0]) / 2.,
-        '' if args.units is None else ' '+args.units), 3)
+    s_nom, s_hi, s_lo = GetRounded(POI_fit[1], POI_fit[2] - POI_fit[1], POI_fit[1] - POI_fit[0])
+    plot.DrawTitle(pads[1], '#hat{%s} = %s^{#plus%s}_{#minus%s}%s' % (
+        Translate(POI, translate), s_nom, s_hi, s_lo,
+        '' if args.units is None else ' '+args.units), 3, 0.27)
     extra = ''
     if page == 0:
         extra = '('
