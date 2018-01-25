@@ -111,9 +111,11 @@ class CombineHarvester {
       std::string const& era,
       std::string const& channel,
       int bin_id,
-      std::string const& mass);
+      std::string const& mass,
+      bool loadShapes = true);
   int ParseDatacard(std::string const& filename,
-      std::string parse_rule = "");
+      std::string parse_rule = "",
+      bool loadShapes = true);
 
   void WriteDatacard(std::string const& name, std::string const& root_file);
   void WriteDatacard(std::string const& name, TFile & root_file);
