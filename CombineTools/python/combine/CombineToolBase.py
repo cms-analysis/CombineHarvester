@@ -102,6 +102,8 @@ class CombineToolBase:
         self.bopts = ''  # batch submission options
         self.custom_crab = None
         self.custom_crab_post = None
+        self.add_stat_only = False
+        self.add_no_thunc = False
 
     def attach_job_args(self, group):
         group.add_argument('--job-mode', default=self.job_mode, choices=[
@@ -126,6 +128,10 @@ class CombineToolBase:
                            help='python file containing a function with name signature "custom_crab(config)" that can be used to modify the default crab configuration')
         group.add_argument('--custom-crab-post', default=self.custom_crab_post,
                            help='txt file containing command lines that can be used in the crab job script instead of the defaults.')
+        group.add_argument('--add-stat-only', action='store_true',
+                           help="for every combine call, also call the same command adding --freezeParameters 'rgx{^.*$}'")
+        group.add_argument('--add-no-thunc', action='store_true',
+                           help="for every combine call, also call the same command freezing signal theory uncs (hard coded here)")
 
     def attach_intercept_args(self, group):
         pass
@@ -147,6 +153,8 @@ class CombineToolBase:
         self.memory = self.args.memory
         self.crab_area = self.args.crab_area
         self.custom_crab_post = self.args.custom_crab_post
+        self.add_stat_only = self.args.add_stat_only
+        self.add_no_thunc = self.args.add_no_thunc
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -282,12 +290,34 @@ class CombineToolBase:
                     newline = line
                     if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
                     wsp = str(self.extract_workspace_arg(newline.split()))
+
                     newline = newline.replace(wsp, os.path.basename(wsp))
                     if wsp.startswith('root://'):
                         newline = ('./copyRemoteWorkspace.sh %s ./%s; ' % (wsp, os.path.basename(wsp))) + newline
                     else:
                         wsp_files.add(wsp)
                     outscript.write('  ' + newline + '\n')
+
+                    if (self.add_stat_only):
+                        nameOut = newline.split("-n ")[1].split(" ")[0].rstrip(".POINTS")
+                        if ("freezeParameters" in newline):
+                            statline = newline.replace(wsp, os.path.basename(wsp)).replace("freezeParameters ","freezeParameters 'rgx{^.*$}',") + '\n'
+                            statline = statline.replace(nameOut,nameOut+".StatOnly")
+                            outscript.write('  ' + statline)
+                        else:
+                            statline = newline.replace(wsp, os.path.basename(wsp))+ " --freezeParameters 'rgx{^.*$}'" + '\n'
+                            statline = statline.replace(nameOut,nameOut+".StatOnly")
+                            outscript.write('  ' + statline)
+                    if (self.add_no_thunc):
+                        nameOut = newline.split("-n ")[1].split(" ")[0].rstrip(".POINTS")
+                        if ("freezeParameters" in newline):
+                            nothline = newline.replace(wsp, os.path.basename(wsp)).replace("freezeParameters ","freezeParameters 'rgx{.*THU.*}',QCDscale_qqH,QCDscale_VH,QCDscale_ggZH,QCDscale_ttH,pdf_Higgs_gg,pdf_Higgs_qqbar,pdf_Higgs_qg,CMS_vhbb_boost_EWK_13TeV,CMS_vhbb_boost_QCD_13TeV,QCDscale_VH_ggZHacceptance_highPt,param_alphaS,param_mB,param_mC,param_mt,HiggsDecayWidthTHU_hqq,HiggsDecayWidthTHU_hvv,HiggsDecayWidthTHU_hll,HiggsDecayWidthTHU_hgg,HiggsDecayWidthTHU_hzg,HiggsDecayWidthTHU_hgluglu,") + '\n'
+                            nothline = nothline.replace(nameOut,nameOut+".NoThUnc")
+                            outscript.write('  ' + nothline)
+                        else:
+                            nothline = newline.replace(wsp, os.path.basename(wsp))+ " --freezeParameters 'rgx{.*THU.*}',QCDscale_qqH,QCDscale_VH,QCDscale_ggZH,QCDscale_ttH,pdf_Higgs_gg,pdf_Higgs_qqbar,pdf_Higgs_qg,CMS_vhbb_boost_EWK_13TeV,CMS_vhbb_boost_QCD_13TeV,QCDscale_VH_ggZHacceptance_highPt,param_alphaS,param_mB,param_mC,param_mt,HiggsDecayWidthTHU_hqq,HiggsDecayWidthTHU_hvv,HiggsDecayWidthTHU_hll,HiggsDecayWidthTHU_hgg,HiggsDecayWidthTHU_hzg,HiggsDecayWidthTHU_hgluglu" + '\n'
+                            nothline = nothline.replace(nameOut,nameOut+".NoThUnc")
+                            outscript.write('  ' + nothline)
                 outscript.write('fi')
             if self.custom_crab_post is not None:
                 with open(self.custom_crab_post, 'r') as postfile:
