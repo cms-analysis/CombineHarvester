@@ -1,11 +1,11 @@
 import os
 
 CHN_DICT_SR = {
-    "Wen": [["WenHighPt","1-lepton (e)"]],
-    "Wmn": [["WmnHighPt","1-lepton (#mu)"]],
-    "Zee": [["ZeeHighPt_13TeV","2-lepton (e), High p_{T} (V)"],["ZeeLowPt_13TeV","2-lepton (e), Low p_{T} (V)"]],
-    "Zmm": [["ZuuHighPt_13TeV","2-lepton (#mu), High p_{T} (V)"],["ZuuLowPt_13TeV","2-lepton (#mu), Low p_{T} (V)"]],
-    "Znn": [["Znn_13TeV_Signal","0-lepton"]]
+    "Wen": [["vhbb_Wen_1_13TeV","1-lepton (e)"]],
+    "Wmn": [["vhbb_Wmn_1_13TeV","1-lepton (#mu)"]],
+    "Zee": [["vhbb_Zee_1_13TeV","2-lepton (e), High p_{T} (V)"],["vhbb_Zee_2_13TeV","2-lepton (e), Low p_{T} (V)"]],
+    "Zmm": [["vhbb_Zmm_1_13TeV","2-lepton (#mu), High p_{T} (V)"],["vhbb_Zmm_2_13TeV","2-lepton (#mu), Low p_{T} (V)"]],
+    "Znn": [["vhbb_Znn_1_13TeV","0-lepton"]]
 }
 
 

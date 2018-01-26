@@ -1,11 +1,11 @@
 import os
 
 CHN_DICT_SR = {
-    "Wen": [["ttWen","1-lepton (e),t#bar{t} enriched"],["whfWenHigh","1-lepton (e), high Mjj W+b#bar{b} enr."],["whfWenLow","1-lepton (e), low Mjj, W+b#bar{b} enr."],["wlfWen","1-lepton (e),W+udcsg enr."]],
-    "Wmn": [["ttWmn","1-lepton (#mu),t#bar{t} enriched"],["whfWmnHigh","1-lepton (#mu), high Mjj W+b#bar{b} enr."],["whfWmnLow","1-lepton (#mu), low Mjj, W+b#bar{b} enr."],["wlfWmn","1-lepton (#mu),W+udcsg enr."]],
-    "Zee": [["ttbar_high_Zee","2-lepton (e), High p_{T} (V), t#bar{t} enr."],["Zhf_high_Zee","2-lepton (e), High p_{T} (V),Z+b#bar{b} enr."],["Zlf_high_Zee","2-lepton (e), High p_{T} (V), Z+udcsg enr."],["ttbar_low_Zee","2-lepton (e), Low p_{T} (V), t#bar{t} enr."],["Zhf_low_Zee","2-lepton (e), Low p_{T} (V), Z+b#bar{b} enr."],["Zlf_low_Zee","2-lepton (e), Low p_{T} (V), Z+udcsg enr."]],
-    "Zmm": [["ttbar_high_Zuu","2-lepton (#mu), High p_{T} (V), t#bar{t} enr."],["Zhf_high_Zuu","2-lepton (#mu), High p_{T} (V),Z+b#bar{b} enr."],["Zlf_high_Zuu","2-lepton (#mu), High p_{T} (V), Z+udcsg enr."],["ttbar_low_Zuu","2-lepton (#mu), Low p_{T} (V), t#bar{t} enr."],["Zhf_low_Zuu","2-lepton (#mu), Low p_{T} (V), Z+b#bar{b} enr."],["Zlf_low_Zuu","2-lepton (#mu), Low p_{T} (V), Z+udcsg enr."]],
-    "Znn": [["Znn_13TeV_TT","0-lepton, t#bar{t} enr."],["Znn_13TeV_Zbb","0-lepton, Z+b#bar{b} enr."],["Znn_13TeV_Zlight","0-lepton, Z+udcsg enr."]]
+    "Wen": [["vhbb_Wen_7_13TeV","1-lepton (e),t#bar{t} enriched"],["vhbb_Wen_5_13TeV","1-lepton (e), high Mjj W+b#bar{b} enr."],["vhbb_Wen_6_13TeV","1-lepton (e), low Mjj, W+b#bar{b} enr."],["vhbb_Wen_3_13TeV","1-lepton (e),W+udcsg enr."]],
+    "Wmn": [["vhbb_Wmn_7_13TeV","1-lepton (#mu),t#bar{t} enriched"],["vhbb_Wmn_5_13TeV","1-lepton (#mu), high Mjj W+b#bar{b} enr."],["vhbb_Wmn_6_13TeV","1-lepton (#mu), low Mjj, W+b#bar{b} enr."],["vhbb_Wmn_3_13TeV","1-lepton (#mu),W+udcsg enr."]],
+    "Zee": [["vhbb_Zee_7_13TeV","2-lepton (e), High p_{T} (V), t#bar{t} enr."],["vhbb_Zee_5_13TeV","2-lepton (e), High p_{T} (V),Z+b#bar{b} enr."],["vhbb_Zee_3_13TeV","2-lepton (e), High p_{T} (V), Z+udcsg enr."],["vhbb_Zee_8_13TeV","2-lepton (e), Low p_{T} (V), t#bar{t} enr."],["vhbb_Zee_6_13TeV","2-lepton (e), Low p_{T} (V), Z+b#bar{b} enr."],["vhbb_Zee_4_13TeV","2-lepton (e), Low p_{T} (V), Z+udcsg enr."]],
+    "Zmm": [["vhbb_Zmm_7_13TeV","2-lepton (#mu), High p_{T} (V), t#bar{t} enr."],["vhbb_Zmm_5_13TeV","2-lepton (#mu), High p_{T} (V),Z+b#bar{b} enr."],["vhbb_Zmm_3_13TeV","2-lepton (#mu), High p_{T} (V), Z+udcsg enr."],["vhbb_Zmm_8_13TeV","2-lepton (#mu), Low p_{T} (V), t#bar{t} enr."],["vhbb_Zmm_6_13TeV","2-lepton (#mu), Low p_{T} (V), Z+b#bar{b} enr."],["vhbb_Zmm_4_13TeV","2-lepton (#mu), Low p_{T} (V), Z+udcsg enr."]],
+    "Znn": [["vhbb_Znn_7_13TeV","0-lepton, t#bar{t} enr."],["vhbb_Znn_5_13TeV","0-lepton, Z+b#bar{b} enr."],["vhbb_Znn_3_13TeV","0-lepton, Z+udcsg enr."]]
 }
 
 

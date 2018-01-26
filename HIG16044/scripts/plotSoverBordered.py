@@ -63,16 +63,7 @@ ROOT.gStyle.SetHatchesSpacing(0.2)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', '-f',help='Input file if shape file has already been created')
-parser.add_argument('--channel',default='',help='Option to specify channel in case it is not obtainable from the shape file name')
-parser.add_argument('--file_dir',default='',help='Name of TDirectory inside shape file')
-parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
-#Blinding options
-parser.add_argument('--manual_blind', action='store_true',default=False,help='Blind data with hand chosen range')
-parser.add_argument('--x_blind_min',default=10000,help='Minimum x for manual blinding')
-parser.add_argument('--x_blind_max',default=4000,help='Maximum x for manual blinding')
-parser.add_argument('--empty_bin_error',action='store_true',default=False, help='Draw error bars for empty bins')
 #General plotting options
-parser.add_argument('--channel_label',default='0-lepton',help='Channel label')
 parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio plot')
 parser.add_argument('--custom_x_range', help='Fix x axis range', action='store_true', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=0.0)
@@ -83,18 +74,14 @@ parser.add_argument('--y_axis_max',  help='Fix y axis maximum', default=100000.0
 parser.add_argument('--log_y', action='store_true',help='Use log for y axis')
 parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
-parser.add_argument('--outname',default='',help='Optional string for start of output filename')
-parser.add_argument('--bkg_fractions', default=False, action='store_true', help='Instead of yields for each process plot fraction of total bkg in each bin')
+parser.add_argument('--outname',default='sbordered',help='Output plot name')
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.5,1.5")
-parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--x_title', default='log_{10}(S/B)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
 parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
-channel_label = args.channel_label
-file_dir = args.file_dir
 manual_blind = args.manual_blind
 x_blind_min = args.x_blind_min
 x_blind_max = args.x_blind_max
@@ -106,7 +93,6 @@ x_axis_min = float(args.x_axis_min)
 x_axis_max = float(args.x_axis_max)
 y_axis_min = float(args.y_axis_min)
 y_axis_max = float(args.y_axis_max)
-mode=args.mode
 log_y=args.log_y
 log_x=args.log_x
 
