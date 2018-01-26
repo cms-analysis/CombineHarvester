@@ -189,29 +189,25 @@ int main(int argc, char** argv) {
       };
     } else {
       cats_cp["em"] = {
-          {3, "em_dijet_lowM"},
-          {4, "em_dijet_highM"},
-          {5, "em_dijet_boosted"}
+          {3, "em_dijet_lowboost"},
+          {4, "em_dijet_boosted"}
           
       };
       
       cats_cp["et"] = {
-          {3, "et_dijet_lowM"},
-          {4, "et_dijet_highM"},
-          {5, "et_dijet_boosted"}
+          {3, "et_dijet_lowboost"},
+          {4, "et_dijet_boosted"}
           
       };
       
       cats_cp["mt"] = {
-          {3, "mt_dijet_lowM"},
-          {4, "mt_dijet_highM"},
-          {5, "mt_dijet_boosted"}
+          {3, "mt_dijet_lowboost"},
+          {4, "mt_dijet_boosted"}
       };    
       
       cats_cp["tt"] = {
-          {3, "tt_dijet_lowM"},
-          {4, "tt_dijet_highM"},
-          {5, "tt_dijet_boosted"}
+          {3, "tt_dijet_lowboost"},
+          {4, "tt_dijet_boosted"}
       };    
     }
     
@@ -252,9 +248,8 @@ int main(int argc, char** argv) {
                   queue.push_back(make_pair(binid+4,chn+"_dijet_highM_qcd_cr"));
                   queue.push_back(make_pair(binid+5,chn+"_dijet_boosted_qcd_cr"));
                 } else {
-                  queue.push_back(make_pair(binid+2,chn+"_dijet_lowM_qcd_cr"));
-                  queue.push_back(make_pair(binid+3,chn+"_dijet_highM_qcd_cr"));
-                  queue.push_back(make_pair(binid+4,chn+"_dijet_boosted_qcd_cr"));    
+                  queue.push_back(make_pair(binid+2,chn+"_dijet_lowboost_qcd_cr"));
+                  queue.push_back(make_pair(binid+3,chn+"_dijet_boosted_qcd_cr"));    
                 }
                 
                 cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
@@ -277,10 +272,8 @@ int main(int argc, char** argv) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
         
-        if(chn == "tt" || chn == "mt" || chn == "et"){
-          cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats_cp[chn]);
-          cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
-        }
+        cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats_cp[chn]);
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
 
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], true);
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
@@ -304,10 +297,10 @@ int main(int argc, char** argv) {
                                       {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
                                       {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
       } else {   
-        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowM"},{4, "et_dijet_highM"}, {5, "et_dijet_boosted"},
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowboost"}, {4, "et_dijet_boosted"},
                                       {10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},
                                       {13, "et_antiiso_0jet_cr"},{14, "et_antiiso_boosted_cr"}}, false);
-        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowM"},{4, "mt_dijet_highM"}, {5, "mt_dijet_boosted"},
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowboost"},{4, "mt_dijet_boosted"},
                                       {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
                                       {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
       }
@@ -316,8 +309,8 @@ int main(int argc, char** argv) {
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowMjj"},{4, "et_dijet_lowM"},{5, "et_dijet_highM"}, {6, "et_dijet_boosted"}}, false);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowMjj"},{4, "mt_dijet_lowM"},{5, "mt_dijet_highM"}, {6, "mt_dijet_boosted"}}, false);
       } else {
-        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowM"},{4, "et_dijet_highM"}, {5, "et_dijet_boosted"}}, false);
-        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowM"},{4, "mt_dijet_highM"}, {5, "mt_dijet_boosted"}}, false);  
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowboost"}, {4, "et_dijet_boosted"}}, false);
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowboost"}, {4, "mt_dijet_boosted"}}, false);  
       }
     }
     
@@ -347,10 +340,19 @@ int main(int argc, char** argv) {
     
     ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit, dijet_2d);
     
+
     if (! only_init.empty()) {
         std::cout << "Write datacards (without shapes) to directory \"" << only_init << "\" and quit." << std::endl;
         ch::CardWriter tmpWriter("$TAG/$ANALYSIS_$ERA_$CHANNEL_$BINID_$MASS.txt", "$TAG/dummy.root");
         tmpWriter.WriteCards(only_init, cb);
+
+    if(no_shape_systs){
+      cb.FilterSysts([&](ch::Systematic *s){
+        return s->type().find("shape") != std::string::npos;
+      });
+    }
+    
+
         
         /*
         ch::CardWriter tmpWriter("$TAG/cmb.txt", "$TAG/dummy.root");
@@ -433,12 +435,6 @@ int main(int argc, char** argv) {
         }
         return null_yield;
     });
-    
-    if(no_shape_systs){
-      cb.FilterSysts([&](ch::Systematic *s){
-        return s->type().find("shape") != std::string::npos;
-      });
-    }
         
     
     
