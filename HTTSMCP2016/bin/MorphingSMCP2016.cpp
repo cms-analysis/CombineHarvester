@@ -65,6 +65,7 @@ int main(int argc, char** argv) {
     string input_folder_tt="Imperial/CP/";
     string input_folder_mm="USCMS/";
     string input_folder_ttbar="USCMS/";
+    string only_init="";
     string postfix="";
     int control_region = 0;
     bool mm_fit = false;
@@ -81,6 +82,7 @@ int main(int argc, char** argv) {
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
+    ("only_init", po::value<string>(&only_init)->default_value(""))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
     ("control_region", po::value<int>(&control_region)->default_value(0))
@@ -341,15 +343,58 @@ int main(int argc, char** argv) {
     
     ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit, dijet_2d);
     
+
+    if (! only_init.empty()) {
+        std::cout << "Write datacards (without shapes) to directory \"" << only_init << "\" and quit." << std::endl;
+        ch::CardWriter tmpWriter("$TAG/$ANALYSIS_$ERA_$CHANNEL_$BINID_$MASS.txt", "$TAG/dummy.root");
+        tmpWriter.WriteCards(only_init, cb);
+
     if(no_shape_systs){
       cb.FilterSysts([&](ch::Systematic *s){
         return s->type().find("shape") != std::string::npos;
       });
     }
     
+
         
-    
-    
+        /*
+        ch::CardWriter tmpWriter("$TAG/cmb.txt", "$TAG/dummy.root");
+        tmpWriter.WriteCards(only_init, cb);
+        
+        for (std::string analysis : cb.analysis_set())
+        {
+            ch::CombineHarvester cbAnalysis = cb.cp().analysis({analysis});
+            for (std::string era : cbAnalysis.era_set())
+            {
+                ch::CombineHarvester cbEra = cbAnalysis.cp().era({era});
+                for (std::string channel : cbEra.channel_set())
+                {
+                    ch::CombineHarvester cbChannel = cbEra.cp().channel({channel});
+                    for (int binId : cbChannel.bin_id_set())
+                    {
+                        ch::CombineHarvester cbBinId = cbChannel.cp().bin_id({binId});
+                        for (std::string mass : cbBinId.mass_set())
+                        {
+                            if ((cbBinId.mass_set().size() == 1) && (mass == "*"))
+                            {
+                                std::string path = only_init+"/"+analysis+"_"+era+"_"+channel+"_"+std::to_string(binId)+".txt";
+                                cbBinId.WriteDatacard(path, only_init+"/dummy.root");
+                            }
+                            else if (mass != "*")
+                            {
+                                ch::CombineHarvester cbMass = cbBinId.cp().mass({mass, "*"});
+                                std::string path = only_init+"/"+analysis+"_"+era+"_"+channel+"_"+std::to_string(binId)+"_"+mass+".txt";
+                                cbMass.WriteDatacard(path, only_init+"/dummy.root");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        */
+        return 0;
+    }
+            
     //! [part7]
     for (string chn:chns){
         cb.cp().channel({chn}).backgrounds().ExtractShapes(
