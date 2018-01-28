@@ -33,7 +33,7 @@ namespace ch {
         //}
         
         
-        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHf0_htt", "ggHf1_htt", "ggHf0p5_htt"};
+        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt"};
         
         // N.B. when adding this list of backgrounds to a nuisance, only
         // the backgrounds that are included in the background process
@@ -202,10 +202,13 @@ namespace ch {
                                                   "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","em"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({1,2,4,5,6}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({1,2,5,6}).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, {"ZL","ZJ","ZTT","TTJ","TTT","TT","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({3}).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, {"ZJ","ZTT","TTJ","TTT","TT","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({4}).AddSyst(cb,
+                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+ 
         // Standard JES, factorized 27 JES implementation below
         // only use 1 at a time.
         // full 27 JES...

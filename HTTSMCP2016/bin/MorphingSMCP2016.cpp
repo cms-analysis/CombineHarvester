@@ -188,14 +188,12 @@ int main(int argc, char** argv) {
     } else {
       cats_cp["em"] = {
           {3, "em_dijet_lowboost"},
-          {4, "em_dijet_boosted"}
-          
+          {4, "em_dijet_boosted"} 
       };
       
       cats_cp["et"] = {
           {3, "et_dijet_lowboost"},
-          {4, "et_dijet_boosted"}
-          
+          {4, "et_dijet_boosted"}       
       };
       
       cats_cp["mt"] = {
@@ -259,8 +257,10 @@ int main(int argc, char** argv) {
     
     map<string, VString> sig_procs;
     sig_procs["ggH"] = {"ggH_htt"};
-    sig_procs["qqH"] = {"qqH_htt","WH_htt","ZH_htt"};
-    sig_procs["ggHCP"] = {"ggHf0_htt", "ggHf1_htt", "ggHf0p5_htt"};
+    //sig_procs["qqH"] = {"qqHsm_htt125","qqHmm_htt125","qqHps_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
+    sig_procs["qqH"] = {"qqHsm_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
+
+    sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     vector<string> masses = {"125"};    
 
     using ch::syst::bin_id;
@@ -268,15 +268,18 @@ int main(int argc, char** argv) {
     //! [part2]
     for (auto chn : chns) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
-        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
-        
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats_cp[chn]);
+
+        cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
 
-        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], true);
-        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
-        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats_cp[chn], true);
-        cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
+        if(chn == "em" || chn == "et" || chn == "mt" || chn == "tt"){
+          cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], false); // VBF/VH are added as backgrounds
+          cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats_cp[chn], false);
+        
+          cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
+          cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
+        }
         
         //Needed to add ewkz and W as these are not not available/Negative in qcd cR
     }
@@ -353,15 +356,15 @@ int main(int argc, char** argv) {
                                                            input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                            "$BIN/$PROCESS",
                                                            "$BIN/$PROCESS_$SYSTEMATIC");
-        cb.cp().channel({chn}).process(sig_procs["qqH"]).ExtractShapes(
-                                                                input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-                                                                "$BIN/$PROCESS$MASS",
-                                                                "$BIN/$PROCESS$MASS_$SYSTEMATIC");
-        cb.cp().channel({chn}).process(sig_procs["ggH"]).ExtractShapes(
-                                                                input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-                                                                "$BIN/$PROCESS$MASS",
-                                                                "$BIN/$PROCESS$MASS_$SYSTEMATIC");
-        if (chn == "tt" || chn == "mt" || chn == "et"){
+        //cb.cp().channel({chn}).process(sig_procs["qqH"]).ExtractShapes(
+        //                                                        input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+        //                                                        "$BIN/$PROCESS$MASS",
+        //                                                        "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+        if(chn == "em" || chn == "et" || chn == "mt" || chn == "tt"){
+          cb.cp().channel({chn}).process(sig_procs["ggH"]).ExtractShapes(
+                                                                  input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                                  "$BIN/$PROCESS$MASS",
+                                                                  "$BIN/$PROCESS$MASS_$SYSTEMATIC");
           cb.cp().channel({chn}).process(sig_procs["ggHCP"]).ExtractShapes(
                                                                   input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                                   "$BIN/$PROCESS$MASS",
@@ -555,9 +558,9 @@ int main(int argc, char** argv) {
                 cb.cp().channel({"mm"}).bin_id({3}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_3_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm3.root");
             }
             
-            if (ttbar_fit){
-                cb.cp().channel({"ttbar"}).bin_id({1}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_ttbar_1_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_ttbar1.root");
-            }
+            //if (ttbar_fit){
+            //    cb.cp().channel({"ttbar"}).bin_id({1}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_ttbar_1_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_ttbar1.root");
+            //}
             
             
             if (control_region > 0){

@@ -16,7 +16,7 @@ the params set by the option `--setPhysicsModelParameters` determin the paramete
 
     `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=alpha --output=test --no-numbers --no-box --x_title="#alpha (#frac{#pi}{2})"`
 
-# Running with contrain on cross-section
+# Running with constraint on cross-section
 
 At the moment this uses an approximation for the scaling of the cross-section with alpha. The PS cross-section is assumed to be 2.25x the SM cross-section based on Table 6 in https://arxiv.org/pdf/1407.5089.pdf. The cross-section is assumed to scale as XS_sm*cos(alpha)^2 + XS_ps*sin(alpha)^2.
 
@@ -32,3 +32,6 @@ Then run the maximum liklihood scan using:
 
     `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0 --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp090118/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8`
 
+plot using 
+
+python scripts/plotMultiDimFit.py --title-right="35.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass 125 -o alpha_2D_limit output/cp250117_ic_2d/cmb/125/higgsCombine.2DScan.MultiDimFit.mH125.root
