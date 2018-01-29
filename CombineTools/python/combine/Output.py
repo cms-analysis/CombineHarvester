@@ -61,7 +61,10 @@ class PrintFit(CombineToolBase):
               json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
         elif self.args.algo == 'singles':
             res = utils.get_singles_results(self.args.input, POIs, POIs)
-            js_out = {}
+            if os.path.isfile(self.args.json):
+                with open(self.args.json) as jsonfile: js_out = json.load(jsonfile)
+            else:
+                js_out = {}
             for p in POIs:
                 js_out[p] = {}
                 val = res[p][p]
