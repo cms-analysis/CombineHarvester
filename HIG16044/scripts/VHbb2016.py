@@ -156,6 +156,9 @@ if args.bbb_mode==2 or args.bbb_mode==3:
 if args.bbb_mode==4:
   cb.AddDatacardLineAtEnd("* autoMCStats 0")
 
+if args.bbb_mode==5:
+  cb.AddDatacardLineAtEnd("* autoMCStats -1")
+
 
 if args.zero_out_low:
   nbins_to_keep = {'Wen':[[1,5]],'Wmn':[[1,5]],'Znn':[[1,5]],'Zee':[[1,5],[2,3]],'Zmm':[[1,5],[2,3]]}
