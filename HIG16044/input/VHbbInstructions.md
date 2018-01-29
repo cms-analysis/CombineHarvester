@@ -30,7 +30,7 @@ Access to this repository is linked to the higgs-vlephbb e-group.
 
 ## Setting up datacards
 
-python ./scripts/VHbb2016.py [options]
+./scripts/VHbb2016.py [options]
 
 This creates .txt datacards in the 'output' directory, both combined and per channel (Zee,Zmm,Wen,Wmn,Znn,Wln,Zll), all in separate subdirectories.
 At the moment the options are
@@ -85,18 +85,17 @@ First run the maximum likelihood fit as described above for the post-fit plots.
 
 Set up new cards and workspace for which the contents of the bins we want to ignore are set to 0 (NOTE: this implementation in the datacard production script still to be improved)
 
-`python ./scripts/VHbb2016.py [options] --zero_out_low`
+`./scripts/VHbb2016.py [options] --zero_out_low`
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder_zeroed_out>/cmb/`
 
 Create the pre- and postfit yield tables:
-`python scripts/printYieldTables.py --workspace output/<output_folder_zeroed_out>/cmb/ws.root --fit_file output/<output_folder>/cmb/fitDiagnostics.Test.root`
+`./scripts/printYieldTables.py --workspace output/<output_folder_zeroed_out>/cmb/ws.root --fit_file output/<output_folder>/cmb/fitDiagnostics.Test.root`
 
 It is *very* important to use fit results for the *full* model, otherwise the uncertainties on the yields will not be correct. <output_folder_zeroed_out> and <output_folder> are therefore explicitly different, unless yield tables are made for the full model too.
 
 
 ## Other plots
 ### Channel compatibility
-*in progress:*
 Make workspace with separate r_ZH/r_WH:
 
 `combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_proc.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=.*/.*ZH_hbb:r_ZH[1,0,5]' --PO 'map=.*/WH_hbb:r_WH[1,0,5]' `
@@ -113,12 +112,24 @@ Now we need to run MultiDimFit to get the best-fit value and uncertainty for eac
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_onelep -n .onelep --algo singles --cminDefaultMinimizerStrategy 0`
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_twolep -n .twolep --algo singles --cminDefaultMinimizerStrategy 0`
 
+Next we want to collect all of the fit results in a single json file:
+
+`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_ZH -i higgsCombine.ZH.MultiDimFit.mH120.root --algo singles`
+`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_WH -i higgsCombine.WH.MultiDimFit.mH120.root --algo singles`
+
+`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_zerolep -i higgsCombine.zerolep.MultiDimFit.mH120.root --algo singles`
+`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_onelep -i higgsCombine.onelep.MultiDimFit.mH120.root --algo singles`
+`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_twolep -i higgsCombine.twolep.MultiDimFit.mH120.root --algo singles`
+
+Now make the plot (plotting script requires some serious work still!)
+
+`./scripts/plotCCC.py -i MultiDimFit_cc.json -o cccPlot`
 
 ### S-over-B ordered plot
 As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.
 First we need to set up some datacards with the bins re-ordered according to post-fit S/B
 
-`python scripts/prepareSoverBordered.py -w output/<original_output_folder>/cmb/ws.root -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root -d output/<original_output_folder>/cmb/combined.txt.cmb`
+`./scripts/prepareSoverBordered.py -w output/<original_output_folder>/cmb/ws.root -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root -d output/<original_output_folder>/cmb/combined.txt.cmb`
 
 This writes out S/B ordered datacards for the SR categories only to output/vhbb_sbordered/vhbb_2016.txt
 
@@ -129,21 +140,19 @@ Now we need to run PostFitShapesFromWorkspace on the new S/B ordered workspace w
 `PostFitShapesFromWorkspace -d output/vhbb_sbordered/vhbb_2016.txt -w output/vhbb_sbordered/ws.root -o shapes.root --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s`
 
 To make the plot:
-`python scripts/plotSoverBordered.py -f shapes.root --log_y --custom_y_range --ratio`
+`./scripts/plotSoverBordered.py -f shapes.root --log_y --custom_y_range --ratio`
 
 *Some code cleanup and cosmetic changes still required*
-
-To be updated
 
 ## Diagnostic tools
 ### Printing/visualising correlations:
 We can use the FitDiagnostics output to print/plot the correlations (from the fit covariance matrix).
 To print the top N correlations:
-`python scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -m N`
+`./scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -m N`
 To print the N largest correlations of other parameters with a given parameter:
-`python scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAMETER_NAME -m N`
+`./scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAMETER_NAME -m N`
 To save and draw the correlation matrix for a given set of parameters:
-`python scripts/plotCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAM_NAME_1,PARAM_NAME_2,...,PARAM_NAME_3 -o <output_name_string>`
+`./scripts/plotCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAM_NAME_1,PARAM_NAME_2,...,PARAM_NAME_3 -o <output_name_string>`
 This plots the correlation matrix as <output_name_string>.pdf/png and saves the TH2 in <output_name_string>.root 
 
 ### FastScan 

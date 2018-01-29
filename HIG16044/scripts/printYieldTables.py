@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import CombineHarvester.CombineTools.ch as ch
 import argparse
 # import CombineHarvester.CombineTools.pdgRounding as pdgRounding

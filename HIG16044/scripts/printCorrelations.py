@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import ROOT
 import argparse
 #This script is copied from HiggsAnalysis-CombinedLimit/test/printCorrelations.py

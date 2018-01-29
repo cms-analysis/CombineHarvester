@@ -1,3 +1,5 @@
+#!/usr/bin/env python 
+
 import CombineHarvester.CombineTools.plotting as plot
 import ROOT
 import math
