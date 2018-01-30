@@ -8,6 +8,7 @@ import json
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 plot.ModTDRStyle()
+ROOT.gStyle.SetTickLength(0., "Y")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input','-i',help = 'input json file')
@@ -21,7 +22,8 @@ with open(args.input) as jsonfile:
 canv = ROOT.TCanvas(args.output,args.output)
 pads = plot.OnePad()
 pads[0].SetTicks(1,-1)
-pads[0].SetLeftMargin(0.3)
+pads[0].SetLeftMargin(0.22)
+pads[0].SetTicky(0)
 
 axis = ROOT.TH2F('axis', '',1,-1,3,7,0,7)
 plot.Set(axis.GetYaxis(), LabelSize=0)
@@ -31,18 +33,18 @@ axis.Draw()
 
 cmb_band = ROOT.TBox()
 plot.Set(cmb_band, FillColor=ROOT.kGreen)
-plot.DrawVerticalBand(pads[0],cmb_band,1.2-0.4,1.2+0.4)
+plot.DrawVerticalBand(pads[0],cmb_band,js['r']['val']-js['r']['ErrLo'],js['r']['val']+js['r']['ErrHi'])
 
 cmb_line = ROOT.TLine()
 plot.Set(cmb_line,LineWidth=2)
-plot.DrawVerticalLine(pads[0],cmb_line,1.2)
+plot.DrawVerticalLine(pads[0],cmb_line,js['r']['val'])
 
 
 gr = ROOT.TGraphAsymmErrors(5)
 plot.Set(gr, LineWidth=2, LineColor=ROOT.kRed)
 
-y_pos = 5.5
-x_text = -2.7
+y_pos = 4.5
+x_text = -2.0
 i=0
 latex = ROOT.TLatex()
 plot.Set(latex, TextAlign=12,TextSize=0.035)
@@ -69,8 +71,13 @@ pads[0].cd()
 pads[0].GetFrame().Draw()
 pads[0].RedrawAxis()
 
-plot.DrawCMSLogo(pads[0],'CMS','',11.,0.045,0.05,1.0,'',1.0)
+plot.DrawCMSLogo(pads[0],'CMS','',11.,0.12,0.05,1.0,'',1.0)
 plot.DrawTitle(pads[0],'35.9 fb^{-1} (13 TeV)',3)
+
+latex.SetTextFont(42)
+latex.SetTextSize(0.03)
+latex.DrawLatex(-0.82,6.1,"pp#rightarrow VH; H#rightarrow b#bar{b}")
+latex.DrawLatex(-0.82,5.7,"Combined #mu=%.1f#pm%.1f"%(js['r']['val'],js['r']['ErrHi']))
 
 canv.Print('.png')
 canv.Print('.pdf')
