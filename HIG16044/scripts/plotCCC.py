@@ -21,8 +21,9 @@ with open(args.input) as jsonfile:
 canv = ROOT.TCanvas(args.output,args.output)
 pads = plot.OnePad()
 pads[0].SetTicks(1,-1)
+pads[0].SetLeftMargin(0.3)
 
-axis = ROOT.TH2F('axis', '',1,-1,3,9,0,9)
+axis = ROOT.TH2F('axis', '',1,-1,3,7,0,7)
 plot.Set(axis.GetYaxis(), LabelSize=0)
 plot.Set(axis.GetXaxis(), Title = 'Best fit #mu')
 axis.Draw()
@@ -40,19 +41,18 @@ plot.DrawVerticalLine(pads[0],cmb_line,1.2)
 gr = ROOT.TGraphAsymmErrors(5)
 plot.Set(gr, LineWidth=2, LineColor=ROOT.kRed)
 
-y_pos = 7.5
-x_text = -1.7
+y_pos = 5.5
+x_text = -2.7
 i=0
 latex = ROOT.TLatex()
 plot.Set(latex, TextAlign=12,TextSize=0.035)
 order = ['r_ZH','r_WH','r_zerolep','r_onelep','r_twolep']
-
 txt_dict = {
-  'r_ZH': '#splitline{ZH(bb)}{#mu=}',
-  'r_WH': '#splitline{WH(bb)}{#mu=}',
-  'r_zerolep': '#splitline{0 lept.}{#mu=}',
-  'r_onelep': '#splitline{1 lept.}{#mu=}',
-  'r_twolep': '#splitline{2 lept.}{#mu=}'
+  'r_ZH': '#splitline{ZH(bb)}{#mu=%.1f#pm%.1f}'%(js['r_ZH']['val'],js['r_ZH']['ErrHi']),
+  'r_WH': '#splitline{WH(bb)}{#mu=%.1f#pm%.1f}'%(js['r_WH']['val'],js['r_WH']['ErrHi']),
+  'r_zerolep': '#splitline{0 lept.}{#mu=%.1f#pm%.1f}'%(js['r_zerolep']['val'],js['r_zerolep']['ErrHi']),
+  'r_onelep': '#splitline{1 lept.}{#mu=%.1f#pm%.1f}'%(js['r_onelep']['val'],js['r_onelep']['ErrHi']),
+  'r_twolep': '#splitline{2 lept.}{#mu=%.1f#pm%.1f}'%(js['r_twolep']['val'],js['r_twolep']['ErrHi'])
 }
 
 for stre in order:
