@@ -25,7 +25,7 @@ parser.add_argument(
 parser.add_argument(
     '--x-title', default='#alpha (#frac{#pi}{2})', help="""Title for the x-axis""")
 parser.add_argument(
-    '--y-title', default='#kappa_{ggH#rightarrow#tau#tau}', help="""Title for the x-axis""")
+    '--y-title', default='#mu_{F}', help="""Title for the y-axis""")
 parser.add_argument(
     '--debug-output', '-d', help="""If specified, write the contour TH2s and
     TGraphs into this output ROOT file""")
@@ -54,7 +54,7 @@ plot.fastFillTH2(hists, graph,interpolateMissing=True)
 if args.bg_exp:
     limit_bg = plot.MakeTChain(args.bg_exp, 'limit')
     best_bg = plot.TGraphFromTree(
-        limit_bg, "alha", "muF", 'deltaNLL == 0')
+        limit_bg, "alpha", "muF", 'deltaNLL == 0')
     plot.RemoveGraphXDuplicates(best_bg)
 
 # If included just plot SM exp at 1,1

@@ -259,8 +259,7 @@ int main(int argc, char** argv) {
     
     map<string, VString> sig_procs;
     sig_procs["ggH"] = {"ggH_htt"};
-    //sig_procs["qqH"] = {"qqHsm_htt125","qqHmm_htt125","qqHps_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
-    sig_procs["qqH"] = {"qqHsm_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
+    sig_procs["qqH"] = {"qqHsm_htt125","qqHmm_htt125","qqHps_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
 
     sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     vector<string> masses = {"125"};    
@@ -342,6 +341,12 @@ int main(int argc, char** argv) {
     
     
     ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit, dijet_2d);
+    
+    if(no_shape_systs){
+      cb.FilterSysts([&](ch::Systematic *s){
+        return s->type().find("shape") != std::string::npos;
+      });
+    }
     
 
     if (! only_init.empty()) {

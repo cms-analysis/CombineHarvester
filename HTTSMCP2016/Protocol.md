@@ -1,37 +1,63 @@
 
 # creating datacards
     
+To create datacards using Aachen groups categorisation use:    
+
     `MorphingSMCP2016 --output_folder="cp261217" --postfix="-2D" --control_region=1 --mm_fit=false --ttbar_fit=true`
 
+To create datacards using IC categorisation and unrolled 2D distributions of m_sv vs sjdphi/D0star for the dijet categories use:
+
+    `MorphingSMCP2016 --output_folder="cp310118" --postfix="-2D" --control_region=1 --mm_fit=false --ttbar_fit=true --dijet_2d=true`    
+
+To not include shape systematics use the option:
+    `--no_shape_systs=true`
+
 # Building the workspaces:
-   `combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixture:CPMixture -i output/cp261217/{cmb,em,et,mt,tt}/* -o ws.root --parallel 8`
+
+Build the workspace using
+
+    `combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixture:CPMixture -i output/cp310118/{cmb,em,et,mt,tt}/* -o ws.root --parallel 8`
+   
+Currently since we use JHU sample the ggH XS does not depend on alpha. In MG5 XS depends on alpha like cos^2(alpha) + (3/2)^2*sin^2(alpha). To scale the ggH XS according to this function create the workspace using:
+
+    `combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixture:CPMixture -i output/cp310118/{cmb,em,et,mt,tt}/* -o ws.root --parallel 8 --PO constrain_ggHYield`
+
+To scale the lumi by a factor X use the option:
+    `--PO lumi_scale=X`
+when creating the worspace
 
 # Run maximum liklihood scan
 
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0 --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp261217/cmb/125/ws.root --algo grid -t -1`
+Worspaces are created with 4 free parameters muF, muV, alpha, and f. muF is the rate parameter for ggH, muV is the rate parameter for VBF/VH, alpha defines the CP mixing for ggH (note alpha is in units of pi/2 -> SM:alpha=0, PS:alpha=1), and f defines the CP mixing for VBF (SM:f=0, PS:f=1) 
+By using the option --freezeNuisances these parameters can be prevented from floating in the fit this can be used to change how the VBF background is treated in the fit e.g. VBF taken as SM or not.
+To take VBF as SM in both rate and shape use:
+    `--freezeNuisances f,muV`
+To take the VBF shape as SM and float the rate use:
+    `--freezeNuisances f`
+Not using the --freezeNuisances will float both the VBF rate and shape by default.
 
-the params set by the option `--setPhysicsModelParameters` determin the parameters of the azimov dataset i.e SM params
+To scan alpha:
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp310118/cmb/125/ws.root --algo grid -t -1 --there -n .alpha`
+
+
+To scan muF:
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges muF=0,4 --points 20 --redefineSignalPOIs muF  -d output/cp310818/cmb/125/ws.root --algo grid -t -1 --there -n .muF`
+
+To scan alpha including the constrain on the XS use:
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f,muF --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp310118/cmb/125/ws.root --algo grid -t -1 --there -n .alpha`
+
+Run 2D liklihood scan of muF vs alpha using:
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp310118/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8`
 
 # Plot scan
 
-    `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=alpha --output=test --no-numbers --no-box --x_title="#alpha (#frac{#pi}{2})"`
+1D scans can be plotted using scripts/plot1DScan.py script.
+To plot alpha:
+    `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=alpha --output=alpha --no-numbers --no-box --x_title="#alpha (#frac{#pi}{2})"` --y-max=2.2
+To plot muF:
+    `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=muF --output=muF --no-numbers --no-box --x_title="#mu_{F}"`
 
-# Running with constraint on cross-section
+2D scans can be plotted using scripts/plotMultiDimFit.py script:
 
-At the moment this uses an approximation for the scaling of the cross-section with alpha. The PS cross-section is assumed to be 2.25x the SM cross-section based on Table 6 in https://arxiv.org/pdf/1407.5089.pdf. The cross-section is assumed to scale as XS_sm*cos(alpha)^2 + XS_ps*sin(alpha)^2.
+    `python scripts/plotMultiDimFit.py --title-right="35.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass 125 -o muF_vs_alpha output/cp310118/cmb/125/higgsCombine.2DScan.MultiDimFit.mH125.root`
 
-Build the workspace using:
-
-    `combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixture:CPMixture -i output/cp090118/{cmb,em,et,mt,tt}/* -o ws.root --PO constrain_ggHYield`
-
-Then run the maximum liklihood scan using:
-    
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muV=1,alpha=0 --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp090118/cmb/125/ws.root --algo grid -t -1 --parallel=8`
-
-# Run 2D fit
-
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0 --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp090118/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8`
-
-plot using 
-
-python scripts/plotMultiDimFit.py --title-right="35.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass 125 -o alpha_2D_limit output/cp250117_ic_2d/cmb/125/higgsCombine.2DScan.MultiDimFit.mH125.root
