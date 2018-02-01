@@ -23,7 +23,7 @@ Currently since we use JHU sample the ggH XS does not depend on alpha. In MG5 XS
     `combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixture:CPMixture -i output/cp310118/{cmb,em,et,mt,tt}/* -o ws.root --parallel 8 --PO constrain_ggHYield`
 
 To scale the lumi by a factor X use the option:
-    `--PO lumi_scale=X`
+    `--PO lumiScale=X`
 when creating the worspace
 
 # Run maximum liklihood scan

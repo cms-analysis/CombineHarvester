@@ -67,7 +67,7 @@ class CPMixture(PhysicsModel):
                 for cp in vbf_cps: 
                   self.modelBuilder.factory_('expr::muV_{cp}("@0*@1", muV, {cp})'.format(cp=cp))
                 
-                # if lumi_scale option is set then scale all templates by lumi_scale value
+                # if lumiScale=X option is set then scale all templates by X value
                 if self.lumi_scale is not None:
                   self.modelBuilder.factory_('expr::lumi_scaling("@0",{lumi_scale})'.format(lumi_scale=self.lumi_scale))
                   self.modelBuilder.factory_('expr::muF_lumi_scaling("@0*@1", muF, lumi_scaling)')
