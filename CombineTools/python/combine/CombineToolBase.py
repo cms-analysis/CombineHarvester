@@ -253,7 +253,7 @@ class CombineToolBase:
             condor_settings = CONDOR_TEMPLATE % {
               'EXE': outscriptname,
               'TASK': self.task_name,
-              'EXTRA': self.bopts,
+              'EXTRA': self.bopts.decode('string_escape'),
               'NUMBER': jobs
             }
             subfile.write(condor_settings)
