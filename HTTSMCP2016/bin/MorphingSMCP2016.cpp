@@ -133,18 +133,22 @@ int main(int argc, char** argv) {
     map<string,Categories> cats;
     cats["et"] = {
         {1, "et_0jet"},
-        {2, "et_boosted"}};
+        {2, "et_boosted"}
+    };
     
     cats["mt"] = {
         {1, "mt_0jet"},
-        {2, "mt_boosted"}}; 
+        {2, "mt_boosted"}
+    }; 
     cats["em"] = {
         {1, "em_0jet"},
-        {2, "em_boosted"}};
+        {2, "em_boosted"}
+    };
     
     cats["tt"] = {
         {1, "tt_0jet"},
-        {2, "tt_boosted"}};
+        {2, "tt_boosted"}
+    };
     
     cats["mm"] = {
         {1, "mm_0jet"},
