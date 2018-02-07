@@ -281,6 +281,17 @@ for yval in yvals:
 
 main_scan['func'].Draw('same')
 main_scan['graph'].Draw('PLSAME')
+
+if args.POI == 'alpha':
+  import scipy.stats
+  significance = math.sqrt(scipy.stats.chi2.ppf(scipy.stats.chi2.cdf(main_scan['func'].Eval(1),1),1))
+  latex = ROOT.TLatex()
+  latex.SetNDC()
+  latex.SetTextSize(0.04)
+  latex.SetTextAlign(12)
+  latex.DrawLatex(.7,.9,"0^{+} vs 0^{-} = %.2f#sigma" % significance)
+
+
 for other in other_scans:
     if args.breakdown is not None:
         other['func'].SetLineStyle(2)
