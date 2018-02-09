@@ -25,8 +25,8 @@ if type is None:
 w = fin.Get('w')
 # w.Print()
 
-pdf = w.pdf('pdf')
-data = w.data('global_obs')
+pdf = w.function('nll')
+#data = w.data('global_obs')
 
 wfinal = w
 
@@ -176,10 +176,10 @@ if type == 'L1toK3':
     wfinal = wnew
 
 # B1ZZ_TH --> A1_mu
-if type == 'B1ZZ_THtoA1_mu':
+if type == 'B1ZZtoA1_mu':
     wnew = ROOT.RooWorkspace()
-    wnew.factory('mu[1,0.0,2.0]')
-    wnew.factory('expr::mu_XS_ggF_x_BR_ZZ("@0", mu)')
+    wnew.factory('mu_XS_ggF_x_BR_ZZ[1,0.0,2.0]')
+    # wnew.factory('expr::mu_XS_ggF_x_BR_ZZ("@0", mu)')
     wnew.factory('mu_XS_VBF_r_XS_ggF[1]')
     wnew.factory('mu_XS_WH_r_XS_ggF[1]')
     wnew.factory('mu_XS_ZH_r_XS_ggF[1]')
@@ -189,7 +189,7 @@ if type == 'B1ZZ_THtoA1_mu':
     wnew.factory('mu_BR_gamgam_r_BR_ZZ[1]')
     wnew.factory('mu_BR_tautau_r_BR_ZZ[1]')
     getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
-    pdf = wnew.pdf('pdf')
+    pdf = wnew.function('nll')
     pdf.Print('tree')
     wfinal = wnew
 
@@ -262,6 +262,16 @@ if type == 'A1_5PDtoA1_mu':
     pdf.Print('tree')
     wfinal = wnew
 
+if type == 'A1_5PtoA1_mu':
+    wnew = ROOT.RooWorkspace()
+    wnew.factory('mu[1,0.0,2.0]')
+    for P in ['ggFbbH', 'VBF', 'WH', 'ZH', 'ttHtH']:
+        wnew.factory('expr::mu_XS_%s("@0", mu)' % (P))
+    getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
+    pdf = wnew.function('nll')
+    pdf.Print('tree')
+    wfinal = wnew
+
 # A1_5PD --> A1_5P
 if type == 'A1_5PDtoA1_5P':
     wnew = ROOT.RooWorkspace()
@@ -305,13 +315,15 @@ if type == 'A1_5PDtoA1_5D':
     # pdf.Print('tree')
     wfinal = wnew
 
-nll = pdf.createNLL(data)
+#nll = pdf.createNLL(data)
+nll = pdf
 
 minim = ROOT.RooMinimizer(nll)
 minim.setVerbose(False)
 minim.minimize('Minuit2', 'migrad')
 minim.setPrintLevel(-1)
 wfinal.allFunctions().Print('v')
+wfinal.allVars().Print('v')
 
 nll0 = nll.getVal()
 
@@ -319,7 +331,7 @@ param = wfinal.var(POI)
 param.setConstant()
 
 # Figure out the other floating parameters
-params = pdf.getParameters(data)
+params = pdf.getParameters(ROOT.RooArgSet())
 param_it = params.createIterator()
 var = param_it.Next()
 float_params = set()
@@ -360,12 +372,15 @@ for i, var in enumerate(float_params):
     float_arrs[i][0] = wfinal.var(var).getVal()
 tout.Fill()
 
+# nll.Print('v')
+
 for p in xrange(points):
     for key,val in snapshot.iteritems():
       wfinal.var(key).setVal(val)
     param.setVal(r)
     a_r[0] = r
     minim.minimize('Minuit2', 'migrad')
+    #wfinal.allVars().Print('v')
     for i, var in enumerate(float_params):
         float_arrs[i][0] = wfinal.var(var).getVal()
     nllf = nll.getVal()
