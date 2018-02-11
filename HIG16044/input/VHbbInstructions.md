@@ -151,13 +151,39 @@ To make the plot:
 
 *Some code cleanup and cosmetic changes still required*
 
+##Impacts
+First set up the datacards as above and create the workspace.
+
+Run the initial fit:
+```
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doInitialFit --robustFit 1 --setParameterRanges r=0,3
+```
+
+Then run fits for all nuisance parameters:
+```
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars
+```
+
+We can submit these fits to a batch system too, by adding:
+(lxbatch): `--job-mode lxbatch --sub-opts '-q <queuename>' --merge 10`
+Condor: to be merged onto this branch
+`--merge N` runs N of the fits in the same job, these fits can take a long time so --merge 5 is probably reasonable. 
+
+Collecting the results in a json file:
+`combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --allPars -o impacts.json`
+
+Plotting:
+`plotImpacts.py -i impacts.json -o impacts_out --transparent`
+
+
+
 ## Diagnostic tools
 ### Printing/visualising correlations:
 We can use the FitDiagnostics output to print/plot the correlations (from the fit covariance matrix).
 To print the top N correlations:
 `./scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -m N`
 To print the N largest correlations of other parameters with a given parameter:
-`./scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAMETER_NAME -m N`
+`./scripts/printCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAMETER_NAME -m N`
 To save and draw the correlation matrix for a given set of parameters:
 `./scripts/plotCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAM_NAME_1,PARAM_NAME_2,...,PARAM_NAME_3 -o <output_name_string>`
 This plots the correlation matrix as <output_name_string>.pdf/png and saves the TH2 in <output_name_string>.root 
