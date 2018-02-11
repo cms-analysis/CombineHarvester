@@ -9,11 +9,8 @@ shapes = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/HIG16044/HIG16044card
 output = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/HIG16044/output/vhbb_stxs/'
 
 cb = ch.CombineHarvester()
-cb2 = ch.CombineHarvester()
 
-#cb2.ParseDatacard(output+"combined.txt.cmb","vhbb","13TeV","Wln")
 cb.ParseDatacard(shapes+"vhbb_2016_13TeV.txt","vhbb","13TeV","")
-#cb.ParseDatacard(shapes+"znn_test/vhbb_znnhbb_2016_13TeV.txt","vhbb","13TeV","Znn")
 
 cb.cp().ForEachObj(lambda x: x.set_process("ZH_lep_hbb") if x.process()=='ZH_hbb' else None)
 cb.cp().ForEachObj(lambda x: x.set_process("WH_lep_hbb") if x.process()=='WH_hbb' else None)
