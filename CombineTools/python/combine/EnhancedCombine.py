@@ -110,7 +110,7 @@ class EnhancedCombine(CombineToolBase):
                     argname = '-%s' % header if len(header) == 1 else '--%s' % header
                     if header == 'n' or header == 'name':
                         final_arg.append(e)
-                    elif len(e):
+                    elif len(e) and e != '!':
                         final_arg.append('%s %s' % (argname, e))
                     else:
                         final_arg.append('')

@@ -54,11 +54,14 @@ class PrintFit(CombineToolBase):
         POIs = self.args.POIs.split(',')
         if self.args.algo == 'none':
             res = utils.get_none_results(self.args.input, POIs)
+            for p in POIs:
+                val = res[p]
+                print '%-30s = %+.3f' % (p, val)
             if self.args.json is not None:
-              for key,val in res.iteritems():
-                js_target[key] = { 'Val' : val }
-            with open(json_structure[0], 'w') as outfile:
-              json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+                for key,val in res.iteritems():
+                    js_target[key] = { 'Val' : val }
+                with open(json_structure[0], 'w') as outfile:
+                    json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
         elif self.args.algo == 'singles':
             res = utils.get_singles_results(self.args.input, POIs, POIs)
             for p in POIs:
