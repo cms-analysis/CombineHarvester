@@ -130,7 +130,7 @@ class CombineToolBase:
                            help='crab working area')
         group.add_argument('--custom-crab', default=self.custom_crab,
                            help='python file containing a function with name signature "custom_crab(config)" that can be used to modify the default crab configuration')
-        group.add_argument('--crab-extra-files', nargs='+',
+        group.add_argument('--crab-extra-files', nargs='+', default=self.crab_files,
                            help='Extra files that should be shipped to crab')
         group.add_argument('--pre-cmd', default=self.pre_cmd,
                            help='Prefix the call to combine with this string')
