@@ -29,8 +29,10 @@ class CPMixture(PhysicsModel):
                 self.modelBuilder.doSet('POI', ','.join(poiNames))
 
                 params = {
-                           'a_tilde' : 1.0, # Values of a_tilde and b_tilde specific to settings used to produce maximum-mixing MC
-                           'b_tilde' : 1.0,
+                           'a_tilde' : 1.0, # Values of a_tilde and b_tilde specific to settings used to produce maximum-mixing MC for ggH
+                           'b_tilde' : 1.0, 
+                           'vbf_a_tilde' : 1.0, # Values of a_tilde and b_tilde specific to settings used to produce maximum-mixing MC for VBF
+                           'vbf_b_tilde' : 0.297979018705,   
                            'ps_sm_xs_ratio': 2.25
                          }
 
@@ -55,14 +57,16 @@ class CPMixture(PhysicsModel):
                 
                 # Add parameter f to float VBF shape for different CP mixtures
                 # Scanning f between -1 and 1. Sign of f only determins whether the interference is positive or negative
-                # Samples scaled like: (1 - f -/+ sqrt(f*(1-f)))*SM + (f -/+ sqrt(f*(1-f)))*PS  +/- 2*sqrt(f*(1-f))*MM - f is absolute value of f, sign of f determins whether to take +/-
                 self.modelBuilder.doVar('f[0,-1,1]')
                 poiNames.append('f')
                 self.modelBuilder.factory_('expr::sign("f/abs(f)", f)'.format(**params))
                 self.modelBuilder.factory_('expr::absf("abs(f)", f)'.format(**params))  
-                self.modelBuilder.factory_('expr::vbf_sm_scaling("1-@0-@1*sqrt(@0*(1-@0))", absf, sign)'.format(**params))
-                self.modelBuilder.factory_('expr::vbf_ps_scaling("@0-@1*sqrt(@0*(1-@0))", absf, sign)'.format(**params)) 
-                self.modelBuilder.factory_('expr::vbf_mm_scaling("@1*sqrt(@0*(1-@0))", absf, sign)'.format(**params))
+
+                self.modelBuilder.factory_('expr::vbf_sm_scaling("1-@0-@1*sqrt(@0*(1-@0))*{vbf_a_tilde}/{vbf_b_tilde}", absf, sign)'.format(**params))
+                self.modelBuilder.factory_('expr::vbf_ps_scaling("@0-@1*sqrt(@0*(1-@0))*{vbf_b_tilde}/{vbf_a_tilde}", absf, sign)'.format(**params))
+                self.modelBuilder.factory_('expr::vbf_mm_scaling("@1*sqrt(@0*(1-@0))/({vbf_a_tilde}*{vbf_b_tilde})", absf, sign)'.format(**params))
+
+               
                 vbf_cps = ['vbf_sm_scaling', 'vbf_ps_scaling', 'vbf_mm_scaling']
                 for cp in vbf_cps: 
                   self.modelBuilder.factory_('expr::muV_{cp}("@0*@1", muV, {cp})'.format(cp=cp))
