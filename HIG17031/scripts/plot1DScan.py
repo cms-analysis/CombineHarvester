@@ -290,6 +290,7 @@ parser.add_argument('--box-frac', default=0.625, type=float, help='fraction of t
 parser.add_argument('--x-title', default=None)
 parser.add_argument('--x-range', default=None)
 parser.add_argument('--premade', action='store_true')
+parser.add_argument('--outdir', default='')
 parser.add_argument('--no-sort', action='store_true')
 parser.add_argument('--vertical-line', type=float, default=None)
 parser.add_argument('--legend-off', default=0.0, type=float, help='legend x-offset')
@@ -444,7 +445,7 @@ axishist = plot.GetAxisHist(pads[0])
 # pads[0].SetLogy(True)
 axishist.SetMaximum(args.y_max)
 # axishist.GetYaxis().SetTitle("- 2 #Delta ln #Lambda(%s)" % fixed_name)
-axishist.GetYaxis().SetTitle("#minus2 ln #Lambda")
+axishist.GetYaxis().SetTitle("q")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
 if args.x_title is not None:
     axishist.GetXaxis().SetTitle(args.x_title)
@@ -488,9 +489,9 @@ for other in other_scans:
 
 line = ROOT.TLine()
 for i, yval in enumerate(yvals):
-    line.SetLineColor(ROOT.kRed)
-    if args.pub and i > 0:
-        line.SetLineColor(ROOT.kGreen+2)
+    line.SetLineColor(14)
+    # if args.pub and i > 0:
+    #     line.SetLineColor(ROOT.kGreen+2)
     plot.DrawHorizontalLine(pads[0], line, yval)
     if (len(other_scans) == 0 or args.upper_cl is not None) and args.pub is False:
         for cr in main_scan['crossings'][yval]:
@@ -714,6 +715,21 @@ if args.json is not None:
             js_extra['2sig_OtherLimitHi'] = other['hi']
             js_extra['2sig_ValidOtherLimitLo'] = other['valid_lo']
             js_extra['2sig_ValidOtherLimitHi'] = other['valid_hi']
+
+        if args.breakdown is not None:
+            for oi, other in enumerate(other_scans):
+                if len(other['other_1sig']) >= 1:
+                    interval = other['other_1sig'][0]
+                    js_extra['OtherLimit%sLo' % breakdown[oi+1]] = interval['lo']
+                    js_extra['OtherLimit%sHi' % breakdown[oi+1]] = interval['hi']
+                    js_extra['ValidOtherLimit%sLo' % breakdown[oi+1]] = interval['valid_lo']
+                    js_extra['ValidOtherLimit%sHi' % breakdown[oi+1]] = interval['valid_hi']
+                if len(main_scan['other_2sig']) >= 1:
+                    interval = other['other_2sig'][0]
+                    js_extra['2sig_OtherLimit%sLo' % breakdown[oi+1]] = interval['lo']
+                    js_extra['2sig_OtherLimit%sHi' % breakdown[oi+1]] = interval['hi']
+                    js_extra['2sig_ValidOtherLimit%sLo' % breakdown[oi+1]] = interval['valid_lo']
+                    js_extra['2sig_ValidOtherLimit%sHi' % breakdown[oi+1]] = interval['valid_hi']
         js[args.model][args.POI].update(js_extra)
 
     with open(args.json, 'w') as outfile:
@@ -728,7 +744,7 @@ if 'atlas_' in args.output:
 subtext = '{#bf{Run 1 Internal}}'
     # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
 plot.DrawCMSLogo(pads[0], 'CMS',
-                 'Internal', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
+                 'Preliminary', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS',
 #                  '#it{LHC Run 1 Internal}', 11, 0.045, 0.035, 1.2)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1
@@ -755,6 +771,8 @@ if not args.no_input_label:
     plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
 # legend_l = 0.70 if len(args) >= 4 else 0.73
 
+plot.DrawTitle(pads[0], '35.9 fb^{-1} (13 TeV)', 3)
+# plot.DrawTitle(pads[0], 'm_{H} = 125.09 GeV', 1)
 
 latex = ROOT.TLatex()
 latex.SetNDC()
@@ -768,6 +786,9 @@ if len(other_scans) > 0:
         legend_l = legend_l - len(other_scans) * 0.015
 if args.legend_pos in [1,6]:
     legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
+    if args.POI_line is not None:
+        latex.DrawLatex(0.35, 0.875, POI_line)
+
 elif args.legend_pos == 2:
     legend = ROOT.TLegend(0.56+args.legend_off, legend_l+0.075, 0.9+args.legend_off, 0.78+0.075, '', 'NBNDC')
     if args.POI_line is not None:
@@ -821,7 +842,11 @@ legend.Draw()
 save_graph = main_scan['graph'].Clone()
 save_graph.GetXaxis().SetTitle('%s = %.3f %+.3f/%+.3f' %
                                (fixed_name, val_nom[0], val_nom[2], val_nom[1]))
-outfile = ROOT.TFile(args.output + '.root', 'RECREATE')
+
+outdir = args.outdir
+if args.outdir is not '':
+    outdir = outdir + '/'
+outfile = ROOT.TFile(outdir + args.output + '.root', 'RECREATE')
 outfile.WriteTObject(save_graph, 'main')
 for i, other in enumerate(other_scans):
     save_graph = other['graph'].Clone()
@@ -834,8 +859,8 @@ for i, other in enumerate(other_scans):
     outfile.WriteTObject(save_graph, other_scans_opts[i][0].replace('.root','').split('/')[-1])
 
 outfile.Close()
-canv.Print('.pdf')
-canv.Print('.png')
+canv.Print(outdir + canv.GetName() + '.pdf')
+canv.Print(outdir + canv.GetName() + '.png')
 
 meta = {}
 
@@ -844,7 +869,7 @@ if args.meta != '':
     for m in meta_list:
         meta_pair = m.split(':')
         meta[meta_pair[0]] = meta_pair[1]
-    with open(args.output + '.json', 'w') as outmeta:
+    with open(outdir + args.output + '.json', 'w') as outmeta:
         json.dump(
             meta, outmeta, sort_keys=True, indent=4, separators=(',', ': '))
 
