@@ -237,6 +237,7 @@ class CollectGoodnessOfFit(CombineToolBase):
         for filename in self.args.input:
             if not plot.TFileIsGood(filename):
                 print '>> File %s is corrupt or incomplete, skipping' % filename
+                continue
             if not self.args.use_dirs:
                 if 'default' not in limit_sets:
                     limit_sets['default'] = ([],[])
