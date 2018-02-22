@@ -67,7 +67,15 @@ class PrintFit(CombineToolBase):
             for p in POIs:
                 val = res[p][p]
                 print '%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1])
+        elif self.args.algo == 'fixed':
+            res = utils.get_fixed_results(self.args.input, POIs)
+            print '%-30s   bestfit :   fixed' % ('')
+            for p in POIs:
+                print '%-30s = %+.3f  :   %+.3f' % (p, res['bestfit'][p], res['fixedpoint'][p])
+            print '-' * 60
+            print '2*deltaNLL = %f, nPOIs = %i, p-value = %0.4f' % (2.*res['deltaNLL'], len(POIs), res['pvalue'])
 
+            # pprint.pprint(res)
 
 class CollectLimits(CombineToolBase):
     description = 'Aggregate limit output from combine'
@@ -102,6 +110,7 @@ class CollectLimits(CombineToolBase):
         for filename in self.args.input:
             if not plot.TFileIsGood(filename):
                 print '>> File %s is corrupt or incomplete, skipping' % filename
+                continue
             if self.args.use_dirs is False:
                 limit_sets['default'].append(filename)
             else:
