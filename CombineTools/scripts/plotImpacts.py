@@ -29,6 +29,10 @@ def Translate(name, ndict):
 
 
 def GetRounded(nom, e_hi, e_lo):
+    if e_hi < 0.0:
+        e_hi = 0.0
+    if e_lo < 0.0:
+        e_lo = 0.0
     rounded = rounding.PDGRoundAsym(nom, e_hi if e_hi != 0.0 else 1.0, e_lo if e_lo != 0.0 else 1.0)
     s_nom = rounding.downgradePrec(rounded[0],rounded[2])
     s_hi = rounding.downgradePrec(rounded[1][0][0],rounded[2]) if e_hi != 0.0 else '0'
