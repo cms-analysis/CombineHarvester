@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
     string input_folder_mm="USCMS/";
     string input_folder_ttbar="USCMS/";
     string only_init="";
+    string scale_sig_procs="";
     string postfix="";
     int control_region = 0;
     bool mm_fit = false;
@@ -83,6 +84,7 @@ int main(int argc, char** argv) {
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
+    ("scale_sig_procs", po::value<string>(&scale_sig_procs)->default_value(""))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
     ("control_region", po::value<int>(&control_region)->default_value(0))
@@ -268,6 +270,23 @@ int main(int argc, char** argv) {
     sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     vector<string> masses = {"125"};    
 
+    map<const std::string, float> sig_xsec_aachen;
+    map<const std::string, float> sig_xsec_IC;
+	
+    sig_xsec_aachen["ggHsm_htt"] = 0.921684152;      
+    sig_xsec_aachen["ggHmm_htt"] = 1.84349344;    
+    sig_xsec_aachen["ggHps_htt"] = 0.909898616;    
+    sig_xsec_aachen["qqHsm_htt"] = 0.689482928;    
+    sig_xsec_aachen["qqHmm_htt"] = 0.12242788;    
+    sig_xsec_aachen["qqHps_htt"] = 0.0612201968;
+
+    sig_xsec_IC["ggHsm_htt"] = 0.3987;    
+    sig_xsec_IC["ggHmm_htt"] = 0.7893;    
+    sig_xsec_IC["ggHps_htt"] = 0.3858;    
+    sig_xsec_IC["qqHsm_htt"] = 2.6707;    
+    sig_xsec_IC["qqHmm_htt"] = 0.47421;    
+    sig_xsec_IC["qqHps_htt"] = 0.2371314;    
+    
     using ch::syst::bin_id;
     
     //! [part2]
@@ -501,6 +520,14 @@ int main(int argc, char** argv) {
          s->shape_d()->Print("range");
       }
   });
+  
+    ////! Option to scale ratei
+    std::vector< std::string > sig_processes = {"ggHsm_htt125","ggHmm_htt125","ggHps_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125"};
+
+    if (!scale_sig_procs.empty()) {	
+	   cb.cp().PrintAll();		
+           cb.ForEachProc([sig_xsec_IC, sig_xsec_aachen](ch::Process *p) { if (sig_xsec_IC.count(p->process()) ){std::cout << "Scaling " << p->process() << std::endl;  p->set_rate(p->rate() * sig_xsec_IC.at(p->process())/sig_xsec_aachen.at(p->process()) ); };});                 	
+ };
     
     
     ////! [part8]
