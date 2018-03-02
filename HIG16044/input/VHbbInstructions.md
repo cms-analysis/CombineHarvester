@@ -61,17 +61,18 @@ Post-fit:
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
 
 ### Signal strength (with reasonably accurate uncertainty)
-Pre-fit:
+Pre-fit:\
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --minDefaultMinimizerStrategy 0 --algo singles`
-Post-fit:
+
+Post-fit:\
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles`
 
 ### Significance:
-Pre-fit expected*: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`
-Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist`
-Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there`
+Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`\
+Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist`\
+Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there`\
 
-* To calculate the pre-fit expected significance with the control regions unblind we have to do slightly more work.
+[*] To calculate the pre-fit expected significance with the control regions unblind we have to do slightly more work.
 However, this is the fairer thing to do as the CR fit can have quite a large effect on the background predictions in the SR:
 
 First we need to create a new workspace, set up for channel masking:
@@ -81,7 +82,7 @@ First we need to create a new workspace, set up for channel masking:
 This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
 We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
 
-`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Znn_1_13TeV=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/tutorial_1302/cmb/ws_masked.root`
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Znn_1_13TeV=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
 
 Now continue as with post-fit expected significance:
 `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
@@ -93,7 +94,7 @@ First run the maximum likelihood fit:
 
 `combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
 
-create the post-fit shapes with uncertainties from the datacard and the MLFit:
+create the post-fit shapes with uncertainties from the datacard and the MLFit:  
 *Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense.
 
 `PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s`
@@ -156,25 +157,25 @@ Make workspace with separate r for 0,1 and 2 lepton channels:
 
 Now we need to run MultiDimFit to get the best-fit value and uncertainty for each separate signal strength, as well as the combined signal strength:
 
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --cminDefaultMinimizerStrategy 0 --algo singles -n .cmb`
+```combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --cminDefaultMinimizerStrategy 0 --algo singles -n .cmb
 
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_ZH -n .ZH --algo singles --cminDefaultMinimizerStrategy 0`
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_WH -n .WH --algo singles --cminDefaultMinimizerStrategy 0`
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_ZH -n .ZH --algo singles --cminDefaultMinimizerStrategy 0
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_WH -n .WH --algo singles --cminDefaultMinimizerStrategy 0
 
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_zerolep -n .zerolep --algo singles --cminDefaultMinimizerStrategy 0`
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_onelep -n .onelep --algo singles --cminDefaultMinimizerStrategy 0`
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_twolep -n .twolep --algo singles --cminDefaultMinimizerStrategy 0`
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_zerolep -n .zerolep --algo singles --cminDefaultMinimizerStrategy 0
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_onelep -n .onelep --algo singles --cminDefaultMinimizerStrategy 0
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_twolep -n .twolep --algo singles --cminDefaultMinimizerStrategy 0```
 
 Next we want to collect all of the fit results in a single json file:
 
-`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r -i higgsCombine.cmb.MultiDimFit.mH120.root --algo singles`
+```combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r -i higgsCombine.cmb.MultiDimFit.mH120.root --algo singles
 
-`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_ZH -i higgsCombine.ZH.MultiDimFit.mH120.root --algo singles`
-`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_WH -i higgsCombine.WH.MultiDimFit.mH120.root --algo singles`
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_ZH -i higgsCombine.ZH.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_WH -i higgsCombine.WH.MultiDimFit.mH120.root --algo singles
 
-`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_zerolep -i higgsCombine.zerolep.MultiDimFit.mH120.root --algo singles`
-`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_onelep -i higgsCombine.onelep.MultiDimFit.mH120.root --algo singles`
-`combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_twolep -i higgsCombine.twolep.MultiDimFit.mH120.root --algo singles`
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_zerolep -i higgsCombine.zerolep.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_onelep -i higgsCombine.onelep.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_twolep -i higgsCombine.twolep.MultiDimFit.mH120.root --algo singles```
 
 Now make the plot:
 
@@ -190,14 +191,13 @@ Make workspace with separate r for 0,1 and 2 lepton channels:
 
 Now we need to run MultiDimFit to get the best-fit value and uncertainty for each separate signal strength, as well as the combined signal strength:
 
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --cminDefaultMinimizerStrategy 0 --algo singles -n .cmb --expectSignal 1 -t -1`
+```combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --cminDefaultMinimizerStrategy 0 --algo singles -n .cmb --expectSignal 1 -t -1
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_ZH -n .ZH --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal 1 -t -1
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_WH -n .WH --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1
 
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_ZH -n .ZH --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal 1 -t -1`
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_WH -n .WH --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1`
-
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_zerolep -n .zerolep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1`
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_onelep -n .onelep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1`
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_twolep -n .twolep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1`
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_zerolep -n .zerolep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_onelep -n .onelep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_twolep -n .twolep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1```
 
 Next we want to collect all of the fit results in a single json file:
 
@@ -227,14 +227,15 @@ Make the workspace for these cards:
 `combineTool.py -M T2W -o "ws.root" -i output/vhbb_sbordered/ `
 
 Now we need to run PostFitShapesFromWorkspace on the new S/B ordered workspace we have just made, using the RooFit result we have been using all along:
-`PostFitShapesFromWorkspace -d output/vhbb_sbordered/vhbb_2016.txt -w output/vhbb_sbordered/ws.root -o shapes.root --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s`
+
+`PostFitShapesFromWorkspace -d output/vhbb_sbordered/vhbb_2016.txt -w output/vhbb_sbordered/ws.root -o shapes.root --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
 
 To make the plot:
 `./scripts/plotSoverBordered.py -f shapes.root --log_y --custom_y_range --ratio`
 
 *Some code cleanup and cosmetic changes still required*
 
-##Impacts (post-fit)
+## Impacts (post-fit)
 First set up the datacards as above and create the workspace.
 
 Run the initial fit:
@@ -258,7 +259,7 @@ Collecting the results in a json file:
 Plotting:
 `plotImpacts.py -i impacts.json -o impacts_out --transparent`
 
-##Impacts (pre-fit)
+## Impacts (pre-fit)
 First set up the datacards as above and create the workspace.
 
 Run the initial fit:
