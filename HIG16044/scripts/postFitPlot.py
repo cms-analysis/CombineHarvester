@@ -71,9 +71,9 @@ parser.add_argument('--channel',default='',help='Option to specify channel in ca
 parser.add_argument('--file_dir',default='',help='Name of TDirectory inside shape file')
 parser.add_argument('--mode',default='prefit',help='Prefit or postfit')
 #Blinding options
-parser.add_argument('--manual_blind', action='store_true',default=False,help='Blind data with hand chosen range')
-parser.add_argument('--x_blind_min',default=10000,help='Minimum x for manual blinding')
-parser.add_argument('--x_blind_max',default=4000,help='Maximum x for manual blinding')
+parser.add_argument('--blind', action='store_true',default=False,help='Blind data in x_blind_min,x_blind_max range')
+parser.add_argument('--x_blind_min',default=0,help='Minimum x for manual blinding')
+parser.add_argument('--x_blind_max',default=1,help='Maximum x for manual blinding')
 parser.add_argument('--empty_bin_error',action='store_true',default=False, help='Draw error bars for empty bins')
 #General plotting options
 parser.add_argument('--channel_label',default='0-lepton',help='Channel label')
@@ -100,7 +100,7 @@ args = parser.parse_args()
 
 channel_label = args.channel_label
 file_dir = args.file_dir
-manual_blind = args.manual_blind
+blind = args.blind
 x_blind_min = args.x_blind_min
 x_blind_max = args.x_blind_max
 empty_bin_error = args.empty_bin_error
@@ -155,7 +155,7 @@ sighist_forratio = sighist.Clone()
 sighist_forratio.SetName("sighist_forratio")
 
 #Blinding by hand using requested range, set to 200-4000 by default
-if manual_blind:
+if blind:
   for i in range(0,total_datahist.GetNbinsX()):
     low_edge = total_datahist.GetBinLowEdge(i+1)
     high_edge = low_edge+total_datahist.GetBinWidth(i+1)
