@@ -287,13 +287,13 @@ combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits 
 
 ## Diagnostic tools
 ### Printing/visualising correlations:
-We can use the FitDiagnostics output to print/plot the correlations (from the fit covariance matrix).
-To print the top N correlations:
-`./scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -m N`
-To print the N largest correlations of other parameters with a given parameter:
-`./scripts/printCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAMETER_NAME -m N`
-To save and draw the correlation matrix for a given set of parameters:
-`./scripts/plotCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAM_NAME_1,PARAM_NAME_2,...,PARAM_NAME_3 -o <output_name_string>`
+We can use the FitDiagnostics output to print/plot the correlations (from the fit covariance matrix).\
+To print the top N correlations:\
+`./scripts/printAllCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -m N`\
+To print the N largest correlations of other parameters with a given parameter:\
+`./scripts/printCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAMETER_NAME -m N`\
+To save and draw the correlation matrix for a given set of parameters:\
+`./scripts/plotCorrelations -i output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s -p PARAM_NAME_1,PARAM_NAME_2,...,PARAM_NAME_3 -o <output_name_string>`\
 This plots the correlation matrix as <output_name_string>.pdf/png and saves the TH2 in <output_name_string>.root 
 
 ### FastScan 
