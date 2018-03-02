@@ -133,11 +133,11 @@ $(document).ready(function(){initNavTree('_main_8md.html','');});
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  * **CombineHarvester/CombineTools**, which contains the CombineHarvester class and other parts of the core framework</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  * **CombineHarvester/CombinePdfs**, which provides tools for building custom RooFit pdfs</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;The CMSSW version that should be used with CombineHarvester is driven by the recommendation for the HiggsAnalysis/CombinedLimit package, which is also required. The latest instructions can be found [here](https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#ROOT6_SLC6_release_CMSSW_7_4_X). Note that the CombineHarvester framework is only compatible with the CMSSW 7_X_Y series releases.  A new release area can be set up and compiled in the following steps:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;The CMSSW version that should be used with CombineHarvester is driven by the recommendation for the HiggsAnalysis/CombinedLimit package, which is also required. The latest instructions can be found [here](https://cms-hcomb.gitbooks.io/combine/content/part1/#for-end-users-that-dont-need-to-commit-or-do-any-development). The CombineHarvester framework is  compatible with the CMSSW 7_4_X and 8_1_X series releases. A new release area can be set up and compiled in the following steps:</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    export SCRAM_ARCH=slc6_amd64_gcc491</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    scram project CMSSW CMSSW_7_4_7</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    cd CMSSW_7_4_7/src</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    export SCRAM_ARCH=slc6_amd64_gcc530</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    scram project CMSSW CMSSW_8_1_0</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    cd CMSSW_8_1_0/src</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    cmsenv</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    # IMPORTANT: Checkout the recommended tag on the link above</div>
