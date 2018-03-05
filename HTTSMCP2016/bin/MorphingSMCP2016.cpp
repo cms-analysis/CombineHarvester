@@ -73,6 +73,7 @@ int main(int argc, char** argv) {
     bool ttbar_fit = false;
     bool do_jetfakes = false;
     bool dijet_2d = false;
+    bool real_data = false;
     bool no_shape_systs = false;
     po::variables_map vm;
     po::options_description config("configuration");
@@ -84,6 +85,7 @@ int main(int argc, char** argv) {
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
+    ("real_data", po::value<bool>(&real_data)->default_value(real_data))
     ("scale_sig_procs", po::value<string>(&scale_sig_procs)->default_value(""))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
@@ -474,8 +476,23 @@ int main(int argc, char** argv) {
     // Convert all shapes to lnN at this stage
     cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
         sys->set_type("lnN");
+        if(sys->value_d() <0.001) {sys->set_value_d(0.001);};
     });
     
+    std::vector<std::string> all_prefit_bkgs = {
+        "QCD","ZL","ZJ","ZTT","TTJ","TTT","TT",
+        "W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
+        "ggH_hww125","qqH_hww125","EWKZ", "qqHsm_htt125", "qqH_htt125", "WH_htt125", "ZH_htt125"};
+    
+    if(!real_data){
+         for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+             std::cout << " - Replacing data with asimov in bin " << b << "\n";
+             cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
+               obs->set_shape(cb.cp().bin({b}).backgrounds().process(all_prefit_bkgs).GetShape()+cb.cp().bin({b}).signals().process({"ggHsm_htt", "ggH_htt"}).mass({"125"}).GetShape(), true);
+               obs->set_rate(cb.cp().bin({b}).backgrounds().process(all_prefit_bkgs).GetRate()+cb.cp().bin({b}).signals().process({"ggHsm_htt", "ggH_htt"}).mass({"125"}).GetRate());
+             });
+           }
+   }    
     
     //     //Merge to one bin for control region bins
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
@@ -521,7 +538,7 @@ int main(int argc, char** argv) {
       }
   });
   
-    ////! Option to scale ratei
+    ////! Option to scale rate
     std::vector< std::string > sig_processes = {"ggHsm_htt125","ggHmm_htt125","ggHps_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125"};
 
     if (!scale_sig_procs.empty()) {	
