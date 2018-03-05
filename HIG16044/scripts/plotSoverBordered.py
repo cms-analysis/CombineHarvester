@@ -84,10 +84,6 @@ parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
-manual_blind = args.manual_blind
-x_blind_min = args.x_blind_min
-x_blind_max = args.x_blind_max
-empty_bin_error = args.empty_bin_error
 extra_pad = float(args.extra_pad)
 custom_x_range = args.custom_x_range
 custom_y_range = args.custom_y_range
@@ -104,7 +100,7 @@ histo_file = ROOT.TFile(args.file)
 bkghist = getHistogram(histo_file,'TotalBkg','', 'postfit', logx=log_x)[0]
 splusbhist = getHistogram(histo_file,'TotalProcs','','postfit',logx=log_x)[0]
 total_datahist = getHistogram(histo_file,"data_obs",'','postfit', logx=log_x)[0]
-sighist = getHistogram(histo_file,'TotalSig', '', 'postfit',logx=log_x)[0]
+sighist = getHistogram(histo_file,'TotalSig', '', 'prefit',logx=log_x)[0]
 sighist_forratio = sighist.Clone()
 sighist_forratio.SetName("sighist_forratio")
 

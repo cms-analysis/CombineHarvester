@@ -49,17 +49,22 @@ cb = ch.CombineHarvester()
 cb_man = ch.CombineHarvester()
 cb_man.SetFlag('workspaces-use-clone', True)
 
+cb_prefit = ch.CombineHarvester()
+cb_prefit.SetFlag('workspaces-use-clone', True)
+
+
 f_wsp = ROOT.TFile(args.workspace)
 ws = f_wsp.Get('w')
 ch.ParseCombineWorkspace(cb_man, ws, "ModelConfig", "data_obs", True)
+ch.ParseCombineWorkspace(cb_prefit, ws, "ModelConfig", "data_obs", True)
 #We are going to update the contents of this workspace and use these updated inputs to do the S/B ordering
 
 f_fit = ROOT.TFile(args.fitresult)
 fitresult = f_fit.Get('fit_s')
 
 cb_man.UpdateParameters(fitresult)
-cb_man.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV'])
-
+cb_man.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV']) #Only keep the SR bins
+ 
 #Now let's parse the original full combined datacard that we want to manipulate
 cb.ParseDatacard(args.datacard,"vhbb","13TeV","")
 cb.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV']) #Only keep the SR bins
@@ -73,7 +78,7 @@ sig_hist = ROOT.TH1F()
 for b in cb_man.bin_set():
   cb_man_bin = cb_man.cp().bin([b])
   bkg_hist = cb_man.cp().bin([b]).backgrounds().GetShape()
-  sig_hist = cb_man.cp().bin([b]).signals().GetShape()
+  sig_hist = cb_prefit.cp().bin([b]).signals().GetShape()
   bin_dict[b] = {}
   for i in range(1,bkg_hist.GetNbinsX()+1):
     c_sig = sig_hist.GetBinContent(i)
