@@ -226,8 +226,10 @@ Now make the plot:
 
 
 ### S-over-B ordered plot
-As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.
-First we need to set up some datacards with the bins re-ordered according to post-fit S/B
+** Note: this is currently set up to replicate the HIG-16-044 plot. These instructions may be subject to change. **
+
+As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.  
+First we need to set up some datacards with the bins re-ordered according to (pre-fit S)/(post-fit B) 
 
 `./scripts/prepareSoverBordered.py -w output/<original_output_folder>/cmb/ws.root -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root -d output/<original_output_folder>/cmb/combined.txt.cmb`
 
@@ -238,12 +240,26 @@ Make the workspace for these cards:
 
 Now we need to run PostFitShapesFromWorkspace on the new S/B ordered workspace we have just made, using the RooFit result we have been using all along:
 
-`PostFitShapesFromWorkspace -d output/vhbb_sbordered/vhbb_2016.txt -w output/vhbb_sbordered/ws.root -o shapes.root --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
+`PostFitShapesFromWorkspace -d output/vhbb_sbordered/vhbb_2016.txt -w output/vhbb_sbordered/ws.root -o shapes.root --postfit --sampling -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
 
 To make the plot:
 `./scripts/plotSoverBordered.py -f shapes.root --log_y --custom_y_range --ratio`
 
-*Some code cleanup and cosmetic changes still required*
+### S/(S+B) weighted plot
+a-la-HIG-16-044 we would need multiple steps. First we have to extract S/(S+B) weights from the existing model:
+
+`./scripts/extractSoverSplusBweights.py -w output/<original_output_folder>/cmb/ws.root -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root -d output/<original_output_folder>/cmb/combined.txt.cmb`
+
+This writes a file store_ssplusbweights.root which contains histograms with the same BDT binning as used in the analysis, containing the relevant weight for each BDT bin that can then be applied by the analysts. In HIG-16-044 style the analysts then provide m_jj shape inputs with the weights applied, which we will use to make the plot. First set up the datacards for the mjj shapes up as before (currently would need to hack the input root file names into VHbb2016.py but we should add an option to do this instead).
+
+Then make the workspace for these cards:  
+`combineTool.py -M T2W -o "ws.root" -i output/mjj_cards/cmb/`  
+
+And as before run PostFitShapesFromWorkspace on this new workspace with the fit result we have been using all along as input:
+
+`PostFitShapesFromWorkspace -d output/mjj_cards/cmb/combined.txt.cmb -w output/mjj_cards/cmb/ws.root -o shapes_mjj.root --postfit --sampling -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`  
+
+Plotting script very similar to ./scripts/plotSoverBordered.py still needed.
 
 ## Impacts (post-fit)
 First set up the datacards as above and create the workspace.
@@ -258,12 +274,12 @@ Then run fits for all nuisance parameters:
 combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars
 ```
 
-We can submit these fits to a batch system too, by adding:
-(lxbatch): `--job-mode lxbatch --sub-opts '-q <queuename>' --merge 10`
-Condor: to be merged onto this branch
+We can submit these fits to a batch system too, by adding:\n
+(lxbatch): `--job-mode lxbatch --sub-opts '-q <queuename>' --merge 10`\n
+(condor):  `--job-mode condor --sub-opts --sub-opts='+JobFlavour = "workday"'\n
 `--merge N` runs N of the fits in the same job, these fits can take a long time so --merge 5 is probably reasonable. 
 
-Collecting the results in a json file:
+Collecting the results in a json file:\n
 `combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --allPars -o impacts.json`
 
 Plotting:
@@ -282,7 +298,42 @@ Then run fits for all nuisance parameters:
 combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars -t -1 --expectSignal 1
 ```
 
+## Goodness-of-Fit
+**NOTE: There is no such thing as a blind goodness-of-fit test, so only run once it is ok to unblind**
+Several GoF tests  are implemented in combine: the saturated model, Kolmogorov-Smirnov and Anderson-Darling tests. More info [here](https://cms-hcomb.gitbooks.io/combine/content/part3/commonstatsmethods.html#goodness-of-fit-tests).\n
+Both KS and AD rely on the full model, but compute a GoF measure in each category/region. The saturated model test is defined for individiual categories/regions as well as combinations thereof.\n
+Because our background predictions rely heavily on the fitted control regions we need to use post-fit toys to build our test-statistic distribution. The KS and AD tests are then slightly fairer since at least the post-fit toys will be fully post-fit, not just in the category/region we are testing. However, there is nothing technically to stop us from running the saturated model.
 
+### AD/KS
+$ALGO = AD,KS:  
+```
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 125 --there -d output/<output_folder>/cmb/ws.root -n ".$ALGO.toys" --fixedSignalStrength=1 -t 500 --toysFrequentist  
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 125 --there -d output/<output_folder>/cmb/ws.root -n ".$ALGO" --fixedSignalStrength=1
+```
+
+these jobs can be submitted to a batch system/condor as specified above. In that case we probably want to split the N toys into fewer toys per job, for example for 5 toys/job we could replace `-t 500` by `-t 5 -s 0:99:1` (which sets the seed of each job to 0,1...99).
+When the jobs finish we collect the output:
+
+`combineTool.py -M CollectGoodnessOfFit --input output/<output_folder>/cmb/higgsCombine.$ALGO.GoodnessOfFit.mH125.root output/<output_folder>/cmb/higgsCombine.$ALGO.toys.GoodnessOfFit.mH125.*.root -o cmb_$ALGO.json`
+
+And to make plots for all regions:
+
+`python ../CombineTools/scripts/plotGof.py --statistic $ALGO --mass 125.0 cmb_$ALGO.json --title-right="35.9 fb^{-1} (13 TeV)" --output='-$ALGO'`
+
+### Saturated model
+**Note: we do not currently write datacards for individual regions into separate folders. Workspaces for individual regions can be created like as, e.g. for 1-electron channel SR:  
+`text2workspace.py -o output/<output_folder>/Wen/ws_wen1.root output/<output_folder>/Wen/vhbb_Wen_1_13TeV.txt`
+
+Now run everything separately for each region/combination of regions you want to look at:
+```
+combineTool.py -M GoodnessOfFit --algorithm saturated -m 125 --there -d output/<output_folder>/Zee/ws.root -n ".saturated.toys" --fixedSignalStrength=1 -t 500 --toysFrequentist  
+combineTool.py -M GoodnessOfFit --algorithm saturated -m 125 --there -d output/<output_folder>/Zee/ws.root -n ".saturated" --fixedSignalStrength=1
+
+combineTool.py -M CollectGoodnessOfFit --input output/<output_folder>/Zee/higgsCombine.saturated.GoodnessOfFit.mH125.root output/<output_folder>/Zee/higgsCombine.saturated.toys.GoodnessOfFit.mH125.*.root -o Zee_saturated.json
+
+python ../CombineTools/scripts/plotGof.py --statistic saturated --mass 125.0 -o Zee_saturated Zee_saturated.json  --title-right="35.9 fb^{-1} (13 TeV)" --title-left="2-electron (SRs+CRs)"
+
+```
 
 
 ## Diagnostic tools
