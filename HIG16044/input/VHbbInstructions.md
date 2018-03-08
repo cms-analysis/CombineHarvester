@@ -53,18 +53,18 @@ Or, for example, to just create a workspace for the Zee channel:
 
 ## Fits
 ### Signal strength (without uncertainty):
-Pre-fit:
-`combineTool.py -M MultiDimFit -t -1 -d output/<output_folder>/cmb/ws.root --there -cminDefaultMinimizerStrategy 0 --expectSignal X`
+Pre-fit:  
+`combineTool.py -M MultiDimFit -t -1 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --expectSignal X`
 Here X can be 0 or 1 -> result of the fit will be 0 or 1 too.
 
-Post-fit:
+Post-fit:  
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
 
 ### Signal strength (with reasonably accurate uncertainty)
-Pre-fit:\
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --minDefaultMinimizerStrategy 0 --algo singles`
+Pre-fit:  
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles`
 
-Post-fit:\
+Post-fit:  
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles`
 
 ### Significance:
@@ -226,7 +226,7 @@ Now make the plot:
 
 
 ### S-over-B ordered plot
-** Note: this is currently set up to replicate the HIG-16-044 plot. These instructions may be subject to change. **
+**Note: this is currently set up to replicate the HIG-16-044 plot. These instructions may be subject to change.**
 
 As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.  
 First we need to set up some datacards with the bins re-ordered according to (pre-fit S)/(post-fit B) 
@@ -274,15 +274,15 @@ Then run fits for all nuisance parameters:
 combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars
 ```
 
-We can submit these fits to a batch system too, by adding:\n
-(lxbatch): `--job-mode lxbatch --sub-opts '-q <queuename>' --merge 10`\n
-(condor):  `--job-mode condor --sub-opts --sub-opts='+JobFlavour = "workday"'\n
+We can submit these fits to a batch system too, by adding:  
+(lxbatch): `--job-mode lxbatch --sub-opts '-q <queuename>' --merge 10`  
+(condor):  `--job-mode condor --sub-opts --sub-opts='+JobFlavour = "workday"'  
 `--merge N` runs N of the fits in the same job, these fits can take a long time so --merge 5 is probably reasonable. 
 
-Collecting the results in a json file:\n
+Collecting the results in a json file: 
 `combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --allPars -o impacts.json`
 
-Plotting:
+Plotting:  
 `plotImpacts.py -i impacts.json -o impacts_out --transparent`
 
 ## Impacts (pre-fit)
@@ -299,7 +299,7 @@ combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits 
 ```
 
 ## Goodness-of-Fit
-**NOTE: There is no such thing as a blind goodness-of-fit test, so only run once it is ok to unblind**
+**NOTE: There is no such thing as a blind goodness-of-fit test, so only run once it is ok to unblind**  
 Several GoF tests  are implemented in combine: the saturated model, Kolmogorov-Smirnov and Anderson-Darling tests. More info [here](https://cms-hcomb.gitbooks.io/combine/content/part3/commonstatsmethods.html#goodness-of-fit-tests).\n
 Both KS and AD rely on the full model, but compute a GoF measure in each category/region. The saturated model test is defined for individiual categories/regions as well as combinations thereof.\n
 Because our background predictions rely heavily on the fitted control regions we need to use post-fit toys to build our test-statistic distribution. The KS and AD tests are then slightly fairer since at least the post-fit toys will be fully post-fit, not just in the category/region we are testing. However, there is nothing technically to stop us from running the saturated model.
@@ -322,7 +322,7 @@ And to make plots for all regions:
 
 ### Saturated model
 **Note: we do not currently write datacards for individual regions into separate folders. Workspaces for individual regions can be created like as, e.g. for 1-electron channel SR:  
-`text2workspace.py -o output/<output_folder>/Wen/ws_wen1.root output/<output_folder>/Wen/vhbb_Wen_1_13TeV.txt`
+`text2workspace.py -o output/<output_folder>/Wen/ws_wen1.root output/<output_folder>/Wen/vhbb_Wen_1_13TeV.txt`**
 
 Now run everything separately for each region/combination of regions you want to look at:
 ```
