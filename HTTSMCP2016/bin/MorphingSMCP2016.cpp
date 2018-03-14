@@ -484,6 +484,14 @@ int main(int argc, char** argv) {
         "W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
         "ggH_hww125","qqH_hww125","EWKZ", "qqHsm_htt125", "qqH_htt125", "WH_htt125", "ZH_htt125"};
     
+        ////! Option to scale rate
+    std::vector< std::string > sig_processes = {"ggHsm_htt125","ggHmm_htt125","ggHps_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125"};
+     
+    if (!scale_sig_procs.empty()) {	
+    	cb.cp().PrintAll();		
+        cb.ForEachProc([sig_xsec_IC, sig_xsec_aachen](ch::Process *p) { if (sig_xsec_IC.count(p->process()) ){std::cout << "Scaling " << p->process() << std::endl;  p->set_rate(p->rate() * sig_xsec_IC.at(p->process())/sig_xsec_aachen.at(p->process()) ); };});                 	
+    };
+    
     if(!real_data){
          for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
              std::cout << " - Replacing data with asimov in bin " << b << "\n";
@@ -537,15 +545,7 @@ int main(int argc, char** argv) {
          s->shape_d()->Print("range");
       }
   });
-  
-    ////! Option to scale rate
-    std::vector< std::string > sig_processes = {"ggHsm_htt125","ggHmm_htt125","ggHps_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125"};
-
-    if (!scale_sig_procs.empty()) {	
-	   cb.cp().PrintAll();		
-           cb.ForEachProc([sig_xsec_IC, sig_xsec_aachen](ch::Process *p) { if (sig_xsec_IC.count(p->process()) ){std::cout << "Scaling " << p->process() << std::endl;  p->set_rate(p->rate() * sig_xsec_IC.at(p->process())/sig_xsec_aachen.at(p->process()) ); };});                 	
- };
-    
+      
     
     ////! [part8]
     auto bbb = ch::BinByBinFactory()
