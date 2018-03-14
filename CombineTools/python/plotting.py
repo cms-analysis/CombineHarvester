@@ -1059,6 +1059,19 @@ def ReZeroTGraph(gr, doIt=False):
                 # print 'Point %i, before=%f, after=%f' % (i, before, after)
     return min_y
 
+def FilterGraph(gr, n=3):
+    counter = 0
+    remove_list = []
+    for i in xrange(gr.GetN()):
+        if gr.GetY()[i] == 0.:
+            continue
+        if counter % n < (n - 1):
+            remove_list.append(i)
+        counter += 1
+
+    for i in reversed(remove_list):
+        gr.RemovePoint(i)
+
 
 def RemoveNearMin(graph, val, spacing=None):
     # assume graph is sorted:

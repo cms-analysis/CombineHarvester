@@ -47,6 +47,7 @@ def read(scan, param, files, chop, remove_near_min, rezero,
         NAMECOUNTER += 1
         plot.ImproveMinimum(graph, func, True)
     # graph.Print()
+    # plot.FilterGraph(graph)
     return graph
 
 def Eval(obj, x, params):
@@ -293,8 +294,9 @@ parser.add_argument('--premade', action='store_true')
 parser.add_argument('--outdir', default='')
 parser.add_argument('--no-sort', action='store_true')
 parser.add_argument('--vertical-line', type=float, default=None)
+parser.add_argument('--decorate-signif', default=None)
 parser.add_argument('--legend-off', default=0.0, type=float, help='legend x-offset')
-
+parser.add_argument('--title-right', default='35.9 fb^{-1} (13 TeV)')
 args = parser.parse_args()
 if args.pub:
     args.no_input_label = True
@@ -312,6 +314,10 @@ if args.translate is not None:
         fixed_name = name_translate[args.POI]
 
 yvals = [1., 4.]
+if args.decorate_signif is not None:
+    yvals = [float(i)*float(i) for i in args.decorate_signif.split(',')]
+    NPX = 1000
+    ROOT.gStyle.SetPadRightMargin(0.05)
 if args.upper_cl is not None:
     yvals = [ROOT.Math.chisquared_quantile(args.upper_cl, 1)]
 
@@ -357,7 +363,7 @@ if args.others is not None:
                       args.chop,
                       args.remove_near_min if args.envelope is False else None,
                       args.rezero,
-                      args.envelope and i < n_env,
+                      args.envelope,
                       remove_delta=args.remove_delta,
                       improve=args.improve,
                       pregraph=tmp_gr
@@ -374,8 +380,10 @@ if args.envelope and args.breakdown:
         print'>> Evaluating for offset at best-fit of %f gives %f' % (bf, y_off)
         for j in xrange(1, n_brk):
             oth = other_scans[i+j*n_env]
+            # oth['graph'].Print()
             print '>> Applying shift of %f to graph %s' % (y_off, other_scans_opts[i+j*n_env][0])
             plot.ApplyGraphYOffset(oth['graph'], y_off)
+            # oth['graph'].Print()
             color = oth['func'].GetLineColor()
             oth['spline'] = ROOT.TSpline3("spline3", oth['graph'])
             oth['func'] = ROOT.TF1('splinefn' + str(NAMECOUNTER), partial(Eval, oth['spline']), oth[
@@ -490,6 +498,14 @@ for other in other_scans:
 line = ROOT.TLine()
 for i, yval in enumerate(yvals):
     line.SetLineColor(14)
+    if args.decorate_signif:
+        line.SetLineStyle(7)
+        latex = ROOT.TLatex()
+        latex.SetTextFont(62)
+        latex.SetTextSize(0.04)
+        latex.SetTextAlign(12)
+        latex.SetTextColor(14)
+        latex.DrawLatex(axishist.GetXaxis().GetXmax() * 1.01, yval, '%i#sigma' % (int(math.sqrt(yval)+0.5)))
     # if args.pub and i > 0:
     #     line.SetLineColor(ROOT.kGreen+2)
     plot.DrawHorizontalLine(pads[0], line, yval)
@@ -517,6 +533,9 @@ for other in other_scans:
             # other['func'].SetLineStyle(9)
         other['graph'].Draw('PSAME') # redraw this
         # other['func'].SetLineWidth(3)
+    if args.decorate_signif:
+        other['func'].SetLineStyle(1)
+        other['func'].SetLineWidth(1)
     other['func'].Draw('SAME')
 
 # main_scan['func'].Draw('same')
@@ -630,6 +649,7 @@ if args.breakdown is not None:
 signif = None
 signif_x = None
 signif_y = None
+arrow_list = []
 if args.signif:
     gr = main_scan['graph']
     for i in xrange(gr.GetN()):
@@ -639,6 +659,7 @@ if args.signif:
             pt.SetX1(0.52)
             signif = ROOT.Math.normal_quantile_c(
                 ROOT.Math.chisquared_cdf_c(gr.GetY()[i], 1) / 2., 1)
+            arrow_list.append((main_scan['func'].GetLineColor(), signif))
             signif_x = gr.GetX()[i]
             signif_y = gr.GetY()[i]
             txt_cross = '[-2#DeltalnL @ %s = %.1f is %.3f]' % (
@@ -650,7 +671,29 @@ if args.signif:
                 ROOT.Math.chisquared_cdf_c(main_scan['func'].Eval(1.0), 1) / 2., 1)
     print '-2#DeltalnL @ %s = %.1f is %.3f, signif = %.2fsigma' % (fixed_name, 1., main_scan['func'].Eval(1.0), signif)
 
+    if args.decorate_signif:
+        for i, other in enumerate(other_scans):
+            gr = other['graph']
+            for p in xrange(gr.GetN()):
+                if abs(gr.GetX()[p] - 0.) < 1E-4:
+                    print 'Found scan point at %s = %.6f' % (args.POI, gr.GetX()[p])
+                    arrow_list.append((other['func'].GetLineColor(), ROOT.Math.normal_quantile_c(
+                        ROOT.Math.chisquared_cdf_c(gr.GetY()[p], 1) / 2., 1)))
+                    break
 
+        xmin = axishist.GetXaxis().GetXmin()
+        xmax = axishist.GetXaxis().GetXmax()
+        x_align_label = xmin + (0.07 * (xmax - xmin))
+        latex = ROOT.TLatex()
+        latex.SetTextFont(62)
+        latex.SetTextSize(0.05)
+        latex.SetTextAlign(12)
+        for col, sig in arrow_list:
+            latex.SetTextColor(col)
+            latex.DrawLatex(x_align_label, sig*sig+1.0, '%.1f#sigma' % sig)
+            arrow = ROOT.TArrow()
+            arrow.SetLineColor(col)
+            arrow.DrawArrow(0.005 * (xmax - xmin), sig*sig, xmin + (0.06 * (xmax - xmin)), sig*sig+1.0, 0.02, '-<-')
 # pt.AddText(textfit)
 # if len(args) >= 4:
 #     syst_hi = math.sqrt(val_nom[1]*val_nom[1] - syst_scan['val'][1] * syst_scan['val'][1])
@@ -771,7 +814,7 @@ if not args.no_input_label:
     plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
 # legend_l = 0.70 if len(args) >= 4 else 0.73
 
-plot.DrawTitle(pads[0], '35.9 fb^{-1} (13 TeV)', 3)
+plot.DrawTitle(pads[0], args.title_right, 3)
 # plot.DrawTitle(pads[0], 'm_{H} = 125.09 GeV', 1)
 
 latex = ROOT.TLatex()
@@ -816,7 +859,9 @@ elif args.legend_pos == 7:
     legend.SetNColumns(1)
     if args.POI_line is not None:
         latex.DrawLatex(0.58, 0.875, POI_line)
-
+elif args.legend_pos == 9:
+    legend = ROOT.TLegend(0.56, 0.74, 0.91, 0.92, '', 'NBNDC')
+    # legend.SetNColumns(1)
 
 if len(other_scans) >= 3 and args.legend_pos == 1:
     y_sub = 0. if args.POI_line is None else 0.07
