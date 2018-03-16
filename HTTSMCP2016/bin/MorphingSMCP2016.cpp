@@ -383,7 +383,7 @@ int main(int argc, char** argv) {
     }
             
     //! [part7]
-    for (string chn:chns){
+    for (string chn : cb.channel_set()){
         cb.cp().channel({chn}).backgrounds().ExtractShapes(
                                                            input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                            "$BIN/$PROCESS",
@@ -591,7 +591,7 @@ int main(int argc, char** argv) {
     //    writer.SetVerbosity(1);
     
     writer.WriteCards("cmb", cb);
-    for (auto chn : chns) {
+    for (auto chn : cb.channel_set()) {
         if(chn == std::string("mm"))
         {
             continue;
