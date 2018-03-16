@@ -378,50 +378,7 @@ int main(int argc, char** argv) {
         std::cout << "Write datacards (without shapes) to directory \"" << only_init << "\" and quit." << std::endl;
         ch::CardWriter tmpWriter("$TAG/$ANALYSIS_$ERA_$CHANNEL_$BINID_$MASS.txt", "$TAG/dummy.root");
         tmpWriter.WriteCards(only_init, cb);
-
-    if(no_shape_systs){
-      cb.FilterSysts([&](ch::Systematic *s){
-        return s->type().find("shape") != std::string::npos;
-      });
-    }
-    
-
         
-        /*
-        ch::CardWriter tmpWriter("$TAG/cmb.txt", "$TAG/dummy.root");
-        tmpWriter.WriteCards(only_init, cb);
-        
-        for (std::string analysis : cb.analysis_set())
-        {
-            ch::CombineHarvester cbAnalysis = cb.cp().analysis({analysis});
-            for (std::string era : cbAnalysis.era_set())
-            {
-                ch::CombineHarvester cbEra = cbAnalysis.cp().era({era});
-                for (std::string channel : cbEra.channel_set())
-                {
-                    ch::CombineHarvester cbChannel = cbEra.cp().channel({channel});
-                    for (int binId : cbChannel.bin_id_set())
-                    {
-                        ch::CombineHarvester cbBinId = cbChannel.cp().bin_id({binId});
-                        for (std::string mass : cbBinId.mass_set())
-                        {
-                            if ((cbBinId.mass_set().size() == 1) && (mass == "*"))
-                            {
-                                std::string path = only_init+"/"+analysis+"_"+era+"_"+channel+"_"+std::to_string(binId)+".txt";
-                                cbBinId.WriteDatacard(path, only_init+"/dummy.root");
-                            }
-                            else if (mass != "*")
-                            {
-                                ch::CombineHarvester cbMass = cbBinId.cp().mass({mass, "*"});
-                                std::string path = only_init+"/"+analysis+"_"+era+"_"+channel+"_"+std::to_string(binId)+"_"+mass+".txt";
-                                cbMass.WriteDatacard(path, only_init+"/dummy.root");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
         return 0;
     }
             
