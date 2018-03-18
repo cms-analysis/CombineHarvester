@@ -25,6 +25,7 @@ parser.add_argument('--cms-label', default='Internal', help='Label next to the C
 parser.add_argument('--height', type=int, default=700, help='Label next to the CMS logo')
 parser.add_argument('--labels', default=None, help='Label next to the CMS logo')
 parser.add_argument('--x-title', default='Parameter value', help='Label next to the CMS logo')
+parser.add_argument('--x-range', default='0,10', help='Label next to the CMS logo')
 parser.add_argument('--subline', default='35.9 fb^{-1} (13 TeV)', help='Label next to the CMS logo')
 args = parser.parse_args()
 
@@ -130,8 +131,8 @@ print drawlist
 
 N = len(drawlist)
 
-xmin = -1.0
-xmax = +9.0
+xmin = float(args.x_range.split(',')[0])
+xmax = float(args.x_range.split(',')[1])
 
 hframe = ROOT.TH2F("hframe", "hframe", 6, xmin, xmax, N+1, 0, N+1)
 
@@ -408,3 +409,4 @@ legend.Draw()
     #     extra = ')'
 
 canv.Print('.pdf')
+canv.Print('.png')

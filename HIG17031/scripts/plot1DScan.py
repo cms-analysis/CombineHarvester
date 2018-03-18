@@ -349,6 +349,9 @@ if args.others is not None:
         splitargs = oargs.split(':')
         print splitargs
         other_scans_opts.append(splitargs)
+        other_POI = args.POI
+        if len(splitargs) >= 4:
+            other_POI = splitargs[3]
         tmp_gr = None
         if args.premade:
             tmp_file = ROOT.TFile(splitargs[0])
@@ -356,7 +359,7 @@ if args.others is not None:
             tmp_file.Close()
         other_scans.append(
             BuildScan(args.output,
-                      args.POI,
+                      other_POI,
                       [splitargs[0]],
                       int(splitargs[2]),
                       yvals,
@@ -690,6 +693,7 @@ if args.signif:
         latex.SetTextAlign(12)
         for col, sig in arrow_list:
             latex.SetTextColor(col)
+            print sig
             latex.DrawLatex(x_align_label, sig*sig+1.0, '%.1f#sigma' % sig)
             arrow = ROOT.TArrow()
             arrow.SetLineColor(col)

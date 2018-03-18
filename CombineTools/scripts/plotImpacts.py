@@ -19,6 +19,7 @@ parser.add_argument('--per-page', type=int, default=30, help='Number of paramete
 parser.add_argument('--cms-label', default='Internal', help='Label next to the CMS logo')
 parser.add_argument('--transparent', action='store_true', help='Draw areas as hatched lines instead of solid')
 parser.add_argument('--checkboxes', action='store_true', help='Draw an extra panel with filled checkboxes')
+parser.add_argument('--blind', action='store_true', help='Do not print best fit signal strength')
 parser.add_argument('--color-groups', default=None, help='Comma separated list of GROUP=COLOR')
 parser.add_argument('--POI', default=None, help='Specify a POI to draw')
 args = parser.parse_args()
@@ -280,9 +281,10 @@ for page in xrange(n):
 
     plot.DrawCMSLogo(pads[0], 'CMS', args.cms_label, 0, 0.25, 0.00, 0.00)
     s_nom, s_hi, s_lo = GetRounded(POI_fit[1], POI_fit[2] - POI_fit[1], POI_fit[1] - POI_fit[0])
-    plot.DrawTitle(pads[1], '#hat{%s} = %s^{#plus%s}_{#minus%s}%s' % (
-        Translate(POI, translate), s_nom, s_hi, s_lo,
-        '' if args.units is None else ' '+args.units), 3, 0.27)
+    if not args.blind:
+        plot.DrawTitle(pads[1], '#hat{%s} = %s^{#plus%s}_{#minus%s}%s' % (
+            Translate(POI, translate), s_nom, s_hi, s_lo,
+            '' if args.units is None else ' '+args.units), 3, 0.27)
     extra = ''
     if page == 0:
         extra = '('
