@@ -199,7 +199,7 @@ for page in xrange(n):
 
     # Style and draw the pulls histo
     plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
-    plot.Set(h_pulls.GetYaxis(), LabelSize=0.022, TickLength=0.0)
+    plot.Set(h_pulls.GetYaxis(), LabelSize=0.021, TickLength=0.0)
     h_pulls.GetYaxis().LabelsOption('v')
     h_pulls.Draw()
 
