@@ -66,12 +66,14 @@ int main(int argc, char** argv) {
     string input_folder_mm="USCMS/";
     string input_folder_ttbar="USCMS/";
     string only_init="";
+    string scale_sig_procs="";
     string postfix="";
     int control_region = 0;
     bool mm_fit = false;
     bool ttbar_fit = false;
     bool do_jetfakes = false;
     bool dijet_2d = false;
+    bool real_data = false;
     bool no_shape_systs = false;
     po::variables_map vm;
     po::options_description config("configuration");
@@ -83,6 +85,8 @@ int main(int argc, char** argv) {
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
+    ("real_data", po::value<bool>(&real_data)->default_value(real_data))
+    ("scale_sig_procs", po::value<string>(&scale_sig_procs)->default_value(""))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
     ("control_region", po::value<int>(&control_region)->default_value(0))
@@ -268,6 +272,23 @@ int main(int argc, char** argv) {
     sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     vector<string> masses = {"125"};    
 
+    map<const std::string, float> sig_xsec_aachen;
+    map<const std::string, float> sig_xsec_IC;
+	
+    sig_xsec_aachen["ggHsm_htt"] = 0.921684152;      
+    sig_xsec_aachen["ggHmm_htt"] = 1.84349344;    
+    sig_xsec_aachen["ggHps_htt"] = 0.909898616;    
+    sig_xsec_aachen["qqHsm_htt"] = 0.689482928;    
+    sig_xsec_aachen["qqHmm_htt"] = 0.12242788;    
+    sig_xsec_aachen["qqHps_htt"] = 0.0612201968;
+
+    sig_xsec_IC["ggHsm_htt"] = 0.3987;    
+    sig_xsec_IC["ggHmm_htt"] = 0.7893;    
+    sig_xsec_IC["ggHps_htt"] = 0.3858;    
+    sig_xsec_IC["qqHsm_htt"] = 2.6707;    
+    sig_xsec_IC["qqHmm_htt"] = 0.47421;    
+    sig_xsec_IC["qqHps_htt"] = 0.2371314;    
+    
     using ch::syst::bin_id;
     
     //! [part2]
@@ -357,55 +378,12 @@ int main(int argc, char** argv) {
         std::cout << "Write datacards (without shapes) to directory \"" << only_init << "\" and quit." << std::endl;
         ch::CardWriter tmpWriter("$TAG/$ANALYSIS_$ERA_$CHANNEL_$BINID_$MASS.txt", "$TAG/dummy.root");
         tmpWriter.WriteCards(only_init, cb);
-
-    if(no_shape_systs){
-      cb.FilterSysts([&](ch::Systematic *s){
-        return s->type().find("shape") != std::string::npos;
-      });
-    }
-    
-
         
-        /*
-        ch::CardWriter tmpWriter("$TAG/cmb.txt", "$TAG/dummy.root");
-        tmpWriter.WriteCards(only_init, cb);
-        
-        for (std::string analysis : cb.analysis_set())
-        {
-            ch::CombineHarvester cbAnalysis = cb.cp().analysis({analysis});
-            for (std::string era : cbAnalysis.era_set())
-            {
-                ch::CombineHarvester cbEra = cbAnalysis.cp().era({era});
-                for (std::string channel : cbEra.channel_set())
-                {
-                    ch::CombineHarvester cbChannel = cbEra.cp().channel({channel});
-                    for (int binId : cbChannel.bin_id_set())
-                    {
-                        ch::CombineHarvester cbBinId = cbChannel.cp().bin_id({binId});
-                        for (std::string mass : cbBinId.mass_set())
-                        {
-                            if ((cbBinId.mass_set().size() == 1) && (mass == "*"))
-                            {
-                                std::string path = only_init+"/"+analysis+"_"+era+"_"+channel+"_"+std::to_string(binId)+".txt";
-                                cbBinId.WriteDatacard(path, only_init+"/dummy.root");
-                            }
-                            else if (mass != "*")
-                            {
-                                ch::CombineHarvester cbMass = cbBinId.cp().mass({mass, "*"});
-                                std::string path = only_init+"/"+analysis+"_"+era+"_"+channel+"_"+std::to_string(binId)+"_"+mass+".txt";
-                                cbMass.WriteDatacard(path, only_init+"/dummy.root");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
         return 0;
     }
             
     //! [part7]
-    for (string chn:chns){
+    for (string chn : cb.channel_set()){
         cb.cp().channel({chn}).backgrounds().ExtractShapes(
                                                            input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                            "$BIN/$PROCESS",
@@ -455,8 +433,31 @@ int main(int argc, char** argv) {
     // Convert all shapes to lnN at this stage
     cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
         sys->set_type("lnN");
+        if(sys->value_d() <0.001) {sys->set_value_d(0.001);};
     });
     
+    std::vector<std::string> all_prefit_bkgs = {
+        "QCD","ZL","ZJ","ZTT","TTJ","TTT","TT",
+        "W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
+        "ggH_hww125","qqH_hww125","EWKZ", "qqHsm_htt125", "qqH_htt125", "WH_htt125", "ZH_htt125"};
+    
+        ////! Option to scale rate
+    std::vector< std::string > sig_processes = {"ggHsm_htt125","ggHmm_htt125","ggHps_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125"};
+     
+    if (!scale_sig_procs.empty()) {	
+    	cb.cp().PrintAll();		
+        cb.ForEachProc([sig_xsec_IC, sig_xsec_aachen](ch::Process *p) { if (sig_xsec_IC.count(p->process()) ){std::cout << "Scaling " << p->process() << std::endl;  p->set_rate(p->rate() * sig_xsec_IC.at(p->process())/sig_xsec_aachen.at(p->process()) ); };});                 	
+    };
+    
+    if(!real_data){
+         for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+             std::cout << " - Replacing data with asimov in bin " << b << "\n";
+             cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
+               obs->set_shape(cb.cp().bin({b}).backgrounds().process(all_prefit_bkgs).GetShape()+cb.cp().bin({b}).signals().process({"ggHsm_htt", "ggH_htt"}).mass({"125"}).GetShape(), true);
+               obs->set_rate(cb.cp().bin({b}).backgrounds().process(all_prefit_bkgs).GetRate()+cb.cp().bin({b}).signals().process({"ggHsm_htt", "ggH_htt"}).mass({"125"}).GetRate());
+             });
+           }
+   }    
     
     //     //Merge to one bin for control region bins
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
@@ -501,7 +502,7 @@ int main(int argc, char** argv) {
          s->shape_d()->Print("range");
       }
   });
-    
+      
     
     ////! [part8]
     auto bbb = ch::BinByBinFactory()
@@ -590,7 +591,7 @@ int main(int argc, char** argv) {
     //    writer.SetVerbosity(1);
     
     writer.WriteCards("cmb", cb);
-    for (auto chn : chns) {
+    for (auto chn : cb.channel_set()) {
         if(chn == std::string("mm"))
         {
             continue;
