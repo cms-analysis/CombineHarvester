@@ -5,6 +5,7 @@ import CombineHarvester.HIG16044.systematics as systs
 import ROOT as R
 import glob
 import os
+import sys
 import argparse
 
 def adjust_shape(proc,nbins):
@@ -26,6 +27,17 @@ parser.add_argument(
  '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
 parser.add_argument(
  '--zero_out_low', action='store_true', help="""Zero-out lowest SR bins (purely for the purpose of making yield tables""")
+parser.add_argument(
+ '--Zmm_fwk', default='Xbb', help="""Framework the Zmm inputs were produced with. Supported options: 'Xbb', 'AT'""")
+parser.add_argument(
+ '--Zee_fwk', default='Xbb', help="""Framework the Zee inputs were produced with. Supported options: 'Xbb', 'AT'""")
+parser.add_argument(
+ '--Wmn_fwk', default='AT', help="""Framework the Wmn inputs were produced with. Supported options: 'Xbb', 'AT'""")
+parser.add_argument(
+ '--Wen_fwk', default='AT', help="""Framework the Wen inputs were produced with. Supported options: 'Xbb', 'AT'""")
+parser.add_argument(
+ '--Znn_fwk', default='Xbb', help="""Framework the Znn inputs were produced with. Supported options: 'Xbb', 'AT'""")
+
 
 args = parser.parse_args()
 
@@ -50,12 +62,31 @@ if 'Wln' in args.channel or 'Wen' in args.channel:
 if 'Znn' in args.channel:
   chns.append('Znn')
 
+input_fwks = {
+  'Wen' : args.Wen_fwk, 
+  'Wmn' : args.Wmn_fwk,
+  'Zee' : args.Zee_fwk,
+  'Zmm' : args.Zmm_fwk,
+  'Znn' : args.Znn_fwk
+}
+
+for chn in chns:
+  if not input_fwks[chn]=='Xbb' and not input_fwks[chn]=='AT':
+    print "Framework ", input_fwks[chn], "not supported! Choose from: 'Xbb','AT'"
+    sys.exit()
+
+#The following in anticipation of separate subdirs for Xbb and AT inputs
+folder_map = {
+  'Xbb' : 'Example',
+  'AT'  : 'Example'
+}
+
 input_folders = {
-  'Wen' : 'Example',
-  'Wmn' : 'Example',
-  'Zee' : 'Example',
-  'Zmm' : 'Example',
-  'Znn' : 'Example'
+  'Wen' : folder_map[input_fwks['Wen']],
+  'Wmn' : folder_map[input_fwks['Wmn']],
+  'Zee' : folder_map[input_fwks['Zee']],
+  'Zmm' : folder_map[input_fwks['Zmm']],
+  'Znn' : folder_map[input_fwks['Znn']] 
 }
 
 bkg_procs = {
@@ -121,13 +152,13 @@ if args.bbb_mode==1 or args.bbb_mode==5:
 
 for chn in chns:
   file = shapes + input_folders[chn] + "/vhbb_"+chn+".root"
-  if not chn =='Wen' and not chn =='Wmn':
+  if input_fwks[chn] == 'Xbb':
     cb.cp().channel([chn]).backgrounds().ExtractShapes(
       file, '$BIN/$PROCESS', '$BIN/$PROCESS$SYSTEMATIC')
     cb.cp().channel([chn]).signals().ExtractShapes(
       file, '$BIN/$PROCESS', '$BIN/$PROCESS$SYSTEMATIC')
       #file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
-  else:
+  elif input_fwks[chn] == 'AT':
     cb.cp().channel([chn]).backgrounds().ExtractShapes(
       file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
     cb.cp().channel([chn]).signals().ExtractShapes(
