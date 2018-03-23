@@ -17,7 +17,7 @@ for MODE in ['prefit','postfit']:
               OUTNAME = "%s" % CHN_DICT_SR[CHN][i][0]
               os.system(('./scripts/postFitPlot.py' \
                   ' --file=shapes.root --ratio --extra_pad=0.53 --file_dir=%(OUTNAME)s --no_signal ' \
-                  ' --ratio_range 0.4,1.6 --empty_bin_error --channel=%(CHN)s ' \
+                  ' --ratio_range 0.4,1.6 --empty_bin_error --channel=%(CHN)s --cr ' \
                   ' --outname %(OUTNAME)s --mode %(MODE)s --x_title="CMVA_{min}" '\
                   ' --channel_label "%(LABEL)s"' % vars()))
 

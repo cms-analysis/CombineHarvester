@@ -88,12 +88,12 @@ parser.add_argument('--log_y', action='store_true',help='Use log for y axis')
 parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='',help='Optional string for start of output filename')
-parser.add_argument('--bkg_fractions', default=False, action='store_true', help='Instead of yields for each process plot fraction of total bkg in each bin')
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.7,1.3")
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--x_title', default='BDT output',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
 parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--cr', default=False, action='store_true', help='Plot CRs? (Important for QCD in 0-lep')
 
 
 args = parser.parse_args()
@@ -131,11 +131,14 @@ shape_file_name=args.file
 histo_file = ROOT.TFile(shape_file)
 
 #Store plotting information for different backgrounds 
-background_schemes = {'Wen':[backgroundComp("Single top",["s_Top"],432),backgroundComp("VV+LF",["VVLF"], ROOT.kGray+3),backgroundComp("VV+HF",["VVHF"],ROOT.kGray+1),backgroundComp("t#bar{t}",["TT"],600),backgroundComp("Z+udscg",["Zj0b"],394),backgroundComp("Z+b",["Zj1b"],398),backgroundComp("Z+b#bar{b}",["Zj2b"],400),backgroundComp("W+udscg",["Wj0b"],418),backgroundComp("W+b",["Wj1b"],410),backgroundComp("W+b#bar{b}",["Wj2b"],416),backgroundComp("ZHb#bar{b}",["ZH_hbb"],ROOT.kRed),backgroundComp("WHb#bar{b}",["WH_hbb"],ROOT.kRed+2)],
-'Wmn':[backgroundComp("Single top",["s_Top"],432),backgroundComp("VV+LF",["VVLF"], ROOT.kGray+3),backgroundComp("VV+HF",["VVHF"],ROOT.kGray+1),backgroundComp("t#bar{t}",["TT"],600),backgroundComp("Z+udscg",["Zj0b"],394),backgroundComp("Z+b",["Zj1b"],398),backgroundComp("Z+b#bar{b}",["Zj2b"],400),backgroundComp("W+udscg",["Wj0b"],418),backgroundComp("W+b",["Wj1b"],410),backgroundComp("W+b#bar{b}",["Wj2b"],416),backgroundComp("ZHb#bar{b}",["ZH_hbb"],ROOT.kRed),backgroundComp("WHb#bar{b}",["WH_hbb"],ROOT.kRed+2)],
-'Zee':[backgroundComp("Single top",["s_Top"],432),backgroundComp("VV+LF",["VVLF"], ROOT.kGray+3),backgroundComp("VV+HF",["VVHF"],ROOT.kGray+1),backgroundComp("t#bar{t}",["TT"],600),backgroundComp("Z+udscg",["Zj0b"],394),backgroundComp("Z+b",["Zj1b"],398),backgroundComp("Z+b#bar{b}",["Zj2b"],400),backgroundComp("ZHb#bar{b}",["ZH_hbb"],ROOT.kRed),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],ROOT.kRed-7)],
-'Zmm':[backgroundComp("Single top",["s_Top"],432),backgroundComp("VV+LF",["VVLF"], ROOT.kGray+3),backgroundComp("VV+HF",["VVHF"],ROOT.kGray+1),backgroundComp("t#bar{t}",["TT"],600),backgroundComp("Z+udscg",["Zj0b"],394),backgroundComp("Z+b",["Zj1b"],398),backgroundComp("Z+b#bar{b}",["Zj2b"],400),backgroundComp("ZHb#bar{b}",["ZH_hbb"],ROOT.kRed),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],ROOT.kRed-7)],
-'Znn':[backgroundComp("Single top",["s_Top"],432),backgroundComp("VV+LF",["VVLF"], ROOT.kGray+3),backgroundComp("VV+HF",["VVHF"],ROOT.kGray+1),backgroundComp("t#bar{t}",["TT"],600),backgroundComp("Z+udscg",["Zj0b"],394),backgroundComp("Z+b",["Zj1b"],398),backgroundComp("Z+b#bar{b}",["Zj2b"],400),backgroundComp("W+udscg",["Wj0b"],418),backgroundComp("W+b",["Wj1b"],410),backgroundComp("W+b#bar{b}",["Wj2b"],416),backgroundComp("ZHb#bar{b}",["ZH_hbb"],ROOT.kRed),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],ROOT.kRed-7),backgroundComp("WHb#bar{b}",["WH_hbb"],ROOT.kRed+2)]}
+background_schemes = {'Wen':[backgroundComp("Single top",["s_Top"],70),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("WHb#bar{b}",["WH_hbb"],634)],
+'Wmn':[backgroundComp("Single top",["s_Top"],70),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("WHb#bar{b}",["WH_hbb"],634)],
+'Zee':[backgroundComp("Single top",["s_Top"],70),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625)],
+'Zmm':[backgroundComp("Single top",["s_Top"],70),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625)],
+'Znn':[backgroundComp("Single top",["s_Top"],70),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625),backgroundComp("WHb#bar{b}",["WH_hbb"],634)]}
+
+if args.cr:
+  background_schemes['Znn']=[backgroundComp("Single top",["s_Top"],70),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("QCD",["QCD"],613),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625),backgroundComp("WHb#bar{b}",["WH_hbb"],634)]
 
 #Extract relevant histograms from shape file
 [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
@@ -243,13 +246,16 @@ if not custom_y_range:
 axish[0].Draw()
 
 #Draw uncertainty band
-bkghist.SetFillColor(plot.CreateTransparentColor(12,0.4))
+ROOT.gStyle.SetHatchesSpacing(0.4)
+ROOT.gStyle.SetHatchesLineWidth(1)
+bkghist.SetFillColor(12)
+bkghist.SetFillStyle(3944)
 bkghist.SetLineColor(0)
 bkghist.SetMarkerSize(0)
-splusbhist.SetFillColor(plot.CreateTransparentColor(12,0.4))
+splusbhist.SetFillColor(12)
 splusbhist.SetLineColor(0)
 splusbhist.SetMarkerSize(0)
-
+splusbhist.SetFillStyle(3944)
 
 
 stack.Draw("histsame")
