@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
     bool dijet_2d = false;
     bool real_data = false;
     bool no_shape_systs = false;
+    bool no_jec_split = false;    
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -93,6 +94,7 @@ int main(int argc, char** argv) {
     ("dijet_2d", po::value<bool>(&dijet_2d)->default_value(dijet_2d))
     ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
     ("mm_fit", po::value<bool>(&mm_fit)->default_value(true))
+    ("no_jec_split", po::value<bool>(&no_jec_split)->default_value(true))    
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
 
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
@@ -365,7 +367,7 @@ int main(int argc, char** argv) {
     }
     
     
-    ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit, dijet_2d);
+    ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit, dijet_2d, no_jec_split);
     
     if(no_shape_systs){
       cb.FilterSysts([&](ch::Systematic *s){

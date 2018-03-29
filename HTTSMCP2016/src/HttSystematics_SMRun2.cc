@@ -18,7 +18,7 @@ namespace ch {
     using ch::syst::bin;
     using ch::JoinStr;
     
-    void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit, bool dijet_2d) {
+    void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit, bool dijet_2d, bool no_jec_split) {
         // Create a CombineHarvester clone that only contains the signal
         // categories
         //
@@ -222,64 +222,67 @@ namespace ch {
 //        cb.cp().process(JoinStr({sig_procs, {"ZTT","TT","W","VV", "ZL", "QCD"}})).channel({"ttbar"}).AddSyst(cb,
 //                                             "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
 
-        // JES factorization test tautau        
-        std::vector< std::string > uncertNames = {
-            "AbsoluteFlavMap",
-            "AbsoluteMPFBias",
-            "AbsoluteScale",
-            "AbsoluteStat",
-            //"CorrelationGroupFlavor",
-            //"CorrelationGroupIntercalibration",
-            //"CorrelationGroupMPFInSitu",
-            //"CorrelationGroupUncorrelated",
-            //"CorrelationGroupbJES",
-            //"FlavorPhotonJet",
-            //"FlavorPureBottom",
-            //"FlavorPureCharm",
-            //"FlavorPureGluon",
-            //"FlavorPureQuark",
-            "FlavorQCD",
-            //"FlavorZJet",
-            "Fragmentation",
-            "PileUpDataMC",
-            //"PileUpEnvelope",
-            //"PileUpMuZero",
-            "PileUpPtBB",
-            "PileUpPtEC1",
-            "PileUpPtEC2",
-            "PileUpPtHF",
-            "PileUpPtRef",
-            "RelativeBal",
-            "RelativeFSR",
-            "RelativeJEREC1",
-            "RelativeJEREC2",
-            "RelativeJERHF",
-            "RelativePtBB",
-            "RelativePtEC1",
-            "RelativePtEC2",
-            "RelativePtHF",
-            "RelativeStatEC",
-            "RelativeStatFSR",
-            "RelativeStatHF",
-            "SinglePionECAL",
-            "SinglePionHCAL",
-            //"SubTotalAbsolute",
-            //"SubTotalMC",
-            //"SubTotalPileUp",
-            //"SubTotalPt",
-            //"SubTotalRelative",
-            //"SubTotalScale",
-            "TimePtEta",
-            //"TimeRunBCD",
-            //"TimeRunE",
-            //"TimeRunF",
-            //"TimeRunGH",
-            //"TotalNoFlavorNoTime",
-            //"TotalNoFlavor",
-            //"TotalNoTime",
-            //"Total", // Total JES value, don't include
-            //"Closure", // Closure Measure, don't include
-        }; // end uncertNames
+        // JES factorization test tautau  
+        std::vector< std::string > uncertNames;
+        if (!no_jec_split) {      
+            uncertNames = {
+                "AbsoluteFlavMap",
+                "AbsoluteMPFBias",
+                "AbsoluteScale",
+                "AbsoluteStat",
+                //"CorrelationGroupFlavor",
+                //"CorrelationGroupIntercalibration",
+                //"CorrelationGroupMPFInSitu",
+                //"CorrelationGroupUncorrelated",
+                //"CorrelationGroupbJES",
+                //"FlavorPhotonJet",
+                //"FlavorPureBottom",
+                //"FlavorPureCharm",
+                //"FlavorPureGluon",
+                //"FlavorPureQuark",
+                "FlavorQCD",
+                //"FlavorZJet",
+                "Fragmentation",
+                "PileUpDataMC",
+                //"PileUpEnvelope",
+                //"PileUpMuZero",
+                "PileUpPtBB",
+                "PileUpPtEC1",
+                "PileUpPtEC2",
+                "PileUpPtHF",
+                "PileUpPtRef",
+                "RelativeBal",
+                "RelativeFSR",
+                "RelativeJEREC1",
+                "RelativeJEREC2",
+                "RelativeJERHF",
+                "RelativePtBB",
+                "RelativePtEC1",
+                "RelativePtEC2",
+                "RelativePtHF",
+                "RelativeStatEC",
+                "RelativeStatFSR",
+                "RelativeStatHF",
+                "SinglePionECAL",
+                "SinglePionHCAL",
+                //"SubTotalAbsolute",
+                //"SubTotalMC",
+                //"SubTotalPileUp",
+                //"SubTotalPt",
+                //"SubTotalRelative",
+                //"SubTotalScale",
+                "TimePtEta",
+                //"TimeRunBCD",
+                //"TimeRunE",
+                //"TimeRunF",
+                //"TimeRunGH",
+                //"TotalNoFlavorNoTime",
+                //"TotalNoFlavor",
+                //"TotalNoTime",
+                //"Total", // Total JES value, don't include
+                //"Closure", // Closure Measure, don't include
+            }; // end uncertNames
+        } else { uncertNames = { "Total" }; }
         // Uncomment below for 27 JES
         //
         
