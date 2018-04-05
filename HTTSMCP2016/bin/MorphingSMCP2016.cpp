@@ -75,6 +75,8 @@ int main(int argc, char** argv) {
     bool dijet_2d = false;
     bool real_data = false;
     bool no_shape_systs = false;
+    bool do_embedding = false;
+    bool auto_rebin = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -93,7 +95,9 @@ int main(int argc, char** argv) {
     ("dijet_2d", po::value<bool>(&dijet_2d)->default_value(dijet_2d))
     ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
     ("mm_fit", po::value<bool>(&mm_fit)->default_value(true))
-    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
+    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true))
+    ("do_embedding", po::value<bool>(&do_embedding)->default_value(false))
+    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false));
 
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
     po::notify(vm);
@@ -111,7 +115,7 @@ int main(int argc, char** argv) {
     input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_et+"/";
     input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_tt+"/";
     input_dir["mm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mm+"/";
-    input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_ttbar+"/";    
+    input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
     VString chns = {"mt","et","tt","em"};
@@ -130,8 +134,15 @@ int main(int argc, char** argv) {
     }
     bkg_procs["em"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
-    bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV", "EWKZ"};
+    bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     
+    if(do_embedding){
+      bkg_procs["et"] = {"EmbedZTT",   "QCD", "ZL", "ZJ","TTT","TTJ", "VV"};
+      bkg_procs["mt"] = {"EmbedZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",  "VV"};
+      bkg_procs["tt"] = {"EmbedZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ"};
+      // Not use embedding for em channel currently
+    }
+
     ch::CombineHarvester cb;
     
     map<string,Categories> cats;
@@ -160,7 +171,7 @@ int main(int argc, char** argv) {
         {3, "mm_vbf"}
     };
     cats["ttbar"] = {
-        {1, "ttbar_all"}
+        {1, "em_ttbar"}
     };
     
     map<string,Categories> cats_cp;
@@ -267,8 +278,8 @@ int main(int argc, char** argv) {
     
     map<string, VString> sig_procs;
     sig_procs["ggH"] = {"ggH_htt"};
-    sig_procs["qqH"] = {"qqHsm_htt125","qqHmm_htt125","qqHps_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
-
+    sig_procs["qqH"] = {"qqHsm_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
+    sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt"};
     sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     vector<string> masses = {"125"};    
 
@@ -300,9 +311,12 @@ int main(int argc, char** argv) {
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats_cp[chn], false);
 
         if(chn == "em" || chn == "et" || chn == "mt" || chn == "tt"){
-          cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], false); // VBF/VH are added as backgrounds
+          cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], false); // SM VBF/VH are added as backgrounds
           cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats_cp[chn], false);
-        
+          
+          cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats[chn], true); // Non-SM VBF/VH are added as signal
+          cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats_cp[chn], true);
+           
           cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
           cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
         }
@@ -384,15 +398,17 @@ int main(int argc, char** argv) {
             
     //! [part7]
     for (string chn : cb.channel_set()){
+        string channel = chn;
+        if(chn == "ttbar") channel = "em"; 
         cb.cp().channel({chn}).backgrounds().ExtractShapes(
-                                                           input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                           input_dir[chn] + "htt_"+channel+".inputs-sm-13TeV"+postfix+".root",
                                                            "$BIN/$PROCESS",
                                                            "$BIN/$PROCESS_$SYSTEMATIC");
-        //cb.cp().channel({chn}).process(sig_procs["qqH"]).ExtractShapes(
-        //                                                        input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-        //                                                        "$BIN/$PROCESS$MASS",
-        //                                                        "$BIN/$PROCESS$MASS_$SYSTEMATIC");
         if(chn == "em" || chn == "et" || chn == "mt" || chn == "tt"){
+          cb.cp().channel({chn}).process(sig_procs["qqH_BSM"]).ExtractShapes(
+                                                                  input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                                  "$BIN/$PROCESS$MASS",
+                                                                  "$BIN/$PROCESS$MASS_$SYSTEMATIC");
           cb.cp().channel({chn}).process(sig_procs["ggH"]).ExtractShapes(
                                                                   input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                                   "$BIN/$PROCESS$MASS",
@@ -414,7 +430,7 @@ int main(int argc, char** argv) {
     
     //Now delete processes with 0 yield
     cb.FilterProcs([&](ch::Process *p) {
-        bool null_yield = !(p->rate() > 0. || BinIsControlRegion(p));
+        bool null_yield = !(p->rate() > 0. /*|| BinIsControlRegion(p)*/);
         if (null_yield){
             std::cout << "[Null yield] Removing process with null yield: \n ";
             std::cout << ch::Process::PrintHeader << *p << "\n";
@@ -462,6 +478,15 @@ int main(int argc, char** argv) {
     //     //Merge to one bin for control region bins
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
+    
+    // can auto-merge the bins with bbb uncertainty > 90% - may be better to merge these bins by hand though!
+    auto rebin = ch::AutoRebin()
+    .SetBinThreshold(0.)
+    .SetBinUncertFraction(0.9)
+    .SetRebinMode(1)
+    .SetPerformRebin(true)
+    .SetVerbosity(1);
+    if(auto_rebin) rebin.Rebin(cb, cb);
   
   
     // At this point we can fix the negative bins
