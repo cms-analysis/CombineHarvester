@@ -36,7 +36,7 @@ with open(args.input) as jsonfile:
     data = json.load(jsonfile)
 
 # Set the global plotting style
-plot.ModTDRStyle(l=0.4, b=0.10, width=700)
+plot.ModTDRStyle(l=0.4, b=0.10, r=0.055, width=700)
 
 # We will assume the first POI is the one to plot
 POIs = [ele['name'] for ele in data['POIs']]
@@ -157,7 +157,7 @@ for page in xrange(n):
 
     # Style and draw the pulls histo
     plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
-    plot.Set(h_pulls.GetYaxis(), LabelSize=0.022, TickLength=0.0)
+    plot.Set(h_pulls.GetYaxis(), LabelSize=0.021, TickLength=0.0)
     h_pulls.GetYaxis().LabelsOption('v')
     h_pulls.Draw()
 
@@ -183,7 +183,7 @@ for page in xrange(n):
     if max_impact == 0.: max_impact = 1E-6  # otherwise the plotting gets screwed up
     h_impacts = ROOT.TH2F(
         "impacts", "impacts", 6, -max_impact * 1.1, max_impact * 1.1, n_params, 0, n_params)
-    plot.Set(h_impacts.GetXaxis(), LabelSize=0.03, TitleSize=0.04, Ndivisions=505, Title=
+    plot.Set(h_impacts.GetXaxis(), LabelSize=0.025, TitleSize=0.04, Ndivisions=505, Title=
         '#Delta#hat{%s}' % (Translate(POIs[0], translate)))
     plot.Set(h_impacts.GetYaxis(), LabelSize=0, TickLength=0.0)
     h_impacts.Draw()
