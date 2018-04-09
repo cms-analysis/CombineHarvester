@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"classch_1_1_combine_harvester.html#acd2aec5d4b862d3edc79399ae0801f4c":[16,0,0,6,92],
+"classch_1_1_combine_harvester.html#acee50a734519bf510935610238641b7d":[16,0,0,6,12],
+"classch_1_1_combine_harvester.html#ad2c92025d60e32b438a3445aa756d631":[16,0,0,6,44],
 "classch_1_1_combine_harvester.html#ad4bd2bb5458d8435efd8fff49624b7b0":[16,0,0,6,88],
 "classch_1_1_combine_harvester.html#ad61cdbfaea0ed88c09651c2a92c934e2":[16,0,0,6,66],
 "classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2":[16,0,0,6,7],
@@ -194,8 +197,8 @@ var NAVTREEINDEX2 =
 "functions_d.html":[16,2,0,3],
 "functions_e.html":[16,2,0,4],
 "functions_f.html":[16,2,0,5],
-"functions_func.html":[16,2,1],
 "functions_func.html":[16,2,1,0],
+"functions_func.html":[16,2,1],
 "functions_func_b.html":[16,2,1,1],
 "functions_func_c.html":[16,2,1,2],
 "functions_func_d.html":[16,2,1,3],
@@ -239,15 +242,12 @@ var NAVTREEINDEX2 =
 "globals_func.html":[17,1,1],
 "globals_vars.html":[17,1,2],
 "hierarchy.html":[16,1],
-"index.html":[],
 "index.html":[0],
+"index.html":[],
 "index.html#getting-started":[0,0],
 "index.html#high-level-tools":[0,1],
 "index.html#note":[0,2],
 "intro1.html":[1],
 "intro1.html#ex1-p1":[1,0],
-"intro1.html#ex1-p2":[1,1],
-"intro1.html#ex1-p3":[1,2],
-"intro1.html#ex1-p4":[1,3],
-"intro2.html":[2]
+"intro1.html#ex1-p2":[1,1]
 };

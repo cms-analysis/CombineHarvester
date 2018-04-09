@@ -4,7 +4,7 @@ var searchData=
   ['make_5frelative',['make_relative',['../namespacech.html#a2f4db67e7b9039935a58ea60b650041a',1,'ch']]],
   ['make_5funique',['make_unique',['../namespacech.html#a34936b9e16919f93ca72d0f164d83347',1,'ch']]],
   ['makeerrorband',['MakeErrorBand',['../namespaceplotting.html#ac9523d7013393a5c2af56b1592f6ccd7',1,'plotting']]],
-  ['makehist1d',['makeHist1D',['../namespaceplotting.html#affe8f293686abdb2bf4cec1f17d7bbb6',1,'plotting']]],
+  ['makehist1d',['makeHist1D',['../namespaceplotting.html#acd360db15648376d29ea61109f6164e8',1,'plotting']]],
   ['makehist2d',['makeHist2D',['../namespaceplotting.html#a152c9876f212cb864bcfb2080c8e2660',1,'plotting']]],
   ['makemorphdebugplots',['MakeMorphDebugPlots',['../namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d',1,'ch']]],
   ['makeratiohist',['MakeRatioHist',['../_plotting_8h.html#a526842799b4de3a542d8114989dba48d',1,'MakeRatioHist():&#160;Plotting.h'],['../namespaceplotting.html#a8e9aa50e693ba0dc50f85235f4194f35',1,'plotting.MakeRatioHist()']]],
@@ -18,5 +18,6 @@ var searchData=
   ['mergebinerrors',['MergeBinErrors',['../classch_1_1_bin_by_bin_factory.html#a6e0495e815c6a5ac41b45fb200b860cf',1,'ch::BinByBinFactory::MergeBinErrors()'],['../classch_1_1_combine_harvester.html#a37e613f8c2c67871b4b3bc89c78a1f68',1,'ch::CombineHarvester::MergeBinErrors()']]],
   ['mergedjson',['MergedJson',['../namespacech.html#aec2e836e1039ccd11ac13a201627c5c8',1,'ch::MergedJson(int argc, char *argv[])'],['../namespacech.html#a52e06fe8e122355225a7c485d88c22ff',1,'ch::MergedJson(std::vector&lt; std::string &gt; const &amp;vec)']]],
   ['modtdrstyle',['ModTDRStyle',['../_plotting___style_8h.html#a7f6399c7470d5331ac4c464cb14c86e1',1,'ModTDRStyle(int width, int height, double t, double b, double l, double r):&#160;Plotting_Style.h'],['../_plotting___style_8h.html#a25f3f929fadd38fd9423aaa6ef6ddd51',1,'ModTDRStyle():&#160;Plotting_Style.h'],['../namespaceplotting.html#a54515e51dabf8327c983dc428c2999df',1,'plotting.ModTDRStyle()']]],
-  ['multiratiosplit',['MultiRatioSplit',['../namespaceplotting.html#aeff720afd7d0ca9416ced3d72540addf',1,'plotting']]]
+  ['multiratiosplit',['MultiRatioSplit',['../namespaceplotting.html#aeff720afd7d0ca9416ced3d72540addf',1,'plotting']]],
+  ['multiratiosplitcolumns',['MultiRatioSplitColumns',['../namespaceplotting.html#abe8262401429a666b6a4c43390699be1',1,'plotting']]]
 ];

@@ -6,7 +6,7 @@ var searchData=
   ['make_5frelative',['make_relative',['../namespacech.html#a2f4db67e7b9039935a58ea60b650041a',1,'ch']]],
   ['make_5funique',['make_unique',['../namespacech.html#a34936b9e16919f93ca72d0f164d83347',1,'ch']]],
   ['makeerrorband',['MakeErrorBand',['../namespaceplotting.html#ac9523d7013393a5c2af56b1592f6ccd7',1,'plotting']]],
-  ['makehist1d',['makeHist1D',['../namespaceplotting.html#affe8f293686abdb2bf4cec1f17d7bbb6',1,'plotting']]],
+  ['makehist1d',['makeHist1D',['../namespaceplotting.html#acd360db15648376d29ea61109f6164e8',1,'plotting']]],
   ['makehist2d',['makeHist2D',['../namespaceplotting.html#a152c9876f212cb864bcfb2080c8e2660',1,'plotting']]],
   ['makemorphdebugplots',['MakeMorphDebugPlots',['../namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d',1,'ch']]],
   ['makeratiohist',['MakeRatioHist',['../_plotting_8h.html#a526842799b4de3a542d8114989dba48d',1,'MakeRatioHist():&#160;Plotting.h'],['../namespaceplotting.html#a8e9aa50e693ba0dc50f85235f4194f35',1,'plotting.MakeRatioHist()']]],
@@ -26,5 +26,6 @@ var searchData=
   ['morphfunctions_2eh',['MorphFunctions.h',['../_morph_functions_8h.html',1,'']]],
   ['model_20dependent_20limits_20using_20morphingmssmupdate',['Model dependent Limits using MorphingMSSMUpdate',['../_m_s_s_m_update_model_dep.html',1,'']]],
   ['mssmyieldtable_2ecpp',['MSSMYieldTable.cpp',['../_m_s_s_m_yield_table_8cpp.html',1,'']]],
-  ['multiratiosplit',['MultiRatioSplit',['../namespaceplotting.html#aeff720afd7d0ca9416ced3d72540addf',1,'plotting']]]
+  ['multiratiosplit',['MultiRatioSplit',['../namespaceplotting.html#aeff720afd7d0ca9416ced3d72540addf',1,'plotting']]],
+  ['multiratiosplitcolumns',['MultiRatioSplitColumns',['../namespaceplotting.html#abe8262401429a666b6a4c43390699be1',1,'plotting']]]
 ];

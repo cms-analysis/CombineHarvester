@@ -2,6 +2,7 @@ var searchData=
 [
   ['generatecombinations',['GenerateCombinations',['../namespacech.html#a98ec286981dda179332f736f113ab8a5',1,'ch']]],
   ['get',['get',['../structch_1_1syst_1_1bin.html#ae566871b3c3496a373d94804fe078026',1,'ch::syst::bin::get()'],['../structch_1_1syst_1_1analysis.html#aef7aa22862630508c22b57ecd436e31c',1,'ch::syst::analysis::get()'],['../structch_1_1syst_1_1era.html#a0608c96c7f833d6375c16881c3aeaaf4',1,'ch::syst::era::get()'],['../structch_1_1syst_1_1channel.html#a72ea9574f99f03f955df62612a43c088',1,'ch::syst::channel::get()'],['../structch_1_1syst_1_1mass.html#a2f9dad5f252ac95b1628924fb7ad2b62',1,'ch::syst::mass::get()'],['../structch_1_1syst_1_1process.html#a02b9e1d72b3e3b9160f56859d6563227',1,'ch::syst::process::get()'],['../classch_1_1syst_1_1bin__id.html#a16e43240ce229d97f80b2e6728c3f1d9',1,'ch::syst::bin_id::get()'],['../namespaceplotting.html#a4769656475c403839b6fea5083d4d4f9',1,'plotting.Get()']]],
+  ['getautomcstatsbins',['GetAutoMCStatsBins',['../classch_1_1_combine_harvester.html#a315e2ca75b43d25c202e21140819ff15',1,'ch::CombineHarvester']]],
   ['getaxishist',['GetAxisHist',['../_plotting_8h.html#aafd63f976dd4c5ae271062e0f91c2681',1,'GetAxisHist():&#160;Plotting.h'],['../namespaceplotting.html#a3f11bc70e3e0278d0b4cf33ab8c383d3',1,'plotting.GetAxisHist()']]],
   ['getclonedth1',['GetClonedTH1',['../namespacech.html#a9db822b84dd7cf9f1d3bc76a6a741498',1,'ch']]],
   ['getflag',['GetFlag',['../classch_1_1_combine_harvester.html#ac64212156595f320b76bf32ec2c7a9e7',1,'ch::CombineHarvester']]],

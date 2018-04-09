@@ -35,6 +35,7 @@ var searchData=
   ['set_5fvalue_5fd',['set_value_d',['../classch_1_1_systematic.html#a40fb079acc7cdf7acd81d7bccb653f8a',1,'ch::Systematic']]],
   ['set_5fvalue_5fu',['set_value_u',['../classch_1_1_systematic.html#a780d467fd100c4c521fc604ddcea6f0f',1,'ch::Systematic']]],
   ['setaddthreshold',['SetAddThreshold',['../classch_1_1_bin_by_bin_factory.html#a022063406869d59a03e7aef47ce53e34',1,'ch::BinByBinFactory']]],
+  ['setautomcstats',['SetAutoMCStats',['../classch_1_1_combine_harvester.html#a8598c8d734f7461228d6e4d4a20ba33b',1,'ch::CombineHarvester']]],
   ['setbinthreshold',['SetBinThreshold',['../classch_1_1_auto_rebin.html#aa08dc119e1c1f3296fbeb59732529338',1,'ch::AutoRebin']]],
   ['setbinuncertfraction',['SetBinUncertFraction',['../classch_1_1_auto_rebin.html#ab156ebbbbbfc264c736d06f182da7c25',1,'ch::AutoRebin']]],
   ['setbirdpalette',['SetBirdPalette',['../namespaceplotting.html#a352c801d8b36f5e37b3a7e61bd3cee47',1,'plotting']]],

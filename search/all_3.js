@@ -10,6 +10,6 @@ var searchData=
   ['drawcontours',['drawContours',['../_plotting___contours_8h.html#afcb8faa65f5a499825189a7cdd745b9e',1,'Plotting_Contours.h']]],
   ['drawhorizontalline',['DrawHorizontalLine',['../_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98',1,'DrawHorizontalLine():&#160;Plotting.h'],['../namespaceplotting.html#a1102590a510e7c4921fba16694201a5b',1,'plotting.DrawHorizontalLine()']]],
   ['drawlimitband',['DrawLimitBand',['../namespaceplotting.html#a46caef3f43ba70de6364c881776167d0',1,'plotting']]],
-  ['drawtitle',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'DrawTitle():&#160;Plotting.h'],['../namespaceplotting.html#a75a4405c808f2d73ecd8c059bc59d7ff',1,'plotting.DrawTitle()']]],
+  ['drawtitle',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'DrawTitle():&#160;Plotting.h'],['../namespaceplotting.html#af9e086c663eae77d30240bd2bdb692ce',1,'plotting.DrawTitle()']]],
   ['drawverticalline',['DrawVerticalLine',['../namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70',1,'plotting']]]
 ];

@@ -100,5 +100,8 @@ var classch_1_1_combine_harvester =
     [ "AddBinByBin", "classch_1_1_combine_harvester.html#a20c5575a1983fbd8ff1b4232128610ff", null ],
     [ "AddBinByBin", "classch_1_1_combine_harvester.html#aaf7c0e7a370d1a43290815e818058735", null ],
     [ "MergeBinErrors", "classch_1_1_combine_harvester.html#a37e613f8c2c67871b4b3bc89c78a1f68", null ],
+    [ "SetAutoMCStats", "classch_1_1_combine_harvester.html#a8598c8d734f7461228d6e4d4a20ba33b", null ],
+    [ "RenameAutoMCStatsBin", "classch_1_1_combine_harvester.html#a44d791bc4812feb68729e7660fd3e5b3", null ],
+    [ "GetAutoMCStatsBins", "classch_1_1_combine_harvester.html#a315e2ca75b43d25c202e21140819ff15", null ],
     [ "swap", "classch_1_1_combine_harvester.html#a6b7c11550052d3edd98cd0971280ff79", null ]
 ];
