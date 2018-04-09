@@ -92,7 +92,7 @@ Once all calculations are complete, the results are collected into json files us
 
 `combineTool.py -M CollectLimits output/mssm_201017/*/higgsCombine.ggH*.root --use-dirs -o "mssm_201017_ggH.json"`
 
-`combineTool.py -M CollectLimits output/mssm_201017/*/higgsCombine.bbH*.root --use-dirs -o "mssm_201017_bbH.json`
+`combineTool.py -M CollectLimits output/mssm_201017/*/higgsCombine.bbH*.root --use-dirs -o "mssm_201017_bbH.json"`
 
 This will place a json in the current directory, and append the string "mssm_201017_ggH" or "mssm_201017_ggH" to them. One will be placed for every subdir, so every channel-cat, combination requested will be available then for plotting.
 
@@ -271,31 +271,51 @@ To also create the yield tables, add --make_yield_tables as additional option to
 ### Postfit plots
 Postfit plots require a sensible choice of fit. You can choose either the model independent or model dependent workspace, and simply need to set the appropriate parameters to something sensible.
 
-The plotting code can then be used in postfit mode and passed the output of the maximum likelihood fit.
+The plotting code can then be used in postfit mode and passed the output of the maximum likelihood fit. Some examples are given for the model-dependent and the model-independent case.
 
-**For the plots in the docs:**
+#### For the plots in the docs:
 
-Set up model dependent workspace:
 
-`MorphingMSSMFull2016 --output_folder="mssm_201017_unblinding_mhmodp" --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true`
+**Model dependent case: mhmodp model with mu = 200 GeV, m_A = 700 GeV, tanb = 20 at 13 TeV with the fit performed for all categories combined. Parameters for the shapes are taken from the signal plus background (s + b) fit. Signal strengh parameters for the signal yields are taken equal to the model expectation.**
 
-`combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$PWD/shapes/Models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 -i output/mssm_120717_unblinding_mhmodp/*`
+1. Set up workspace:
 
-Set up model-independent workspace for max likelihood fit:
+`MorphingMSSMFull2016 --output_folder="mssm_201017_unblinding_mhmodp" --postfix="-mttot" --manual_rebin=true`
 
-`MorphingMSSMFull2016 --output_folder="mssm_201017_unblinding" -m MH --postfix="-mttot" --control_region=0 --auto_rebin=true --real_data=true --zmm_fit=true --ttbar_fit=true --jetfakes=true`
+`combineTool.py -M T2W -o "mhmodp.root" -P CombineHarvester.CombinePdfs.MSSM:MSSM --PO filePrefix=$PWD/shapes/Models/ --PO modelFiles=13TeV,mhmodp_mu200_13TeV.root,1 -i output/mssm_201017_unblinding_mhmodp/cmb/ --PO MSSM-NLO-Workspace=$PWD/shapes/Models/higgs_pt_v3_mssm_mode.root`
 
-`combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_201017_unblinding/*`
+2. Max likelihood fit:
 
-Max likelihood fit (model independent ws):
+`combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters mA=700,tanb=20 -d output/mssm_201017_unblinding_mhmodp/cmb/mhmodp.root --there --minimizerTolerance 0.1 --minimizerStrategy 0 --cminPreScan --robustFit 1`
+
+3. Get the shapes:
+
+`PostFitShapesFromWorkspace -d output/mssm_201017_unblinding_mhmodp/cmb/combined.txt.cmb -w output/mssm_201017_unblinding_mhmodp/cmb/mhmodp.root -o shapes.root --print --freeze mA=700,tanb=20,r=1,x=1 --postfit --sampling -f output/mssm_final_limit_shapes_mhmodp/cmb/mlfit.Test.root:fit_s`
+
+4. Plot the shapes with current style setup:
+
+`python scripts/makeMassPlots_split-y-scale.py`
+
+
+**Model independent case: general multi signal model for the resonance mass m = 700 GeV with the fit performed for all categories combined. Parameters for the shapes are taken from the background only (b) fit. Therefore, the signal strengh parameters in the s + b fit are restricted to values near 0. For the shapes, the ggH and bbH signals are scaled both to 10 pb.**
+
+1. Set up workspace:
+
+`MorphingMSSMFull2016 --output_folder="mssm_201017_unblinding" -m MH --postfix="-mttot" --manual_rebin=true`
+
+`combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_201017_unblinding/cmb/ `
+
+2. Max likelihood fit:
 
 `combineTool.py -M MaxLikelihoodFit --setPhysicsModelParameters r_ggH=0,r_bbH=0 --freezeNuisances r_bbH --redefineSignalPOIs r_ggH -m 700  --setPhysicsModelParameterRanges r_ggH=-0.000001,0.000001 --minimizerTolerance 0.1 --minimizerStrategy 0 -d output/mssm_201017_unblinding/cmb/ws.root --there`
 
-Get the shapes, including signal shape from the model dependent ws:
+3. Get the shapes:
 
-`PostFitShapesFromWorkspace -d output/mssm_201017_unblinding_mhmodp/cmb/combined.txt.cmb -w output/mssm_201017_unblinding_mhmodp/cmb/mhmodp.root -o shapes.root --print --freeze mA=1000,tanb=50,r=1,x=1 --postfit --sampling -f output/mssm_201017_unblinding/cmb/mlfit.Test.root:fit_b`
+`PostFitShapesFromWorkspace -d output/mssm_201017_unblinding_mhmodp/cmb/combined.txt.cmb -w output/mssm_201017_unblinding/cmb/ws.root -o shapes.root --print --freeze r_ggH=10,r_bbH=10 --postfit --sampling -f output/mssm_201017_unblinding/cmb/mlfit.Test.root:fit_b`
 
-`python scripts/makeMassPlots.py`
+4. Plot the shapes with current style setup:
+
+`python scripts/makeMassPlots_model-independent.py`
 
 ## Creating datacards for pulls and GOF tests
 
