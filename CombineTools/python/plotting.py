@@ -379,6 +379,22 @@ def TwoPadSplitColumns(split_point, gap_left, gap_right):
     return result
 
 
+def MultiRatioSplitColumns(split_points, gaps_left, gaps_right):
+    pads = []
+    for i in xrange(len(split_points)+1):
+        pad = R.TPad('pad%i'%i, '', 0., 0., 1., 1.)
+        if i > 0:
+            pad.SetLeftMargin(sum(split_points[0:i])+gaps_left[i-1])
+        if i < len(split_points):
+            pad.SetRightMargin(1.-sum(split_points[0:i+1])+gaps_right[i])
+        pad.SetFillStyle(4000)
+        pad.Draw()
+        pads.append(pad)
+    pads[0].cd()
+    # pads.reverse()
+    return pads
+
+
 def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered,
                                y_min, y_max):
     if lower.GetXaxis().GetTitle() == '':
@@ -785,11 +801,11 @@ def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
     return h2d
 
 
-def makeHist1D(name, xbins, graph):
+def makeHist1D(name, xbins, graph, scaleXrange=1.0):
     len_x = graph.GetX()[graph.GetN() - 1] - graph.GetX()[0]
     binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
     hist = R.TH1F(
-        name, '', xbins, graph.GetX()[0], graph.GetX()[graph.GetN() - 1] + binw_x)
+        name, '', xbins, graph.GetX()[0], scaleXrange * (graph.GetX()[graph.GetN() - 1] + binw_x))
     return hist
 
 
@@ -1042,6 +1058,31 @@ def ReZeroTGraph(gr, doIt=False):
                 after = gr.GetY()[i]
                 # print 'Point %i, before=%f, after=%f' % (i, before, after)
     return min_y
+
+def FilterGraph(gr, n=3):
+    counter = 0
+    remove_list = []
+    for i in xrange(gr.GetN()):
+        if gr.GetY()[i] == 0.:
+            continue
+        if counter % n < (n - 1):
+            remove_list.append(i)
+        counter += 1
+
+    for i in reversed(remove_list):
+        gr.RemovePoint(i)
+
+
+def RemoveInXRange(gr, xmin=0, xmax=1):
+    remove_list = []
+    for i in xrange(gr.GetN()):
+        if gr.GetY()[i] == 0.:
+            continue
+        if gr.GetX()[i] > xmin and gr.GetX()[i] < xmax:
+            remove_list.append(i)
+
+    for i in reversed(remove_list):
+        gr.RemovePoint(i)
 
 
 def RemoveNearMin(graph, val, spacing=None):
@@ -1399,7 +1440,7 @@ def DrawVerticalLine(pad, line, xval):
     line.DrawLine(xval, ymin, xval, ymax)
 
 
-def DrawTitle(pad, text, align):
+def DrawTitle(pad, text, align, textOffset=0.2):
     pad_backup = R.gPad
     pad.cd()
     t = pad.GetTopMargin()
@@ -1412,7 +1453,6 @@ def DrawTitle(pad, text, align):
         pad_ratio = 1.
 
     textSize = 0.6
-    textOffset = 0.2
 
     latex = R.TLatex()
     latex.SetNDC()

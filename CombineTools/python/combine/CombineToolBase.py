@@ -77,7 +77,9 @@ rm higgsCombine*.root
 """
 
 
-def run_command(dry_run, command):
+def run_command(dry_run, command, pre_cmd=''):
+    if command.startswith('combine'):
+        command = pre_cmd + command
     if not dry_run:
         print '>> ' + command
         return os.system(command)
@@ -101,6 +103,9 @@ class CombineToolBase:
         self.dry_run = False
         self.bopts = ''  # batch submission options
         self.custom_crab = None
+        self.custom_crab_post = None
+        self.pre_cmd = ''
+        self.crab_files = []
 
     def attach_job_args(self, group):
         group.add_argument('--job-mode', default=self.job_mode, choices=[
@@ -123,6 +128,12 @@ class CombineToolBase:
                            help='crab working area')
         group.add_argument('--custom-crab', default=self.custom_crab,
                            help='python file containing a function with name signature "custom_crab(config)" that can be used to modify the default crab configuration')
+        group.add_argument('--crab-extra-files', nargs='+', default=self.crab_files,
+                           help='Extra files that should be shipped to crab')
+        group.add_argument('--pre-cmd', default=self.pre_cmd,
+                           help='Prefix the call to combine with this string')
+        group.add_argument('--custom-crab-post', default=self.custom_crab_post,
+                           help='txt file containing command lines that can be used in the crab job script instead of the defaults.')
 
     def attach_intercept_args(self, group):
         pass
@@ -143,6 +154,9 @@ class CombineToolBase:
         self.custom_crab = self.args.custom_crab
         self.memory = self.args.memory
         self.crab_area = self.args.crab_area
+        self.crab_files = self.args.crab_extra_files
+        self.pre_cmd = self.args.pre_cmd
+        self.custom_crab_post = self.args.custom_crab_post
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -172,7 +186,7 @@ class CombineToolBase:
                 if do_log: log_part = ' 2>&1 | %s ' % tee + logname + log_part
                 if command.startswith('combine') or command.startswith('pushd'):
                     text_file.write(
-                        'eval ' + command + log_part)
+                        self.pre_cmd + 'eval ' + command + log_part)
                 else:
                     text_file.write(command)
         st = os.stat(fname)
@@ -200,7 +214,7 @@ class CombineToolBase:
         if self.job_mode == 'interactive':
             pool = Pool(processes=self.parallel)
             result = pool.map(
-                partial(run_command, self.dry_run), self.job_queue)
+                partial(run_command, self.dry_run, pre_cmd=self.pre_cmd), self.job_queue)
         script_list = []
         if self.job_mode in ['script', 'lxbatch', 'SGE']:
             if self.prefix_file != '':
@@ -253,13 +267,13 @@ class CombineToolBase:
             condor_settings = CONDOR_TEMPLATE % {
               'EXE': outscriptname,
               'TASK': self.task_name,
-              'EXTRA': self.bopts,
+              'EXTRA': self.bopts.decode('string_escape'),
               'NUMBER': jobs
             }
             subfile.write(condor_settings)
             subfile.close()
             run_command(self.dry_run, 'condor_submit %s' % (subfilename))
- 
+
         if self.job_mode == 'crab3':
             #import the stuff we need
             from CRABAPI.RawCommand import crabCommand
@@ -271,17 +285,28 @@ class CombineToolBase:
             outscript.write(CRAB_PREFIX)
             jobs = 0
             wsp_files = set()
+            for extra in self.crab_files:
+                wsp_files.add(extra)
             for i, j in enumerate(range(0, len(self.job_queue), self.merge)):
                 jobs += 1
                 outscript.write('\nif [ $1 -eq %i ]; then\n' % jobs)
                 for line in self.job_queue[j:j + self.merge]:
                     newline = line
-                    if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
+                    if line.startswith('combine'): newline = self.pre_cmd + line.replace('combine', './combine', 1)
                     wsp = str(self.extract_workspace_arg(newline.split()))
-                    wsp_files.add(wsp)
-                    outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
+
+                    newline = newline.replace(wsp, os.path.basename(wsp))
+                    if wsp.startswith('root://'):
+                        newline = ('./copyRemoteWorkspace.sh %s ./%s; ' % (wsp, os.path.basename(wsp))) + newline
+                    else:
+                        wsp_files.add(wsp)
+                    outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
-            outscript.write(CRAB_POSTFIX)
+            if self.custom_crab_post is not None:
+                with open(self.custom_crab_post, 'r') as postfile:
+                    outscript.write(postfile.read())
+            else:
+                outscript.write(CRAB_POSTFIX)
             outscript.close()
             from CombineHarvester.CombineTools.combine.crab import config
             config.General.requestName = self.task_name
