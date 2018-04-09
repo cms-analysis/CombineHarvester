@@ -18,6 +18,10 @@ ROOT.gStyle.SetMarkerSize(0.7)
 NAMECOUNTER = 0
 NPX = 200
 
+DELTANLL = 'deltaNLL'
+
+FILTER = None
+REMOVE_X_RANGES = None
 
 def read(scan, param, files, chop, remove_near_min, rezero,
          remove_delta=None, improve=False, remove_dups=True):
@@ -25,7 +29,7 @@ def read(scan, param, files, chop, remove_near_min, rezero,
     goodfiles = [f for f in files if plot.TFileIsGood(f)]
     limit = plot.MakeTChain(goodfiles, 'limit')
     graph = plot.TGraphFromTree(
-        limit, param, '2*deltaNLL', 'quantileExpected > -1.5')
+        limit, param, '2*%s' % DELTANLL, 'quantileExpected > -1.5')
     # print 'INPUT'
     # graph.Print()
     graph.SetName(scan)
@@ -47,7 +51,11 @@ def read(scan, param, files, chop, remove_near_min, rezero,
         NAMECOUNTER += 1
         plot.ImproveMinimum(graph, func, True)
     # graph.Print()
-    # plot.FilterGraph(graph)
+    if FILTER is not None:
+        plot.FilterGraph(graph, FILTER)
+    if REMOVE_X_RANGES is not None:
+        for remove_x in REMOVE_X_RANGES:
+            plot.RemoveInXRange(graph, remove_x[0], remove_x[1])
     return graph
 
 def Eval(obj, x, params):
@@ -166,7 +174,8 @@ def BuildScan(scan, param, files, color, yvals, chop,
               envelope=False,
               pregraph=None,
               remove_delta=None,
-              improve=False):
+              improve=False,
+              linestyle=1):
     print files
     if pregraph is None:
         remove_dups = not envelope
@@ -176,6 +185,7 @@ def BuildScan(scan, param, files, color, yvals, chop,
 
     else:
         graph = pregraph
+
     bestfit = None
     for i in xrange(graph.GetN()):
         if graph.GetY()[i] == 0.:
@@ -192,6 +202,7 @@ def BuildScan(scan, param, files, color, yvals, chop,
     func.SetNpx(NPX)
     NAMECOUNTER += 1
     func.SetLineColor(color)
+    func.SetLineStyle(linestyle)
     func.SetLineWidth(3)
     assert(bestfit is not None)
     if not envelope:
@@ -297,10 +308,22 @@ parser.add_argument('--vertical-line', type=float, default=None)
 parser.add_argument('--decorate-signif', default=None)
 parser.add_argument('--legend-off', default=0.0, type=float, help='legend x-offset')
 parser.add_argument('--title-right', default='35.9 fb^{-1} (13 TeV)')
+parser.add_argument('--nll-branch', default='deltaNLL')
+parser.add_argument('--filter-points', default=None)
+parser.add_argument('--remove-x-ranges', default=None)
+parser.add_argument('--paper', action='store_true')
+
 args = parser.parse_args()
 if args.pub:
     args.no_input_label = True
 
+DELTANLL = args.nll_branch
+if args.filter_points is not None:
+    FILTER = int(args.filter_points)
+
+if args.remove_x_ranges is not None:
+    x_ranges = args.remove_x_ranges.split(':')
+    REMOVE_X_RANGES = [(float(x.split(',')[0]), float(x.split(',')[1])) for x in x_ranges]
 
 print '--------------------------------------'
 print args.output
@@ -317,7 +340,7 @@ yvals = [1., 4.]
 if args.decorate_signif is not None:
     yvals = [float(i)*float(i) for i in args.decorate_signif.split(',')]
     NPX = 1000
-    ROOT.gStyle.SetPadRightMargin(0.05)
+    # ROOT.gStyle.SetPadRightMargin(0.05)
 if args.upper_cl is not None:
     yvals = [ROOT.Math.chisquared_quantile(args.upper_cl, 1)]
 
@@ -352,6 +375,9 @@ if args.others is not None:
         other_POI = args.POI
         if len(splitargs) >= 4:
             other_POI = splitargs[3]
+        linestyle=1
+        if len(splitargs) >= 5:
+            linestyle = int(splitargs[4])
         tmp_gr = None
         if args.premade:
             tmp_file = ROOT.TFile(splitargs[0])
@@ -369,7 +395,8 @@ if args.others is not None:
                       args.envelope,
                       remove_delta=args.remove_delta,
                       improve=args.improve,
-                      pregraph=tmp_gr
+                      pregraph=tmp_gr,
+                      linestyle=linestyle
                       )
             )
 
@@ -508,7 +535,8 @@ for i, yval in enumerate(yvals):
         latex.SetTextSize(0.04)
         latex.SetTextAlign(12)
         latex.SetTextColor(14)
-        latex.DrawLatex(axishist.GetXaxis().GetXmax() * 1.01, yval, '%i#sigma' % (int(math.sqrt(yval)+0.5)))
+        latex.DrawLatex(axishist.GetXaxis().GetXmax() * 0.93, yval+0.7, '%i#sigma' % (int(math.sqrt(yval)+0.5)))
+        # latex.DrawLatex(axishist.GetXaxis().GetXmax() * 1.01, yval, '%i#sigma' % (int(math.sqrt(yval)+0.5)))
     # if args.pub and i > 0:
     #     line.SetLineColor(ROOT.kGreen+2)
     plot.DrawHorizontalLine(pads[0], line, yval)
@@ -522,12 +550,14 @@ for i, yval in enumerate(yvals):
 # main_scan['func'].SetNpx(200)
 if args.pub:
     main_scan['func'].SetLineStyle(args.line_style)
+if args.decorate_signif:
+    main_scan['func'].SetLineWidth(3)
 main_scan['func'].Draw('same')
 for other in other_scans:
     if args.breakdown is not None:
         other['func'].SetLineStyle(2)
         other['func'].SetLineWidth(2)
-    if args.pub:
+    if args.pub and not args.decorate_signif:
         other['func'].SetLineStyle(2)
     if args.hide_envelope:
         other['func'].SetLineWidth(1)
@@ -537,8 +567,8 @@ for other in other_scans:
         other['graph'].Draw('PSAME') # redraw this
         # other['func'].SetLineWidth(3)
     if args.decorate_signif:
-        other['func'].SetLineStyle(1)
-        other['func'].SetLineWidth(1)
+        # other['func'].SetLineStyle(1)
+        other['func'].SetLineWidth(2)
     other['func'].Draw('SAME')
 
 # main_scan['func'].Draw('same')
@@ -686,7 +716,8 @@ if args.signif:
 
         xmin = axishist.GetXaxis().GetXmin()
         xmax = axishist.GetXaxis().GetXmax()
-        x_align_label = xmin + (0.07 * (xmax - xmin))
+        x_align_label = xmin + (0.13 * (xmax - xmin))
+        # x_align_label = xmin + (0.07 * (xmax - xmin))
         latex = ROOT.TLatex()
         latex.SetTextFont(62)
         latex.SetTextSize(0.05)
@@ -694,10 +725,22 @@ if args.signif:
         for col, sig in arrow_list:
             latex.SetTextColor(col)
             print sig
-            latex.DrawLatex(x_align_label, sig*sig+1.0, '%.1f#sigma' % sig)
+            if sig > 0.0:
+                # latex.DrawLatex(x_align_label, sig*sig+1.0, '%.1f#sigma' % sig)
+                latex.DrawLatex(x_align_label, sig*sig+1.5, '%.1f#sigma' % sig)
+            else:
+                latex.DrawLatex(xmin + (0.13 * (xmax - xmin)), sig*sig+1.8, '%.1f#sigma' % sig)
+                # latex.DrawLatex(xmin + (0.02 * (xmax - xmin)), sig*sig-5.0, '%.1f#sigma' % sig)
+
             arrow = ROOT.TArrow()
             arrow.SetLineColor(col)
-            arrow.DrawArrow(0.005 * (xmax - xmin), sig*sig, xmin + (0.06 * (xmax - xmin)), sig*sig+1.0, 0.02, '-<-')
+            if sig > 0.0:
+                # arrow.DrawArrow(0.005 * (xmax - xmin), sig*sig, xmin + (0.06 * (xmax - xmin)), sig*sig+1.0, 0.02, '-<-')
+                arrow.DrawArrow(0.005 * (xmax - xmin), sig*sig, xmin + (0.12 * (xmax - xmin)), sig*sig+1.5, 0.02, '-<-')
+            else:
+                # arrow.DrawArrow(0.005 * (xmax - xmin), sig*sig - 0.7, xmin + (0.04 * (xmax - xmin)), sig*sig-4.0, 0.02, '-<-')
+                arrow.DrawArrow(0.005 * (xmax - xmin), sig*sig, xmin + (0.12 * (xmax - xmin)), sig*sig+1.8, 0.02, '-<-')
+
 # pt.AddText(textfit)
 # if len(args) >= 4:
 #     syst_hi = math.sqrt(val_nom[1]*val_nom[1] - syst_scan['val'][1] * syst_scan['val'][1])
@@ -790,8 +833,13 @@ if 'atlas_' in args.output:
 
 subtext = '{#bf{Run 1 Internal}}'
     # subtext = '#it{#splitline{LHC Run 1}{Internal}}'
-plot.DrawCMSLogo(pads[0], 'CMS',
-                 'Preliminary', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
+if args.decorate_signif or args.paper:
+    plot.DrawCMSLogo(pads[0], 'CMS',
+                    '', 11, 0.045, 0.035, 1.2, '', 1.1 if args.pub else 0.8)
+else:
+    plot.DrawCMSLogo(pads[0], 'CMS',
+                    'Preliminary', 11, 0.045, 0.035, 1.2, '', 0.9 if args.pub else 0.8)
+
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS',
 #                  '#it{LHC Run 1 Internal}', 11, 0.045, 0.035, 1.2)
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1
@@ -864,7 +912,7 @@ elif args.legend_pos == 7:
     if args.POI_line is not None:
         latex.DrawLatex(0.58, 0.875, POI_line)
 elif args.legend_pos == 9:
-    legend = ROOT.TLegend(0.56, 0.74, 0.91, 0.92, '', 'NBNDC')
+    legend = ROOT.TLegend(0.42, 0.74, 0.70, 0.92, '', 'NBNDC')
     # legend.SetNColumns(1)
 
 if len(other_scans) >= 3 and args.legend_pos == 1:

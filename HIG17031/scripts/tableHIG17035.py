@@ -31,7 +31,7 @@ ORDER = {
 
 TRANSLATE = {
     'mu_XS_ttH_BR_ZZ': '\\mu_{\\text{ttH}}^{\\text{ZZ}}',
-    'mu_XS_ttH_BR_WW': '\\mu_{\\text{ttH}}^{\\text{ZZ}}',
+    'mu_XS_ttH_BR_WW': '\\mu_{\\text{ttH}}^{\\text{WW}}',
     'mu_XS_ttH_BR_gamgam': '\\mu_{\\text{ttH}}^{\\gamma\\gamma}',
     'mu_XS_ttH_BR_tautau': '\\mu_{\\text{ttH}}^{\\tau\\tau}',
     'mu_XS_ttH_BR_bb': '\\mu_{\\text{ttH}}^{\\text{bb}}',
@@ -109,7 +109,7 @@ for i, model in enumerate(MODS):
         if args.obs_run2 is not None:
             # line += ' $^{%+.2f}_{%+.2f}$ & $^{%+.2f}_{%+.2f}$ ' % (obs_run2[POI]['StatHi'], obs_run2[POI]['StatLo'], obs_run2[POI]['SystHi'], obs_run2[POI]['SystHi'])
             if POI == 'mu_XS_ttH_BR_ZZ':
-                blank =''
+                blank ='-0.00'
                 line += '$%.2f$ & {}$^{%+.2f}_{%s}$ & ' % (obs_run2[POI]['Val'], obs_run2[POI]['ErrorHi'], blank)
                 line += ' $^{%+.2f}_{%s}$ & $^{%+.2f}_{%s}$ & $^{%+.2f}_{%s}$ & $^{%+.2f}_{%s}$ ' % (obs_run2[POI]['StatHi'], blank, obs_run2[POI]['ExpHi'], blank, obs_run2[POI]['BkgThHi'], blank, obs_run2[POI]['SigThHi'], blank)
             else:

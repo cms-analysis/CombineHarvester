@@ -1073,6 +1073,18 @@ def FilterGraph(gr, n=3):
         gr.RemovePoint(i)
 
 
+def RemoveInXRange(gr, xmin=0, xmax=1):
+    remove_list = []
+    for i in xrange(gr.GetN()):
+        if gr.GetY()[i] == 0.:
+            continue
+        if gr.GetX()[i] > xmin and gr.GetX()[i] < xmax:
+            remove_list.append(i)
+
+    for i in reversed(remove_list):
+        gr.RemovePoint(i)
+
+
 def RemoveNearMin(graph, val, spacing=None):
     # assume graph is sorted:
     n = graph.GetN()

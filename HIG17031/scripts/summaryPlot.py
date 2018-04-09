@@ -32,7 +32,7 @@ args = parser.parse_args()
 
 default_bar_styles = {
     '2sig_Error': {
-        'LineWidth': 1,
+        'LineWidth': 2,
         'LineColor': ROOT.kBlue,
         'MarkerSize': 0
     },
@@ -42,25 +42,25 @@ default_bar_styles = {
         'MarkerSize': 0
     },
     'Stat': {
-        'LineWidth': 5,
+        'LineWidth': 6,
         'LineColor': ROOT.kRed,
         'MarkerSize': 0
     },
     'Syst': {
-        'LineWidth': 5,
+        'LineWidth': 6,
         'LineColor': ROOT.kRed,
         'MarkerSize': 0
     },
     'BestFit': {
-        'MarkerSize': 1
+        'MarkerSize': 1.1
     }
 }
 
 default_bar_labels = {
-    '2sig_Error': '#pm2#sigma',
-    'Error': '#pm1#sigma (stat. #oplus sys.)',
-    'Stat': '#pm1#sigma (stat.)',
-    'Syst': '#pm1#sigma (sys.)'
+    '2sig_Error': '#pm2#sigma (stat #oplus syst)',
+    'Error': '#pm1#sigma (stat #oplus syst)',
+    'Stat': '#pm1#sigma (stat)',
+    'Syst': '#pm1#sigma (syst)'
 }
 
 
@@ -94,7 +94,7 @@ if args.translate is not None:
 
 
 # Set the global plotting style
-plot.ModTDRStyle(l=0.20, b=0.10, height=args.height, t=0.02)
+plot.ModTDRStyle(l=0.20, b=0.10, height=args.height, t=0.05)
 ROOT.gStyle.SetNdivisions(510, 'XYZ')
 
 canv = ROOT.TCanvas(args.output, args.output)
@@ -231,17 +231,18 @@ gr_fit.Draw('PSAME')
 pads[0].RedrawAxis()
 
 
-title_box = ROOT.TPaveText(xmin + (xmax-xmin)*0.01, float(N)+0.1, xmin + (xmax-xmin)*0.65, float(N+1)-0.1, 'NB')
+title_box = ROOT.TPaveText(xmin + (xmax-xmin)*0.01, float(N)+0.3, xmin + (xmax-xmin)*0.65, float(N+1)-0.2, 'NB')
 title_box.SetTextFont(42)
 title_box.SetTextAlign(12)
-title_box.AddText('#scale[1.2]{#bf{CMS}} #it{Preliminary}')
-title_box.AddText('#scale[0.6]{%s}' % args.subline)
+title_box.AddText('#scale[1.4]{#bf{CMS}}')
+# title_box.AddText('#scale[0.5]{%s}' % '')
+plot.DrawTitle(pads[0], args.subline, 3)
 title_box.SetMargin(0.0)
 title_box.Draw()
 
 frame_h = 1. - pads[0].GetBottomMargin() - pads[0].GetTopMargin()
 frame_frac = pads[0].GetBottomMargin() + (frame_h * ((float(N)-0.4)/float(N+1)))
-legend = ROOT.TLegend(0.66, frame_frac, 0.95, 0.97, '', 'NBNDC')
+legend = ROOT.TLegend(0.66, frame_frac, 0.95, 0.945, '', 'NBNDC')
 legend.AddEntry(gr_fit, 'Observed', 'P')
 
 
