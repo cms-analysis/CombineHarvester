@@ -113,6 +113,14 @@ void CloneProcsAndSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
   ch::CloneProcsAndSysts(src, dest, lambda);
 }
 
+TH1F SystematicGetShapeUpPy(ch::Systematic& s) {
+    return *dynamic_cast<const TH1F*>(s.shape_u());
+}
+
+TH1F SystematicGetShapeDownPy(ch::Systematic& s) {
+    return *dynamic_cast<const TH1F*>(s.shape_d());
+}
+
 // To resolve overloaded methods we first define some pointers
 int (CombineHarvester::*Overload1_ParseDatacard)(
     std::string const&, std::string const&, std::string const&,
@@ -384,6 +392,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("value_u", &Systematic::value_u)
       .def("set_value_d", &Systematic::set_value_d)
       .def("value_d", &Systematic::value_d)
+      .def("shape_u", SystematicGetShapeUpPy)
+      .def("shape_d", SystematicGetShapeDownPy)
       .def("set_scale", &Systematic::set_scale)
       .def("scale", &Systematic::scale)
       .def("set_asymm", &Systematic::set_asymm)
