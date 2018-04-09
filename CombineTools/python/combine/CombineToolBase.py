@@ -7,6 +7,7 @@ DRY_RUN = False
 
 JOB_PREFIX = """#!/bin/sh
 ulimit -s unlimited
+set -e
 cd %(CMSSW_BASE)s/src
 export SCRAM_ARCH=%(SCRAM_ARCH)s
 eval `scramv1 runtime -sh`
@@ -17,6 +18,22 @@ cd %(PWD)s
     'PWD': os.environ['PWD']
 })
 
+CONDOR_TEMPLATE = """executable = %(EXE)s
+arguments = $(ProcId)
+output                = %(TASK)s.$(ClusterId).$(ProcId).out
+error                 = %(TASK)s.$(ClusterId).$(ProcId).err
+log                   = %(TASK)s.$(ClusterId).log
+
+# Send the job to Held state on failure.
+on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
+
+# Periodically retry the jobs every 10 minutes, up to a maximum of 5 retries.
+periodic_release =  (NumJobStarts < 3) && ((CurrentTime - EnteredCurrentStatus) > 600)
+
+%(EXTRA)s
+queue %(NUMBER)s
+
+"""
 
 CRAB_PREFIX = """
 set -x
@@ -87,7 +104,7 @@ class CombineToolBase:
 
     def attach_job_args(self, group):
         group.add_argument('--job-mode', default=self.job_mode, choices=[
-                           'interactive', 'script', 'lxbatch', 'SGE', 'crab3'], help='Task execution mode')
+                           'interactive', 'script', 'lxbatch', 'SGE', 'condor', 'crab3'], help='Task execution mode')
         group.add_argument('--prefix-file', default=self.prefix_file,
                            help='Path to file containing job prefix')
         group.add_argument('--task-name', default=self.task_name,
@@ -216,6 +233,33 @@ class CombineToolBase:
                 full_script = os.path.abspath(script)
                 logname = full_script.replace('.sh', '_%J.log')
                 run_command(self.dry_run, 'qsub -o %s %s %s' % (logname, self.bopts, full_script))
+        if self.job_mode == 'condor':
+            outscriptname = 'condor_%s.sh' % self.task_name
+            subfilename = 'condor_%s.sub' % self.task_name
+            print '>> condor job script will be %s' % outscriptname
+            outscript = open(outscriptname, "w")
+            outscript.write(JOB_PREFIX)
+            jobs = 0
+            wsp_files = set()
+            for i, j in enumerate(range(0, len(self.job_queue), self.merge)):
+                outscript.write('\nif [ $1 -eq %i ]; then\n' % jobs)
+                jobs += 1
+                for line in self.job_queue[j:j + self.merge]:
+                    newline = line
+                    outscript.write('  ' + newline + '\n')
+                outscript.write('fi')
+            outscript.close()
+            subfile = open(subfilename, "w")
+            condor_settings = CONDOR_TEMPLATE % {
+              'EXE': outscriptname,
+              'TASK': self.task_name,
+              'EXTRA': self.bopts,
+              'NUMBER': jobs
+            }
+            subfile.write(condor_settings)
+            subfile.close()
+            run_command(self.dry_run, 'condor_submit %s' % (subfilename))
+ 
         if self.job_mode == 'crab3':
             #import the stuff we need
             from CRABAPI.RawCommand import crabCommand

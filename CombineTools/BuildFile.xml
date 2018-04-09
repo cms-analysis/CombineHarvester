@@ -12,6 +12,7 @@
 <use name="boost_python"/>
 <use name="boost_regex"/>
 <use name="rootpy"/>
+<use name="HiggsAnalysis/CombinedLimit"/>
 <export>
   <lib name="1"/>
 </export>
