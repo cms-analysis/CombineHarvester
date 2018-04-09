@@ -8,6 +8,7 @@ var hierarchy =
     [ "BkgInfo", "struct_bkg_info.html", null ],
     [ "ch::CardWriter", "classch_1_1_card_writer.html", null ],
     [ "ch::syst::channel", "structch_1_1syst_1_1channel.html", null ],
+    [ "ch::CMSHistFuncFactory", "classch_1_1_c_m_s_hist_func_factory.html", null ],
     [ "ColInfo", "struct_col_info.html", null ],
     [ "ch::CombineHarvester", "classch_1_1_combine_harvester.html", null ],
     [ "convert_cpp_map_to_py_dict< TKey, TValue >", "structconvert__cpp__map__to__py__dict.html", null ],

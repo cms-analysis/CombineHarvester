@@ -12,7 +12,7 @@ var searchData=
   ['filterprocspy',['FilterProcsPy',['../_combine_harvester___python_8h.html#a56ae7ecb5e38f893261f069dfdf2bd71',1,'FilterProcsPy(ch::CombineHarvester &amp;cb, boost::python::object func):&#160;CombineHarvester_Python.cc'],['../_combine_harvester___python_8cc.html#a56ae7ecb5e38f893261f069dfdf2bd71',1,'FilterProcsPy(ch::CombineHarvester &amp;cb, boost::python::object func):&#160;CombineHarvester_Python.cc']]],
   ['filtersysts',['FilterSysts',['../classch_1_1_combine_harvester.html#a91821b9464ebaacb5b92be2b3bc794f8',1,'ch::CombineHarvester']]],
   ['filtersystspy',['FilterSystsPy',['../_combine_harvester___python_8h.html#a012558445da84ccfe7ddc24ad2a7eb75',1,'FilterSystsPy(ch::CombineHarvester &amp;cb, boost::python::object func):&#160;CombineHarvester_Python.cc'],['../_combine_harvester___python_8cc.html#a012558445da84ccfe7ddc24ad2a7eb75',1,'FilterSystsPy(ch::CombineHarvester &amp;cb, boost::python::object func):&#160;CombineHarvester_Python.cc']]],
-  ['findaddpdf',['FindAddPdf',['../namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a',1,'ch']]],
+  ['findaddpdf',['FindAddPdf',['../namespacech.html#a5a4aae941cd175bf6764ad6789b4df8c',1,'ch']]],
   ['findcrossingswithspline',['FindCrossingsWithSpline',['../namespaceplotting.html#a930ca7cb0408b290b0db1c79f5911105',1,'plotting']]],
   ['findnewbinning',['FindNewBinning',['../classch_1_1_auto_rebin.html#a2dc97baa47e812e6aa1817f604e2541a',1,'ch::AutoRebin']]],
   ['fixbothranges',['FixBothRanges',['../namespaceplotting.html#a436e05154225b06e1a13a22dbffd2096',1,'plotting']]],

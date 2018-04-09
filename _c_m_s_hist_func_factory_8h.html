@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.10"/>
-<title>CombineHarvester: Data Fields</title>
+<title>CombineHarvester: CombinePdfs/interface/CMSHistFuncFactory.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('functions_o.html','');});
+$(document).ready(function(){initNavTree('_c_m_s_hist_func_factory_8h.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -95,40 +95,37 @@ $(document).ready(function(){initNavTree('functions_o.html','');});
 </iframe>
 </div>
 
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Data Structures</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
+  <div class="headertitle">
+<div class="title">CMSHistFuncFactory.h File Reference</div>  </div>
+</div><!--header-->
 <div class="contents">
-<div class="textblock">Here is a list of all struct and union fields with links to the structures/unions they belong to:</div>
-
-<h3><a class="anchor" id="index_o"></a>- o -</h3><ul>
-<li>Object()
-: <a class="el" href="classch_1_1_object.html#adff80080730670f56fc3fcb4cecf65a7">ch::Object</a>
-</li>
-<li>observable()
-: <a class="el" href="classch_1_1_process.html#a25e01410aada0818fa20a95a30a96025">ch::Process</a>
-</li>
-<li>Observation()
-: <a class="el" href="classch_1_1_observation.html#a56897e63ca73b158071633e3f379e8c5">ch::Observation</a>
-</li>
-<li>operator()()
-: <a class="el" href="classch_1_1syst_1_1_syst_map.html#a3b41078801af7d6558c7f6f5dfbae567">ch::syst::SystMap&lt; T &gt;</a>
-, <a class="el" href="classch_1_1syst_1_1_syst_map_asymm.html#ad111f1db37742d597c453b27eaa34173">ch::syst::SystMapAsymm&lt; T &gt;</a>
-, <a class="el" href="classch_1_1syst_1_1_syst_map_func.html#ac396f6270a8cfa9db7058408ebccd2d3">ch::syst::SystMapFunc&lt; T &gt;</a>
-</li>
-<li>operator&lt;&lt;
-: <a class="el" href="structch_1_1_hist_mapping.html#a082b489ab66940ac856997bfcd1ced7a">ch::HistMapping</a>
-, <a class="el" href="classch_1_1_observation.html#a987488ba4dcac7dee972febeeab0b648">ch::Observation</a>
-, <a class="el" href="classch_1_1_parameter.html#a4b23aafe9b144c9d6affc3a86d1efeb5">ch::Parameter</a>
-, <a class="el" href="classch_1_1_process.html#ad2d1aa710013a7a2eac899ed820a8f29">ch::Process</a>
-, <a class="el" href="classch_1_1_systematic.html#a02ece8cccb0b41cb2cb28145822875d8">ch::Systematic</a>
-</li>
-<li>operator=()
-: <a class="el" href="classch_1_1_combine_harvester.html#a537e7bf110bf4e466d5c39843e76fd03">ch::CombineHarvester</a>
-, <a class="el" href="classch_1_1_object.html#a852658426c7ab24d17a8cf5b33ec6805">ch::Object</a>
-, <a class="el" href="classch_1_1_observation.html#a64da98f3d291c5f1b9cdd26d9e6999c5">ch::Observation</a>
-, <a class="el" href="classch_1_1_parameter.html#ae6cafb3e152e109ff3e3e7b829eb58fe">ch::Parameter</a>
-, <a class="el" href="classch_1_1_process.html#ae59eb8e73740459d47205a32d23b517a">ch::Process</a>
-, <a class="el" href="classch_1_1_systematic.html#a14586d1bc593e9564ce15736ad8367c4">ch::Systematic</a>
-</li>
-</ul>
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;RooWorkspace.h&quot;</code><br />
+<code>#include &quot;RooHistPdf.h&quot;</code><br />
+<code>#include &quot;RooBinning.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="_combine_harvester_8h_source.html">CombineHarvester/CombineTools/interface/CombineHarvester.h</a>&quot;</code><br />
+<code>#include &quot;HiggsAnalysis/CombinedLimit/interface/CMSHistFunc.h&quot;</code><br />
+<code>#include &quot;HiggsAnalysis/CombinedLimit/interface/RooSpline1D.h&quot;</code><br />
+<code>#include &quot;HiggsAnalysis/CombinedLimit/interface/VerticalInterpHistPdf.h&quot;</code><br />
+<code>#include &quot;HiggsAnalysis/CombinedLimit/interface/AsymPow.h&quot;</code><br />
+</div>
+<p><a href="_c_m_s_hist_func_factory_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Data Structures</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_c_m_s_hist_func_factory.html">ch::CMSHistFuncFactory</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacech"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html">ch</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.6-->

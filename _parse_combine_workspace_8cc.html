@@ -104,6 +104,7 @@ $(document).ready(function(){initNavTree('_parse_combine_workspace_8cc.html','')
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="_parse_combine_workspace_8h_source.html">CombineHarvester/CombineTools/interface/ParseCombineWorkspace.h</a>&quot;</code><br />
+<code>#include &quot;HiggsAnalysis/CombinedLimit/interface/CMSHistErrorPropagator.h&quot;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
@@ -112,6 +113,7 @@ $(document).ready(function(){initNavTree('_parse_combine_workspace_8cc.html','')
 <code>#include &quot;RooCategory.h&quot;</code><br />
 <code>#include &quot;RooAddPdf.h&quot;</code><br />
 <code>#include &quot;RooProdPdf.h&quot;</code><br />
+<code>#include &quot;RooRealSumPdf.h&quot;</code><br />
 <code>#include &quot;RooStats/ModelConfig.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="_logging_8h_source.html">CombineHarvester/CombineTools/interface/Logging.h</a>&quot;</code><br />
 </div>
@@ -128,8 +130,8 @@ Functions</h2></td></tr>
 <tr class="separator:af7bcceb32c2f4a82fe1de32a93d0dfa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ae8a88e9e0d2120deec06e553a525f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">ch::ParseCombineWorkspace</a> (CombineHarvester &amp;cb, RooWorkspace &amp;ws, std::string const &amp;modelcfg, std::string const &amp;data, bool verbose=false)</td></tr>
 <tr class="separator:a5ae8a88e9e0d2120deec06e553a525f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d8871a3c13b62ac6fefeb9a87b5e44a"><td class="memItemLeft" align="right" valign="top">RooAddPdf *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a">ch::FindAddPdf</a> (RooAbsPdf *input)</td></tr>
-<tr class="separator:a0d8871a3c13b62ac6fefeb9a87b5e44a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a4aae941cd175bf6764ad6789b4df8c"><td class="memItemLeft" align="right" valign="top">RooAbsReal *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacech.html#a5a4aae941cd175bf6764ad6789b4df8c">ch::FindAddPdf</a> (RooAbsReal *input)</td></tr>
+<tr class="separator:a5a4aae941cd175bf6764ad6789b4df8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

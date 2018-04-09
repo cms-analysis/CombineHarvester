@@ -70,6 +70,8 @@ var classch_1_1_combine_harvester =
     [ "SetGroup", "classch_1_1_combine_harvester.html#a5d75e03de3d628f7281a2e6914722bc5", null ],
     [ "RemoveGroup", "classch_1_1_combine_harvester.html#ac3e906d415a6d68713f08a0c3f885810", null ],
     [ "RenameGroup", "classch_1_1_combine_harvester.html#a750a78b28b4ae6ca2d27a34b4ac32cc9", null ],
+    [ "AddDatacardLineAtEnd", "classch_1_1_combine_harvester.html#a59b5a637f7f11c2ee77a9b07bc1deb02", null ],
+    [ "ClearDatacardLinesAtEnd", "classch_1_1_combine_harvester.html#ac431bdfafad282e891915f7488f43bce", null ],
     [ "GetRate", "classch_1_1_combine_harvester.html#aff4165661f9f137607d6c3c881172689", null ],
     [ "GetObservedRate", "classch_1_1_combine_harvester.html#a0b5444f9dcfa6fdace5fa2d8dc2ca11f", null ],
     [ "GetUncertainty", "classch_1_1_combine_harvester.html#a9c0e44635dc637746222f67e9be518e5", null ],

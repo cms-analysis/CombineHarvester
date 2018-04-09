@@ -1,6 +1,7 @@
 var searchData=
 [
   ['object',['Object',['../classch_1_1_object.html#adff80080730670f56fc3fcb4cecf65a7',1,'ch::Object::Object()'],['../classch_1_1_object.html#ab43915289318053f138083f1e8720646',1,'ch::Object::Object(Object const &amp;other)'],['../classch_1_1_object.html#a1d58aeeeea90ab0492d114ad75b9da66',1,'ch::Object::Object(Object &amp;&amp;other)']]],
+  ['observable',['observable',['../classch_1_1_process.html#a25e01410aada0818fa20a95a30a96025',1,'ch::Process']]],
   ['observation',['Observation',['../classch_1_1_observation.html#a56897e63ca73b158071633e3f379e8c5',1,'ch::Observation::Observation()'],['../classch_1_1_observation.html#a9f88f5220628a9d923539c3fe8a0669a',1,'ch::Observation::Observation(Observation const &amp;other)'],['../classch_1_1_observation.html#af37c17965ed6342871c1154df190e9cf',1,'ch::Observation::Observation(Observation &amp;&amp;other)']]],
   ['onepad',['OnePad',['../_plotting_8h.html#aa098641a0337d718d1074531133b884f',1,'OnePad():&#160;Plotting.h'],['../namespaceplotting.html#a1126597eb4f60cba5a5b87ab05dcc46b',1,'plotting.OnePad()']]],
   ['openfromtfile',['OpenFromTFile',['../namespacech.html#aa859d4d87eb7f27b2499e55c73789d98',1,'ch::OpenFromTFile(std::string const &amp;fullpath)'],['../namespacech.html#af7fe148f865bc9674341c9aa36d875ef',1,'ch::OpenFromTFile(TFile *file, std::string const &amp;path)']]],

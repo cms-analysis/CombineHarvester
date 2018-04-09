@@ -20,5 +20,6 @@ var searchData=
   ['restorebinning',['RestoreBinning',['../namespacech.html#a23cd9444931a49de080638458f722501',1,'ch']]],
   ['rezerotgraph',['ReZeroTGraph',['../_plotting_8h.html#af2524f9f02ac66a16164c87bfc149628',1,'ReZeroTGraph():&#160;Plotting.h'],['../namespaceplotting.html#a273bab5cfe205a69a469a86828ab3f3b',1,'plotting.ReZeroTGraph()']]],
   ['roccurvefrom1dhists',['RocCurveFrom1DHists',['../namespaceplotting.html#a0d8bc74b28155809f534df954fe60355',1,'plotting']]],
-  ['roomorphingpdf_2emd',['RooMorphingPdf.md',['../_roo_morphing_pdf_8md.html',1,'']]]
+  ['roomorphingpdf_2emd',['RooMorphingPdf.md',['../_roo_morphing_pdf_8md.html',1,'']]],
+  ['run',['Run',['../classch_1_1_c_m_s_hist_func_factory.html#a76a006851773756a05ca67e577b32c60',1,'ch::CMSHistFuncFactory']]]
 ];

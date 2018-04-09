@@ -101,131 +101,163 @@ $(document).ready(function(){initNavTree('_parse_combine_workspace_8cc_source.ht
 </div><!--header-->
 <div class="contents">
 <a href="_parse_combine_workspace_8cc.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_parse_combine_workspace_8h.html">CombineHarvester/CombineTools/interface/ParseCombineWorkspace.h</a>&quot;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;RooWorkspace.h&quot;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;RooSimultaneous.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;RooCategory.h&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;RooAddPdf.h&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;RooProdPdf.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;RooStats/ModelConfig.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_logging_8h.html">CombineHarvester/CombineTools/interface/Logging.h</a>&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacech.html">ch</a> {</div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="namespacech.html#af7bcceb32c2f4a82fe1de32a93d0dfa3">   14</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#af7bcceb32c2f4a82fe1de32a93d0dfa3">ParseCombineWorkspacePy</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a>&amp; cb, RooWorkspace <span class="keyword">const</span>&amp; ws,</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                           std::string <span class="keyword">const</span>&amp; modelcfg,</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                           std::string <span class="keyword">const</span>&amp; data, <span class="keywordtype">bool</span> verbose) {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <a class="code" href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">ParseCombineWorkspace</a>(cb, const_cast&lt;RooWorkspace&amp;&gt;(ws), modelcfg, data, verbose);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;}</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">   20</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">ParseCombineWorkspace</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a>&amp; cb, RooWorkspace&amp; ws,</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                           std::string <span class="keyword">const</span>&amp; modelcfg_name,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                           std::string <span class="keyword">const</span>&amp; data_name, <span class="keywordtype">bool</span> verbose) {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordtype">bool</span> v = verbose;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  RooStats::ModelConfig* cfg =</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      <span class="keyword">dynamic_cast&lt;</span>RooStats::ModelConfig*<span class="keyword">&gt;</span>(ws.genobj(modelcfg_name.c_str()));</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordflow">if</span> (!cfg) {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Could not get ModelConfig from workspace&quot;</span>));</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  }</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  RooSimultaneous* pdf = <span class="keyword">dynamic_cast&lt;</span>RooSimultaneous*<span class="keyword">&gt;</span>(cfg-&gt;GetPdf());</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">if</span> (!pdf) {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;PDF is not a RooSimultaneous&quot;</span>));</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  std::vector&lt;std::string&gt; cats;</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;HiggsAnalysis/CombinedLimit/interface/CMSHistErrorPropagator.h&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;RooWorkspace.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;RooSimultaneous.h&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;RooCategory.h&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;RooAddPdf.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;RooProdPdf.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;RooRealSumPdf.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;RooStats/ModelConfig.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_logging_8h.html">CombineHarvester/CombineTools/interface/Logging.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacech.html">ch</a> {</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="namespacech.html#af7bcceb32c2f4a82fe1de32a93d0dfa3">   16</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#af7bcceb32c2f4a82fe1de32a93d0dfa3">ParseCombineWorkspacePy</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a>&amp; cb, RooWorkspace <span class="keyword">const</span>&amp; ws,</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                           std::string <span class="keyword">const</span>&amp; modelcfg,</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                           std::string <span class="keyword">const</span>&amp; data, <span class="keywordtype">bool</span> verbose) {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <a class="code" href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">ParseCombineWorkspace</a>(cb, const_cast&lt;RooWorkspace&amp;&gt;(ws), modelcfg, data, verbose);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">   22</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">ParseCombineWorkspace</a>(<a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a>&amp; cb, RooWorkspace&amp; ws,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                           std::string <span class="keyword">const</span>&amp; modelcfg_name,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                           std::string <span class="keyword">const</span>&amp; data_name, <span class="keywordtype">bool</span> verbose) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordtype">bool</span> v = verbose;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  RooStats::ModelConfig* cfg =</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      <span class="keyword">dynamic_cast&lt;</span>RooStats::ModelConfig*<span class="keyword">&gt;</span>(ws.genobj(modelcfg_name.c_str()));</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordflow">if</span> (!cfg) {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Could not get ModelConfig from workspace&quot;</span>));</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  RooSimultaneous* pdf = <span class="keyword">dynamic_cast&lt;</span>RooSimultaneous*<span class="keyword">&gt;</span>(cfg-&gt;GetPdf());</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordflow">if</span> (!pdf) {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;PDF is not a RooSimultaneous&quot;</span>));</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  }</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">struct </span>ProcInfo {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    std::string bin;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::string proc;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    std::string pdf;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::string norm;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  };</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  std::map&lt;std::string, std::vector&lt;ProcInfo&gt;&gt; proc_infos;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  RooAbsData *data = ws.data(data_name.c_str());</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// Hard-coded the category as &quot;CMS_channel&quot;. Could deduce instead...</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  std::unique_ptr&lt;TList&gt; split(data-&gt;split(RooCategory(<span class="stringliteral">&quot;CMS_channel&quot;</span>, <span class="stringliteral">&quot;&quot;</span>)));</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; split-&gt;GetSize(); ++i) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    RooAbsData *idat = <span class="keyword">dynamic_cast&lt;</span>RooAbsData*<span class="keyword">&gt;</span>(split-&gt;At(i));</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    cats.push_back(idat-&gt;GetName());</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v) &lt;&lt; <span class="stringliteral">&quot;Found data for category: &quot;</span> &lt;&lt; cats.back() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    ws.import(*idat);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="classch_1_1_observation.html">ch::Observation</a> obs;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    obs.<a class="code" href="classch_1_1_object.html#a7997c967b45c8048e5d37284634192c8">set_bin</a>(cats.back());</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    cb.<a class="code" href="classch_1_1_combine_harvester.html#acd2aec5d4b862d3edc79399ae0801f4c">InsertObservation</a>(obs);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    RooAddPdf *ipdf = <a class="code" href="namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a">FindAddPdf</a>(pdf-&gt;getPdf(cats.back().c_str()));</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordflow">if</span> (ipdf) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v) &lt;&lt; <span class="stringliteral">&quot;Found RooAddPdf: &quot;</span> &lt;&lt; ipdf-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      RooArgList <span class="keyword">const</span>&amp; coeffs = ipdf-&gt;coefList();</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      RooArgList <span class="keyword">const</span>&amp; pdfs = ipdf-&gt;pdfList();</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keywordflow">if</span> (coeffs.getSize() != pdfs.getSize()) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;This RooAddPdf is not extended!&quot;</span>));</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; coeffs.getSize(); ++j) {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        RooAbsReal *jcoeff = <span class="keyword">dynamic_cast&lt;</span>RooAbsReal*<span class="keyword">&gt;</span>(coeffs.at(j));</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        RooAbsPdf *jpdf = <span class="keyword">dynamic_cast&lt;</span>RooAbsPdf*<span class="keyword">&gt;</span>(pdfs.at(j));</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v) &lt;&lt; <span class="stringliteral">&quot;Component &quot;</span> &lt;&lt; j &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; jcoeff-&gt;GetName()</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                             &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; jpdf-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <a class="code" href="classch_1_1_process.html">ch::Process</a> proc;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        proc.<a class="code" href="classch_1_1_object.html#a7997c967b45c8048e5d37284634192c8">set_bin</a>(cats.back());</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="comment">// Get the process name &amp; signal flag from the pdf attributes that are</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="comment">// set by text2workspace. Should really check they exist first...</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        proc.<a class="code" href="classch_1_1_object.html#a3515d3c5453c0141c198718eb7b4bd03">set_process</a>(jpdf-&gt;getStringAttribute(<span class="stringliteral">&quot;combine.process&quot;</span>));</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        proc.<a class="code" href="classch_1_1_process.html#a178a4692175af3cb3f9699f424a03b30">set_rate</a>(1.);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        proc.<a class="code" href="classch_1_1_object.html#aef78a48151888bb0731a2e00cd0fa62c">set_signal</a>(jpdf-&gt;getAttribute(<span class="stringliteral">&quot;combine.signal&quot;</span>));</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        proc_infos[proc.<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>()].push_back(</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            {proc.<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>(), proc.<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>(), jpdf-&gt;GetName(), jcoeff-&gt;GetName()});</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        cb.<a class="code" href="classch_1_1_combine_harvester.html#a8a4f3b4e71986fd61990e9a66e455f43">InsertProcess</a>(proc);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;      }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    }</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  }</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  cb.<a class="code" href="classch_1_1_combine_harvester.html#a17500b104a107f1ca619a9b659d4a76d">AddWorkspace</a>(ws);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  cb.<a class="code" href="classch_1_1_combine_harvester.html#ac40e961ea428fa6411ec8e3b6ddeadef">ExtractData</a>(ws.GetName(), <span class="stringliteral">&quot;$BIN&quot;</span>);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">// This loop is slow if we have have a lot of procs</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">// Better way would be to filter to each bin, then do all the procs for that</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// bin</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> b : cb.<a class="code" href="classch_1_1_combine_harvester.html#a869c951c635b86fba33b2c550c9c39c9">bin_set</a>()) {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keyword">auto</span> cb_bin = cb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#a83dd50569a1f1a4b5a46f2ad2b5c1cdb">bin</a>({b});</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; pinfo: proc_infos[b]) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        cb_bin.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#a3afe330e302ad37b9fd69a821b8b4099">process</a>({pinfo.proc}).ExtractPdfs(</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            cb, ws.GetName(), pinfo.pdf, pinfo.norm);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  }</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a">   99</a></span>&#160;RooAddPdf* <a class="code" href="namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a">FindAddPdf</a>(RooAbsPdf* input) {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  RooAddPdf *as_add = <span class="keyword">dynamic_cast&lt;</span>RooAddPdf*<span class="keyword">&gt;</span>(input);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">if</span> (as_add) <span class="keywordflow">return</span> as_add;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  RooProdPdf *as_prod = <span class="keyword">dynamic_cast&lt;</span>RooProdPdf*<span class="keyword">&gt;</span>(input);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">if</span> (as_prod) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    RooArgList <span class="keyword">const</span>&amp; comps = as_prod-&gt;pdfList();</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; comps.getSize(); ++i) {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      RooAddPdf* try_add = <a class="code" href="namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a">FindAddPdf</a>(dynamic_cast&lt;RooAbsPdf*&gt;(comps.at(i)));</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      <span class="keywordflow">if</span> (try_add) <span class="keywordflow">return</span> try_add;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    }    </div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  std::vector&lt;std::string&gt; cats;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">struct </span>ProcInfo {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    std::string bin;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::string proc;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    std::string pdf;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    std::string norm;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  };</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  std::map&lt;std::string, std::vector&lt;ProcInfo&gt;&gt; proc_infos;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  RooAbsData *data = ws.data(data_name.c_str());</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// Hard-coded the category as &quot;CMS_channel&quot;. Could deduce instead...</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  std::unique_ptr&lt;TList&gt; split(data-&gt;split(RooCategory(<span class="stringliteral">&quot;CMS_channel&quot;</span>, <span class="stringliteral">&quot;&quot;</span>)));</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; split-&gt;GetSize(); ++i) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    RooAbsData *idat = <span class="keyword">dynamic_cast&lt;</span>RooAbsData*<span class="keyword">&gt;</span>(split-&gt;At(i));</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    cats.push_back(idat-&gt;GetName());</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v) &lt;&lt; <span class="stringliteral">&quot;Found data for category: &quot;</span> &lt;&lt; cats.back() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classch_1_1_observation.html">ch::Observation</a> obs;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    obs.<a class="code" href="classch_1_1_object.html#a7997c967b45c8048e5d37284634192c8">set_bin</a>(cats.back());</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    cb.<a class="code" href="classch_1_1_combine_harvester.html#acd2aec5d4b862d3edc79399ae0801f4c">InsertObservation</a>(obs);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">bool</span> delete_pdfs = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    RooAbsReal *ipdf = <a class="code" href="namespacech.html#a5a4aae941cd175bf6764ad6789b4df8c">FindAddPdf</a>(pdf-&gt;getPdf(cats.back().c_str()));</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">if</span> (ipdf) {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      std::unique_ptr&lt;RooArgSet&gt; pdf_obs(ipdf-&gt;getObservables(data-&gt;get()));</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      idat = idat-&gt;reduce(*pdf_obs);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      ws.import(*idat);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      RooAddPdf *ipdf_add = <span class="keyword">dynamic_cast&lt;</span>RooAddPdf*<span class="keyword">&gt;</span>(ipdf);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      RooRealSumPdf *ipdf_sum = <span class="keyword">dynamic_cast&lt;</span>RooRealSumPdf*<span class="keyword">&gt;</span>(ipdf);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      RooArgList <span class="keyword">const</span>* coeffs = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      RooArgList <span class="keyword">const</span>* pdfs = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keywordflow">if</span> (ipdf_add) {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v) &lt;&lt; <span class="stringliteral">&quot;Found RooAddPdf: &quot;</span> &lt;&lt; ipdf_add-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        coeffs = &amp;(ipdf_add-&gt;coefList());</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        pdfs = &amp;(ipdf_add-&gt;pdfList());</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">if</span> (coeffs-&gt;getSize() != pdfs-&gt;getSize()) {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;          <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;This RooAddPdf is not extended!&quot;</span>));</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      <span class="keywordflow">if</span> (ipdf_sum) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v) &lt;&lt; <span class="stringliteral">&quot;Found RooRealSumPdf: &quot;</span> &lt;&lt; ipdf_sum-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        coeffs = &amp;(ipdf_sum-&gt;coefList());</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        pdfs = &amp;(ipdf_sum-&gt;funcList());</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordflow">if</span> (coeffs-&gt;getSize() != pdfs-&gt;getSize()) {</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;          <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;This RooRealSumPdf is not extended!&quot;</span>));</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        }</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <span class="keywordflow">if</span> (pdfs-&gt;getSize() == 1) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;           CMSHistErrorPropagator *err = <span class="keyword">dynamic_cast&lt;</span>CMSHistErrorPropagator*<span class="keyword">&gt;</span>(pdfs-&gt;at(0));</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;           <span class="keywordflow">if</span> (err) {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;             coeffs = &amp;(err-&gt;coefList());</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;             pdfs = <span class="keyword">new</span> RooArgList(err-&gt;wrapperList());</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;             delete_pdfs = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;           }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        }</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      }</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; coeffs-&gt;getSize(); ++j) {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        RooAbsReal *jcoeff = <span class="keyword">dynamic_cast&lt;</span>RooAbsReal*<span class="keyword">&gt;</span>(coeffs-&gt;at(j));</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        RooAbsReal *jpdf = <span class="keyword">dynamic_cast&lt;</span>RooAbsReal*<span class="keyword">&gt;</span>(pdfs-&gt;at(j));</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v) &lt;&lt; <span class="stringliteral">&quot;Component &quot;</span> &lt;&lt; j &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; jcoeff-&gt;GetName()</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                             &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; jpdf-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <a class="code" href="classch_1_1_process.html">ch::Process</a> proc;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        proc.<a class="code" href="classch_1_1_object.html#a7997c967b45c8048e5d37284634192c8">set_bin</a>(cats.back());</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <span class="comment">// Get the process name &amp; signal flag from the pdf attributes that are</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="comment">// set by text2workspace. Should really check they exist first...</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        proc.<a class="code" href="classch_1_1_object.html#a3515d3c5453c0141c198718eb7b4bd03">set_process</a>(jpdf-&gt;getStringAttribute(<span class="stringliteral">&quot;combine.process&quot;</span>));</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        proc.<a class="code" href="classch_1_1_process.html#a178a4692175af3cb3f9699f424a03b30">set_rate</a>(1.);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        proc.<a class="code" href="classch_1_1_object.html#aef78a48151888bb0731a2e00cd0fa62c">set_signal</a>(jpdf-&gt;getAttribute(<span class="stringliteral">&quot;combine.signal&quot;</span>));</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        proc_infos[proc.<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>()].push_back(</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            {proc.<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>(), proc.<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>(), jpdf-&gt;GetName(), jcoeff-&gt;GetName()});</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        cb.<a class="code" href="classch_1_1_combine_harvester.html#a8a4f3b4e71986fd61990e9a66e455f43">InsertProcess</a>(proc);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      <span class="keywordflow">if</span> (delete_pdfs) <span class="keyword">delete</span> pdfs;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    }</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  }</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  cb.<a class="code" href="classch_1_1_combine_harvester.html#a17500b104a107f1ca619a9b659d4a76d">AddWorkspace</a>(ws);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  cb.<a class="code" href="classch_1_1_combine_harvester.html#ac40e961ea428fa6411ec8e3b6ddeadef">ExtractData</a>(ws.GetName(), <span class="stringliteral">&quot;$BIN&quot;</span>);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="comment">// This loop is slow if we have have a lot of procs</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="comment">// Better way would be to filter to each bin, then do all the procs for that</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// bin</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> b : cb.<a class="code" href="classch_1_1_combine_harvester.html#a869c951c635b86fba33b2c550c9c39c9">bin_set</a>()) {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keyword">auto</span> cb_bin = cb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#a83dd50569a1f1a4b5a46f2ad2b5c1cdb">bin</a>({b});</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; pinfo: proc_infos[b]) {</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        cb_bin.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#a3afe330e302ad37b9fd69a821b8b4099">process</a>({pinfo.proc}).ExtractPdfs(</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;            cb, ws.GetName(), pinfo.pdf, pinfo.norm);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;}</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="namespacech.html#a5a4aae941cd175bf6764ad6789b4df8c">  128</a></span>&#160;RooAbsReal* <a class="code" href="namespacech.html#a5a4aae941cd175bf6764ad6789b4df8c">FindAddPdf</a>(RooAbsReal* input) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  RooAddPdf *as_add = <span class="keyword">dynamic_cast&lt;</span>RooAddPdf*<span class="keyword">&gt;</span>(input);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  RooRealSumPdf *as_sum = <span class="keyword">dynamic_cast&lt;</span>RooRealSumPdf*<span class="keyword">&gt;</span>(input);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">if</span> (as_add) <span class="keywordflow">return</span> as_add;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">if</span> (as_sum) <span class="keywordflow">return</span> as_sum;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  RooProdPdf *as_prod = <span class="keyword">dynamic_cast&lt;</span>RooProdPdf*<span class="keyword">&gt;</span>(input);</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordflow">if</span> (as_prod) {</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    RooArgList <span class="keyword">const</span>&amp; comps = as_prod-&gt;pdfList();</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; comps.getSize(); ++i) {</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;      RooAbsReal* try_add = <a class="code" href="namespacech.html#a5a4aae941cd175bf6764ad6789b4df8c">FindAddPdf</a>(dynamic_cast&lt;RooAbsReal*&gt;(comps.at(i)));</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      <span class="keywordflow">if</span> (try_add) <span class="keywordflow">return</span> try_add;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    }</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  }</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;}</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;}</div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_ac40e961ea428fa6411ec8e3b6ddeadef"><div class="ttname"><a href="classch_1_1_combine_harvester.html#ac40e961ea428fa6411ec8e3b6ddeadef">ch::CombineHarvester::ExtractData</a></div><div class="ttdeci">void ExtractData(std::string const &amp;ws_name, std::string const &amp;rule)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___creation_8cc_source.html#l00199">CombineHarvester_Creation.cc:199</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_aef78a48151888bb0731a2e00cd0fa62c"><div class="ttname"><a href="classch_1_1_object.html#aef78a48151888bb0731a2e00cd0fa62c">ch::Object::set_signal</a></div><div class="ttdeci">void set_signal(bool const &amp;signal)</div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00022">Object.h:22</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html"><div class="ttname"><a href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a></div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00030">CombineHarvester.h:30</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_a3515d3c5453c0141c198718eb7b4bd03"><div class="ttname"><a href="classch_1_1_object.html#a3515d3c5453c0141c198718eb7b4bd03">ch::Object::set_process</a></div><div class="ttdeci">virtual void set_process(std::string const &amp;process)</div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00019">Object.h:19</a></div></div>
-<div class="ttc" id="classch_1_1_combine_harvester_html_ade0f7c161d078a189404a274b93336d2"><div class="ttname"><a href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">ch::CombineHarvester::cp</a></div><div class="ttdeci">CombineHarvester cp()</div><div class="ttdoc">Creates and returns a shallow copy of the CombineHarvester instance. </div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8cc_source.html#l00211">CombineHarvester.cc:211</a></div></div>
-<div class="ttc" id="namespacech_html_af7bcceb32c2f4a82fe1de32a93d0dfa3"><div class="ttname"><a href="namespacech.html#af7bcceb32c2f4a82fe1de32a93d0dfa3">ch::ParseCombineWorkspacePy</a></div><div class="ttdeci">void ParseCombineWorkspacePy(CombineHarvester &amp;cb, RooWorkspace const &amp;ws, std::string const &amp;modelcfg, std::string const &amp;data, bool verbose=false)</div><div class="ttdef"><b>Definition:</b> <a href="_parse_combine_workspace_8cc_source.html#l00014">ParseCombineWorkspace.cc:14</a></div></div>
+<div class="ttc" id="classch_1_1_combine_harvester_html_ade0f7c161d078a189404a274b93336d2"><div class="ttname"><a href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">ch::CombineHarvester::cp</a></div><div class="ttdeci">CombineHarvester cp()</div><div class="ttdoc">Creates and returns a shallow copy of the CombineHarvester instance. </div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8cc_source.html#l00216">CombineHarvester.cc:216</a></div></div>
+<div class="ttc" id="namespacech_html_af7bcceb32c2f4a82fe1de32a93d0dfa3"><div class="ttname"><a href="namespacech.html#af7bcceb32c2f4a82fe1de32a93d0dfa3">ch::ParseCombineWorkspacePy</a></div><div class="ttdeci">void ParseCombineWorkspacePy(CombineHarvester &amp;cb, RooWorkspace const &amp;ws, std::string const &amp;modelcfg, std::string const &amp;data, bool verbose=false)</div><div class="ttdef"><b>Definition:</b> <a href="_parse_combine_workspace_8cc_source.html#l00016">ParseCombineWorkspace.cc:16</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a869c951c635b86fba33b2c550c9c39c9"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a869c951c635b86fba33b2c550c9c39c9">ch::CombineHarvester::bin_set</a></div><div class="ttdeci">std::set&lt; std::string &gt; bin_set()</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___filters_8cc_source.html#l00190">CombineHarvester_Filters.cc:190</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a3afe330e302ad37b9fd69a821b8b4099"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a3afe330e302ad37b9fd69a821b8b4099">ch::CombineHarvester::process</a></div><div class="ttdeci">CombineHarvester &amp; process(std::vector&lt; std::string &gt; const &amp;vec, bool cond=true)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___filters_8cc_source.html#l00035">CombineHarvester_Filters.cc:35</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a8a4f3b4e71986fd61990e9a66e455f43"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a8a4f3b4e71986fd61990e9a66e455f43">ch::CombineHarvester::InsertProcess</a></div><div class="ttdeci">void InsertProcess(ch::Process const &amp;proc)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___creation_8cc_source.html#l00249">CombineHarvester_Creation.cc:249</a></div></div>
-<div class="ttc" id="namespacech_html_a5ae8a88e9e0d2120deec06e553a525f6"><div class="ttname"><a href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">ch::ParseCombineWorkspace</a></div><div class="ttdeci">void ParseCombineWorkspace(CombineHarvester &amp;cb, RooWorkspace &amp;ws, std::string const &amp;modelcfg, std::string const &amp;data, bool verbose=false)</div><div class="ttdef"><b>Definition:</b> <a href="_parse_combine_workspace_8cc_source.html#l00020">ParseCombineWorkspace.cc:20</a></div></div>
-<div class="ttc" id="classch_1_1_process_html_a178a4692175af3cb3f9699f424a03b30"><div class="ttname"><a href="classch_1_1_process.html#a178a4692175af3cb3f9699f424a03b30">ch::Process::set_rate</a></div><div class="ttdeci">void set_rate(double const &amp;rate)</div><div class="ttdef"><b>Definition:</b> <a href="_process_8h_source.html#l00023">Process.h:23</a></div></div>
+<div class="ttc" id="namespacech_html_a5ae8a88e9e0d2120deec06e553a525f6"><div class="ttname"><a href="namespacech.html#a5ae8a88e9e0d2120deec06e553a525f6">ch::ParseCombineWorkspace</a></div><div class="ttdeci">void ParseCombineWorkspace(CombineHarvester &amp;cb, RooWorkspace &amp;ws, std::string const &amp;modelcfg, std::string const &amp;data, bool verbose=false)</div><div class="ttdef"><b>Definition:</b> <a href="_parse_combine_workspace_8cc_source.html#l00022">ParseCombineWorkspace.cc:22</a></div></div>
+<div class="ttc" id="classch_1_1_process_html_a178a4692175af3cb3f9699f424a03b30"><div class="ttname"><a href="classch_1_1_process.html#a178a4692175af3cb3f9699f424a03b30">ch::Process::set_rate</a></div><div class="ttdeci">void set_rate(double const &amp;rate)</div><div class="ttdef"><b>Definition:</b> <a href="_process_8h_source.html#l00024">Process.h:24</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a17500b104a107f1ca619a9b659d4a76d"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a17500b104a107f1ca619a9b659d4a76d">ch::CombineHarvester::AddWorkspace</a></div><div class="ttdeci">void AddWorkspace(RooWorkspace const &amp;ws, bool can_rename=false)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___creation_8cc_source.html#l00176">CombineHarvester_Creation.cc:176</a></div></div>
 <div class="ttc" id="_logging_8h_html_ab140ae8826e1f99c5aa0e920a9c13112"><div class="ttname"><a href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a></div><div class="ttdeci">#define FNERROR(x)</div><div class="ttdef"><b>Definition:</b> <a href="_logging_8h_source.html#l00009">Logging.h:9</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_a0b0c5f14564e159d11bf325b7a08dfba"><div class="ttname"><a href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">ch::Object::process</a></div><div class="ttdeci">virtual std::string const &amp; process() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00020">Object.h:20</a></div></div>
+<div class="ttc" id="namespacech_html_a5a4aae941cd175bf6764ad6789b4df8c"><div class="ttname"><a href="namespacech.html#a5a4aae941cd175bf6764ad6789b4df8c">ch::FindAddPdf</a></div><div class="ttdeci">RooAbsReal * FindAddPdf(RooAbsReal *input)</div><div class="ttdef"><b>Definition:</b> <a href="_parse_combine_workspace_8cc_source.html#l00128">ParseCombineWorkspace.cc:128</a></div></div>
 <div class="ttc" id="namespacech_html"><div class="ttname"><a href="namespacech.html">ch</a></div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00010">Algorithm.h:10</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a83dd50569a1f1a4b5a46f2ad2b5c1cdb"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a83dd50569a1f1a4b5a46f2ad2b5c1cdb">ch::CombineHarvester::bin</a></div><div class="ttdeci">CombineHarvester &amp; bin(std::vector&lt; std::string &gt; const &amp;vec, bool cond=true)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___filters_8cc_source.html#l00013">CombineHarvester_Filters.cc:13</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_acd2aec5d4b862d3edc79399ae0801f4c"><div class="ttname"><a href="classch_1_1_combine_harvester.html#acd2aec5d4b862d3edc79399ae0801f4c">ch::CombineHarvester::InsertObservation</a></div><div class="ttdeci">void InsertObservation(ch::Observation const &amp;obs)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___creation_8cc_source.html#l00245">CombineHarvester_Creation.cc:245</a></div></div>
@@ -234,8 +266,7 @@ $(document).ready(function(){initNavTree('_parse_combine_workspace_8cc_source.ht
 <div class="ttc" id="classch_1_1_observation_html"><div class="ttname"><a href="classch_1_1_observation.html">ch::Observation</a></div><div class="ttdef"><b>Definition:</b> <a href="_observation_8h_source.html#l00012">Observation.h:12</a></div></div>
 <div class="ttc" id="_logging_8h_html_a3eb848e20af411db5ba7f1d4f082fed0"><div class="ttname"><a href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a></div><div class="ttdeci">#define FNLOGC(x, y)</div><div class="ttdef"><b>Definition:</b> <a href="_logging_8h_source.html#l00014">Logging.h:14</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_aa2f03ad2ae3518c7169ea0dc79bca780"><div class="ttname"><a href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">ch::Object::bin</a></div><div class="ttdeci">virtual std::string const &amp; bin() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00017">Object.h:17</a></div></div>
-<div class="ttc" id="namespacech_html_a0d8871a3c13b62ac6fefeb9a87b5e44a"><div class="ttname"><a href="namespacech.html#a0d8871a3c13b62ac6fefeb9a87b5e44a">ch::FindAddPdf</a></div><div class="ttdeci">RooAddPdf * FindAddPdf(RooAbsPdf *input)</div><div class="ttdef"><b>Definition:</b> <a href="_parse_combine_workspace_8cc_source.html#l00099">ParseCombineWorkspace.cc:99</a></div></div>
-<div class="ttc" id="classch_1_1_process_html"><div class="ttname"><a href="classch_1_1_process.html">ch::Process</a></div><div class="ttdef"><b>Definition:</b> <a href="_process_8h_source.html#l00014">Process.h:14</a></div></div>
+<div class="ttc" id="classch_1_1_process_html"><div class="ttname"><a href="classch_1_1_process.html">ch::Process</a></div><div class="ttdef"><b>Definition:</b> <a href="_process_8h_source.html#l00015">Process.h:15</a></div></div>
 <div class="ttc" id="_logging_8h_html"><div class="ttname"><a href="_logging_8h.html">Logging.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

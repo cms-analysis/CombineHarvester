@@ -158,112 +158,134 @@ $(document).ready(function(){initNavTree('_card_writer_8cc_source.html','');});
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      }</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      f_map[key] = mappings;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    });</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">return</span> f_map;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">void</span> CardWriter::MakeDirs(PatternMap <span class="keyword">const</span>&amp; map)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  std::set&lt;boost::filesystem::path&gt; mk_dirs;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; f : map) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    mk_dirs.insert(boost::filesystem::path(f.first).parent_path());</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp; dir : mk_dirs) {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v_ &gt; 0) &lt;&lt; <span class="stringliteral">&quot;Creating dir &quot;</span> &lt;&lt; dir.string() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    boost::filesystem::create_directories(dir);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classch_1_1_card_writer.html#af23bf08d1ef4323fa0f96fb9da9d835e">   74</a></span>&#160;std::map&lt;std::string, CombineHarvester&gt; <a class="code" href="classch_1_1_card_writer.html#af23bf08d1ef4323fa0f96fb9da9d835e">CardWriter::WriteCards</a>(std::string <span class="keyword">const</span>&amp; tag,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                       <a class="code" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a>&amp; cmb)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">  #ifdef TIME_FUNCTIONS</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="_logging_8h.html#a7dbba20d0f1848f31de83551b351de72">LAUNCH_FUNCTION_TIMER</a>(__timer__, __token__)</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Update the current &quot;$TAG&quot; value</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  tag_ = tag;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// Build the set of files we need to create (the map keys), and associate a</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// set of compiled Object patterns that are associated to each file (the map</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// values). One entry will typically look like:</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">// [&quot;htt_mt_125.root&quot;] = {&quot;htt_mt_125.root&quot;, &quot;htt_mt_*.root&quot;}</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// i.e. in addition to getting a pattern identical to the filename, we also</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// get a pattern where each $MASS placeholder has been replaced by a wildcard</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// expression.</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keyword">auto</span> f_map = BuildMap(root_pattern_, cmb);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordflow">if</span> (create_dirs_) MakeDirs(f_map);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">auto</span> masses = cmb.cp().mass(wildcard_masses_, <span class="keyword">false</span>).mass_set();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  cmb.cp().mass(wildcard_masses_, <span class="keyword">true</span>)</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    .ForEachObj([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      <span class="comment">// Build the fully-compiled key</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      std::string key = Compile(pattern, obj, <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">auto</span> m : masses) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        std::string full_key = key;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        boost::replace_all(full_key, <span class="stringliteral">&quot;$MASS&quot;</span>, m);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">if</span> (f_map.count(full_key)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        std::set&lt;std::string&gt; mappings;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="comment">// The fully-compiled pattern always goes in</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        std::string wildcard_key = key;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        boost::replace_all(wildcard_key, <span class="stringliteral">&quot;$MASS&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce">mass</a>());</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        mappings.insert(wildcard_key);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        f_map[full_key] = mappings;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    });</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; it : f_map) {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    std::cout &lt;&lt; it.first &lt;&lt; <span class="stringliteral">&quot;: &quot;</span>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; it2 : it.second) std::cout &lt;&lt; it2 &lt;&lt; <span class="stringliteral">&quot; &quot;</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  }</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">return</span> f_map;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keywordtype">void</span> CardWriter::MakeDirs(PatternMap <span class="keyword">const</span>&amp; map)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::set&lt;boost::filesystem::path&gt; mk_dirs;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; f : map) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    mk_dirs.insert(boost::filesystem::path(f.first).parent_path());</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp; dir : mk_dirs) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v_ &gt; 0) &lt;&lt; <span class="stringliteral">&quot;Creating dir &quot;</span> &lt;&lt; dir.string() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    boost::filesystem::create_directories(dir);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  }</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// It turns out that the Compile method takes a small but appreciable amount</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// of CPU time. To evaluate it every time it&#39;s needed could be O(10^7) calls,</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">// equivalent to tens of seconds for a complex model. To avoid this we just</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="comment">// calculate once for each ch::Object and store the result in a map, which we</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="comment">// use as a look-up later.</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  std::map&lt;Object const*, std::string&gt; root_map;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  cmb.<a class="code" href="classch_1_1_combine_harvester.html#adfa906384002e89b68fa1adcce4023ac">ForEachObj</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      root_map[obj] = Compile(root_pattern_, obj);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    });</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  std::map&lt;Object const*, std::string&gt; text_map;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  cmb.<a class="code" href="classch_1_1_combine_harvester.html#adfa906384002e89b68fa1adcce4023ac">ForEachObj</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      text_map[obj] = Compile(text_pattern_, obj);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    });</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  std::map&lt;std::string, CombineHarvester&gt; datacards;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; f : f_map) {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="comment">// Create each ROOT file (overwrite pre-existing)</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v_ &gt; 0) &lt;&lt; <span class="stringliteral">&quot;Creating file &quot;</span> &lt;&lt; f.first &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    TFile file(f.first.c_str(), <span class="stringliteral">&quot;RECREATE&quot;</span>);</div>
+<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="classch_1_1_card_writer.html#af23bf08d1ef4323fa0f96fb9da9d835e">   96</a></span>&#160;std::map&lt;std::string, CombineHarvester&gt; <a class="code" href="classch_1_1_card_writer.html#af23bf08d1ef4323fa0f96fb9da9d835e">CardWriter::WriteCards</a>(std::string <span class="keyword">const</span>&amp; tag,</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                       <a class="code" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a>&amp; cmb)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">  #ifdef TIME_FUNCTIONS</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <a class="code" href="_logging_8h.html#a7dbba20d0f1848f31de83551b351de72">LAUNCH_FUNCTION_TIMER</a>(__timer__, __token__)</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// Update the current &quot;$TAG&quot; value</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  tag_ = tag;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// Build the set of files we need to create (the map keys), and associate a</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="comment">// set of compiled Object patterns that are associated to each file (the map</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// values). One entry will typically look like:</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// [&quot;htt_mt_125.root&quot;] = {&quot;htt_mt_125.root&quot;, &quot;htt_mt_*.root&quot;}</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="comment">// i.e. in addition to getting a pattern identical to the filename, we also</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="comment">// get a pattern where each $MASS placeholder has been replaced by a wildcard</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="comment">// expression.</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keyword">auto</span> f_map = BuildMap(root_pattern_, cmb);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="comment">// Filter CH instance to leave only the objects that will be written into</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="comment">// this file</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> f_cmb = cmb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#aab08f8aee1553b76501ff1a4de0a716c">FilterAll</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      <span class="keywordflow">return</span> !<a class="code" href="namespacech.html#a961ef6b98124198d1648868011bc0153">ch::contains</a>(f.second, root_map.at(obj));</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    });</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="comment">// Call BuildMap again - this time to figure out which text datacards to</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="comment">// create</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keyword">auto</span> d_map = BuildMap(text_pattern_, f_cmb);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="comment">// Create dirs if we&#39;re allowed to</span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keywordflow">if</span> (create_dirs_) MakeDirs(d_map);</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="comment">// Loop through each datacard</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; d : d_map) {</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <span class="comment">// Filter CH instance to leave only the objects that will be written into</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      <span class="comment">// this text datacard</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> d_cmb = f_cmb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#aab08f8aee1553b76501ff1a4de0a716c">FilterAll</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordflow">return</span> !<a class="code" href="namespacech.html#a961ef6b98124198d1648868011bc0153">ch::contains</a>(d.second, text_map.at(obj));</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      });</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v_ &gt; 0) &lt;&lt; <span class="stringliteral">&quot;Creating datacard &quot;</span> &lt;&lt; d.first &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;      d_cmb.<a class="code" href="classch_1_1_combine_harvester.html#a63255dd5ec491fa12857bc63b4174e92">WriteDatacard</a>(d.first, file);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      datacards[d.first] = d_cmb;</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    }</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  };</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="keywordflow">return</span> datacards;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;}</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keywordflow">if</span> (create_dirs_) MakeDirs(f_map);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// It turns out that the Compile method takes a small but appreciable amount</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">// of CPU time. To evaluate it every time it&#39;s needed could be O(10^7) calls,</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="comment">// equivalent to tens of seconds for a complex model. To avoid this we just</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="comment">// calculate once for each ch::Object and store the result in a map, which we</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">// use as a look-up later.</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  std::map&lt;Object const*, std::string&gt; root_map;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  cmb.<a class="code" href="classch_1_1_combine_harvester.html#adfa906384002e89b68fa1adcce4023ac">ForEachObj</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      root_map[obj] = Compile(root_pattern_, obj);</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    });</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  std::map&lt;Object const*, std::string&gt; text_map;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  cmb.<a class="code" href="classch_1_1_combine_harvester.html#adfa906384002e89b68fa1adcce4023ac">ForEachObj</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      text_map[obj] = Compile(text_pattern_, obj);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    });</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  std::map&lt;std::string, CombineHarvester&gt; datacards;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; f : f_map) {</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="comment">// Create each ROOT file (overwrite pre-existing)</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v_ &gt; 0) &lt;&lt; <span class="stringliteral">&quot;Creating file &quot;</span> &lt;&lt; f.first &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    TFile file(f.first.c_str(), <span class="stringliteral">&quot;RECREATE&quot;</span>);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    <span class="comment">// Filter CH instance to leave only the objects that will be written into</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="comment">// this file</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> f_cmb = cmb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#aab08f8aee1553b76501ff1a4de0a716c">FilterAll</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;      <span class="keywordflow">return</span> !<a class="code" href="namespacech.html#a961ef6b98124198d1648868011bc0153">ch::contains</a>(f.second, root_map.at(obj));</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    });</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;std::string CardWriter::Compile(std::string pattern, <a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj,</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                                <span class="keywordtype">bool</span> skip_mass)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="preprocessor">  #ifdef TIME_FUNCTIONS</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <a class="code" href="_logging_8h.html#a7dbba20d0f1848f31de83551b351de72">LAUNCH_FUNCTION_TIMER</a>(__timer__, __token__)</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$TAG&quot;</span>, tag_);</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$BINID&quot;</span>,</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                     boost::lexical_cast&lt;std::string&gt;(obj-&gt;<a class="code" href="classch_1_1_object.html#ac57605a5c14ab76dc7be7ec7fa74be81">bin_id</a>()));</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$BIN&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>());</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$PROCESS&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>());</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordflow">if</span> (!skip_mass) boost::replace_all(pattern, <span class="stringliteral">&quot;$MASS&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce">mass</a>());</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$ERA&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7">era</a>());</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$CHANNEL&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a60ff05363e905e268f4a85bc9d2a63c1">channel</a>());</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$ANALYSIS&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#acc6dfa0e69fd9c9647e4b242bfe6a93e">analysis</a>());</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="keywordflow">return</span> pattern;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;}</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;}</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="comment">// Call BuildMap again - this time to figure out which text datacards to</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="comment">// create</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keyword">auto</span> d_map = BuildMap(text_pattern_, f_cmb);</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="comment">// Create dirs if we&#39;re allowed to</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <span class="keywordflow">if</span> (create_dirs_) MakeDirs(d_map);</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="comment">// Loop through each datacard</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span>&amp; d : d_map) {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      <span class="comment">// Filter CH instance to leave only the objects that will be written into</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      <span class="comment">// this text datacard</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a> d_cmb = f_cmb.<a class="code" href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">cp</a>().<a class="code" href="classch_1_1_combine_harvester.html#aab08f8aee1553b76501ff1a4de0a716c">FilterAll</a>([&amp;](<a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj) {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <span class="keywordflow">return</span> !<a class="code" href="namespacech.html#a961ef6b98124198d1648868011bc0153">ch::contains</a>(d.second, text_map.at(obj));</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      });</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      <a class="code" href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a>(std::cout, v_ &gt; 0) &lt;&lt; <span class="stringliteral">&quot;Creating datacard &quot;</span> &lt;&lt; d.first &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      d_cmb.<a class="code" href="classch_1_1_combine_harvester.html#a63255dd5ec491fa12857bc63b4174e92">WriteDatacard</a>(d.first, file);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      datacards[d.first] = d_cmb;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  };</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">return</span> datacards;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;}</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;std::string CardWriter::Compile(std::string pattern, <a class="code" href="classch_1_1_object.html">ch::Object</a> <span class="keyword">const</span>* obj,</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;                                <span class="keywordtype">bool</span> skip_mass)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="preprocessor">  #ifdef TIME_FUNCTIONS</span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <a class="code" href="_logging_8h.html#a7dbba20d0f1848f31de83551b351de72">LAUNCH_FUNCTION_TIMER</a>(__timer__, __token__)</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$TAG&quot;</span>, tag_);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$BINID&quot;</span>,</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                     boost::lexical_cast&lt;std::string&gt;(obj-&gt;<a class="code" href="classch_1_1_object.html#ac57605a5c14ab76dc7be7ec7fa74be81">bin_id</a>()));</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$BIN&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">bin</a>());</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$PROCESS&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a0b0c5f14564e159d11bf325b7a08dfba">process</a>());</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">if</span> (!skip_mass) boost::replace_all(pattern, <span class="stringliteral">&quot;$MASS&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce">mass</a>());</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$ERA&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7">era</a>());</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$CHANNEL&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#a60ff05363e905e268f4a85bc9d2a63c1">channel</a>());</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  boost::replace_all(pattern, <span class="stringliteral">&quot;$ANALYSIS&quot;</span>, obj-&gt;<a class="code" href="classch_1_1_object.html#acc6dfa0e69fd9c9647e4b242bfe6a93e">analysis</a>());</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordflow">return</span> pattern;</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;}</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;}</div>
 <div class="ttc" id="classch_1_1_object_html_acc6dfa0e69fd9c9647e4b242bfe6a93e"><div class="ttname"><a href="classch_1_1_object.html#acc6dfa0e69fd9c9647e4b242bfe6a93e">ch::Object::analysis</a></div><div class="ttdeci">virtual std::string const &amp; analysis() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00026">Object.h:26</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html"><div class="ttname"><a href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a></div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00030">CombineHarvester.h:30</a></div></div>
-<div class="ttc" id="classch_1_1_combine_harvester_html_a63255dd5ec491fa12857bc63b4174e92"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a63255dd5ec491fa12857bc63b4174e92">ch::CombineHarvester::WriteDatacard</a></div><div class="ttdeci">void WriteDatacard(std::string const &amp;name, std::string const &amp;root_file)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___datacards_8cc_source.html#l00454">CombineHarvester_Datacards.cc:454</a></div></div>
-<div class="ttc" id="classch_1_1_combine_harvester_html_ade0f7c161d078a189404a274b93336d2"><div class="ttname"><a href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">ch::CombineHarvester::cp</a></div><div class="ttdeci">CombineHarvester cp()</div><div class="ttdoc">Creates and returns a shallow copy of the CombineHarvester instance. </div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8cc_source.html#l00211">CombineHarvester.cc:211</a></div></div>
+<div class="ttc" id="classch_1_1_combine_harvester_html_a63255dd5ec491fa12857bc63b4174e92"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a63255dd5ec491fa12857bc63b4174e92">ch::CombineHarvester::WriteDatacard</a></div><div class="ttdeci">void WriteDatacard(std::string const &amp;name, std::string const &amp;root_file)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___datacards_8cc_source.html#l00455">CombineHarvester_Datacards.cc:455</a></div></div>
+<div class="ttc" id="classch_1_1_combine_harvester_html_ade0f7c161d078a189404a274b93336d2"><div class="ttname"><a href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">ch::CombineHarvester::cp</a></div><div class="ttdeci">CombineHarvester cp()</div><div class="ttdoc">Creates and returns a shallow copy of the CombineHarvester instance. </div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8cc_source.html#l00216">CombineHarvester.cc:216</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_ac57605a5c14ab76dc7be7ec7fa74be81"><div class="ttname"><a href="classch_1_1_object.html#ac57605a5c14ab76dc7be7ec7fa74be81">ch::Object::bin_id</a></div><div class="ttdeci">virtual int bin_id() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00035">Object.h:35</a></div></div>
 <div class="ttc" id="classch_1_1_card_writer_html_a34ef01d0ec9b52687437e01db911f3c8"><div class="ttname"><a href="classch_1_1_card_writer.html#a34ef01d0ec9b52687437e01db911f3c8">ch::CardWriter::SetWildcardMasses</a></div><div class="ttdeci">CardWriter &amp; SetWildcardMasses(std::vector&lt; std::string &gt; const &amp;masses)</div><div class="ttdoc">Redefine the mass values that should be treated as wildcards. </div><div class="ttdef"><b>Definition:</b> <a href="_card_writer_8cc_source.html#l00031">CardWriter.cc:31</a></div></div>
 <div class="ttc" id="classch_1_1_card_writer_html"><div class="ttname"><a href="classch_1_1_card_writer.html">ch::CardWriter</a></div><div class="ttdoc">Automates the writing of datacards into directory structures. </div><div class="ttdef"><b>Definition:</b> <a href="_card_writer_8h_source.html#l00050">CardWriter.h:50</a></div></div>
@@ -273,15 +295,15 @@ $(document).ready(function(){initNavTree('_card_writer_8cc_source.html','');});
 <div class="ttc" id="_algorithm_8h_html"><div class="ttname"><a href="_algorithm_8h.html">Algorithm.h</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_a88dfb8797821405ddc943dd9b4a0b4ce"><div class="ttname"><a href="classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce">ch::Object::mass</a></div><div class="ttdeci">virtual std::string const &amp; mass() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00038">Object.h:38</a></div></div>
 <div class="ttc" id="classch_1_1_card_writer_html_ac6b92918c967a8177add4d72bfa44e90"><div class="ttname"><a href="classch_1_1_card_writer.html#ac6b92918c967a8177add4d72bfa44e90">ch::CardWriter::CardWriter</a></div><div class="ttdeci">CardWriter(std::string const &amp;text_pattern, std::string const &amp;root_pattern)</div><div class="ttdoc">Must be constructed with text and ROOT file patterns. </div><div class="ttdef"><b>Definition:</b> <a href="_card_writer_8cc_source.html#l00012">CardWriter.cc:12</a></div></div>
-<div class="ttc" id="classch_1_1_combine_harvester_html_aab08f8aee1553b76501ff1a4de0a716c"><div class="ttname"><a href="classch_1_1_combine_harvester.html#aab08f8aee1553b76501ff1a4de0a716c">ch::CombineHarvester::FilterAll</a></div><div class="ttdeci">CombineHarvester &amp; FilterAll(Function func)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00607">CombineHarvester.h:607</a></div></div>
+<div class="ttc" id="classch_1_1_combine_harvester_html_aab08f8aee1553b76501ff1a4de0a716c"><div class="ttname"><a href="classch_1_1_combine_harvester.html#aab08f8aee1553b76501ff1a4de0a716c">ch::CombineHarvester::FilterAll</a></div><div class="ttdeci">CombineHarvester &amp; FilterAll(Function func)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00621">CombineHarvester.h:621</a></div></div>
 <div class="ttc" id="_logging_8h_html_a7dbba20d0f1848f31de83551b351de72"><div class="ttname"><a href="_logging_8h.html#a7dbba20d0f1848f31de83551b351de72">LAUNCH_FUNCTION_TIMER</a></div><div class="ttdeci">#define LAUNCH_FUNCTION_TIMER(x, y)                                                      </div><div class="ttdoc">Conveniently initialise a ch::FnTimer instance. </div><div class="ttdef"><b>Definition:</b> <a href="_logging_8h_source.html#l00067">Logging.h:67</a></div></div>
 <div class="ttc" id="_logging_8h_html_a3eb848e20af411db5ba7f1d4f082fed0"><div class="ttname"><a href="_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0">FNLOGC</a></div><div class="ttdeci">#define FNLOGC(x, y)</div><div class="ttdef"><b>Definition:</b> <a href="_logging_8h_source.html#l00014">Logging.h:14</a></div></div>
 <div class="ttc" id="namespacech_html_a961ef6b98124198d1648868011bc0153"><div class="ttname"><a href="namespacech.html#a961ef6b98124198d1648868011bc0153">ch::contains</a></div><div class="ttdeci">bool contains(const Range &amp;r, T p)</div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00022">Algorithm.h:22</a></div></div>
 <div class="ttc" id="classch_1_1_card_writer_html_a1c214a68a95a4d2f09dbe45a033cce16"><div class="ttname"><a href="classch_1_1_card_writer.html#a1c214a68a95a4d2f09dbe45a033cce16">ch::CardWriter::CreateDirectories</a></div><div class="ttdeci">CardWriter &amp; CreateDirectories(bool flag)</div><div class="ttdoc">Control whether directories can be created if missing. </div><div class="ttdef"><b>Definition:</b> <a href="_card_writer_8cc_source.html#l00025">CardWriter.cc:25</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_aa2f03ad2ae3518c7169ea0dc79bca780"><div class="ttname"><a href="classch_1_1_object.html#aa2f03ad2ae3518c7169ea0dc79bca780">ch::Object::bin</a></div><div class="ttdeci">virtual std::string const &amp; bin() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00017">Object.h:17</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_a5ff1c80eee75e9f6d5ebc7d7089503d7"><div class="ttname"><a href="classch_1_1_object.html#a5ff1c80eee75e9f6d5ebc7d7089503d7">ch::Object::era</a></div><div class="ttdeci">virtual std::string const &amp; era() const </div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00029">Object.h:29</a></div></div>
-<div class="ttc" id="classch_1_1_combine_harvester_html_adfa906384002e89b68fa1adcce4023ac"><div class="ttname"><a href="classch_1_1_combine_harvester.html#adfa906384002e89b68fa1adcce4023ac">ch::CombineHarvester::ForEachObj</a></div><div class="ttdeci">void ForEachObj(Function func)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00585">CombineHarvester.h:585</a></div></div>
-<div class="ttc" id="classch_1_1_card_writer_html_af23bf08d1ef4323fa0f96fb9da9d835e"><div class="ttname"><a href="classch_1_1_card_writer.html#af23bf08d1ef4323fa0f96fb9da9d835e">ch::CardWriter::WriteCards</a></div><div class="ttdeci">std::map&lt; std::string, CombineHarvester &gt; WriteCards(std::string const &amp;tag, ch::CombineHarvester &amp;cmb) const </div><div class="ttdoc">Write datacards according to patterns, substituting $TAG for tag </div><div class="ttdef"><b>Definition:</b> <a href="_card_writer_8cc_source.html#l00074">CardWriter.cc:74</a></div></div>
+<div class="ttc" id="classch_1_1_combine_harvester_html_adfa906384002e89b68fa1adcce4023ac"><div class="ttname"><a href="classch_1_1_combine_harvester.html#adfa906384002e89b68fa1adcce4023ac">ch::CombineHarvester::ForEachObj</a></div><div class="ttdeci">void ForEachObj(Function func)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00599">CombineHarvester.h:599</a></div></div>
+<div class="ttc" id="classch_1_1_card_writer_html_af23bf08d1ef4323fa0f96fb9da9d835e"><div class="ttname"><a href="classch_1_1_card_writer.html#af23bf08d1ef4323fa0f96fb9da9d835e">ch::CardWriter::WriteCards</a></div><div class="ttdeci">std::map&lt; std::string, CombineHarvester &gt; WriteCards(std::string const &amp;tag, ch::CombineHarvester &amp;cmb) const </div><div class="ttdoc">Write datacards according to patterns, substituting $TAG for tag </div><div class="ttdef"><b>Definition:</b> <a href="_card_writer_8cc_source.html#l00096">CardWriter.cc:96</a></div></div>
 <div class="ttc" id="classch_1_1_object_html"><div class="ttname"><a href="classch_1_1_object.html">ch::Object</a></div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00008">Object.h:8</a></div></div>
 <div class="ttc" id="_logging_8h_html"><div class="ttname"><a href="_logging_8h.html">Logging.h</a></div></div>
 <div class="ttc" id="_card_writer_8h_html"><div class="ttname"><a href="_card_writer_8h.html">CardWriter.h</a></div></div>

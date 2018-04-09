@@ -5,6 +5,7 @@ var namespacech =
     [ "AutoRebin", "classch_1_1_auto_rebin.html", "classch_1_1_auto_rebin" ],
     [ "BinByBinFactory", "classch_1_1_bin_by_bin_factory.html", "classch_1_1_bin_by_bin_factory" ],
     [ "CardWriter", "classch_1_1_card_writer.html", "classch_1_1_card_writer" ],
+    [ "CMSHistFuncFactory", "classch_1_1_c_m_s_hist_func_factory.html", "classch_1_1_c_m_s_hist_func_factory" ],
     [ "CombineHarvester", "classch_1_1_combine_harvester.html", "classch_1_1_combine_harvester" ],
     [ "FnTimer", "classch_1_1_fn_timer.html", "classch_1_1_fn_timer" ],
     [ "HistMapping", "structch_1_1_hist_mapping.html", "structch_1_1_hist_mapping" ],

@@ -298,6 +298,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a750a78b28b4ae6ca2d27a34b4ac32cc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_combine_harvester.html#a750a78b28b4ae6ca2d27a34b4ac32cc9">RenameGroup</a> (std::string const &amp;oldname, std::string const &amp;newname)</td></tr>
 <tr class="memdesc:a750a78b28b4ae6ca2d27a34b4ac32cc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rename a nuisance parameter group.  <a href="#a750a78b28b4ae6ca2d27a34b4ac32cc9">More...</a><br /></td></tr>
 <tr class="separator:a750a78b28b4ae6ca2d27a34b4ac32cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59b5a637f7f11c2ee77a9b07bc1deb02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_combine_harvester.html#a59b5a637f7f11c2ee77a9b07bc1deb02">AddDatacardLineAtEnd</a> (std::string const &amp;line)</td></tr>
+<tr class="memdesc:a59b5a637f7f11c2ee77a9b07bc1deb02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a line of text at the end of all datacards.  <a href="#a59b5a637f7f11c2ee77a9b07bc1deb02">More...</a><br /></td></tr>
+<tr class="separator:a59b5a637f7f11c2ee77a9b07bc1deb02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac431bdfafad282e891915f7488f43bce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classch_1_1_combine_harvester.html#ac431bdfafad282e891915f7488f43bce">ClearDatacardLinesAtEnd</a> ()</td></tr>
+<tr class="memdesc:ac431bdfafad282e891915f7488f43bce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all added datacard lines.  <a href="#ac431bdfafad282e891915f7488f43bce">More...</a><br /></td></tr>
+<tr class="separator:ac431bdfafad282e891915f7488f43bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Rate, shape and uncertainty evaluation</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>Methods to calculate total yields and shapes</p>
 <p>All of these methods are greedy, meaning they will sum over all available objects and evaluate the effect of all uncertainties. They should be used at the end of a chain of filter methods to give the desired yield, shape or uncertainty. </p>
@@ -436,7 +442,7 @@ Friends</h2></td></tr>
 <p>Copy constructor (makes a shallow copy) </p>
 <p>When copying a <a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> instance it is important to remember that the stored <a class="el" href="classch_1_1_observation.html">Observation</a>, <a class="el" href="classch_1_1_process.html">Process</a>, <a class="el" href="classch_1_1_systematic.html">Systematic</a> and <a class="el" href="classch_1_1_parameter.html">Parameter</a> objects themselves are not duplicated, rather their pointers are simply copied. This is called making a <em>shallow-copy</em>, and means modifying the contents of one of these objects in the copied <a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> also modifies it for the original. However, filtering methods only affect the instance they are called from. For example, if all the signal <a class="el" href="classch_1_1_process.html">Process</a> entries are filtered from a copied <a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> instance they will remain in the original instance. </p>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00047">47</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00048">48</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -454,7 +460,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00198">198</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00203">203</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -473,7 +479,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00204">204</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00209">209</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -504,7 +510,7 @@ Friends</h2></td></tr>
 <p>Set a named flag value. </p>
 <p>Creates the flag if it doesn't already </p>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00061">61</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00063">63</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -522,7 +528,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00072">72</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00074">74</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -541,7 +547,7 @@ Friends</h2></td></tr>
 
 <p>Creates and returns a shallow copy of the <a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> instance. </p>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00211">211</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00216">216</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -561,7 +567,7 @@ Friends</h2></td></tr>
 <p>Creates and retunrs a deep copy of the <a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> instance. </p>
 <p>Unlike the shallow copy, a deep copy will duplicate every internal object, including any attached RooWorkspaces. This makes it completely independent of the original instance. </p>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00081">81</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00083">83</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -578,7 +584,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00217">217</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00222">222</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -595,7 +601,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00221">221</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00226">226</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -612,7 +618,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00228">228</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00233">233</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -629,7 +635,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00235">235</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00240">240</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -646,7 +652,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00242">242</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8cc_source.html#l00247">247</a> of file <a class="el" href="_combine_harvester_8cc_source.html">CombineHarvester.cc</a>.</p>
 
 </div>
 </div>
@@ -805,7 +811,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00454">454</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00455">455</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
 
 </div>
 </div>
@@ -833,7 +839,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00622">622</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00629">629</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
 
 </div>
 </div>
@@ -851,7 +857,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00461">461</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___datacards_8cc_source.html#l00462">462</a> of file <a class="el" href="_combine_harvester___datacards_8cc_source.html">CombineHarvester_Datacards.cc</a>.</p>
 
 </div>
 </div>
@@ -1270,7 +1276,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00607">607</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00621">621</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1290,7 +1296,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00615">615</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00629">629</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1310,7 +1316,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00623">623</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00637">637</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1330,7 +1336,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00630">630</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00644">644</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1513,7 +1519,7 @@ template&lt;typename T , typename R &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00555">555</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00569">569</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1536,7 +1542,7 @@ template&lt;typename T , typename R &gt; </div>
 <p>Fill an std::set using only the <a class="el" href="classch_1_1_observation.html">Observation</a> entries. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classch_1_1_combine_harvester.html#ac514e331fc81a67fc9d8de884b5666c3" title="Fill an std::set with the return values from an arbitrary function. ">SetFromAll</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00564">564</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00578">578</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1559,7 +1565,7 @@ template&lt;typename T , typename R &gt; </div>
 <p>Fill an std::set using only the <a class="el" href="classch_1_1_process.html">Process</a> entries. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classch_1_1_combine_harvester.html#ac514e331fc81a67fc9d8de884b5666c3" title="Fill an std::set with the return values from an arbitrary function. ">SetFromAll</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00571">571</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00585">585</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1582,7 +1588,7 @@ template&lt;typename T , typename R &gt; </div>
 <p>Fill an std::set using only the <a class="el" href="classch_1_1_systematic.html">Systematic</a> entries. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classch_1_1_combine_harvester.html#ac514e331fc81a67fc9d8de884b5666c3" title="Fill an std::set with the return values from an arbitrary function. ">SetFromAll</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00578">578</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00592">592</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1600,7 +1606,7 @@ template&lt;typename T , typename R &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00517">517</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00523">523</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1618,7 +1624,7 @@ template&lt;typename T , typename R &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00527">527</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00533">533</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1636,7 +1642,7 @@ template&lt;typename T , typename R &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00536">536</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00542">542</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1657,7 +1663,7 @@ template&lt;typename T , typename R &gt; </div>
 <p>Update the parameters to the post-fit values in a RooFitResult. </p>
 <dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>For consistency and compatibility with the python interface, please use the <a class="el" href="classch_1_1_combine_harvester.html#a2f6fa74fbaa78ec7f73855dc3473a5f2">UpdateParameters(RooFitResult const&amp;)</a> version of this method instead - this method will be removed in an upcoming release </dd></dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00571">571</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00577">577</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1675,7 +1681,7 @@ template&lt;typename T , typename R &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00552">552</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00558">558</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1692,7 +1698,7 @@ template&lt;typename T , typename R &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00575">575</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00581">581</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1720,7 +1726,7 @@ template&lt;typename T , typename R &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00507">507</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00513">513</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1740,7 +1746,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00585">585</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00599">599</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1760,7 +1766,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00592">592</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00606">606</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1780,7 +1786,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00597">597</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00611">611</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1800,7 +1806,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00602">602</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00616">616</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>
@@ -1818,7 +1824,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00583">583</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00589">589</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1836,7 +1842,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00646">646</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00652">652</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1874,7 +1880,7 @@ template&lt;typename Function &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00694">694</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00700">700</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1912,7 +1918,7 @@ template&lt;typename Function &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00708">708</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00714">714</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1949,7 +1955,52 @@ template&lt;typename Function &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00722">722</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00728">728</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a59b5a637f7f11c2ee77a9b07bc1deb02"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ch::CombineHarvester::AddDatacardLineAtEnd </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>line</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a line of text at the end of all datacards. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">line</td><td>Line of text to add </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00739">739</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac431bdfafad282e891915f7488f43bce"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ch::CombineHarvester::ClearDatacardLinesAtEnd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all added datacard lines. </p>
+
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00743">743</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -1983,7 +2034,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00418">418</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00425">425</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -2169,7 +2220,7 @@ template&lt;typename Function &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00426">426</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___evaluate_8cc_source.html#l00433">433</a> of file <a class="el" href="_combine_harvester___evaluate_8cc_source.html">CombineHarvester_Evaluate.cc</a>.</p>
 
 </div>
 </div>
@@ -2435,7 +2486,7 @@ template&lt;class Map &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00638">638</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester_8h_source.html#l00652">652</a> of file <a class="el" href="_combine_harvester_8h_source.html">CombineHarvester.h</a>.</p>
 
 </div>
 </div>

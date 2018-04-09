@@ -23,6 +23,7 @@ var classch_1_1_object =
     [ "mass", "classch_1_1_object.html#a88dfb8797821405ddc943dd9b4a0b4ce", null ],
     [ "set_attribute", "classch_1_1_object.html#a7fdcd9b776c2fa52ad292ef857dd285b", null ],
     [ "delete_attribute", "classch_1_1_object.html#afe324e1fe370f7804a30e84da0a67556", null ],
+    [ "set_all_attributes", "classch_1_1_object.html#a8c779be0d578124a56a17031abd86c9f", null ],
     [ "all_attributes", "classch_1_1_object.html#ac67ae0228db7343bdb8d408e11e19318", null ],
     [ "attribute", "classch_1_1_object.html#a4c0ab9bc1a210c618008faa8dd72f65d", null ],
     [ "swap", "classch_1_1_object.html#a9ea9cb8427d79a8fccee9409eae3f603", null ]

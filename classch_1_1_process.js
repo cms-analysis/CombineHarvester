@@ -14,12 +14,14 @@ var classch_1_1_process =
     [ "ClonedShape", "classch_1_1_process.html#abd6b57dd2665b2e4edfb9d648e09b6f8", null ],
     [ "ClonedScaledShape", "classch_1_1_process.html#a95f8396972318625650d3c8a773bb561", null ],
     [ "ShapeAsTH1F", "classch_1_1_process.html#a75dddf259aac5a30b652a7f838fccc5d", null ],
-    [ "set_pdf", "classch_1_1_process.html#a29daf76545fd7b93af93aa0b42af1790", null ],
-    [ "pdf", "classch_1_1_process.html#afbce7b1c6d9fc6cfcebdf4b3c54e6bd3", null ],
+    [ "set_pdf", "classch_1_1_process.html#ad7adabf3df5395b10b80c77af00648ae", null ],
+    [ "pdf", "classch_1_1_process.html#a40aab277133c48b1852d33e6fdb35ecf", null ],
     [ "set_data", "classch_1_1_process.html#a97283db14e35e64eef1f0231c8cdd64c", null ],
     [ "data", "classch_1_1_process.html#a2e2e290f4c554cf76456180913188b7b", null ],
     [ "set_norm", "classch_1_1_process.html#a0d192379f39205b78311bd0d8cb13f20", null ],
     [ "norm", "classch_1_1_process.html#ab41c6e3bf638dbb480404166185ed0a1", null ],
+    [ "set_observable", "classch_1_1_process.html#af8158fc6ada12e951a6c84504d05444f", null ],
+    [ "observable", "classch_1_1_process.html#a25e01410aada0818fa20a95a30a96025", null ],
     [ "operator<<", "classch_1_1_process.html#ad2d1aa710013a7a2eac899ed820a8f29", null ],
     [ "swap", "classch_1_1_process.html#acdd8a9af1254395822e5c250053397aa", null ]
 ];
