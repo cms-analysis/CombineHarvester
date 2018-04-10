@@ -73,7 +73,7 @@ var searchData=
   ['sortgraph',['SortGraph',['../namespaceplotting.html#a37df2c4a9c0eb15f7e8f096bca365043',1,'plotting']]],
   ['soverbinfo',['SOverBInfo',['../structch_1_1_s_over_b_info.html#a4e552b096fd68bb3ebf2de40bc2cf9d1',1,'ch::SOverBInfo::SOverBInfo()'],['../structch_1_1_s_over_b_info.html#ac6c910ec7a9f9273987ef29a93d3ee96',1,'ch::SOverBInfo::SOverBInfo(TH1F const *sig, TH1F const *bkg, unsigned steps, double frac)']]],
   ['splitsyst',['SplitSyst',['../namespacech.html#a0f62630d67d75c1b6143c0519da2a720',1,'ch']]],
-  ['standardaxes',['StandardAxes',['../_plotting_8h.html#a976a4920cd03f97ded8454279c895a32',1,'StandardAxes():&#160;Plotting.h'],['../namespaceplotting.html#ad9dc489efad414ea5c21dc4c3ae6de79',1,'plotting.StandardAxes()']]],
+  ['standardaxes',['StandardAxes',['../_plotting_8h.html#a976a4920cd03f97ded8454279c895a32',1,'StandardAxes():&#160;Plotting.h'],['../namespaceplotting.html#a90e1437977fa8762db79ad23469ee917',1,'plotting.StandardAxes'],['../namespaceplotting.html#ad9dc489efad414ea5c21dc4c3ae6de79',1,'plotting.StandardAxes(xaxis, yaxis, var, units)']]],
   ['standardlimitsfromjsonfile',['StandardLimitsFromJSONFile',['../namespaceplotting.html#a8a26c6256734bb53864e5d6da2bd2e8a',1,'plotting']]],
   ['starttimer',['StartTimer',['../classch_1_1_fn_timer.html#aa6368e35ad1520773275baf7ad1bbcb6',1,'ch::FnTimer']]],
   ['stoptimer',['StopTimer',['../classch_1_1_fn_timer.html#a4dc02384a997b93294cd083b107a673e',1,'ch::FnTimer']]],

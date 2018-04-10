@@ -145,6 +145,8 @@ Functions</h2></td></tr>
 <tr class="separator:abe8262401429a666b6a4c43390699be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5d59d461f911ba92f497a8b83f9cf9e"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplotting.html#aa5d59d461f911ba92f497a8b83f9cf9e">SetupTwoPadSplitAsRatio</a> (pads, upper, lower, y_title, y_centered, y_min, y_max)</td></tr>
 <tr class="separator:aa5d59d461f911ba92f497a8b83f9cf9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90e1437977fa8762db79ad23469ee917"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplotting.html#a90e1437977fa8762db79ad23469ee917">StandardAxes</a></td></tr>
+<tr class="separator:a90e1437977fa8762db79ad23469ee917"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Axis histograms</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>By default the first TH1 or TGraph drawn on a pad takes control of the x- and y-axis settings. A better way is to create dedicated "axis" TH1s that can be drawn first, one per pad, which will then control all the axis properties. </p>
 </div></td></tr>
@@ -252,6 +254,8 @@ Functions</h2></td></tr>
 <tr class="separator:a2859ac07831f692838afd628bf9abb21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a923135db9a7c26ccf9ebb3098f779377"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplotting.html#a923135db9a7c26ccf9ebb3098f779377">FixOverlay</a> ()</td></tr>
 <tr class="separator:a923135db9a7c26ccf9ebb3098f779377"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0aa26b4d88d4ebd4d80bda85073236c"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplotting.html#ad0aa26b4d88d4ebd4d80bda85073236c">FixBoxPadding</a> (pad, box, frac)</td></tr>
+<tr class="separator:ad0aa26b4d88d4ebd4d80bda85073236c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Decoration</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>Functions for drawing legends, logos, title, lines and boxes </p>
 </div></td></tr>
@@ -266,6 +270,8 @@ Functions</h2></td></tr>
 <tr class="separator:a1102590a510e7c4921fba16694201a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55c01267919e194bd1be83c273fb3a70"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70">DrawVerticalLine</a> (pad, line, xval)</td></tr>
 <tr class="separator:a55c01267919e194bd1be83c273fb3a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace67664dbba47adb388dfcb9ecee7bb8"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplotting.html#ace67664dbba47adb388dfcb9ecee7bb8">DrawVerticalBand</a> (pad, box, x1, x2)</td></tr>
+<tr class="separator:ace67664dbba47adb388dfcb9ecee7bb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9e086c663eae77d30240bd2bdb692ce"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceplotting.html#af9e086c663eae77d30240bd2bdb692ce">DrawTitle</a></td></tr>
 <tr class="separator:af9e086c663eae77d30240bd2bdb692ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Limit plotting</div></td></tr>
@@ -760,6 +766,52 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
 
 </div>
 </div>
+<a class="anchor" id="a90e1437977fa8762db79ad23469ee917"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def plotting.StandardAxes </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>xaxis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>yaxis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>units</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>fmt</em> = <code>'.1f'</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00433">433</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a539285267924c7a796760e6fdefc68c6"></a>
 <div class="memitem">
 <div class="memproto">
@@ -784,7 +836,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00443">443</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00456">456</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -818,7 +870,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00468">468</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00481">481</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -836,7 +888,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00476">476</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00489">489</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -863,7 +915,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code>bool</code> True if the file can opened, is not a zombie, and if ROOT did not need to try and recover the contents </dd></dl>
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00510">510</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00523">523</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -891,7 +943,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00528">528</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00541">541</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -919,7 +971,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00535">535</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00548">548</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -947,7 +999,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00543">543</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00556">556</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -987,7 +1039,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00564">564</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00577">577</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1033,7 +1085,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00570">570</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00583">583</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1067,7 +1119,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00577">577</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00590">590</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1132,7 +1184,7 @@ list List of TPads, indexed from top to bottom on the canvas. </dd></dl>
 <dd>
 TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00655">655</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00668">668</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1212,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00695">695</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00708">708</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1188,7 +1240,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00713">713</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00726">726</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1216,7 +1268,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00724">724</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00737">737</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1244,7 +1296,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00729">729</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00742">742</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1272,7 +1324,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00751">751</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00764">764</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1312,7 +1364,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00756">756</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00769">769</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1358,7 +1410,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00772">772</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00785">785</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1398,7 +1450,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00788">788</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00801">801</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1480,7 +1532,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00803">803</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00816">816</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1520,7 +1572,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00821">821</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00834">834</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1560,7 +1612,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00829">829</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00842">842</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1594,7 +1646,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00839">839</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00852">852</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1628,7 +1680,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00868">868</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00881">881</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1656,7 +1708,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00884">884</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00897">897</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1710,7 +1762,7 @@ TH2F The exact binning of the TH2F depends on the chosen method </dd></dl>
 <dd>
 TH1 A new TH1 containing the ratio </dd></dl>
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00908">908</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00921">921</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1728,7 +1780,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00927">927</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00940">940</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1756,7 +1808,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00936">936</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00949">949</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1784,7 +1836,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00941">941</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00954">954</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1812,7 +1864,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00950">950</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00963">963</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1840,7 +1892,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00960">960</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00973">973</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1874,7 +1926,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l00970">970</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l00983">983</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1908,7 +1960,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01007">1007</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01020">1020</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1936,7 +1988,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01054">1054</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01067">1067</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1964,7 +2016,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01079">1079</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01092">1092</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -1998,7 +2050,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01093">1093</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01106">1106</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2032,7 +2084,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01105">1105</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01118">1118</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2050,7 +2102,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01133">1133</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01146">1146</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2084,7 +2136,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01153">1153</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01166">1166</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2148,7 +2200,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01193">1193</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01206">1206</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2188,7 +2240,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01219">1219</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01232">1232</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2216,7 +2268,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01277">1277</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01290">1290</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2234,7 +2286,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01286">1286</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01299">1299</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2251,7 +2303,41 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01290">1290</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01303">1303</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad0aa26b4d88d4ebd4d80bda85073236c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def plotting.FixBoxPadding </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>pad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>frac</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01308">1308</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2291,7 +2377,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01302">1302</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01352">1352</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2380,7 +2466,7 @@ TH1 A new TH1 containing the ratio </dd></dl>
 <dd>
 TYPE Description </dd></dl>
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01329">1329</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01379">1379</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2426,7 +2512,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01422">1422</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01472">1472</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2460,7 +2546,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01449">1449</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01499">1499</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2494,7 +2580,47 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01456">1456</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01506">1506</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ace67664dbba47adb388dfcb9ecee7bb8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def plotting.DrawVerticalBand </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>pad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>x2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01512">1512</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2534,7 +2660,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01463">1463</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01519">1519</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2574,7 +2700,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01509">1509</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01565">1565</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2602,7 +2728,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01512">1512</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01568">1568</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2672,7 +2798,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01529">1529</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01585">1585</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2712,7 +2838,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01562">1562</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01618">1618</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2746,7 +2872,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01601">1601</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01657">1657</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2786,7 +2912,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01668">1668</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01724">1724</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2814,7 +2940,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01687">1687</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01743">1743</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2842,7 +2968,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01695">1695</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01751">1751</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2860,7 +2986,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01708">1708</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01764">1764</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2878,7 +3004,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01797">1797</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01853">1853</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2906,7 +3032,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01824">1824</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01880">1880</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
@@ -2952,7 +3078,7 @@ TYPE Description </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="plotting_8py_source.html#l01846">1846</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
+<p>Definition at line <a class="el" href="plotting_8py_source.html#l01902">1902</a> of file <a class="el" href="plotting_8py_source.html">plotting.py</a>.</p>
 
 </div>
 </div>
