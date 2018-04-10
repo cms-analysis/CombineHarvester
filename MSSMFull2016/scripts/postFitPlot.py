@@ -106,7 +106,7 @@ parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in forma
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--x_title', default='m_{T}^{tot} (GeV)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='dN/dM_{T}^{tot} (1/GeV)',help='Title for the y-axis')
-parser.add_argument('--lumi', default='12.9 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
@@ -220,7 +220,7 @@ background_schemes = {'mt':[backgroundComp("t#bar{t}",["TTT","TTJ"],ROOT.TColor.
 'et':[backgroundComp("t#bar{t}",["TTT","TTJ"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("Electroweak",["VVT","VVJ","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowee",["ZL","ZJ"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))],
 'tt':[backgroundComp("t#bar{t}",["TTT","TTJ"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("Electroweak",["VVT","VVJ","W","ZL","ZJ"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))],
 'em':[backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104))],
-'zm':[backgroundComp("Misidentified #mu", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104)),backgroundComp("Z#rightarrow#mu#mu",["ZLL"],ROOT.TColor.GetColor(100,192,232))]}
+'zm':[backgroundComp("Misidentified #mu", ["QCD"], ROOT.TColor.GetColor(250,202,255)),backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),backgroundComp("Electroweak",["VV","W","ZJ"],ROOT.TColor.GetColor(222,90,106)),backgroundComp("Z#rightarrow#tau#tau",["ZTT"],ROOT.TColor.GetColor(248,206,104)),backgroundComp("Z#rightarrow#mu#mu",["ZL"],ROOT.TColor.GetColor(100,192,232))]}
 
 #Extract relevent histograms from shape file
 [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
