@@ -169,6 +169,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_mass, mass, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_syst_name, syst_name, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_syst_type, syst_type, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_process_rgx, process_rgx, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_SetAutoMCStats, SetAutoMCStats, 2, 4)
 
 BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_MassesFromRange, ch::MassesFromRange, 1, 2)
 BOOST_PYTHON_FUNCTION_OVERLOADS(defaults_ValsFromRange, ch::ValsFromRange, 1, 2)
@@ -327,6 +328,9 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("InsertSystematic", &CombineHarvester::InsertSystematic)
       .def("AddWorkspace", &CombineHarvester::AddWorkspace)
       .def("ExtractPdfs", &CombineHarvester::ExtractPdfs)
+      .def("SetAutoMCStats", &CombineHarvester::SetAutoMCStats, defaults_SetAutoMCStats())
+      .def("RenameAutoMCStatsBin", &CombineHarvester::RenameAutoMCStatsBin)
+      .def("GetAutoMCStatsBins", &CombineHarvester::GetAutoMCStatsBins)
       ;
 
     py::class_<Object>("Object")

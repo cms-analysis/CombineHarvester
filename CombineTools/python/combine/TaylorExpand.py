@@ -167,8 +167,10 @@ class TaylorExpand(CombineToolBase):
                            help=('Minimum number of points in stencil'))
         group.add_argument('--drop-threshold', type=float, default=0.,
                            help=('Drop contributions below this threshold'))
-        group.add_argument('--multiple', type=int, default=1.,
+        group.add_argument('--multiple', type=int, default=1,
                            help=('Run multiple fixed points in one combine job'))
+        group.add_argument('--workspace-bestfit', action='store_true',
+                           help=('Update the best-fit using the workspace snapshot'))
 
     def load_workspace(self, file, POIs, data='data_obs', snapshot='MultiDimFit'):
         if self.nll is not None:
@@ -190,6 +192,27 @@ class TaylorExpand(CombineToolBase):
         for POI in POIs:
             self.wsp_vars[POI] = self.loaded_wsp.var(POI)
 
+    def get_snpashot_pois(self, file, POIs, snapshot='MultiDimFit'):
+        infile = ROOT.TFile(file)
+        loaded_wsp = infile.Get('w')
+        loaded_wsp.loadSnapshot('MultiDimFit')
+        fit_vals = {}
+        for POI in POIs:
+            fit_vals[POI] = loaded_wsp.var(POI).getVal()
+        return fit_vals
+
+    def fix_TH2(self, h, labels):
+        h_fix = h.Clone()
+        for y in range(1, h.GetNbinsY() + 1):
+            for x in range(1, h.GetNbinsX() + 1):
+                h_fix.SetBinContent(
+                    x, y, h.GetBinContent(x, h.GetNbinsY() + 1 - y))
+        for x in range(1, h_fix.GetNbinsX() + 1):
+            h_fix.GetXaxis().SetBinLabel(x, labels[x - 1])
+        for y in range(1, h_fix.GetNbinsY() + 1):
+            h_fix.GetYaxis().SetBinLabel(y, labels[-y])
+        return h_fix
+
     def run_method(self):
         mass = self.args.mass
         dc = self.args.datacard
@@ -209,6 +232,12 @@ class TaylorExpand(CombineToolBase):
         Nx = len(POIs)
         print '>> Taylor expansion in %i variables up to order %i:' % (Nx, self.args.order)
         pprint(cfg)
+
+        if self.args.workspace_bestfit:
+            fitvals = self.get_snpashot_pois(dc, POIs)
+            for POI, val in fitvals.iteritems():
+                print '>> Updating POI best fit from %f to %f' % (cfg[POI]["BestFit"], val)
+                cfg[POI]["BestFit"] = val
 
         xvec = np.zeros(Nx, dtype=np.float32)
         # hvec = []
@@ -383,6 +412,7 @@ class TaylorExpand(CombineToolBase):
                     hash_id, ','.join(POIs))
                 arg_str += set_vals_str
 
+
                 if self.args.do_fits:
                     if self.args.test_mode == 0 and not os.path.isfile(filename):
                         self.job_queue.append('combine %s %s' % (arg_str, ' '.join(self.passthru)))
@@ -453,13 +483,42 @@ class TaylorExpand(CombineToolBase):
         pos = 0
         te_tracker = ROOT.vector('std::vector<int>')()
 
+        save_cov_matrix = True
+        if save_cov_matrix:
+            hessian = ROOT.TMatrixDSym(len(POIs))
+            cov_matrix = ROOT.TMatrixDSym(len(POIs))
+            cor_matrix = ROOT.TMatrixDSym(len(POIs))
         sorted_terms = []
         for i in xrange(self.args.order + 1):
             sorted_tmp = []
             for tracker, val in cached_terms.iteritems():
                 if len(tracker) == i:
                     sorted_tmp.append((tracker, val))
+                    if i == 2 and save_cov_matrix:
+                        multi = 1.
+                        if tracker[0] == tracker[1]:
+                            multi = 2.
+                        hessian[int(tracker[0])][int(tracker[1])] = multi * val
+                        hessian[int(tracker[1])][int(tracker[0])] = multi * val
             sorted_terms.extend(sorted(sorted_tmp, key=lambda x: x[0]))
+        if save_cov_matrix:
+            # hessian.Print()
+            cov_matrix = hessian.Clone()
+            cov_matrix.Invert()
+            # cov_matrix.Print()
+            cor_matrix = cov_matrix.Clone()
+            for i in xrange(len(POIs)):
+                for j in xrange(len(POIs)):
+                    print cor_matrix[i][j], math.sqrt(cov_matrix[i][i]), math.sqrt(cov_matrix[j][j])
+                    cor_matrix[i][j] = cor_matrix[i][j] / (math.sqrt(cov_matrix[i][i]) * math.sqrt(cov_matrix[j][j]))
+            # cor_matrix.Print()
+            fout = ROOT.TFile('covariance.root', 'RECREATE')
+            fout.WriteTObject(cor_matrix, 'cor')
+            h_cor = self.fix_TH2(ROOT.TH2D(cor_matrix), POIs)
+            fout.WriteTObject(h_cor, 'h_cor')
+            fout.WriteTObject(cov_matrix, 'cov')
+            h_cov = self.fix_TH2(ROOT.TH2D(cov_matrix), POIs)
+            fout.WriteTObject(h_cov, 'h_cov')
         for tracker, val in sorted_terms:
             # Check if this is a really big value
             # if abs(val) > 1E9:

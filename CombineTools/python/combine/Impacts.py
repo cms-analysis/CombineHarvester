@@ -76,8 +76,14 @@ class Impacts(CombineToolBase):
                     'combine -M MultiDimFit -n _initialFit_%(name)s --algo singles --redefineSignalPOIs %(poistr)s %(pass_str)s' % vars())
             self.flush_queue()
             sys.exit(0)
-        initialRes = utils.get_singles_results(
-            'higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
+        if self.args.splitInitial:
+            initialRes = {}
+            for poi in poiList:
+                initialRes.update(utils.get_singles_results(
+                'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
+        else:
+            initialRes = utils.get_singles_results(
+                'higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
         if len(named) > 0:
             paramList = named
         elif self.args.allPars:
@@ -128,13 +134,13 @@ class Impacts(CombineToolBase):
 
     def all_free_parameters(self, file, wsp, mc, pois):
         res = []
-        wsFile = ROOT.TFile(file)
+        wsFile = ROOT.TFile.Open(file)
         config = wsFile.Get(wsp).genobj(mc)
         pdfvars = config.GetPdf().getParameters(config.GetObservables())
         it = pdfvars.createIterator()
         var = it.Next()
         while var:
-            if var.GetName() not in pois and not var.isConstant():
+            if var.GetName() not in pois and (not var.isConstant()) and var.InheritsFrom("RooRealVar"):
                 res.append(var.GetName())
             var = it.Next()
         return res

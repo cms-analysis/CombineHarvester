@@ -104,7 +104,7 @@ if args.statistic in ["AD","KS"]:
         # if key not in titles:
         #     continue
         toy_graph = plot.ToyTGraphFromJSON(js, [args.mass,key,'toy'])
-        toy_hist = plot.makeHist1D("toys", 100, toy_graph)
+        toy_hist = plot.makeHist1D("toys", 100, toy_graph, 1.15)
         for i in range(toy_graph.GetN()):
             toy_hist.Fill(toy_graph.GetX()[i])
         pValue = js[args.mass][key]["p"]

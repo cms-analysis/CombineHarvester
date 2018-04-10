@@ -50,6 +50,8 @@ class EnhancedCombine(CombineToolBase):
                            help='When used in conjunction with --points will create multiple combine calls that each run at most the number of points specified here.')
         group.add_argument(
             '--boundlist', help='Name of json-file which contains the ranges of physical parameters depending on the given mass and given physics model')
+        group.add_argument(
+            '--generate', nargs='*', default=[], help='Generate sets of options')
 
     def set_args(self, known, unknown):
         CombineToolBase.set_args(self, known, unknown)
@@ -81,6 +83,40 @@ class EnhancedCombine(CombineToolBase):
             seed_vals = utils.split_vals(self.args.seed)
             subbed_vars[('SEED',)] = [(sval,) for sval in seed_vals]
             self.passthru.extend(['-s', '%(SEED)s'])
+
+        for i, generate in enumerate(self.args.generate):
+            split_char = ':' if '::' in generate else ';'
+            gen_header, gen_content = generate.split(split_char*2)
+            print gen_header
+            print gen_content
+            gen_headers = gen_header.split(split_char)
+            gen_entries = gen_content.split(split_char)
+            key = tuple()
+            arglist = []
+            for header in gen_headers:
+                if header == 'n' or header == 'name':
+                    self.args.name += '.%(GENNAME' + str(i) + ')s'
+                    key += ('GENNAME' + str(i),)
+                else:
+                    self.passthru.extend(['%(' + header + ')s'])
+                    key += (header,)
+            for entry in gen_entries:
+                if ',,' in entry:
+                    split_entry = entry.split(',,')
+                else:
+                    split_entry = entry.split(',')
+                final_arg = []
+                for header, e in zip(gen_headers, split_entry):
+                    argname = '-%s' % header if len(header) == 1 else '--%s' % header
+                    if header == 'n' or header == 'name':
+                        final_arg.append(e)
+                    elif len(e) and e != '!':
+                        final_arg.append('%s %s' % (argname, e))
+                    else:
+                        final_arg.append('')
+                arglist.append(tuple(final_arg))
+            subbed_vars[key] = arglist
+
 
         if len(self.args.datacard) >= 1:
             # Two lists of tuples, one which does specify the mass, and one
@@ -179,7 +215,7 @@ class EnhancedCombine(CombineToolBase):
             split = self.args.split_points
             start = 0
             ranges = []
-            while (start + (split - 1)) <= points:
+            while (start + (split - 1)) < points:
             #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(start+(split-1))+".MultiDimFit.mH"+str(self.args.mass)+".root"
             #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
             #        # Send job, if the file it's supposed to create doesn't exist yet
