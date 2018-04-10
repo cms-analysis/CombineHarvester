@@ -7,6 +7,7 @@ var searchData=
   ['tgraphfromtree',['TGraphFromTree',['../_plotting_8h.html#a9359e5d70c59b3cd3ec03c4c7b449d1f',1,'TGraphFromTree():&#160;Plotting.h'],['../namespaceplotting.html#aa6101bd81695471d594e8394a9322b15',1,'plotting.TGraphFromTree()']]],
   ['th1f2data',['TH1F2Data',['../namespacech.html#a1347e48be022e182e17dfc421bf12680',1,'ch']]],
   ['th2fromtgraph2d',['TH2FromTGraph2D',['../namespaceplotting.html#a4629e34106e844ae6de90272eb64157f',1,'plotting']]],
+  ['threepadsplit',['ThreePadSplit',['../namespaceplotting.html#ae1d13ecc1771e9a729ac3aee5f18aaf7',1,'plotting']]],
   ['token',['Token',['../classch_1_1_fn_timer_1_1_token.html#a1c853c1c56a90922270aeaa2727b1fab',1,'ch::FnTimer::Token']]],
   ['toytgraphfromjson',['ToyTGraphFromJSON',['../namespaceplotting.html#ac44b2ee69c7d11ed806abd783ce3c255',1,'plotting']]],
   ['toytgraphfromjsonfile',['ToyTGraphFromJSONFile',['../namespaceplotting.html#a79ff334e787da215ff3d7b06d76fa382',1,'plotting']]],

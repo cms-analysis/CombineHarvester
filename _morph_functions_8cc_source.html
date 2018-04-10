@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('_morph_functions_8cc_source.html','');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacech.html">ch</a> {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="namespacech.html#a64d9f4241e5148c2ab549c40a731dc8c">   20</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a64d9f4241e5148c2ab549c40a731dc8c">BuildRooMorphing</a>(RooWorkspace&amp; ws, <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a>&amp; cb,</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="namespacech.html#a97cbe520b49c247995a8d3e55b0f9563">   20</a></span>&#160;std::string <a class="code" href="namespacech.html#a97cbe520b49c247995a8d3e55b0f9563">BuildRooMorphing</a>(RooWorkspace&amp; ws, <a class="code" href="classch_1_1_combine_harvester.html">CombineHarvester</a>&amp; cb,</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                      std::string <span class="keyword">const</span>&amp; bin, std::string <span class="keyword">const</span>&amp; <a class="code" href="structch_1_1syst_1_1process.html">process</a>,</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                      RooAbsReal&amp; mass_var, std::string norm_postfix,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                      <span class="keywordtype">bool</span> allow_morph, <span class="keywordtype">bool</span> verbose, <span class="keywordtype">bool</span> force_template_limit, TFile * file) {</div>
@@ -711,73 +711,73 @@ $(document).ready(function(){initNavTree('_morph_functions_8cc_source.html','');
 <div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;  <span class="comment">// with Morphing PDFs:</span></div>
 <div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;  <span class="comment">// </span></div>
 <div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;  <span class="comment">//   cb.cp().signals().ExtractPdfs(cb, &quot;htt&quot;, &quot;$BIN_$PROCESS_morph&quot;);</span></div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;}</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;</div>
-<div class="line"><a name="l00626"></a><span class="lineno"><a class="line" href="namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d">  626</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d">MakeMorphDebugPlots</a>(RooMorphingPdf* pdf, RooAbsReal* mass,</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;                         std::vector&lt;double&gt; <span class="keyword">const</span>&amp; masses, TFile* f, TH1 *ref_bins) {</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;  RooRealVar *rrv = <span class="keyword">dynamic_cast&lt;</span>RooRealVar*<span class="keyword">&gt;</span>(mass);</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;  <span class="keywordflow">if</span> (!rrv) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;  f-&gt;cd();</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;  f-&gt;mkdir(pdf-&gt;GetName());</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;  gDirectory-&gt;cd(pdf-&gt;GetName());</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; masses.size(); ++i) {</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;    rrv-&gt;setVal(masses[i]);</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;    TH1 * h = pdf-&gt;createHistogram(<span class="stringliteral">&quot;CMS_th1x&quot;</span>);</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;    h-&gt;AddDirectory(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    TH1 * h2 = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    <span class="keywordflow">if</span> (ref_bins) { </div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;      h2 = (TH1*)ref_bins-&gt;Clone();</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;      h2-&gt;Reset();</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 1; x &lt;= h2-&gt;GetNbinsX(); ++x) {</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        h2-&gt;SetBinContent(x, h-&gt;GetBinContent(x));</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;      }</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;      h2 = h;</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;      h = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;    }</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    h2-&gt;AddDirectory(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;    h2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;actual_point_%g&quot;</span>, masses[i]));</div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;    gDirectory-&gt;WriteTObject(h2);</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;    <span class="keywordflow">if</span> (h) <span class="keyword">delete</span> h;</div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;    <span class="keywordflow">if</span> (h2) <span class="keyword">delete</span> h2;</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;  }</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;  <span class="keywordtype">double</span> m = masses.front();</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;  <span class="keywordtype">double</span> step = 1;</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &gt; 100.) step = step * 10.;</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;  <span class="keywordflow">return</span> std::string(morph_name);</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;}</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;</div>
+<div class="line"><a name="l00627"></a><span class="lineno"><a class="line" href="namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d">  627</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d">MakeMorphDebugPlots</a>(RooMorphingPdf* pdf, RooAbsReal* mass,</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;                         std::vector&lt;double&gt; <span class="keyword">const</span>&amp; masses, TFile* f, TH1 *ref_bins) {</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;  RooRealVar *rrv = <span class="keyword">dynamic_cast&lt;</span>RooRealVar*<span class="keyword">&gt;</span>(mass);</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;  <span class="keywordflow">if</span> (!rrv) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;  f-&gt;cd();</div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;  f-&gt;mkdir(pdf-&gt;GetName());</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;  gDirectory-&gt;cd(pdf-&gt;GetName());</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; masses.size(); ++i) {</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;    rrv-&gt;setVal(masses[i]);</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;    TH1 * h = pdf-&gt;createHistogram(<span class="stringliteral">&quot;CMS_th1x&quot;</span>);</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    h-&gt;AddDirectory(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    TH1 * h2 = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;    <span class="keywordflow">if</span> (ref_bins) { </div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;      h2 = (TH1*)ref_bins-&gt;Clone();</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;      h2-&gt;Reset();</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 1; x &lt;= h2-&gt;GetNbinsX(); ++x) {</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;        h2-&gt;SetBinContent(x, h-&gt;GetBinContent(x));</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;      }</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;      h2 = h;</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;      h = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    }</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;    h2-&gt;AddDirectory(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;    h2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;actual_point_%g&quot;</span>, masses[i]));</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;    gDirectory-&gt;WriteTObject(h2);</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;    <span class="keywordflow">if</span> (h) <span class="keyword">delete</span> h;</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;    <span class="keywordflow">if</span> (h2) <span class="keyword">delete</span> h2;</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;  }</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;  <span class="keywordtype">double</span> m = masses.front();</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;  <span class="keywordtype">double</span> step = 1;</div>
 <div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &gt; 100.) step = step * 10.;</div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &lt; 10.) step = step/10.;</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;  <span class="keywordflow">while</span> (m &lt;= masses.back()) {</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;    rrv-&gt;setVal(m);</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;    TH1* hm = pdf-&gt;createHistogram(<span class="stringliteral">&quot;CMS_th1x&quot;</span>);</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;    hm-&gt;AddDirectory(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;    TH1 * hm2 = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    <span class="keywordflow">if</span> (ref_bins) { </div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;      hm2 = (TH1*)ref_bins-&gt;Clone();</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;      hm2-&gt;Reset();</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 1; x &lt;= hm2-&gt;GetNbinsX(); ++x) {</div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;        hm2-&gt;SetBinContent(x, hm-&gt;GetBinContent(x));</div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;      }</div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;      hm2 = hm;</div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;      hm = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;    }</div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;    hm2-&gt;AddDirectory(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;    hm2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;morph_point_%g&quot;</span>, m));</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;    <span class="comment">//It struggles with m=0, instead adds really small number close to 0</span></div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;    <span class="keywordflow">if</span>(fabs(m) &lt; 1E-5) hm2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;morph_point_0&quot;</span>));</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    gDirectory-&gt;WriteTObject(hm2);</div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;    <span class="keywordflow">if</span> (hm) <span class="keyword">delete</span> hm;</div>
-<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;    <span class="keywordflow">if</span> (hm2) <span class="keyword">delete</span> hm2;</div>
-<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;    m += step;</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;  }</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;  f-&gt;cd();</div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;}</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &gt; 100.) step = step * 10.;</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;  <span class="keywordflow">if</span> (((masses.back() - masses.front()) / step) &lt; 10.) step = step/10.;</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;  <span class="keywordflow">while</span> (m &lt;= masses.back()) {</div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;    rrv-&gt;setVal(m);</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;    TH1* hm = pdf-&gt;createHistogram(<span class="stringliteral">&quot;CMS_th1x&quot;</span>);</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;    hm-&gt;AddDirectory(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    TH1 * hm2 = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;    <span class="keywordflow">if</span> (ref_bins) { </div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;      hm2 = (TH1*)ref_bins-&gt;Clone();</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;      hm2-&gt;Reset();</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 1; x &lt;= hm2-&gt;GetNbinsX(); ++x) {</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;        hm2-&gt;SetBinContent(x, hm-&gt;GetBinContent(x));</div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;      }</div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;      hm2 = hm;</div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;      hm = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;    }</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;    hm2-&gt;AddDirectory(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;    hm2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;morph_point_%g&quot;</span>, m));</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;    <span class="comment">//It struggles with m=0, instead adds really small number close to 0</span></div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    <span class="keywordflow">if</span>(fabs(m) &lt; 1E-5) hm2-&gt;SetName(TString::Format(<span class="stringliteral">&quot;morph_point_0&quot;</span>));</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;    gDirectory-&gt;WriteTObject(hm2);</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;    <span class="keywordflow">if</span> (hm) <span class="keyword">delete</span> hm;</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;    <span class="keywordflow">if</span> (hm2) <span class="keyword">delete</span> hm2;</div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;    m += step;</div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;  }</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;  f-&gt;cd();</div>
 <div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;}</div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;}</div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_a3d265eb50ea8ec70192788d985733d9d"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a3d265eb50ea8ec70192788d985733d9d">ch::CombineHarvester::GetShape</a></div><div class="ttdeci">TH1F GetShape()</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___evaluate_8cc_source.html#l00277">CombineHarvester_Evaluate.cc:277</a></div></div>
-<div class="ttc" id="namespacech_html_a64d9f4241e5148c2ab549c40a731dc8c"><div class="ttname"><a href="namespacech.html#a64d9f4241e5148c2ab549c40a731dc8c">ch::BuildRooMorphing</a></div><div class="ttdeci">void BuildRooMorphing(RooWorkspace &amp;ws, CombineHarvester &amp;cb, std::string const &amp;bin, std::string const &amp;process, RooAbsReal &amp;mass_var, std::string norm_postfix, bool allow_morph, bool verbose, bool force_template_limit=false, TFile *file=nullptr)</div><div class="ttdoc">[part1] </div><div class="ttdef"><b>Definition:</b> <a href="_morph_functions_8cc_source.html#l00020">MorphFunctions.cc:20</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html"><div class="ttname"><a href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a></div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00030">CombineHarvester.h:30</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_ade0f7c161d078a189404a274b93336d2"><div class="ttname"><a href="classch_1_1_combine_harvester.html#ade0f7c161d078a189404a274b93336d2">ch::CombineHarvester::cp</a></div><div class="ttdeci">CombineHarvester cp()</div><div class="ttdoc">Creates and returns a shallow copy of the CombineHarvester instance. </div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8cc_source.html#l00219">CombineHarvester.cc:219</a></div></div>
-<div class="ttc" id="namespacech_html_a21ce0ae95c56bde7e1ecc1f21a839d2d"><div class="ttname"><a href="namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d">ch::MakeMorphDebugPlots</a></div><div class="ttdeci">void MakeMorphDebugPlots(RooMorphingPdf *pdf, RooAbsReal *mass, std::vector&lt; double &gt; const &amp;masses, TFile *f, TH1 *ref_bins=nullptr)</div><div class="ttdef"><b>Definition:</b> <a href="_morph_functions_8cc_source.html#l00626">MorphFunctions.cc:626</a></div></div>
+<div class="ttc" id="namespacech_html_a21ce0ae95c56bde7e1ecc1f21a839d2d"><div class="ttname"><a href="namespacech.html#a21ce0ae95c56bde7e1ecc1f21a839d2d">ch::MakeMorphDebugPlots</a></div><div class="ttdeci">void MakeMorphDebugPlots(RooMorphingPdf *pdf, RooAbsReal *mass, std::vector&lt; double &gt; const &amp;masses, TFile *f, TH1 *ref_bins=nullptr)</div><div class="ttdef"><b>Definition:</b> <a href="_morph_functions_8cc_source.html#l00627">MorphFunctions.cc:627</a></div></div>
 <div class="ttc" id="classch_1_1_object_html_a5c94a9f7878cd40ca8aa8f701b6953e3"><div class="ttname"><a href="classch_1_1_object.html#a5c94a9f7878cd40ca8aa8f701b6953e3">ch::Object::set_mass</a></div><div class="ttdeci">virtual void set_mass(std::string const &amp;mass)</div><div class="ttdef"><b>Definition:</b> <a href="_object_8h_source.html#l00037">Object.h:37</a></div></div>
 <div class="ttc" id="classch_1_1_combine_harvester_html_af13ff7dd8c281cd9e9cfd6b11fc05b95"><div class="ttname"><a href="classch_1_1_combine_harvester.html#af13ff7dd8c281cd9e9cfd6b11fc05b95">ch::CombineHarvester::syst_type</a></div><div class="ttdeci">CombineHarvester &amp; syst_type(std::vector&lt; std::string &gt; const &amp;vec, bool cond=true)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester___filters_8cc_source.html#l00136">CombineHarvester_Filters.cc:136</a></div></div>
 <div class="ttc" id="classch_1_1_systematic_html_ad299d1cae11a0803583ae27a3adef31a"><div class="ttname"><a href="classch_1_1_systematic.html#ad299d1cae11a0803583ae27a3adef31a">ch::Systematic::type</a></div><div class="ttdeci">std::string const &amp; type() const </div><div class="ttdef"><b>Definition:</b> <a href="_systematic_8h_source.html#l00024">Systematic.h:24</a></div></div>
@@ -804,6 +804,7 @@ $(document).ready(function(){initNavTree('_morph_functions_8cc_source.html','');
 <div class="ttc" id="classch_1_1_combine_harvester_html_a91821b9464ebaacb5b92be2b3bc794f8"><div class="ttname"><a href="classch_1_1_combine_harvester.html#a91821b9464ebaacb5b92be2b3bc794f8">ch::CombineHarvester::FilterSysts</a></div><div class="ttdeci">CombineHarvester &amp; FilterSysts(Function func)</div><div class="ttdef"><b>Definition:</b> <a href="_combine_harvester_8h_source.html#l00662">CombineHarvester.h:662</a></div></div>
 <div class="ttc" id="classch_1_1_process_html"><div class="ttname"><a href="classch_1_1_process.html">ch::Process</a></div><div class="ttdef"><b>Definition:</b> <a href="_process_8h_source.html#l00015">Process.h:15</a></div></div>
 <div class="ttc" id="_logging_8h_html"><div class="ttname"><a href="_logging_8h.html">Logging.h</a></div></div>
+<div class="ttc" id="namespacech_html_a97cbe520b49c247995a8d3e55b0f9563"><div class="ttname"><a href="namespacech.html#a97cbe520b49c247995a8d3e55b0f9563">ch::BuildRooMorphing</a></div><div class="ttdeci">std::string BuildRooMorphing(RooWorkspace &amp;ws, CombineHarvester &amp;cb, std::string const &amp;bin, std::string const &amp;process, RooAbsReal &amp;mass_var, std::string norm_postfix, bool allow_morph, bool verbose, bool force_template_limit=false, TFile *file=nullptr)</div><div class="ttdoc">[part1] </div><div class="ttdef"><b>Definition:</b> <a href="_morph_functions_8cc_source.html#l00020">MorphFunctions.cc:20</a></div></div>
 <div class="ttc" id="classch_1_1_systematic_html_a003ef543320b8966fd66d85cc5a8cd87"><div class="ttname"><a href="classch_1_1_systematic.html#a003ef543320b8966fd66d85cc5a8cd87">ch::Systematic::name</a></div><div class="ttdeci">std::string const &amp; name() const </div><div class="ttdef"><b>Definition:</b> <a href="_systematic_8h_source.html#l00021">Systematic.h:21</a></div></div>
 <div class="ttc" id="structch_1_1syst_1_1process_html"><div class="ttname"><a href="structch_1_1syst_1_1process.html">ch::syst::process</a></div><div class="ttdef"><b>Definition:</b> <a href="_systematics_8h_source.html#l00036">Systematics.h:36</a></div></div>
 <div class="ttc" id="classch_1_1_systematic_html"><div class="ttname"><a href="classch_1_1_systematic.html">ch::Systematic</a></div><div class="ttdef"><b>Definition:</b> <a href="_systematic_8h_source.html#l00012">Systematic.h:12</a></div></div>

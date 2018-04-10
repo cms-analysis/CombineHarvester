@@ -20,7 +20,7 @@ var searchData=
   ['plotting_2epy',['plotting.py',['../plotting_8py.html',1,'']]],
   ['plotting_5fcontours_2eh',['Plotting_Contours.h',['../_plotting___contours_8h.html',1,'']]],
   ['plotting_5fstyle_2eh',['Plotting_Style.h',['../_plotting___style_8h.html',1,'']]],
-  ['positionedlegend',['PositionedLegend',['../_plotting_8h.html#a658a1da4505b61eb5a0f0db01c01e161',1,'PositionedLegend():&#160;Plotting.h'],['../namespaceplotting.html#afb5d5a7e73f1b2b143d2e5d8b5e53f33',1,'plotting.PositionedLegend()']]],
+  ['positionedlegend',['PositionedLegend',['../_plotting_8h.html#a658a1da4505b61eb5a0f0db01c01e161',1,'PositionedLegend():&#160;Plotting.h'],['../namespaceplotting.html#af1274ec422296d0e8102452d1ba8451d',1,'plotting.PositionedLegend()']]],
   ['post_2dfit_20distributions',['Post-fit Distributions',['../post-fit-shapes.html',1,'']]],
   ['postfitshapes_2ecpp',['PostFitShapes.cpp',['../_post_fit_shapes_8cpp.html',1,'']]],
   ['postfitshapes_2emd',['PostFitShapes.md',['../_post_fit_shapes_8md.html',1,'']]],
