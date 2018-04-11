@@ -980,6 +980,18 @@ def RemoveGraphYAbove(graph, val):
             break
 
 
+def SetMinToZero(graph):
+    min = 999.
+    minNum = -1
+    for i in xrange(graph.GetN()):
+        if graph.GetY()[i] < min :
+            min = graph.GetY()[i]
+            minNum = i
+    for i in xrange(graph.GetN()):
+        graph.SetPoint(i, graph.GetX()[i], graph.GetY()[i]-min)
+    
+
+
 def ImproveMinimum(graph, func, doIt=False):
     fit_x = 0.
     fit_y = 999.
