@@ -529,10 +529,6 @@ def ParamFromFilename(filename, param):
 ##@{
 
 def TGraphFromTree(tree, xvar, yvar, selection):
-    print tree
-    print xvar
-    print yvar
-    print selection
     tree.Draw(xvar + ':' + yvar, selection, 'goff')
     gr = R.TGraph(tree.GetSelectedRows(), tree.GetV1(), tree.GetV2())
     return gr
