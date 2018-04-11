@@ -46,6 +46,7 @@ var plotting_8py =
     [ "RemoveGraphYAll", "plotting_8py.html#a449fed69f4a89594efca25dd9782fb04", null ],
     [ "RemoveSmallDelta", "plotting_8py.html#a3e69cc55cda57a61149bf2b329fe1203", null ],
     [ "RemoveGraphYAbove", "plotting_8py.html#a9d163491d97931e00a423e5eb740f033", null ],
+    [ "SetMinToZero", "plotting_8py.html#ad4f500ac00a36bc051db4a4a3869b107", null ],
     [ "ImproveMinimum", "plotting_8py.html#a9d4935e4496545e605aa3e61b501e34c", null ],
     [ "FindCrossingsWithSpline", "plotting_8py.html#a930ca7cb0408b290b0db1c79f5911105", null ],
     [ "ReZeroTGraph", "plotting_8py.html#a273bab5cfe205a69a469a86828ab3f3b", null ],
