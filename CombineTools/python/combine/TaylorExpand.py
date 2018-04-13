@@ -171,6 +171,8 @@ class TaylorExpand(CombineToolBase):
                            help=('Run multiple fixed points in one combine job'))
         group.add_argument('--workspace-bestfit', action='store_true',
                            help=('Update the best-fit using the workspace snapshot'))
+        group.add_argument('--linear-workaround', default=None,
+                           help=('Comma separated list of POIs that require special treatment due to a linear NLL'))
 
     def load_workspace(self, file, POIs, data='data_obs', snapshot='MultiDimFit'):
         if self.nll is not None:
@@ -193,7 +195,7 @@ class TaylorExpand(CombineToolBase):
             self.wsp_vars[POI] = self.loaded_wsp.var(POI)
 
     def get_snpashot_pois(self, file, POIs, snapshot='MultiDimFit'):
-        infile = ROOT.TFile(file)
+        infile = ROOT.TFile.Open(file)
         loaded_wsp = infile.Get('w')
         loaded_wsp.loadSnapshot('MultiDimFit')
         fit_vals = {}
@@ -249,6 +251,12 @@ class TaylorExpand(CombineToolBase):
         ######################################################################
         # Step 2 - generate stencils
         ######################################################################
+
+        linear_POIs = []
+        if self.args.linear_workaround is not None:
+            linear_POIs = self.args.linear_workaround.split(',')
+
+
         stencils = {}
         validity = []
 
@@ -270,6 +278,23 @@ class TaylorExpand(CombineToolBase):
                 for s in range(stencil_size):
                     stencil.append(s_min + float(s) * stencil_spacing)
                 coefficients = GenerateStencils(n, 1, stencil)
+
+                ## special case here for linear
+                if n == 2 and P in linear_POIs:
+                    ## First requirement is that s_min or s_max  == the best-fit
+                    if abs(s_min) < 1E-6:
+                        xprime = s_max
+                        print xprime
+                        stencil = [s_min, s_max]
+                        coefficients = [0., 2. / (xprime*xprime)]
+                    elif abs(s_max) < 1E-6:
+                        xprime = s_min
+                        stencil = [s_min, s_max]
+                        coefficients = [2. / (xprime*xprime), 0.]
+                    else:
+                        print 'Special treatment of %s not viable, one stencil range endpoint must correspond to the best fit' % P
+
+
                 stencils[i][n] = zip(stencil, coefficients)
 
         pprint(stencils)
@@ -456,6 +481,7 @@ class TaylorExpand(CombineToolBase):
 
             pprint(stats[i])
 
+
         if self.args.save is not None:
             term_cachefile = self.args.save + '_terms.pkl'
             eval_cachefile = self.args.save + '_evals.pkl'
@@ -509,7 +535,7 @@ class TaylorExpand(CombineToolBase):
             cor_matrix = cov_matrix.Clone()
             for i in xrange(len(POIs)):
                 for j in xrange(len(POIs)):
-                    print cor_matrix[i][j], math.sqrt(cov_matrix[i][i]), math.sqrt(cov_matrix[j][j])
+                    print i, j, cor_matrix[i][j], (cov_matrix[i][i]), (cov_matrix[j][j])
                     cor_matrix[i][j] = cor_matrix[i][j] / (math.sqrt(cov_matrix[i][i]) * math.sqrt(cov_matrix[j][j]))
             # cor_matrix.Print()
             fout = ROOT.TFile('covariance.root', 'RECREATE')

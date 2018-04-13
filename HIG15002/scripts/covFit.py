@@ -262,6 +262,16 @@ if type == 'A1_5PDtoA1_mu':
     pdf.Print('tree')
     wfinal = wnew
 
+if type == 'A1_5DtoA1_mu':
+    wnew = ROOT.RooWorkspace()
+    wnew.factory('mu[1,0.0,2.0]')
+    for D in ['WW', 'ZZ', 'gamgam', 'tautau', 'bb']:
+        wnew.factory('expr::mu_BR_%s("@0", mu)' % (D))
+    getattr(wnew, 'import')(pdf, ROOT.RooFit.RecycleConflictNodes())
+    pdf = wnew.function('nll')
+    pdf.Print('tree')
+    wfinal = wnew
+
 if type == 'A1_5PtoA1_mu':
     wnew = ROOT.RooWorkspace()
     wnew.factory('mu[1,0.0,2.0]')
@@ -342,7 +352,10 @@ while var:
         snapshot[var.GetName()] = var.getVal()
     var = param_it.Next()
 
-fit_range = args.range
+if args.range is not None:
+    fit_range = args.range
+else:
+    fit_range = 999.
 points = args.p
 
 r_min = max(param.getVal() - fit_range, param.getMin())
