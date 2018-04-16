@@ -1,4 +1,4 @@
-#include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2.h"
+	#include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2.h"
 #include <vector>
 #include <string>
 #include "CombineHarvester/CombineTools/interface/Systematics.h"
@@ -18,7 +18,7 @@ namespace ch {
     using ch::syst::bin;
     using ch::JoinStr;
     
-    void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit, bool dijet_2d) {
+    void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit, bool no_jec_split) {
         // Create a CombineHarvester clone that only contains the signal
         // categories
         //
@@ -77,7 +77,7 @@ namespace ch {
         //  trigger   ##FIXME   the values have been chosen rather arbitrarily
         //##############################################################################
         
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_W})).channel({"mt"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_W, embed})).channel({"mt"}).AddSyst(cb,
                                              "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
         cb.cp().process({embed}).channel({"mt"}).AddSyst(cb,
                                              "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(0.98));
@@ -102,13 +102,16 @@ namespace ch {
         cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
                         ({"mm"}, {"ZTT", "TT", "VV", "ZL", "ZJ"},  1.02)
                         ({"mt"}, JoinStr({sig_procs, all_mc_bkgs_no_W}),  1.02)
-                        ({"em","ttbar"}, JoinStr({sig_procs, all_mc_bkgs}),  1.02)
-                        ({"et","tt"}, embed,  0.96)   
-                        ({"em","mt"}, embed,  0.98)); 
+                        ({"em","ttbar"}, JoinStr({sig_procs, all_mc_bkgs}),  1.02));
+        
+        cb.cp().AddSyst(cb, "CMS_eff_m_embedsel", "lnN", SystMap<channel, process>::init
+                        ({"et","tt","em","mt"}, embed,  1.04)); //for now this is kept as uncorrelated with other muon id/trigger uncertainties since they use different working-points/triggers but we could concider (partially) correlating these
         
         cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
                         ({"et"}, JoinStr({sig_procs, all_mc_bkgs_no_W, embed}),  1.02)
                         ({"em","ttbar"}, JoinStr({sig_procs, all_mc_bkgs, embed}),       1.02));
+        
+
         
 
         // Tau Efficiency applied to all MC
@@ -146,10 +149,10 @@ namespace ch {
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
                         ({"em","et","mt"}, {1}, {"TTJ","TTT","TT"}, 1.035));
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em","et","mt"}, {2,3,4,5,6}, {"TTJ","TTT","TT"}, 1.05));
+                        ({"em","et","mt"}, {2,3,4}, {"TTJ","TTT","TT"}, 1.05));
 
         cb.cp().AddSyst(cb, "CMS_htt_eff_b_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em","et","mt"}, {2,3,4,5,6}, {"VV","VVT","VVJ"}, 1.015)); // Mainly SingleTop
+                        ({"em","et","mt"}, {2,3,4}, {"VV","VVT","VVJ"}, 1.015)); // Mainly SingleTop
         // need to update numbers for mt and et channles just set these the same as em channel for nowt
         
         //##############################################################################
@@ -172,6 +175,7 @@ namespace ch {
                                                 "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed})).channel({"et","mt","tt"}).AddSyst(cb,
                                                 "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
+        
         //##############################################################################
         //  Embedded uncertainty on ttbar contamination
         //##############################################################################        
@@ -184,52 +188,52 @@ namespace ch {
         //##############################################################################
  
         // MET Systematic shapes
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt","em"}).bin_id({1,2,3,4}).AddSyst(cb,
                                                   "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","em"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","em","tt"}).bin_id({1,2,3,4}).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({1,2,5,6}).AddSyst(cb,
-                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, {"ZL","ZJ","ZTT","TTJ","TTT","TT","W","VV","VVT","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({3}).AddSyst(cb,
-                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, {"ZJ","ZTT","TTJ","TTT","TT","W","W_rest","VV","VVT","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({4}).AddSyst(cb,
-                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({1,2,}).AddSyst(cb,
+        //                                          "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, {"ZL","ZJ","ZTT","TTJ","TTT","TT","W","VV","VVT","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({3}).AddSyst(cb,
+        //                                          "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, {"ZJ","ZTT","TTJ","TTT","TT","W","W_rest","VV","VVT","ggH_hww125","qqH_hww125","EWKZ"}})).channel({"tt"}).bin_id({4}).AddSyst(cb,
+        //                                          "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
  
 
-        // JES factorization         
-        std::vector< std::string > uncertNames = {
-            "AbsoluteFlavMap",
-            "AbsoluteMPFBias",
-            "AbsoluteScale",
-            "AbsoluteStat",
-            "FlavorQCD",
-            "Fragmentation",
-            "PileUpDataMC",
-            "PileUpPtBB",
-            "PileUpPtEC1",
-            "PileUpPtEC2",
-            "PileUpPtHF",
-            "PileUpPtRef",
-            "RelativeBal",
-            "RelativeFSR",
-            "RelativeJEREC1",
-            "RelativeJEREC2",
-            "RelativeJERHF",
-            "RelativePtBB",
-            "RelativePtEC1",
-            "RelativePtEC2",
-            "RelativePtHF",
-            "RelativeStatEC",
-            "RelativeStatFSR",
-            "RelativeStatHF",
-            "SinglePionECAL",
-            "SinglePionHCAL",
-            "TimePtEta",
-        }; // end uncertNames
-        // Uncomment below for 27 JES
-        //
+        // JES factorization test tautau  
+        std::vector< std::string > uncertNames;
+        if (!no_jec_split) {      
+            uncertNames = {
+              "AbsoluteFlavMap",
+              "AbsoluteMPFBias",
+              "AbsoluteScale",
+              "AbsoluteStat",
+              "FlavorQCD",
+              "Fragmentation",
+              "PileUpDataMC",
+              "PileUpPtBB",
+              "PileUpPtEC1",
+              "PileUpPtEC2",
+              "PileUpPtHF",
+              "PileUpPtRef",
+              "RelativeBal",
+              "RelativeFSR",
+              "RelativeJEREC1",
+              "RelativeJEREC2",
+              "RelativeJERHF",
+              "RelativePtBB",
+              "RelativePtEC1",
+              "RelativePtEC2",
+              "RelativePtHF",
+              "RelativeStatEC",
+              "RelativeStatFSR",
+              "RelativeStatHF",
+              "SinglePionECAL",
+              "SinglePionHCAL",
+              "TimePtEta"
+            }; // end uncertNames
+        } else { uncertNames = { "Total" }; }
         
-        // line below add the JES uncertainties split by source as shape uncertainties
         //for (string uncert:uncertNames){
         //    
         //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({10,11,14}).AddSyst(cb,
@@ -243,25 +247,19 @@ namespace ch {
         //    
         //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({10,11,12}).AddSyst(cb,
         //                                                                                         "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-        //}
         //
-        //
-        //for (string uncert:uncertNames){
         //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt","et"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
         //                                   "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
         //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3,4,5,6}).channel({"em"}).AddSyst(cb,
         //                                   "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
         //}
         
-        // un-comment this line to take the total JES uncertainty
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
         
         // uncomment for regional JES uncertainties
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
-        // uncomment to add RelativeBal as a sperate uncertainty
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
+         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
@@ -345,21 +343,10 @@ namespace ch {
                                              "WSFUncert_$CHANNEL_0jet_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
                                              "WSFUncert_$CHANNEL_boosted_$ERA", "shape", SystMap<>::init(1.00));
-        if(!dijet_2d){
-          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                               "WSFUncert_$CHANNEL_dijet_lowMjj_$ERA", "shape", SystMap<>::init(1.00));
-          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
-                                               "WSFUncert_$CHANNEL_dijet_lowM_$ERA", "shape", SystMap<>::init(1.00));
-          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({5}).AddSyst(cb,
-                                               "WSFUncert_$CHANNEL_dijet_highM_$ERA", "shape", SystMap<>::init(1.00));
-          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({6}).AddSyst(cb,
+        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
+                                             "WSFUncert_$CHANNEL_dijet_lowboost_$ERA", "shape", SystMap<>::init(1.00));                             
+        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
                                                "WSFUncert_$CHANNEL_dijet_boosted_$ERA", "shape", SystMap<>::init(1.00));
-        } else {
-          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                               "WSFUncert_$CHANNEL_dijet_lowboost_$ERA", "shape", SystMap<>::init(1.00));                             
-          cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
-                                               "WSFUncert_$CHANNEL_dijet_boosted_$ERA", "shape", SystMap<>::init(1.00));
-        }
         
         // based on the Ersatz study in Run1
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
@@ -839,15 +826,8 @@ namespace ch {
  
             cb.cp().bin({"tt_0jet","tt_0jet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_tt", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"tt_boosted","tt_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_tt", "rateParam", SystMap<>::init(1.0));
-            if(!dijet_2d){
-                cb.cp().bin({"tt_dijet_lowMjj","tt_dijet_lowMjj_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf1_tt", "rateParam", SystMap<>::init(1.0));
-                cb.cp().bin({"tt_dijet_lowM","tt_dijet_lowM_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf2_tt", "rateParam", SystMap<>::init(1.0));
-                cb.cp().bin({"tt_dijet_highM","tt_dijet_highM_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf3_tt", "rateParam", SystMap<>::init(1.0));
-                cb.cp().bin({"tt_dijet_boosted","tt_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf4_tt", "rateParam", SystMap<>::init(1.0));
-            } else {
-                cb.cp().bin({"tt_dijet_lowboost","tt_dijet_lowboost_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf1_tt", "rateParam", SystMap<>::init(1.0));
-                cb.cp().bin({"tt_dijet_boosted","tt_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf2_tt", "rateParam", SystMap<>::init(1.0));  
-            }
+            cb.cp().bin({"tt_dijet_lowboost","tt_dijet_lowboost_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf1_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet_boosted","tt_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf2_tt", "rateParam", SystMap<>::init(1.0));  
             
             
             //        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,

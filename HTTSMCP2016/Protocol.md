@@ -1,13 +1,10 @@
 
 # creating datacards
     
-To create datacards using Aachen groups categorisation use:    
+To create datacards first run morphing:    
 
     `MorphingSMCP2016 --output_folder="cp261217" --postfix="-2D" --control_region=1 --mm_fit=false --ttbar_fit=true`
 
-To create datacards using IC categorisation and unrolled 2D distributions of m_sv vs sjdphi/D0star for the dijet categories use:
-
-    `MorphingSMCP2016 --output_folder="cp310118" --postfix="-2D" --control_region=1 --mm_fit=false --ttbar_fit=true --dijet_2d=true`    
 
 To not include shape systematics use the option:
     `--no_shape_systs=true`
