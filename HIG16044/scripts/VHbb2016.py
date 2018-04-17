@@ -4,6 +4,7 @@ import CombineHarvester.CombineTools.ch as ch
 import CombineHarvester.HIG16044.systematics as systs
 import ROOT as R
 import glob
+import numpy as np
 import os
 import sys
 import argparse
@@ -24,7 +25,7 @@ parser.add_argument(
 parser.add_argument(
  '--auto_rebin', action='store_true', help="""Rebin automatically?""")
 parser.add_argument(
- '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
+ '--bbb_mode', default=4, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
 parser.add_argument(
  '--zero_out_low', action='store_true', help="""Zero-out lowest SR bins (purely for the purpose of making yield tables""")
 parser.add_argument(
@@ -169,6 +170,11 @@ for chn in chns:
 #cb.cp().ForEachObj(lambda x: x.set_process("WH_lep") if x.process()=='WH_hbb' else None)
 
 rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMode(1).SetPerformRebin(True).SetVerbosity(1)
+binning = np.array([-1.0,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
+#binning = np.array([-1.0,-0.85,-0.7,-0.55,-0.4,-0.25,-0.1,0.05,0.2,0.35,0.5,0.65,0.8,0.95,1.0])
+#binning = np.array([-1.0,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0])
+
+cb.cp().channel(['Znn']).bin_id([7]).VariableRebin(binning)
 
 if args.auto_rebin:
   rebin.Rebin(cb, cb)
