@@ -54,11 +54,14 @@ class PrintFit(CombineToolBase):
         POIs = self.args.POIs.split(',')
         if self.args.algo == 'none':
             res = utils.get_none_results(self.args.input, POIs)
+            for p in POIs:
+                val = res[p]
+                print '%-30s = %+.3f' % (p, val)
             if self.args.json is not None:
-              for key,val in res.iteritems():
-                js_target[key] = { 'Val' : val }
-            with open(json_structure[0], 'w') as outfile:
-              json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+                for key,val in res.iteritems():
+                    js_target[key] = { 'Val' : val }
+                with open(json_structure[0], 'w') as outfile:
+                    json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
         elif self.args.algo == 'singles':
             res = utils.get_singles_results(self.args.input, POIs, POIs)
             if os.path.isfile(self.args.json):
@@ -80,7 +83,15 @@ class PrintFit(CombineToolBase):
                     out_file.write(jsondata)
 
                 
+        elif self.args.algo == 'fixed':
+            res = utils.get_fixed_results(self.args.input, POIs)
+            print '%-30s   bestfit :   fixed' % ('')
+            for p in POIs:
+                print '%-30s = %+.3f  :   %+.3f' % (p, res['bestfit'][p], res['fixedpoint'][p])
+            print '-' * 60
+            print '2*deltaNLL = %f, nPOIs = %i, p-value = %0.4f' % (2.*res['deltaNLL'], len(POIs), res['pvalue'])
 
+            # pprint.pprint(res)
 
 class CollectLimits(CombineToolBase):
     description = 'Aggregate limit output from combine'
@@ -115,6 +126,7 @@ class CollectLimits(CombineToolBase):
         for filename in self.args.input:
             if not plot.TFileIsGood(filename):
                 print '>> File %s is corrupt or incomplete, skipping' % filename
+                continue
             if self.args.use_dirs is False:
                 limit_sets['default'].append(filename)
             else:
@@ -241,6 +253,7 @@ class CollectGoodnessOfFit(CombineToolBase):
         for filename in self.args.input:
             if not plot.TFileIsGood(filename):
                 print '>> File %s is corrupt or incomplete, skipping' % filename
+                continue
             if not self.args.use_dirs:
                 if 'default' not in limit_sets:
                     limit_sets['default'] = ([],[])

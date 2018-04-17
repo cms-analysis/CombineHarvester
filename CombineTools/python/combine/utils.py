@@ -124,3 +124,23 @@ def get_none_results(file, params):
     for param in params:
       res[param] = getattr(t, param)
     return res
+
+
+def get_fixed_results(file, params):
+    """Extracts the output from the MultiDimFit fixed mode"""
+    res = {}
+    f = ROOT.TFile(file)
+    if f is None or f.IsZombie():
+        return None
+    t = f.Get("limit")
+    t.GetEntry(0)
+    res['bestfit'] = {}
+    res['fixedpoint'] = {}
+    for param in params:
+        res['bestfit'][param] = getattr(t, param)
+    t.GetEntry(1)
+    for param in params:
+        res['fixedpoint'][param] = getattr(t, param)
+    res['deltaNLL'] = getattr(t, 'deltaNLL')
+    res['pvalue'] = getattr(t, 'quantileExpected')
+    return res

@@ -1,0 +1,6 @@
+*.tar
+*.tar.gz
+cov-matrix
+lhchcg
+*.json
+input*/

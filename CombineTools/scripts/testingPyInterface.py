@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+import CombineHarvester.CombineTools.ch as ch
+cb = ch.CombineHarvester()
+cb.SetFlag('check-negative-bins-on-import', 0)
+cb.ParseDatacard("data/tutorials/htt/125/htt_tt.txt", mass="125")
+# cb.cp().bin(['htt_tt_1_8TeV']).SetAutoMCStats(cb, -1.)
+cb.WriteDatacard("test.txt", 'test.root')
+
 # cb.FilterProcs(lambda x : x.process() in ['ggH', 'qqH'])
 # cb.FilterAll(lambda y : y.mass() == '110')
 

@@ -89,6 +89,7 @@ class MSSMHiggsModel(PhysicsModel):
         self.SMSignal  = "SM125" #SM signal
         self.dbg_file = None
         self.mk_plots = False
+        self.ggHatNLO = None
 
     def setPhysicsOptions(self,physOptions):
         for po in physOptions:
@@ -108,6 +109,8 @@ class MSSMHiggsModel(PhysicsModel):
                 print 'Write debug output to: %s' % self.dbg_file.GetName()
             if po.startswith("makePlots"):
                 self.mk_plots = True
+            if po.startswith("MSSM-NLO-Workspace="):
+                self.ggHatNLO = po.replace('MSSM-NLO-Workspace=', '')
 
     def setModelBuilder(self, modelBuilder):
         """We're not supposed to overload this method, but we have to because
@@ -256,6 +259,13 @@ class MSSMHiggsModel(PhysicsModel):
                 res.SetBinContent(x, y, new_val)
         return res
 
+    def add_ggH_at_NLO(self, name, X):
+	importstring = os.path.expandvars(self.ggHatNLO)+":w:gg{X}_{LC}_MSSM_frac" #import t,b,i fraction of xsec at NLO
+        for loopcontrib in ['t','b','i']:
+            #self.modelBuilder.out._import(importstring.format(X=X, LC=loopcontrib))
+            getattr(self.modelBuilder.out, 'import')(importstring.format(X=X, LC=loopcontrib), ROOT.RooFit.RecycleConflictNodes())
+            self.modelBuilder.out.factory('prod::%s(%s,%s)' % (name.format(X=X, LC=loopcontrib), name.format(X=X, LC=""), "gg%s_%s_MSSM_frac" % (X,loopcontrib))) #multiply t,b,i fractions with xsec at NNLO
+
     def buildModel(self):
         # It's best not to set ranges for the model parameters here.
         # RooFit will create them automatically from the x- and y-axis
@@ -283,6 +293,12 @@ class MSSMHiggsModel(PhysicsModel):
             #! [part3]
             for X in ['h', 'H', 'A']:
                 self.doHistFunc('xs_gg%s_%s' % (X, era), f.Get(hd['xs_gg%s'%X]), pars)
+                if self.ggHatNLO != None:
+                    #import Yukawa coupling factors of given scenario
+                    self.doHistFunc('Yt_MSSM_%s' % (X), f.Get('rescale_gt_%s'%X), pars)
+                    self.doHistFunc('Yb_MSSM_%s' % (X), f.Get('rescale_gb_%s'%X), pars)
+                    #import xsec fractions keeping the Yukawa coupling factors from the step before
+                    self.add_ggH_at_NLO('xs_gg{X}{LC}_%s' %era, X)
             #! [part3]
                 # QCD scale uncertainty
                 self.doAsymPow('systeff_xs_gg%s_scale_%s' % (X,era),
@@ -308,6 +324,10 @@ class MSSMHiggsModel(PhysicsModel):
                 # contains the cross section we defined above
                 self.SYST_DICT['xs_gg%s_%s' % (X, era)].append('systeff_xs_gg%s_scale_%s' % (X,era))
                 self.SYST_DICT['xs_gg%s_%s' % (X, era)].append('systeff_xs_gg%s_pdf_%s' % (X,era))
+                if self.ggHatNLO != None:
+                    for loopcontrib in ['t','b','i']:
+                        self.SYST_DICT['xs_gg%s%s_%s' % (X, loopcontrib, era)].append('systeff_xs_gg%s_scale_%s' % (X,era))
+                        self.SYST_DICT['xs_gg%s%s_%s' % (X, loopcontrib, era)].append('systeff_xs_gg%s_pdf_%s' % (X,era))
 
                 # Build the Santander-matched bbX cross section. The matching depends
                 # on the mass of the Higgs boson in question, so for the h and H we
@@ -357,8 +377,9 @@ class MSSMHiggsModel(PhysicsModel):
                 self.doHistFunc('br_%stautau_%s' % (X, era), f.Get(hd['br_%stautau'%X]), pars)
                 self.doHistFunc('br_%sbb_%s' % (X, era), f.Get(hd['br_%sbb'%X]), pars)
                 # Make a note of what we've built, will be used to create scaling expressions later
-                self.PROC_SETS.append(([ 'gg%s'%X, 'bb%s'%X ], [ '%stautau'%X, '%sbb'%X], [era])
-            )
+                self.PROC_SETS.append(([ 'gg%s'%X, 'bb%s'%X ], [ '%stautau'%X, '%sbb'%X], [era]))
+                if self.ggHatNLO != None:
+                    self.PROC_SETS.append(([ 'gg%st'%X, 'gg%sb'%X, 'gg%si'%X ], [ '%stautau'%X, '%sbb'%X], [era]))
             # Do the BRs for the charged Higgs
             self.doHistFunc('br_tHpb_%s'%era, f.Get(hd['br_tHpb']), pars)
 
