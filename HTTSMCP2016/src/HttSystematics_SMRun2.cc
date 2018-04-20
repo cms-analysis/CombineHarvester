@@ -234,32 +234,32 @@ namespace ch {
             }; // end uncertNames
         } else { uncertNames = { "Total" }; }
         
-        for (string uncert:uncertNames){
-            
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({10,11,14}).AddSyst(cb,
-                                                                                                "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-        
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_TTJ})).channel({"et"}).bin_id({13}).AddSyst(cb,
-                                                                                                "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt"}).bin_id({10,11,13,14}).AddSyst(cb,
-                                                                                                "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({10,11,12}).AddSyst(cb,
-                                                                                                 "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-        
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt","et"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
-                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3,4,5,6}).channel({"em"}).AddSyst(cb,
-                                           "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
-        }
+        //for (string uncert:uncertNames){
+        //    
+        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({10,11,14}).AddSyst(cb,
+        //                                                                                        "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //
+        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_no_TTJ})).channel({"et"}).bin_id({13}).AddSyst(cb,
+        //                                                                                        "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //    
+        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt"}).bin_id({10,11,13,14}).AddSyst(cb,
+        //                                                                                        "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //    
+        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({10,11,12}).AddSyst(cb,
+        //                                                                                         "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //
+        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt","mt","et"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
+        //                                   "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //    cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).bin_id({1,2,3,4,5,6}).channel({"em"}).AddSyst(cb,
+        //                                   "CMS_scale_j_"+uncert+"_$ERA", "shape", SystMap<>::init(1.00));
+        //}
         
         
         // uncomment for regional JES uncertainties
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().AddSyst(cb,
                         "CMS_htt_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
@@ -310,10 +310,17 @@ namespace ch {
         cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
                                                        "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
         
+        if(control_region==0){
+          cb.cp().process({"W"}).channel({"et","mt"}).AddSyst(cb,
+                                                       "CMS_htt_jetFakeLep_13TeV", "lnN", SystMap<>::init(1.20));
         
-        // QCD norm, just for em  decorrelating QCD BG for differenet categories
+          cb.cp().process({"W"}).channel({"et","mt"}).AddSyst(cb,
+                                                       "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));    
+            
+        }
+        
+        // QCD norm, just for em  decorrelating QCD BG for differenet categories (update me)
 
-        // QCD norm, just for tt
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,
                                              "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.10));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,
@@ -322,7 +329,7 @@ namespace ch {
                                              "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
         
         
-        // QCD norm, just for tt
+        // QCD norm, just for tt (update me)
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({1}).AddSyst(cb,
                                              "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.027));
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({2}).AddSyst(cb,
@@ -331,32 +338,43 @@ namespace ch {
                                              "CMS_htt_QCD_VBF_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.15));
         
         
-        //Iso to antiiso extrapolation
-        cb.cp().process({"QCD"}).channel({"mt"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
-                                             "QCD_Extrap_Iso_nonIso_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.20));
-        cb.cp().process({"QCD"}).channel({"et"}).bin_id({1,2,3,4,5,6}).AddSyst(cb,
-                                             "QCD_Extrap_Iso_nonIso_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.20));
-        
-        
-        //This should affect only shape (normalized to nominal values)
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_0jet_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_boosted_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
-                                             "WSFUncert_$CHANNEL_dijet_lowboost_$ERA", "shape", SystMap<>::init(1.00));                             
+        // QCD OS/SS uncertainty should include also extrapolation from non-iso -> iso (update me)
+        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({1,10}).AddSyst(cb,
+                                             "QCD_OSSS_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.1));
+        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2,13}).AddSyst(cb,
+                                             "QCD_OSSS_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.15));
+        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3,16}).AddSyst(cb,
+                                             "QCD_OSSS_dijet_lowboost_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.20));
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
-                                               "WSFUncert_$CHANNEL_dijet_boosted_$ERA", "shape", SystMap<>::init(1.00));
+                                             "QCD_OSSS_dijet_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.30));
         
-        // based on the Ersatz study in Run1
-        cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
-                                             "WHighMTtoLowMT_0jet_$ERA", "lnN", SystMap<>::init(1.10));
-        cb.cp().process({"W"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
-                                             "WHighMTtoLowMT_boosted_$ERA", "lnN", SystMap<>::init(1.05));
-        cb.cp().process({"W"}).channel({"et","mt"}).bin_id({3,4,5,6}).AddSyst(cb,
-                                             "WHighMTtoLowmt_dijet_$ERA", "lnN", SystMap<>::init(1.10));
         
-
+        // based on the Ersatz study
+        cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1,11}).AddSyst(cb,
+                                             "WHighMTtoLowMT_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.033));
+        cb.cp().process({"W"}).channel({"et","mt"}).bin_id({2,14}).AddSyst(cb,
+                                             "WHighMTtoLowMT_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.067));
+        cb.cp().process({"W"}).channel({"et","mt"}).bin_id({3,4,17,20}).AddSyst(cb,
+                                             "WHighMTtoLowMT_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.182));
+        
+        cb.cp().process({"W"}).channel({"et","mt"}).bin_id({4,20}).AddSyst(cb,
+                                             "WlowPTtoHighPT_dijet_$ERA", "lnN", SystMap<>::init(1.279));
+        
+        // W OS/SS systematic uncertainties 
+        cb.cp().process({"W"}).channel({"et"}).bin_id({1,10}).AddSyst(cb,
+                                             "WOSSSsyst_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.002));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({2,13}).AddSyst(cb,
+                                             "WOSSSsyst_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.029));
+        cb.cp().process({"W"}).channel({"et"}).bin_id({3,4,16}).AddSyst(cb,
+                                             "WOSSSsyst_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.131));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({1,10}).AddSyst(cb,
+                                             "WOSSSsyst_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.012));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({2,13}).AddSyst(cb,
+                                             "WOSSSsyst_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.049));
+        cb.cp().process({"W"}).channel({"mt"}).bin_id({3,4,16}).AddSyst(cb,
+                                             "WOSSSsyst_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.086));
+        
+        // W OS/SS statistical uncertainties (update me)
         
         //##############################################################################
         //  DY LO->NLO reweighting, Between no and twice the correc(on.
@@ -786,61 +804,44 @@ namespace ch {
             //  - [x] lnNs for the QCD OS/SS ratio
             //         * should account for stat + syst
             //         * systs should account for: extrap. from anti-iso to iso region,
-            //           possible difference between ratio in low mT and high mT (overkill?)
             //  - [x] lnNs for the W+jets OS/SS ratio
             //         * should account for stat only if not being accounted for with bbb,
             //           i.e. because the OS/SS ratio was measured with a relaxed selection
-            //         * systs should account for: changes in low/high mT and OS/SS due to JES
-            //           and btag (if relevant); OS/SS being wrong in the MC (from enriched data?);
-            //           low/high mT being wrong in the MC (fake rate dependence?)
+            //         * systs should account for: changes in low/high mT and OS/SS due to experimental effects e.g JES,
+            //           OS/SS being wrong in the MC 
+            //           low/high mT being wrong in the MC 
             
-            // Going to use the regex filtering to select the right subset of
-            // categories for each rateParam
-            cb.SetFlag("filters-use-regex", true);
-            //      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
-            // Regex that matches, e.g. mt_nobtag or mt_nobtag_X
+            // W rate params added for all et/mt signal-regions/control-regions. The same W rate param is used for dijet_lowboost and dijet_boosted since the W for the dijet_boosted category is estimated using dijet_lowboost control-region and extraplated to dijet_boosted using MC
+            cb.cp().bin({"mt_0jet","mt_0jet_wjets_cr","mt_0jet_qcd_cr","mt_0jet_wjets_ss_cr"}).process({"W"}).AddSyst(cb, "rate_W_mt_0jet", "rateParam", SystMap<>::init(1.0)); 
+            cb.cp().bin({"mt_boosted","mt_boosted_wjets_cr","mt_boosted_qcd_cr","mt_boosted_wjets_ss_cr"}).process({"W"}).AddSyst(cb, "rate_W_mt_boosted", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_dijet_lowboost","mt_dijet_lowboost_wjets_cr","mt_dijet_lowboost_qcd_cr","mt_dijet_lowboost_wjets_ss_cr","mt_dijet_boosted","mt_dijet_boosted_qcd_cr"}).process({"W"}).AddSyst(cb, "rate_W_mt_dijet", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_0jet","et_0jet_wjets_cr","et_0jet_qcd_cr","et_0jet_wjets_ss_cr"}).process({"W"}).AddSyst(cb, "rate_W_et_0jet", "rateParam", SystMap<>::init(1.0)); 
+            cb.cp().bin({"et_boosted","et_boosted_wjets_cr","et_boosted_qcd_cr","et_boosted_wjets_ss_cr"}).process({"W"}).AddSyst(cb, "rate_W_et_boosted", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_dijet_lowboost","et_dijet_lowboost_wjets_cr","et_dijet_lowboost_qcd_cr","et_dijet_lowboost_wjets_ss_cr","et_dijet_boosted","et_dijet_boosted_qcd_cr"}).process({"W"}).AddSyst(cb, "rate_W_mt_dijet", "rateParam", SystMap<>::init(1.0));
             
+            // QCD rate params added for low-mT region   
+            cb.cp().bin({"mt_0jet","mt_0jet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_mt_0jet", "rateParam", SystMap<>::init(1.0)); 
+            cb.cp().bin({"mt_boosted","mt_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_mt_boosted", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_dijet_lowboost","mt_dijet_lowboost_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_mt_dijet_lowboost", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_dijet_boosted","mt_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_mt_dijet_boosted", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_0jet","et_0jet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_et_0jet", "rateParam", SystMap<>::init(1.0)); 
+            cb.cp().bin({"et_boosted","et_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_et_boosted", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_dijet_lowboost","et_dijet_lowboost_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_et_dijet_lowboost", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_dijet_boosted","et_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_lowmT_et_dijet_boosted", "rateParam", SystMap<>::init(1.0));
             
-            
-            cb.cp().bin({"mt_0jet","mt_wjets_0jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_0jet_mt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"mt_boosted","mt_wjets_boosted_cr","mt_dijet"}).process({"W"}).AddSyst(cb, "rate_W_cr_boosted_mt", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"mt_dijet","mt_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
-            
-            cb.cp().bin({"et_0jet","et_wjets_0jet_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"et_boosted","et_wjets_boosted_cr","tt_dijet"}).process({"W"}).AddSyst(cb, "rate_W_cr_boosted_et", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"tt_dijet","et_wjets_vbf_cr"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
-            
-            
-            cb.cp().bin({"mt_0jet","mt_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_mt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"mt_boosted","mt_antiiso_boosted_cr","mt_dijet"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_mt", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"mt_dijet","mt_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_mt", "rateParam", SystMap<>::init(1.0));
-            
-            cb.cp().bin({"et_0jet","et_antiiso_0jet_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_et", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"et_boosted","et_antiiso_boosted_cr","tt_dijet"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_et", "rateParam", SystMap<>::init(1.0));
-//            cb.cp().bin({"tt_dijet","et_antiiso_vbf_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf_et", "rateParam", SystMap<>::init(1.0));
-            
-            
-            //          cb.cp().bin({bin+"(|_0jet)$"}).process({"W"}).AddSyst(cb, "rate_QCD_cr_0jet_"+bin, "rateParam", SystMap<>::init(1.0));
-            //          cb.cp().bin({bin+"(|_boosted)$"}).process({"W"}).AddSyst(cb, "rate_W_cr_1jet_"+bin, "rateParam", SystMap<>::init(1.0));
-            //          cb.cp().bin({bin+"(|_vbf)$"}).process({"W"}).AddSyst(cb, "rate_W_cr_vbf_"+bin, "rateParam", SystMap<>::init(1.0));
+            // QCD rate params added for high-mT regions    
+            cb.cp().bin({"mt_0jet_wjets_cr","mt_0jet_wjets_ss_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_highmT_mt_0jet", "rateParam", SystMap<>::init(1.0)); 
+            cb.cp().bin({"mt_boosted_wjets_cr","mt_boosted_wjets_ss_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_highmT_mt_boosted", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"mt_dijet_lowboost_wjets_cr","mt_dijet_lowboost_wjets_ss_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_highmT_mt_dijet_lowboost", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_0jet_wjets_cr","et_0jet_wjets_ss_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_highmT_et_0jet", "rateParam", SystMap<>::init(1.0)); 
+            cb.cp().bin({"et_boosted_wjets_cr","et_boosted_wjets_ss_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_highmT_et_boosted", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"et_dijet_lowboost_wjets_cr","et_dijet_lowboost_wjets_ss_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_highmT_et_dijet_lowboost", "rateParam", SystMap<>::init(1.0));
+
  
             cb.cp().bin({"tt_0jet","tt_0jet_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_0jet_tt", "rateParam", SystMap<>::init(1.0));
             cb.cp().bin({"tt_boosted","tt_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_boosted_tt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"tt_dijet_lowboost","tt_dijet_lowboost_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf1_tt", "rateParam", SystMap<>::init(1.0));
-            cb.cp().bin({"tt_dijet_boosted","tt_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_vbf2_tt", "rateParam", SystMap<>::init(1.0));  
-            
-            
-            //        cb.cp().bin({bin+"(|_.*)$"}).process({"W"}).AddSyst(cb,
-            //          "rate_W_cr_"+bin, "rateParam", SystMap<>::init(1.0));
-            //
-            //        // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
-            //        cb.cp().bin({bin+"(|_antiiso_)$"}).process({"QCD"}).AddSyst(cb,
-            //          "rate_QCD_antiiso_"+bin, "rateParam", SystMap<>::init(1.0));
-            
-            // Regex that matches, e.g. mt_nobtag_wjets_cr or mt_nobtag_wjets_ss_cr
-            //        cb.cp().bin({bin+"_wjets_$"}).process({"QCD"}).AddSyst(cb,
-            //          "rate_QCD_highmT_"+bin, "rateParam", SystMap<>::init(1.0));
-            //      }
+            cb.cp().bin({"tt_dijet_lowboost","tt_dijet_lowboost_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_dijet_lowboost_tt", "rateParam", SystMap<>::init(1.0));
+            cb.cp().bin({"tt_dijet_boosted","tt_dijet_boosted_qcd_cr"}).process({"QCD"}).AddSyst(cb, "rate_QCD_cr_dijet_boosted_tt", "rateParam", SystMap<>::init(1.0));  
             
             /////////////////
             // Systematics //
@@ -851,7 +852,6 @@ namespace ch {
             for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
                 cb.GetParameter(sys)->set_range(0.0, 5.0);
             }
-            cb.SetFlag("filters-use-regex", false);
         }
             
         

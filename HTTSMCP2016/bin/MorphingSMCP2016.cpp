@@ -122,16 +122,16 @@ int main(int argc, char** argv) {
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
-    bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
-    bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VV", "EWKZ"};
+    bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
+    bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VVT", "VVJ", "EWKZ", "W"};
     bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
     bkg_procs["em"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
     bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     
     if(do_embedding){
-      bkg_procs["et"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VV"};
-      bkg_procs["mt"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ",  "VV"};
+      bkg_procs["et"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "W"};
+      bkg_procs["mt"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT", "VVJ", "W"};
       bkg_procs["tt"] = {"EmbedZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ"};
       // Not use embedding for em channel currently
     }
@@ -193,22 +193,20 @@ int main(int argc, char** argv) {
         // for each channel use the categories >= 10 for the control regions
         // the control regions are ordered in triples (10,11,12),(13,14,15)...
         for (auto chn : chns){
-            // for em or tt or mm do nothing
             if (ch::contains({"mt", "et"}, chn)) {
                     
                 Categories queue;
                 int binid = 10;
-                //            for (auto cat:cats[chn]){
-                //                queue.push_back(make_pair(binid,chn+"_wjets_cr"));
-                //                queue.push_back(make_pair(binid+1,chn+"_qcd_cr"));
-                //                queue.push_back(make_pair(binid+2,chn+"_wjets_ss_cr"));
-                
-                queue.push_back(make_pair(binid,chn+"_wjets_0jet_cr"));
-                queue.push_back(make_pair(binid+1,chn+"_wjets_boosted_cr"));
-//                queue.push_back(make_pair(binid+2,chn+"_wjets_vbf_cr"));
-                queue.push_back(make_pair(binid+3,chn+"_antiiso_0jet_cr"));
-                queue.push_back(make_pair(binid+4,chn+"_antiiso_boosted_cr"));
-//                queue.push_back(make_pair(binid+5,chn+"_antiiso_vbf_cr"));
+                for (auto cat:cats[chn]){
+                    queue.push_back(make_pair(binid,cat.second+"_wjets_cr"));
+                    queue.push_back(make_pair(binid+1,cat.second+"_qcd_cr"));
+                    queue.push_back(make_pair(binid+2,cat.second+"_wjets_ss_cr"));
+                    binid+=3;
+                }
+                queue.push_back(make_pair(binid,chn+"_dijet_lowboost_wjets_cr"));
+                queue.push_back(make_pair(binid+1,chn+"_dijet_lowboost_qcd_cr"));
+                queue.push_back(make_pair(binid+2,chn+"_dijet_lowboost_wjets_ss_cr"));
+                queue.push_back(make_pair(binid+4,chn+"_dijet_boosted_qcd_cr"));                
                 
                 cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
             }
@@ -273,22 +271,6 @@ int main(int argc, char** argv) {
           cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
           cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
         }
-        
-        //Needed to add ewkz and W as these are not not available/Negative in qcd cR
-    }
-    
-//    //Add EWKZ and W manually !!!!!!
-
-    if (control_region > 0){
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowboost"}, {4, "et_dijet_boosted"},
-                                    {10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},
-                                    {13, "et_antiiso_0jet_cr"},{14, "et_antiiso_boosted_cr"}}, false);
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowboost"},{4, "mt_dijet_boosted"},
-                                    {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
-                                    {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
-    }else {
-       cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_dijet_lowMjj"},{4, "et_dijet_lowM"},{5, "et_dijet_highM"}, {6, "et_dijet_boosted"}}, false);
-       cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_dijet_lowMjj"},{4, "mt_dijet_lowM"},{5, "mt_dijet_highM"}, {6, "mt_dijet_boosted"}}, false);
     }
     
     //! [part4]
