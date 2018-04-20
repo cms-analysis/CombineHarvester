@@ -25,7 +25,8 @@ class CPMixture(PhysicsModel):
                 self.modelBuilder.doVar('muF[1,0,4]')
                 poiNames.append('muF')
 		self.modelBuilder.doVar('muV[1,0,4]')
-                poiNames.append('muV')
+                self.modelBuilder.doVar('f[0,-1,1]')
+
                 self.modelBuilder.doSet('POI', ','.join(poiNames))
 
                 params = {
@@ -55,21 +56,16 @@ class CPMixture(PhysicsModel):
                   for cp in cps:
                     self.modelBuilder.factory_('expr::muF_xs_sf_{cp}("@0*@1", muF_xs_sf, {cp})'.format(cp=cp))
                 
-                # Add parameter f to float VBF shape for different CP mixtures
-                # Scanning f between -1 and 1. Sign of f only determins whether the interference is positive or negative
-                self.modelBuilder.doVar('f[0,-1,1]')
-                poiNames.append('f')
-                self.modelBuilder.factory_('expr::sign("f/abs(f)", f)'.format(**params))
-                self.modelBuilder.factory_('expr::absf("abs(f)", f)'.format(**params))  
+                # define scaling for VBF templates as a function of muV/f 
+                self.modelBuilder.factory_('expr::signf("@0/abs(@0)", f)')
 
-                self.modelBuilder.factory_('expr::vbf_sm_scaling("1-@0-@1*sqrt(@0*(1-@0))*{vbf_a_tilde}/{vbf_b_tilde}", absf, sign)'.format(**params))
-                self.modelBuilder.factory_('expr::vbf_ps_scaling("@0-@1*sqrt(@0*(1-@0))*{vbf_b_tilde}/{vbf_a_tilde}", absf, sign)'.format(**params))
-                self.modelBuilder.factory_('expr::vbf_mm_scaling("@1*sqrt(@0*(1-@0))/({vbf_a_tilde}*{vbf_b_tilde})", absf, sign)'.format(**params))
+                # VBF definition of a1 and a3
+                self.modelBuilder.factory_('expr::a1("sqrt( (1-abs(@0))*@1 )", f, muV)')
+                self.modelBuilder.factory_('expr::a3("@0*sqrt( abs(@1)*@2 )*{vbf_b_tilde}", signf, f, muV)'.format(**params))
 
-               
-                vbf_cps = ['vbf_sm_scaling', 'vbf_ps_scaling', 'vbf_mm_scaling']
-                for cp in vbf_cps: 
-                  self.modelBuilder.factory_('expr::muV_{cp}("@0*@1", muV, {cp})'.format(cp=cp))
+                self.modelBuilder.factory_('expr::vbf_sm_scaling("@0*@0 -@0*@1*{vbf_a_tilde}/{vbf_b_tilde}", a1, a3)'.format(**params))
+                self.modelBuilder.factory_('expr::vbf_ps_scaling("@1*@1-@0*@1*{vbf_b_tilde}/{vbf_a_tilde}", a1, a3)'.format(**params))
+                self.modelBuilder.factory_('expr::vbf_mm_scaling("@0*@1/({vbf_a_tilde}*{vbf_b_tilde})", a1, a3)'.format(**params))                
                 
                 # if lumiScale=X option is set then scale all templates by X value
                 if self.lumi_scale is not None:
@@ -82,45 +78,37 @@ class CPMixture(PhysicsModel):
                     self.modelBuilder.factory_('expr::muV_{cp}_lumi_scaling("@0*@1*@2", muF, {cp}, lumi_scaling)'.format(cp=cp))
 
 	def getYieldScale(self, bin, process):
-		if self.DC.isSignal[process]:
-			scalings = []	
-			if 'ggH' in process: 
-                          scalings.append('muF')
-                          if self.constrain_ggHYield:
-                            scalings.append('xs_sf')
-                          if "ggHsm" in process:
-    			    scalings.append('sm_scaling')
-			  elif "ggHps" in process:
-			    scalings.append('ps_scaling')
-			  elif "ggHmm" in process: 
-                            scalings.append('mm_scaling') 
-                        if self.lumi_scale is not None: scalings.append('lumi_scaling')                        
+		scalings = []	
+		if 'ggH' in process and 'hww' not in process: 
+                  scalings.append('muF')
+                  if self.constrain_ggHYield:
+                    scalings.append('xs_sf')
+                  if "ggHsm" in process:
+    		    scalings.append('sm_scaling')
+		  elif "ggHps" in process:
+		    scalings.append('ps_scaling')
+		  elif "ggHmm" in process: 
+                    scalings.append('mm_scaling') 
 
-                        scaling = '_'.join(scalings)
-                        print 'Scaling %s/%s as %s' % (bin, process, scaling)  
-			return scaling
-		
-		else: 
-                  scalings = []
-                  if any(x in process for x in ['qqH','WH','ZH']) and not 'hww' in process:
-                      scalings.append('muV')
-                  if "qqHsm" in process:
-                    scalings.append('vbf_sm_scaling')
-                  elif "qqHps" in process:
-                    scalings.append('vbf_ps_scaling')
-                  elif "qqHmm" in process:
-                    scalings.append('vbf_mm_scaling')
+                if any(x in process for x in ['WH','ZH']) and not 'hww' in process:
+                    scalings.append('muV')
+                if "qqHsm" in process:
+                  scalings.append('vbf_sm_scaling')
+                elif "qqHps" in process:
+                  scalings.append('vbf_ps_scaling')
+                elif "qqHmm" in process:
+                  scalings.append('vbf_mm_scaling')
 
-                  if self.lumi_scale is not None: 
-                    scalings.append('lumi_scaling')
+                if self.lumi_scale is not None: 
+                  scalings.append('lumi_scaling')
 
-                  if scalings:
-                    scaling = '_'.join(scalings)
-                    print 'Scaling %s/%s as %s' % (bin, process,scaling)
-                    return scaling
-                  else:
-                    #print 'Scaling %s/%s as 1' % (bin, process)
-                    return 1
+                if scalings:
+                  scaling = '_'.join(scalings)
+                  print 'Scaling %s/%s as %s' % (bin, process,scaling)
+                  return scaling
+                else:
+                  #print 'Scaling %s/%s as 1' % (bin, process)
+                  return 1
 
 CPMixture = CPMixture()
 

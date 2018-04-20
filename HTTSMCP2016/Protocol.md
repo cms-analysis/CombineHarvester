@@ -1,13 +1,10 @@
 
 # creating datacards
     
-To create datacards using Aachen groups categorisation use:    
+To create datacards first run morphing:    
 
     `MorphingSMCP2016 --output_folder="cp261217" --postfix="-2D" --control_region=1 --mm_fit=false --ttbar_fit=true`
 
-To create datacards using IC categorisation and unrolled 2D distributions of m_sv vs sjdphi/D0star for the dijet categories use:
-
-    `MorphingSMCP2016 --output_folder="cp310118" --postfix="-2D" --control_region=1 --mm_fit=false --ttbar_fit=true --dijet_2d=true`    
 
 To not include shape systematics use the option:
     `--no_shape_systs=true`
@@ -53,7 +50,7 @@ Run 2D liklihood scan of muF vs alpha using:
 
 1D scans can be plotted using scripts/plot1DScan.py script.
 To plot alpha:
-    `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=alpha --output=alpha --no-numbers --no-box --x_title="#alpha (#frac{#pi}{2})"` --y-max=2.2`
+    `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=alpha --output=alpha --no-numbers --no-box --x_title="#alpha (#frac{#pi}{2})" --y-max=2.2`
 To plot muF:
     `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=muF --output=muF --no-numbers --no-box --x_title="#mu_{F}"`
 
@@ -61,3 +58,27 @@ To plot muF:
 
     `python scripts/plotMultiDimFit.py --title-right="35.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass 125 -o muF_vs_alpha output/cp310118/cmb/125/higgsCombine.2DScan.MultiDimFit.mH125.root`
 
+
+## Impacts
+
+cd into output directory:
+  `cd output/jes_study_dphi_split_jes`
+
+First do initial fit:
+
+  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --doInitialFit --robustFit 1 -t -1 --parallel 8 --setPhysicsModelParameters muF=1,muV=1,f=0,alpha=0 --setPhysicsModelParameterRanges muF=0,4:muV=0,2:alpha=-1,1:f=-1,1`
+
+Run the fits for all nuisance parameters:
+
+  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --robustFit 1 -t -1 --minimizerAlgoForMinos Minuit2,Migrad --doFits --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP  --setPhysicsModelParameters muF=1,muV=1,f=0,alpha=0 --setPhysicsModelParameterRanges muF=0,4:muV=0,2:alpha=-1,1:f=-1,1`
+
+Run on lx batch system using `--job-mode lxbatch --sub-opts '-q 1nh' --merge 2`
+Run on ic batch using `--job-mode 'SGE'  --prefix-file ic --sub-opts "-q hep.q -l h_rt=0:180:0" --merge=2`
+
+Collect results:
+  
+  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 -o impacts.json`
+
+Make impact plot:
+
+  `plotImpacts.py -i impacts.json -o impacts`
