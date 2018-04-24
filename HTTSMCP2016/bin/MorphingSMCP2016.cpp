@@ -46,7 +46,7 @@ void To1Bin(T* proc)
 
 bool BinIsControlRegion(ch::Object const* obj)
 {
-    return (boost::regex_search(obj->bin(),boost::regex{"_cr$"}) || (obj->channel() == std::string("mm")));
+    return (boost::regex_search(obj->bin(),boost::regex{"_cr$"}) );
 }
 
 // Useful to have the inverse sometimes too
@@ -69,9 +69,8 @@ int main(int argc, char** argv) {
     string scale_sig_procs="";
     string postfix="";
     int control_region = 0;
-    bool mm_fit = false;
     bool ttbar_fit = false;
-    bool real_data = false;
+    bool real_data = true;
     bool no_shape_systs = false;
     bool do_embedding = false;
     bool auto_rebin = false;
@@ -92,7 +91,6 @@ int main(int argc, char** argv) {
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
     ("control_region", po::value<int>(&control_region)->default_value(0))
     ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
-    ("mm_fit", po::value<bool>(&mm_fit)->default_value(true))
     ("do_embedding", po::value<bool>(&do_embedding)->default_value(false))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("no_jec_split", po::value<bool>(&no_jec_split)->default_value(true))    
@@ -113,20 +111,17 @@ int main(int argc, char** argv) {
     input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mt+"/";
     input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_et+"/";
     input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_tt+"/";
-    input_dir["mm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mm+"/";
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
     VString chns = {"mt","et","tt","em"};
-    if (mm_fit) chns.push_back("mm");
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
-    bkg_procs["et"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
-    bkg_procs["mt"] = {"ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ",   "VVT", "VVJ", "EWKZ", "W"};
-    bkg_procs["tt"] = {"ZTT",  "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
-    bkg_procs["em"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
-    bkg_procs["mm"] = {"W", "ZL", "TT", "VV"};
+    bkg_procs["et"] = {"ZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
+    bkg_procs["mt"] = {"ZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
+    bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
+    bkg_procs["em"] = {"ZTT","W", "QCD", "ZLL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     
     if(do_embedding){
@@ -158,11 +153,6 @@ int main(int argc, char** argv) {
         {2, "tt_boosted"}
     };
     
-    cats["mm"] = {
-        {1, "mm_0jet"},
-        {2, "mm_1jet"},
-        {3, "mm_vbf"}
-    };
     cats["ttbar"] = {
         {1, "em_ttbar"}
     };
@@ -206,7 +196,7 @@ int main(int argc, char** argv) {
                 queue.push_back(make_pair(binid,chn+"_dijet_lowboost_wjets_cr"));
                 queue.push_back(make_pair(binid+1,chn+"_dijet_lowboost_qcd_cr"));
                 queue.push_back(make_pair(binid+2,chn+"_dijet_lowboost_wjets_ss_cr"));
-                queue.push_back(make_pair(binid+4,chn+"_dijet_boosted_qcd_cr"));                
+                queue.push_back(make_pair(binid+4,chn+"_dijet_boosted_qcd_cr")); 
                 
                 cats[chn].insert(cats[chn].end(),queue.begin(),queue.end());
             }
@@ -276,7 +266,7 @@ int main(int argc, char** argv) {
     //! [part4]
     
     
-    if ((control_region > 0) || mm_fit){
+    if (control_region > 0){
         // Since we now account for QCD in the high mT region we only
         // need to filter signal processes
         cb.FilterAll([](ch::Object const* obj) {
@@ -285,7 +275,7 @@ int main(int argc, char** argv) {
     }
     
     
-    ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit, no_jec_split);
+    ch::AddSMRun2Systematics(cb, control_region, ttbar_fit, no_jec_split);
     
     if(no_shape_systs){
       cb.FilterSysts([&](ch::Systematic *s){
@@ -459,49 +449,13 @@ int main(int argc, char** argv) {
     
     
     
-    
     // This function modifies every entry to have a standardised bin name of
     // the form: {analysis}_{channel}_{bin_id}_{era}
     // which is commonly used in the htt analyses
     ch::SetStandardBinNames(cb);
     //! [part8]
     
-    //! [part9]
-    // First we generate a set of bin names:
-    //    set<string> bins = cb.bin_set();
-    // This method will produce a set of unique bin names by considering all
-    // Observation, Process and Systematic entries in the CombineHarvester
-    // instance.
-    
-    // We create the output root file that will contain all the shapes.
-    // Here we define a CardWriter with a template for how the text datacard
-    // and the root files should be named.
-    //    ch::CardWriter writer("$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt",
-    //                          "$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root");
-    //    // writer.SetVerbosity(1);
-    //    writer.WriteCards("output/htt_cards8_20fb_22Sep/cmb", cb);
-    //    for (auto chn : cb.channel_set()) {
-    //        writer.WriteCards("output/htt_cards8_20fb_22Sep/" + chn, cb.cp().channel({chn}));
-    //    }
-    //    TFile output("output/htt_cards8_20fb_22Sep/htt.input.root", "RECREATE");
-    
-    
-    // Add a theory group to the bottom of the DCs for use with CH Uncertainty Breakdown
-    //string theoryUncertsString = "CMS_scale_gg_.*|CMS_qqH_QCDUnc.*|CMS_ggH_PDF.*|CMS_qqH_PDF.*|CMS_ggH_UEPS.*|CMS_qqH_UEPS.*|BR_htt_THU.*|BR_htt_PU_mq.*|BR_htt_PU_alphas.*|BR_hww_THU.*|BR_hww_PU_mq.*|BR_hww_PU_alphas.*|QCDScale_ggH.*|QCDScale_qqH.*|QCDScale_VH.*|QCDScale_VH.*|pdf_Higgs_gg.*|pdf_Higgs_qq.*|pdf_Higgs_VH.*|pdf_Higgs_VH.*|";
 
-    ////cb.SetGroup("NonThySyst", {".*"});
-    ////cb.RemoveGroup("NonThySyst", {theoryUncertsString});
-    ////cb.SetGroup("JES", {"CMS_scale_j.*"});
-    //cb.SetGroup("all", {".*"});
-    //cb.SetGroup("BinByBin", {"CMS_htt_.*_bin_.*"});
-
-    //// 4 Component Breakdown
-    //cb.SetGroup("Theory", {theoryUncertsString});
-    //cb.SetGroup("TheoryAndBBB", {theoryUncertsString,"CMS_htt_.*_bin_.*"});
-    
-    
-    
-    
     //! [part9]
     // First we generate a set of bin names:
     
@@ -516,37 +470,19 @@ int main(int argc, char** argv) {
                           output_prefix + output_folder + "/$TAG/common/htt_input.root");
     
     
-    // We're not using mass as an identifier - which we need to tell the CardWriter
-    // otherwise it will see "*" as the mass value for every object and skip it
-    //    writer.SetWildcardMasses({});
-    //    writer.SetVerbosity(1);
-    
     writer.WriteCards("cmb", cb);
     for (auto chn : cb.channel_set()) {
-        if(chn == std::string("mm"))
-        {
-            continue;
-        }
+
         // per-channel
-        writer.WriteCards(chn, cb.cp().channel({chn, "mm"}));
+        writer.WriteCards(chn, cb.cp().channel({chn}));
         // And per-channel-category
-        //  THERE IS A FLAW IN COMBINEHARVESTER
         writer.WriteCards("htt_"+chn+"_1_13TeV", cb.cp().channel({chn}).bin_id({1}));
         writer.WriteCards("htt_"+chn+"_2_13TeV", cb.cp().channel({chn}).bin_id({2}));
         writer.WriteCards("htt_"+chn+"_3_13TeV", cb.cp().channel({chn}).bin_id({3}));
+        writer.WriteCards("htt_"+chn+"_4_13TeV", cb.cp().channel({chn}).bin_id({4}));
         
         
         for (auto mmm : {"125"}){
-            
-            if (mm_fit){
-                cb.cp().channel({"mm"}).bin_id({1}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_1_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm1.root");
-                cb.cp().channel({"mm"}).bin_id({2}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_2_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm2.root");
-                cb.cp().channel({"mm"}).bin_id({3}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_mm_3_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_mm3.root");
-            }
-            
-            //if (ttbar_fit){
-            //    cb.cp().channel({"ttbar"}).bin_id({1}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_ttbar_1_13TeV.txt", output_prefix + output_folder +"/"+chn+"/common/htt_input_ttbar1.root");
-            //}
             
             
             if (control_region > 0){
@@ -556,18 +492,26 @@ int main(int argc, char** argv) {
                 
                     cb.cp().channel({chn}).bin_id({10}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_10_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"10.root");
                     cb.cp().channel({chn}).bin_id({11}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_11_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"11.root");
-//                    cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
+                    cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
                     cb.cp().channel({chn}).bin_id({13}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_13_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"13.root");
                     cb.cp().channel({chn}).bin_id({14}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_14_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"14.root");
-//                    cb.cp().channel({chn}).bin_id({15}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_15_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"15.root");
+                    cb.cp().channel({chn}).bin_id({15}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_15_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"15.root");
+                    cb.cp().channel({chn}).bin_id({16}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_16_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"16.root");
+                    cb.cp().channel({chn}).bin_id({17}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_17_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"17.root");
+                    cb.cp().channel({chn}).bin_id({18}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_18_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"18.root");
+                    cb.cp().channel({chn}).bin_id({20}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_20_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"20.root");
                     
                         
                     cb.cp().channel({chn}).bin_id({10}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_10_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"10.root");
                     cb.cp().channel({chn}).bin_id({11}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_11_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"11.root");
-//                    cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
+                    cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
                     cb.cp().channel({chn}).bin_id({13}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_13_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"13.root");
                     cb.cp().channel({chn}).bin_id({14}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_14_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"14.root");
-//                    cb.cp().channel({chn}).bin_id({15}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_15_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"15.root");
+                    cb.cp().channel({chn}).bin_id({15}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_15_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"15.root");
+                    cb.cp().channel({chn}).bin_id({16}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_16_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"16.root");
+                    cb.cp().channel({chn}).bin_id({17}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_17_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"17.root");
+                    cb.cp().channel({chn}).bin_id({18}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_18_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"18.root");
+                    cb.cp().channel({chn}).bin_id({20}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_20_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"20.root");
                     
                 } // end et mt
                 if (ch::contains({"tt"}, chn)) {
@@ -575,35 +519,18 @@ int main(int argc, char** argv) {
                     cb.cp().channel({chn}).bin_id({10}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_10_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"10.root");
                     cb.cp().channel({chn}).bin_id({11}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_11_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"11.root");
                     cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
+                    cb.cp().channel({chn}).bin_id({13}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/"+chn+"/"+mmm+ "/htt_"+chn+"_13_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"13.root");
                         
                         
                     cb.cp().channel({chn}).bin_id({10}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_10_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"10.root");
                     cb.cp().channel({chn}).bin_id({11}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_11_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"11.root");
                     cb.cp().channel({chn}).bin_id({12}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_12_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"12.root");
+                    cb.cp().channel({chn}).bin_id({13}).mass({"$MASS", "*"}).WriteDatacard(output_prefix + output_folder +"/cmb/"+mmm+ "/htt_"+chn+"_13_13TeV.txt", output_prefix + output_folder +"/"+chn+ "/common/htt_input"+chn+"13.root");
                 } // end tt
             } // end CR
         }
     }
     
-    // This part is required in case we need to have limit for each separted categories
-    // For all categories want to include control regions. This will
-    // work even if the extra categories aren't there.
-    //    writer.WriteCards("htt_cmb_1_13TeV", cb.cp().bin_id({1,10,13}));
-    //    writer.WriteCards("htt_cmb_2_13TeV", cb.cp().bin_id({2,10,13}));
-    //    writer.WriteCards("htt_cmb_3_13TeV", cb.cp().bin_id({3,11,14}));
-    //    writer.WriteCards("htt_cmb_4_13TeV", cb.cp().bin_id({4,11,14}));
-    //    writer.WriteCards("htt_cmb_5_13TeV", cb.cp().bin_id({5,12,15}));
-    //    writer.WriteCards("htt_cmb_6_13TeV", cb.cp().bin_id({6,12,15}));
-    
-    //
-    //
-    //
-    //
-    //    set<string> bins = cb.cp().channel({"mt","mm"}).bin_id({1,10,13}).bin_set();
-    //    std::set<string>::iterator it;
-    //    for (it=bins.begin(); it!=bins.end(); ++it){
-    //        std::cout << " ==================>>>>>>>>   " << *it<<"\n\n\n\n";   //htt_et_10_13TeV
-    //    }
     
     cb.PrintAll();
     cout << " done\n";

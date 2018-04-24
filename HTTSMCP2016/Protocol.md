@@ -3,7 +3,7 @@
     
 To create datacards first run morphing:    
 
-    `MorphingSMCP2016 --output_folder="cp261217" --postfix="-2D" --control_region=1 --mm_fit=false --ttbar_fit=true`
+    `MorphingSMCP2016 --output_folder="cp261217" --postfix="-2D" --control_region=1 --ttbar_fit=true`
 
 
 To not include shape systematics use the option:
