@@ -240,7 +240,7 @@ namespace ch {
         }
         
         
-        //// uncomment for regional JES uncertainties
+        // uncomment for regional JES uncertainties
         //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
         //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
         //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
@@ -293,16 +293,19 @@ namespace ch {
                                                        "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));    
         }
         
-        // QCD norm, just for em  decorrelating QCD BG for differenet categories (update me)
-        // iso->noniso extrapolation uncertainty is 1% for 0jet and 14% for dijet and boosted (from comparrison of OS/SS in (anti)iso regions in QCD MC) -> add this in quadrature to OS/SS unceratinty!
+        // QCD norm for em 
+        // First part is iso->noniso extrapolation uncertainty from QCD MC (statistical) correlated for all categories. Second part is from uncertainties on OS/SS linear fits uncorrelated for each category
         
+        cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
+                                             "CMS_htt_QCD_IsoExtrap_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.16));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({1}).AddSyst(cb,
-                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.10));
+                                             "CMS_htt_QCD_0jet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.12));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({2}).AddSyst(cb,
-                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.10));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3,4}).AddSyst(cb,
-                                             "CMS_htt_QCD_dijet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.20));
-        
+                                             "CMS_htt_QCD_boosted_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.08));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({3}).AddSyst(cb,
+                                             "CMS_htt_QCD_dijet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.12));
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({4}).AddSyst(cb,
+                                             "CMS_htt_QCD_dijet_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.11)); 
         
         // QCD norm, just for tt 
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({1}).AddSyst(cb,
