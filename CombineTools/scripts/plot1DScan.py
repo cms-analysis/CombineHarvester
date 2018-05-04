@@ -36,7 +36,7 @@ def BuildScan(scan, param, files, color, yvals, ycut):
     graph = read(scan, param, files, ycut)
     bestfit = None
     for i in xrange(graph.GetN()):
-        if graph.GetY()[i] == 0.:
+        if abs(graph.GetY()[i]) < 0.000001:
             bestfit = graph.GetX()[i]
     graph.SetMarkerColor(color)
     spline = ROOT.TSpline3("spline3", graph)
