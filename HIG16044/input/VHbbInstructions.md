@@ -108,7 +108,7 @@ To make pre- and post fit plots of the CMVA distributions in the CR:\
 `python scripts/makePostFitPlotsCR.py`
 
 ### CR-only post-fit plots:
-`combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/cmb --channel_masks`
+`combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/cmb --channel-masks`
 
 Run maximum likelihood fit, masking the SR from the likelihood:
 `combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws_masked.root --there --cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Znn_1_13TeV=1 -n .SRMasked `
