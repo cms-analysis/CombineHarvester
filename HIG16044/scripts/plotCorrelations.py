@@ -56,7 +56,7 @@ pads[0].SetBottomMargin(0.25)
 #pads[0].SetRightMargin(0.15)
 c2.SetFixedAspectRatio()
 pads[0].cd()
-correlation_matrix.Draw("COLZ")
+correlation_matrix.Draw("COLZTEXT")
 c2.SaveAs("%(outname)s.pdf"%vars())
 c2.SaveAs("%(outname)s.png"%vars())
 
