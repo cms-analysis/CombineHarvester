@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import CombineHarvester.CombineTools.ch as ch
-import CombineHarvester.HIG16044.systematics as systs
+import CombineHarvester.VH2017.systematics as systs
 import ROOT as R
 import glob
 import numpy as np
@@ -19,13 +19,13 @@ def adjust_shape(proc,nbins):
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
- '--channel', default='all', help="""Which channels to run? Supported options: 'all', 'Znn', 'Zee', 'Zmm', 'Zll', 'Wen', 'Wmn','Wln'""")
+ '--channel', default='Zll', help="""Which channels to run? Supported options: 'all', 'Znn', 'Zee', 'Zmm', 'Zll', 'Wen', 'Wmn','Wln'""")
 parser.add_argument(
- '--output_folder', default='vhbb2016', help="""Subdirectory of ./output/ where the cards are written out to""")
+ '--output_folder', default='vhbb2017', help="""Subdirectory of ./output/ where the cards are written out to""")
 parser.add_argument(
  '--auto_rebin', action='store_true', help="""Rebin automatically?""")
 parser.add_argument(
- '--bbb_mode', default=4, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
+ '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: autoMCStats""")
 parser.add_argument(
  '--zero_out_low', action='store_true', help="""Zero-out lowest SR bins (purely for the purpose of making yield tables""")
 parser.add_argument(
@@ -44,7 +44,7 @@ args = parser.parse_args()
 
 cb = ch.CombineHarvester()
 
-shapes = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/HIG16044/shapes/'
+shapes = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/VH2017/shapes/'
 
 mass = ['125']
 
@@ -76,10 +76,9 @@ for chn in chns:
     print "Framework ", input_fwks[chn], "not supported! Choose from: 'Xbb','AT'"
     sys.exit()
 
-#The following in anticipation of separate subdirs for Xbb and AT inputs
 folder_map = {
-  'Xbb' : 'Example',
-  'AT'  : 'Example'
+  'Xbb' : 'Xbb',
+  'AT'  : 'AT'
 }
 
 input_folders = {
@@ -93,8 +92,8 @@ input_folders = {
 bkg_procs = {
   'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
   'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Zmm' : ['s_Top','TT','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Zee' : ['s_Top','TT','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
+  'Zmm' : ['s_Top','TT','VV','Zj0b','Zj1b','Zj2b'],
+  'Zee' : ['s_Top','TT','VV','Zj0b','Zj1b','Zj2b'],
   'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
 }
 
@@ -108,21 +107,20 @@ sig_procs = {
 
 sig_procs_ren = {
   'Wen' : ['WH_lep','ZH_hbb'],
-  'Wmn' : ['WH_lepb','ZH_hbb'],
+  'Wmn' : ['WH_lep','ZH_hbb'],
   'Zmm' : ['ZH_hbb','ggZH_hbb'],
   'Zee' : ['ZH_hbb','ggZH_hbb'],
   'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
 }
 
-
 cats = {
   'Zee' : [
-    (1, 'ZeeHighPt_13TeV'), (2, 'ZeeLowPt_13TeV'), (3, 'Zlf_high_Zee'), (4,'Zlf_low_Zee'),
-    (5, 'Zhf_high_Zee'), (6, 'Zhf_low_Zee'), (7,'ttbar_high_Zee'), (8,'ttbar_low_Zee')
+    (1, 'Zee_BDT_highpt'), (2, 'Zee_BDT_lowpt'), (3, 'Zee_CRZlight_highpt'), (4,'Zee_CRZlight_lowpt'),
+    (5, 'Zee_CRZb_highpt'), (6, 'Zee_CRZb_lowpt'), (7,'Zee_CRttbar_highpt'), (8,'Zee_CRttbar_lowpt')
   ],
   'Zmm' : [
-    (1, 'ZuuHighPt_13TeV'), (2, 'ZuuLowPt_13TeV'), (3, 'Zlf_high_Zuu'), (4,'Zlf_low_Zuu'),
-    (5, 'Zhf_high_Zuu'), (6, 'Zhf_low_Zuu'), (7,'ttbar_high_Zuu'), (8,'ttbar_low_Zuu')
+    (1, 'Zuu_BDT_highpt'), (2, 'Zuu_BDT_lowpt'), (3, 'Zuu_CRZlight_highpt'), (4,'Zuu_CRZlight_lowpt'),
+    (5, 'Zuu_CRZb_highpt'), (6, 'Zuu_CRZb_lowpt'), (7,'Zuu_CRttbar_highpt'), (8,'Zuu_CRttbar_lowpt')
   ],
   'Znn' : [
     (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
@@ -143,13 +141,10 @@ for chn in chns:
 
 systs.AddSystematics(cb)
 
-if args.bbb_mode==1 or args.bbb_mode==5:
-  systs.AddBinByBinSystematics(cb)
-
-  if args.bbb_mode==5:
-    cb.AddDatacardLineAtEnd("* autoMCStats -1")
-
-
+if args.bbb_mode==0:
+  cb.AddDatacardLineAtEnd("* autoMCStats -1")
+elif args.bbb_mode==1:
+  cb.AddDatacardLineAtEnd("* autoMCStats 0")
 
 for chn in chns:
   file = shapes + input_folders[chn] + "/vhbb_"+chn+".root"
@@ -174,24 +169,6 @@ rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMod
 if args.auto_rebin:
   rebin.Rebin(cb, cb)
 
-if args.bbb_mode==2 or args.bbb_mode==3:
-  print "Generating bbb uncertainties..."
-  bbb = ch.BinByBinFactory()
-  bbb.SetAddThreshold(0.).SetMergeThreshold(0.4).SetFixNorm(False)
-  for chn in chns:
-    print " - Doing bbb for channel ", chn
-    bbb.MergeAndAdd(cb.cp().channel([chn]).process(['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']),cb)
-#    bbb.MergeAndAdd(cb.cp().channel([chn]).bin_id([1,2]).process(['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']),cb)
-  if args.bbb_mode==3:
-    cb.AddDatacardLineAtEnd("* autoMCStats -1")
-    
-if args.bbb_mode==4:
-  cb.AddDatacardLineAtEnd("* autoMCStats 0")
-
-if args.bbb_mode==5:
-  cb.AddDatacardLineAtEnd("* autoMCStats -1")
-
-
 if args.zero_out_low:
   nbins_to_keep = {'Wen':[[1,5]],'Wmn':[[1,5]],'Znn':[[1,5]],'Zee':[[1,5],[2,3]],'Zmm':[[1,5],[2,3]]}
   for chn in chns:
@@ -209,14 +186,20 @@ writer.SetVerbosity(1);
                 
 #Combined:
 writer.WriteCards("cmb",cb);
+writer.WriteCards("cmb_CRonly",cb.cp().bin_id([3,4,5,6,7,8]));
 
 #Per channel:
 for chn in chns:
   writer.WriteCards(chn,cb.cp().channel([chn]))
 
+if 'Znn' in chns:
+  writer.WriteCards("Znn_CRonly",cb.cp().bin_id([3,4,5,6,7,8]).channel(['Znn']))
+
 #Zll and Wln:
 if 'Wen' in chns and 'Wmn' in chns:
   writer.WriteCards("Wln",cb.cp().channel(['Wen','Wmn']))
+  writer.WriteCards("Wln_CRonly",cb.cp().bin_id([3,4,5,6,7,8]).channel(['Wen','Wmn']))
 
 if 'Zee' in chns and 'Zmm' in chns:
   writer.WriteCards("Zll",cb.cp().channel(['Zee','Zmm']))
+  writer.WriteCards("Zll_CRonly",cb.cp().bin_id([3,4,5,6,7,8]).channel(['Zee','Zmm']))
