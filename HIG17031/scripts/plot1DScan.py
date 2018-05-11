@@ -860,7 +860,7 @@ if args.POI_line is not None:
         POI_line = '#scale[0.7]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
     if args.legend_pos == 8:
         POI_line = '#scale[1.0]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
-    if args.legend_pos == 10:
+    if args.legend_pos in [6, 10]:
         POI_line = args.POI_line
 
 if not args.no_input_label:
@@ -883,7 +883,7 @@ if len(other_scans) > 0:
 if args.legend_pos in [1,6]:
     legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
     if args.POI_line is not None:
-        latex.DrawLatex(0.35, 0.875, POI_line)
+        latex.DrawLatex(0.17, 0.60, POI_line)
 
 elif args.legend_pos == 2:
     legend = ROOT.TLegend(0.56+args.legend_off, legend_l+0.075, 0.9+args.legend_off, 0.78+0.075, '', 'NBNDC')
@@ -916,11 +916,18 @@ elif args.legend_pos == 9:
     legend = ROOT.TLegend(0.42, 0.74, 0.70, 0.92, '', 'NBNDC')
     # legend.SetNColumns(1)
 elif args.legend_pos == 10:
-    y_sub = 0. if args.POI_line is None else 0.00
-    legend = ROOT.TLegend(0.73, 0.78 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
-    legend.SetNColumns(1)
-    if args.POI_line is not None:
-        latex.DrawLatex(0.54, 0.835, POI_line)
+    if len(other_scans) > 2:
+        y_sub = 0. if args.POI_line is None else 0.00
+        legend = ROOT.TLegend(0.55, 0.77 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
+        legend.SetNColumns(2)
+        if args.POI_line is not None:
+            latex.DrawLatex(0.39, 0.835, POI_line)
+    else: 
+        y_sub = 0. if args.POI_line is None else 0.00
+        legend = ROOT.TLegend(0.71, 0.77 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
+        legend.SetNColumns(1)
+        if args.POI_line is not None:
+            latex.DrawLatex(0.57, 0.835, POI_line)
 
 if len(other_scans) >= 3 and args.legend_pos == 1:
     y_sub = 0. if args.POI_line is None else 0.07
@@ -934,6 +941,8 @@ if len(other_scans) >= 3 and args.legend_pos == 1:
         legend.SetNColumns(2)
 
 legend.AddEntry(main_scan['func'], args.main_label, 'L')
+if args.legend_pos == 10 and len(other_scans) > 2:
+    legend.AddEntry(main_scan['func'], ' ', '')
 if args.breakdown and args.envelope:
     for i in xrange(n_env):
         legend.AddEntry(new_others[i]['func'], other_scans_opts[i][1], 'L')
