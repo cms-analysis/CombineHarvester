@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--input', '-i', help='input name')
 parser.add_argument('--output', '-o', help='output name')
+parser.add_argument('--pub', action='store_true')
 # parser.add_argument('--input', '-i', help='Main input file')
 # parser.add_argument('--label', '-l', help='Main input file')
 # parser.add_argument('--translate', default='texName.json', help='json file with POI name translation')
@@ -48,12 +49,21 @@ pads = plot.OnePad()
 # sb_obs.SetBinContent(17, 0.);
 
 h_bkg.SetFillColor(18)
-h_sig.SetFillColor(ROOT.kRed)
-h_sig.SetFillStyle(3004)
-h_sig.SetLineColor(ROOT.kRed)
-h_sig_mu1.SetFillColor(ROOT.kOrange-2)
-h_sig_mu1.SetFillStyle(3004)
-h_sig_mu1.SetLineColor(ROOT.kOrange-2)
+
+if args.pub:
+    h_sig.SetFillColor(ROOT.kRed+3)
+    h_sig.SetFillStyle(3004)
+    h_sig.SetLineColor(ROOT.kRed+3)
+    h_sig_mu1.SetFillColor(ROOT.kOrange-2)
+    h_sig_mu1.SetFillStyle(3005)
+    h_sig_mu1.SetLineColor(ROOT.kOrange-2)
+else:
+    h_sig.SetFillColor(ROOT.kRed)
+    h_sig.SetFillStyle(3004)
+    h_sig.SetLineColor(ROOT.kRed)
+    h_sig_mu1.SetFillColor(ROOT.kOrange-2)
+    h_sig_mu1.SetFillStyle(3004)
+    h_sig_mu1.SetLineColor(ROOT.kOrange-2)
 
 new_idx = plot.CreateTransparentColor(12, 0.4)
 h_err.SetFillColor(new_idx)
@@ -93,7 +103,10 @@ else:
 pads[0].SetLogy(True)
 
 if do_ratio:
-    plot.SetupTwoPadSplitAsRatio(pads, axes[0], axes[1], "Obs. / Bkg.", True, 0.8, 2.9)
+    if args.pub:
+        plot.SetupTwoPadSplitAsRatio(pads, axes[0], axes[1], "Obs. / Bkg.", True, 0.8, 3.4)
+    else:
+        plot.SetupTwoPadSplitAsRatio(pads, axes[0], axes[1], "Obs. / Bkg.", True, 0.8, 2.9)
     axes[1].GetXaxis().SetTitle("log_{10}(S/B)")
     axes[0].GetYaxis().SetTitle("Events")
 else:
@@ -135,8 +148,13 @@ legend = plot.PositionedLegend(0.30, 0.20, 3, 0.03)
 legend.AddEntry(h_dat, "Observed", "pe")
 legend.AddEntry(h_bkg, "Background", "f")
 legend.AddEntry(h_err, "Uncertainty", "f")
-legend.AddEntry(h_sig, "t#bar{t}H (#mu=1.26)", "f")
-legend.AddEntry(h_sig_mu1, "t#bar{t}H (#mu=1.00)", "f")
+if args.pub:
+    legend.AddEntry(h_sig, "t#bar{t}H (#mu_{t#bar{t}H}=1.26)", "f")
+    legend.AddEntry(h_sig_mu1, "t#bar{t}H (#mu_{t#bar{t}H}=1.00)", "f")
+else:
+    legend.AddEntry(h_sig, "t#bar{t}H (#mu=1.26)", "f")
+    legend.AddEntry(h_sig_mu1, "t#bar{t}H (#mu=1.00)", "f")
+
 # // legend->AddEntry(&sb_err, "Bkg. Uncertainty", "f");
 legend.Draw()
 
@@ -146,7 +164,11 @@ for pad in pads:
 
 
 # plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 0, 0.12, 0.035, 1.2)
-plot.DrawCMSLogo(pads[0], 'CMS', 'Supplementary', 11, 0.045, 0.035, 1.2, '', 0.9)
+if args.pub:
+    plot.DrawCMSLogo(pads[0], 'CMS', '', 11, 0.045, 0.035, 1.2, '', 0.9)
+else:
+    plot.DrawCMSLogo(pads[0], 'CMS', 'Supplementary', 11, 0.045, 0.035, 1.2, '', 0.9)
+
 plot.DrawTitle(pads[0], '5.1 fb^{-1} (7 TeV) + 19.7 fb^{-1} (8 TeV) + 35.9 fb^{-1} (13 TeV)' , 3)
 
 

@@ -814,7 +814,7 @@ if args.json is not None:
                     js_extra['OtherLimit%sHi' % breakdown[oi+1]] = interval['hi']
                     js_extra['ValidOtherLimit%sLo' % breakdown[oi+1]] = interval['valid_lo']
                     js_extra['ValidOtherLimit%sHi' % breakdown[oi+1]] = interval['valid_hi']
-                if len(main_scan['other_2sig']) >= 1:
+                if len(other['other_2sig']) >= 1:
                     interval = other['other_2sig'][0]
                     js_extra['2sig_OtherLimit%sLo' % breakdown[oi+1]] = interval['lo']
                     js_extra['2sig_OtherLimit%sHi' % breakdown[oi+1]] = interval['hi']
@@ -860,7 +860,8 @@ if args.POI_line is not None:
         POI_line = '#scale[0.7]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
     if args.legend_pos == 8:
         POI_line = '#scale[1.0]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
-
+    if args.legend_pos == 10:
+        POI_line = args.POI_line
 
 if not args.no_input_label:
     plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
@@ -914,6 +915,12 @@ elif args.legend_pos == 7:
 elif args.legend_pos == 9:
     legend = ROOT.TLegend(0.42, 0.74, 0.70, 0.92, '', 'NBNDC')
     # legend.SetNColumns(1)
+elif args.legend_pos == 10:
+    y_sub = 0. if args.POI_line is None else 0.00
+    legend = ROOT.TLegend(0.73, 0.78 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
+    legend.SetNColumns(1)
+    if args.POI_line is not None:
+        latex.DrawLatex(0.54, 0.835, POI_line)
 
 if len(other_scans) >= 3 and args.legend_pos == 1:
     y_sub = 0. if args.POI_line is None else 0.07
