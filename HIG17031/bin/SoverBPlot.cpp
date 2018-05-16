@@ -205,8 +205,11 @@ std::map<std::string, SBValues> FillSB(std::map<std::string, ChannelInfo> &infom
   return res;
 }
 
-void AppendToHists(std::map<std::string, SBValues> & sbmap_bins, std::map<std::string, SBValues> & sbmap_vals, TH1 *h_bkg, TH1 *h_sig, TH1 *h_dat) {
+void AppendToHists(std::map<std::string, SBValues> & sbmap_bins, std::map<std::string, SBValues> & sbmap_vals, TH1 *h_bkg, TH1 *h_sig, TH1 *h_dat, std::vector<std::string> const& filter = std::vector<std::string>()) {
   for (auto & it : sbmap_bins) {
+    if (filter.size() > 0 && std::find(filter.begin(), filter.end(), it.first) == filter.end()) {
+      continue;
+    }
     auto & sb_bins = it.second;
     auto & sb_vals = sbmap_vals[it.first];
     for (unsigned i = 0; i < sb_bins.bkg.size(); ++i) {
@@ -259,13 +262,144 @@ int main(int argc, char* argv[]) {
   // Now update to post-fit values
   cb.UpdateParameters(res);
 
-  // Get the distributions
+  std::map<std::string, std::vector<std::string>> channel_bin_dict = {
+      {"hgg", { "TTHHadronicTag_13TeV",
+                "TTHLeptonicTag_13TeV",
+                "UntaggedTag_0_13TeV",
+                "UntaggedTag_1_13TeV",
+                "UntaggedTag_2_13TeV",
+                "UntaggedTag_3_13TeV",
+                "VBFTag_0_13TeV",
+                "VBFTag_1_13TeV",
+                "VBFTag_2_13TeV",
+                "VHHadronicTag_13TeV",
+                "VHLeptonicLooseTag_13TeV",
+                "VHMetTag_13TeV",
+                "WHLeptonicTag_13TeV",
+                "ZHLeptonicTag_13TeV"}},
+      {"hzz4l",       {"cat_hzz_13TeV_2e2mu_Untagged",
+                       "cat_hzz_13TeV_2e2mu_VBF1JetTagged",
+                       "cat_hzz_13TeV_2e2mu_VBF2JetTagged",
+                       "cat_hzz_13TeV_2e2mu_VHHadrTagged",
+                       "cat_hzz_13TeV_2e2mu_VHLeptTagged",
+                       "cat_hzz_13TeV_2e2mu_VHMETtagged",
+                       "cat_hzz_13TeV_2e2mu_ttHTagged",
+                       "cat_hzz_13TeV_4e_UnTagged",
+                       "cat_hzz_13TeV_4e_VBF1JetTagged",
+                       "cat_hzz_13TeV_4e_VBF2JetTagged",
+                       "cat_hzz_13TeV_4e_VHHadrTagged",
+                       "cat_hzz_13TeV_4e_VHLeptTagged",
+                       "cat_hzz_13TeV_4e_VHMETTagged",
+                       "cat_hzz_13TeV_4e_ttHTagged",
+                       "cat_hzz_13TeV_4mu_UnTagged",
+                       "cat_hzz_13TeV_4mu_VBF1JetTagged",
+                       "cat_hzz_13TeV_4mu_VBF2JetTagged",
+                       "cat_hzz_13TeV_4mu_VHHadrTagged",
+                       "cat_hzz_13TeV_4mu_VHLeptTagged",
+                       "cat_hzz_13TeV_4mu_VHMETTagged",
+                       "cat_hzz_13TeV_4mu_ttHTagged"}},
+      {"tth_hbb_hadronic",      { "tth_hbb_fh_j7_t3__mem_FH_4w2h1t",
+                                  "tth_hbb_fh_j7_t4__mem_FH_3w2h2t",
+                                  "tth_hbb_fh_j8_t3__mem_FH_4w2h1t",
+                                  "tth_hbb_fh_j8_t4__mem_FH_3w2h2t",
+                                  "tth_hbb_fh_j9_t3__mem_FH_4w2h1t",
+                                  "tth_hbb_fh_j9_t4__mem_FH_4w2h2t"}},
+      {"tth_hbb_leptonic",      { "ttH_hbb_13TeV_dl_ge4j3t_both",
+                                  "ttH_hbb_13TeV_dl_ge4jge4t_high",
+                                  "ttH_hbb_13TeV_dl_ge4jge4t_low",
+                                  "ttH_hbb_13TeV_sl_eq4j_ge3b_cc_v6b_ttH125_bb__MVA_cc_dnn_ttH_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq4j_ge3b_cc_v6b_ttJets_2b__MVA_cc_dnn_tt2b_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq4j_ge3b_cc_v6b_ttJets_b__MVA_cc_dnn_ttb_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq4j_ge3b_cc_v6b_ttJets_bb__MVA_cc_dnn_ttbb_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq4j_ge3b_cc_v6b_ttJets_cc__MVA_cc_dnn_ttcc_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq4j_ge3b_cc_v6b_ttJets_lf__MVA_cc_dnn_ttlf_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq5j_ge3b_cc_v6b_ttH125_bb__MVA_cc_dnn_ttH_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq5j_ge3b_cc_v6b_ttJets_2b__MVA_cc_dnn_tt2b_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq5j_ge3b_cc_v6b_ttJets_b__MVA_cc_dnn_ttb_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq5j_ge3b_cc_v6b_ttJets_bb__MVA_cc_dnn_ttbb_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq5j_ge3b_cc_v6b_ttJets_cc__MVA_cc_dnn_ttcc_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_eq5j_ge3b_cc_v6b_ttJets_lf__MVA_cc_dnn_ttlf_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_ge6j_ge3b_cc_v6b_ttH125_bb__MVA_cc_dnn_ttH_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_ge6j_ge3b_cc_v6b_ttJets_2b__MVA_cc_dnn_tt2b_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_ge6j_ge3b_cc_v6b_ttJets_b__MVA_cc_dnn_ttb_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_ge6j_ge3b_cc_v6b_ttJets_bb__MVA_cc_dnn_ttbb_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_ge6j_ge3b_cc_v6b_ttJets_cc__MVA_cc_dnn_ttcc_SL_v6b",
+                                  "ttH_hbb_13TeV_sl_ge6j_ge3b_cc_v6b_ttJets_lf__MVA_cc_dnn_ttlf_SL_v6b"}},
+      {"tth_htt",       {"ttH_1l_2tau",
+                         "ttH_2lss_1tau_MEM_missing",
+                         "ttH_2lss_1tau_MEM_nomiss",
+                         "ttH_3l_1tau"}},
+      {"tth_multilepton",       {"ttH_2lss_ee_neg",
+                                 "ttH_2lss_ee_pos",
+                                 "ttH_2lss_em_bl_neg",
+                                 "ttH_2lss_em_bl_pos",
+                                 "ttH_2lss_em_bt_neg",
+                                 "ttH_2lss_em_bt_pos",
+                                 "ttH_2lss_mm_bl_neg",
+                                 "ttH_2lss_mm_bl_pos",
+                                 "ttH_2lss_mm_bt_neg",
+                                 "ttH_2lss_mm_bt_pos",
+                                 "ttH_3l_bl_neg",
+                                 "ttH_3l_bl_pos",
+                                 "ttH_3l_bt_neg",
+                                 "ttH_3l_bt_pos",
+                                 "ttH_4l"}},
+      {"tth_run1", {"hgg_card_7TeV_tth",
+        "hgg_card_8TeV_tth_ch1_cat11_8TeV",
+        "hgg_card_8TeV_tth_ch1_cat12_8TeV",
+        "ttH_2lss_eeBCat_MVA_neg",
+        "ttH_2lss_eeBCat_MVA_pos",
+        "ttH_2lss_emBCat_MVA_neg",
+        "ttH_2lss_emBCat_MVA_pos",
+        "ttH_2lss_mumuBCat_MVA_neg",
+        "ttH_2lss_mumuBCat_MVA_pos",
+        "ttH_3lBCat_MVA_neg",
+        "ttH_3lBCat_MVA_pos",
+        "ttH_4l_nJet",
+        "ttH_8TeV_7_e2je2t",
+        "ttH_8TeV_7_ge3t",
+        "ttH_8TeV_7_ljets_j4_t3",
+        "ttH_8TeV_7_ljets_j4_t4",
+        "ttH_8TeV_7_ljets_j5_t3",
+        "ttH_8TeV_7_ljets_j5_tge4",
+        "ttH_8TeV_7_ljets_jge6_t2",
+        "ttH_8TeV_7_ljets_jge6_t3",
+        "ttH_8TeV_7_ljets_jge6_tge4",
+        "ttH_hbb_8TeV_e3je2t",
+        "ttH_hbb_8TeV_ge3t",
+        "ttH_hbb_8TeV_ge4je2t",
+        "ttH_hbb_8TeV_ljets_j4_t3",
+        "ttH_hbb_8TeV_ljets_j4_t4",
+        "ttH_hbb_8TeV_ljets_j5_t3",
+        "ttH_hbb_8TeV_ljets_j5_tge4",
+        "ttH_hbb_8TeV_ljets_jge6_t2",
+        "ttH_hbb_8TeV_ljets_jge6_t3",
+        "ttH_hbb_8TeV_ljets_jge6_tge4",
+        "ttH_htt_8TeV_TTL_1b_1nb",
+        "ttH_htt_8TeV_TTL_1b_2nb",
+        "ttH_htt_8TeV_TTL_1b_3+nb",
+        "ttH_htt_8TeV_TTL_2b_0nb",
+        "ttH_htt_8TeV_TTL_2b_1nb",
+        "ttH_htt_8TeV_TTL_2b_2+nb"}}};
+
   auto post_sb = FillSB(chn_info, &h_bkg, true);
+
+  for (auto const& it : channel_bin_dict) {
+    TH1* h_bkg_chn = (TH1*)h_bkg.Clone();
+    TH1* h_sig_chn = (TH1*)h_sig.Clone();
+    TH1* h_dat_chn = (TH1*)h_dat.Clone();
+    std::cout << it.first << "\n";
+    AppendToHists(initial_sb, post_sb, h_bkg_chn, h_sig_chn, h_dat_chn, it.second);
+    h_bkg_chn->Print("range");
+    h_sig_chn->Print("range");
+  }
+
+  // Get the distributions
   AppendToHists(initial_sb, post_sb, &h_bkg, &h_sig, &h_dat);
 
   // Do the background sampling
   // -----------------------------------------------------------------------------
-  unsigned n_samples = 200;
+  unsigned n_samples = 10;
   auto backup = cb.GetParameters();
 
   // Calling randomizePars() ensures that the RooArgList of sampled parameters
@@ -321,7 +455,7 @@ int main(int argc, char* argv[]) {
 
 
 
-  TFile outfile((outname+".root").c_str(), "RECREATE");
+  TFile outfile((outname+"_tmp.root").c_str(), "RECREATE");
   h_bkg.Write();
   h_sig.Write();
   h_sig_mu1.Write();

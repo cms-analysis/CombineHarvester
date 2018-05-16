@@ -1,0 +1,2 @@
+method=pval:files=Tot_pvalue_Obs.root,Tot_pvalue_Exp.root:colors=2,4:styles=1,2:widths=3,3:yaxis=0.00000002-1:names=Observed,Expected:text=35.9 fb^{-1} (13TeV):outname=pval13TeV
+

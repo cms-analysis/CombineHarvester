@@ -13,7 +13,6 @@ from CombineHarvester.CombineTools.combine.Output import PrintFit, CollectLimits
 from CombineHarvester.CombineTools.combine.T2W import T2W
 from CombineHarvester.CombineTools.combine.FastScan import FastScan
 from CombineHarvester.CombineTools.combine.TaylorExpand import TaylorExpand
-from CombineHarvester.CombineTools.combine.Covariance import Covariance
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -46,7 +45,6 @@ register_method(parser, methods, AsymptoticGrid)
 register_method(parser, methods, HybridNewGrid)
 register_method(parser, methods, FastScan)
 register_method(parser, methods, TaylorExpand)
-register_method(parser, methods, Covariance)
 
 parser.add_argument('-M', '--method')
 

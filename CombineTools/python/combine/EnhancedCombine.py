@@ -215,17 +215,17 @@ class EnhancedCombine(CombineToolBase):
             split = self.args.split_points
             start = 0
             ranges = []
-            while (start + (split - 1)) <= points:
+            while (start + (split - 1)) < points:
             #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(start+(split-1))+".MultiDimFit.mH"+str(self.args.mass)+".root"
             #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
             #        # Send job, if the file it's supposed to create doesn't exist yet
             #        # or if the file is empty because the previous job didn't finish
                 ranges.append((start, start + (split - 1)))
                 start += split
-            if start <= points:
+            if start < points:
             #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(points - 1)+".MultiDimFit.mH"+str(self.args.mass)+".root"
             #    if (not os.path.isfile(filename)) or (os.path.getsize(filename)<1024):
-                ranges.append((start, points))
+                ranges.append((start, points - 1))
             #if (ranges == []):
             #    print "No jobs were created; All files already exist"
             #    exit()

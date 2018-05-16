@@ -104,8 +104,6 @@ class CombineToolBase:
         self.bopts = ''  # batch submission options
         self.custom_crab = None
         self.custom_crab_post = None
-        self.add_stat_only = False
-        self.add_no_thunc = False
         self.pre_cmd = ''
         self.crab_files = []
 
@@ -136,10 +134,6 @@ class CombineToolBase:
                            help='Prefix the call to combine with this string')
         group.add_argument('--custom-crab-post', default=self.custom_crab_post,
                            help='txt file containing command lines that can be used in the crab job script instead of the defaults.')
-        group.add_argument('--add-stat-only', action='store_true',
-                           help="for every combine call, also call the same command adding --freezeParameters 'rgx{^.*$}'")
-        group.add_argument('--add-no-thunc', action='store_true',
-                           help="for every combine call, also call the same command freezing signal theory uncs (hard coded here)")
 
     def attach_intercept_args(self, group):
         pass
@@ -163,8 +157,6 @@ class CombineToolBase:
         self.crab_files = self.args.crab_extra_files
         self.pre_cmd = self.args.pre_cmd
         self.custom_crab_post = self.args.custom_crab_post
-        self.add_stat_only = self.args.add_stat_only
-        self.add_no_thunc = self.args.add_no_thunc
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -267,7 +259,7 @@ class CombineToolBase:
                 outscript.write('\nif [ $1 -eq %i ]; then\n' % jobs)
                 jobs += 1
                 for line in self.job_queue[j:j + self.merge]:
-                    newline = line
+                    newline = self.pre_cmd + line
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
             outscript.close()
@@ -281,7 +273,7 @@ class CombineToolBase:
             subfile.write(condor_settings)
             subfile.close()
             run_command(self.dry_run, 'condor_submit %s' % (subfilename))
- 
+
         if self.job_mode == 'crab3':
             #import the stuff we need
             from CRABAPI.RawCommand import crabCommand
@@ -309,27 +301,6 @@ class CombineToolBase:
                     else:
                         wsp_files.add(wsp)
                     outscript.write('  ' + newline + '\n')
-
-                    if (self.add_stat_only):
-                        nameOut = newline.split("-n ")[1].split(" ")[0].rstrip(".POINTS")
-                        if ("freezeParameters" in newline):
-                            statline = newline.replace(wsp, os.path.basename(wsp)).replace("freezeParameters ","freezeParameters 'rgx{^.*$}',") + '\n'
-                            statline = statline.replace(nameOut,nameOut+".StatOnly")
-                            outscript.write('  ' + statline)
-                        else:
-                            statline = newline.replace(wsp, os.path.basename(wsp))+ " --freezeParameters 'rgx{^.*$}'" + '\n'
-                            statline = statline.replace(nameOut,nameOut+".StatOnly")
-                            outscript.write('  ' + statline)
-                    if (self.add_no_thunc):
-                        nameOut = newline.split("-n ")[1].split(" ")[0].rstrip(".POINTS")
-                        if ("freezeParameters" in newline):
-                            nothline = newline.replace(wsp, os.path.basename(wsp)).replace("freezeParameters ","freezeParameters 'rgx{.*THU.*}',QCDscale_qqH,QCDscale_VH,QCDscale_ggZH,QCDscale_ttH,pdf_Higgs_gg,pdf_Higgs_qqbar,pdf_Higgs_qg,CMS_vhbb_boost_EWK_13TeV,CMS_vhbb_boost_QCD_13TeV,QCDscale_VH_ggZHacceptance_highPt,param_alphaS,param_mB,param_mC,param_mt,HiggsDecayWidthTHU_hqq,HiggsDecayWidthTHU_hvv,HiggsDecayWidthTHU_hll,HiggsDecayWidthTHU_hgg,HiggsDecayWidthTHU_hzg,HiggsDecayWidthTHU_hgluglu,") + '\n'
-                            nothline = nothline.replace(nameOut,nameOut+".NoThUnc")
-                            outscript.write('  ' + nothline)
-                        else:
-                            nothline = newline.replace(wsp, os.path.basename(wsp))+ " --freezeParameters 'rgx{.*THU.*}',QCDscale_qqH,QCDscale_VH,QCDscale_ggZH,QCDscale_ttH,pdf_Higgs_gg,pdf_Higgs_qqbar,pdf_Higgs_qg,CMS_vhbb_boost_EWK_13TeV,CMS_vhbb_boost_QCD_13TeV,QCDscale_VH_ggZHacceptance_highPt,param_alphaS,param_mB,param_mC,param_mt,HiggsDecayWidthTHU_hqq,HiggsDecayWidthTHU_hvv,HiggsDecayWidthTHU_hll,HiggsDecayWidthTHU_hgg,HiggsDecayWidthTHU_hzg,HiggsDecayWidthTHU_hgluglu" + '\n'
-                            nothline = nothline.replace(nameOut,nameOut+".NoThUnc")
-                            outscript.write('  ' + nothline)
                 outscript.write('fi')
             if self.custom_crab_post is not None:
                 with open(self.custom_crab_post, 'r') as postfile:

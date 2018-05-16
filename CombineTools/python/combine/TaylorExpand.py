@@ -141,6 +141,7 @@ class TaylorExpand(CombineToolBase):
                 continue
             res.append(getattr(evt, 'deltaNLL'))
         print res
+        if len(res) == 0: print file
         return res
 
     def attach_args(self, group):
