@@ -5,7 +5,7 @@ Setting up a new release area:
     cd CMSSW_8_1_0
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-    git checkout v7.0.4
+    git checkout v7.0.8
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
     git checkout -b HIG16044-dev origin/HIG16044-dev
     scram b
