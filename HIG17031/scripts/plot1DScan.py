@@ -116,7 +116,7 @@ def ProcessEnvelope(main, others, relax_safety=0):
     return gr
 
 
-def ProcessEnvelopeNew(main, others, relax_safety=0):
+def ProcessEnvelopeNew(main, others, relax_safety=0, chop=-1.):
     print '[ProcessEnvelope] Will create envelope from %i other scans' % len(others)
     min_x = min([oth['graph'].GetX()[0] for oth in others])
     max_x = max([oth['graph'].GetX()[oth['graph'].GetN() - 1] for oth in others])
@@ -158,9 +158,14 @@ def ProcessEnvelopeNew(main, others, relax_safety=0):
 
     for i in xrange(gr.GetN()):
         gr.GetY()[i] -= min_y
+    if chop > 0:
+        plot.RemoveGraphYAbove(gr, chop)
+
     for oth in others:
         for i in xrange(oth['graph'].GetN()):
             oth['graph'].GetY()[i] -= min_y
+        if chop > 0:
+            plot.RemoveGraphYAbove(oth['graph'], chop)
         # print 'OTHER'
         # oth['graph'].Print()
 
@@ -426,7 +431,7 @@ if args.envelope and args.breakdown:
         if args.old_envelope:
             new_gr = ProcessEnvelope(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)
         else:
-            new_gr = ProcessEnvelopeNew(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)     
+            new_gr = ProcessEnvelopeNew(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety, args.chop)     
         if j == 0:
             main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
@@ -448,7 +453,7 @@ elif args.envelope:
     if args.old_envelope:
         new_gr = ProcessEnvelope(main_scan, other_scans, args.relax_safety)
     else:
-        new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety)
+        new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety, args.chop)
     main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
     for other in other_scans:
@@ -918,10 +923,10 @@ elif args.legend_pos == 9:
 elif args.legend_pos == 10:
     if len(other_scans) > 2:
         y_sub = 0. if args.POI_line is None else 0.00
-        legend = ROOT.TLegend(0.55, 0.77 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
+        legend = ROOT.TLegend(0.52, 0.77 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
         legend.SetNColumns(2)
         if args.POI_line is not None:
-            latex.DrawLatex(0.39, 0.835, POI_line)
+            latex.DrawLatex(0.37, 0.835, POI_line)
     else: 
         y_sub = 0. if args.POI_line is None else 0.00
         legend = ROOT.TLegend(0.71, 0.77 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
