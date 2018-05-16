@@ -25,7 +25,7 @@ parser.add_argument(
 parser.add_argument(
  '--auto_rebin', action='store_true', help="""Rebin automatically?""")
 parser.add_argument(
- '--bbb_mode', default=4, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
+ '--bbb_mode', default=1, type=int, help="""Sets the type of bbb uncertainty setup. 0: no bin-by-bins, 1: bbb's as in 2016 analysis, 2: Use the CH bbb factory to add bbb's, 3: as 2 but with new CMSHistFunc, 4: autoMCstats , 5 : bbb's as in 2016 analysis with new CMSHistFunc (just for testing)""")
 parser.add_argument(
  '--zero_out_low', action='store_true', help="""Zero-out lowest SR bins (purely for the purpose of making yield tables""")
 parser.add_argument(
