@@ -14,6 +14,10 @@ Setting up a new release area:
     cd ..
     scram b
 
+Before checking out the shape files, move to the relevant subdirectory:
+
+`cd CombineHarvester/HIG16044`
+
 The input shape files are stored in an external repository. On a machine with a kerberos token for CERN access (e.g. lxplus) the repository can be checked out as:
 
 `git clone https://:@gitlab.cern.ch:8443/cms-vhbb/HIG16044.git shapes`

@@ -77,7 +77,7 @@ However, this is the fairer thing to do as the CR fit can have quite a large eff
 
 First we need to create a new workspace, set up for channel masking:
 
-`combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/* --channel_masks`
+`combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/* --channel-masks`
 
 This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
 We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
