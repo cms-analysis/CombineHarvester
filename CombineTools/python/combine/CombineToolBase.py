@@ -259,7 +259,7 @@ class CombineToolBase:
                 outscript.write('\nif [ $1 -eq %i ]; then\n' % jobs)
                 jobs += 1
                 for line in self.job_queue[j:j + self.merge]:
-                    newline = line
+                    newline = self.pre_cmd + line
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
             outscript.close()
