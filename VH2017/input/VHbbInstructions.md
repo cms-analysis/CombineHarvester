@@ -8,15 +8,23 @@ http://cms-analysis.github.io/CombineHarvester/
 
     export SCRAM_ARCH=slc6_amd64_gcc530
     scram project CMSSW CMSSW_8_1_0
-    cd CMSSW_8_1_0
+    cd CMSSW_8_1_0/src
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-    git checkout v7.0.4
+    cd HiggsAnalysis/CombinedLimit
+    git checkout v7.0.8
+    cd ../..
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+    cd CombineHarvester
     git checkout -b HIG16044-dev origin/HIG16044-dev
+    cd ..
     scram b
 
 ## Getting the input root files
+
+Before checking out the shape files, move to the relevant subdirectory:
+
+`cd CombineHarvester/VH2017`
 
 The input shape files are stored in an external repository. On a machine with a kerberos token for CERN access (e.g. lxplus) the repository can be checked out as:
 
@@ -50,6 +58,9 @@ To create workspaces for every combination of regions the cards have been writte
 Or, for example, to just create a workspace for the Zee channel:
 
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder>/Zee/`
+
+**NOTE:** only use `*` for subdirectories. If you used e.g. `-i output/<output_folder>/Zee/*`, text2workspace would be called successively on every file in the Zee folder, including the
+just-created workspace which leads to problems. 
 
 ## Fits
 ### Signal strength (without uncertainty):

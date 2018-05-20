@@ -92,7 +92,7 @@ parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in forma
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--x_title', default='BDT output',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
-parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--lumi', default='41.5 fb^{-1} (13 TeV)',help='Lumi label')
 parser.add_argument('--cr', default=False, action='store_true', help='Plot CRs? (Important for QCD in 0-lep')
 
 
@@ -139,6 +139,9 @@ background_schemes = {'Wen':[backgroundComp("Single top",["s_Top"],70),backgroun
 
 if args.cr:
   background_schemes['Znn']=[backgroundComp("Single top",["s_Top"],70),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("QCD",["QCD"],613),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625),backgroundComp("WHb#bar{b}",["WH_hbb"],634)]
+
+#To be filled later depending on which histograms actually exist
+plot_background_schemes = {'Wen':[],'Wmn':[],'Zee':[],'Zmm':[],'Znn':[]}
 
 #Extract relevant histograms from shape file
 [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
@@ -191,6 +194,8 @@ for i,t in enumerate(background_schemes[channel]):
     h.SetLineColor(ROOT.kBlack)
     h.SetMarkerSize(0)
     bkg_histos.append(h)
+    plot_background_schemes[channel].append(t)
+    print plot_background_schemes[channel]
 
 stack = ROOT.THStack("hs","")
 for hists in bkg_histos:
@@ -277,9 +282,9 @@ legend.SetFillColor(0)
 legend.AddEntry(total_datahist,"Observation","PE")
 #Drawn on legend in reverse order looks better
 bkg_histos.reverse()
-background_schemes[channel].reverse()
+plot_background_schemes[channel].reverse()
 for legi,hists in enumerate(bkg_histos):
-  legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
+  legend.AddEntry(hists,plot_background_schemes[channel][legi]['leg_text'],"f")
 legend.AddEntry(splusbhist,"S+B uncertainty","f")
 if not args.no_signal:
   legend.AddEntry(sighist,"VH(b#bar{b})","l")
