@@ -29,13 +29,13 @@ rfr = mlf.Get('fit_s')
 
 
 def PrintTables(cmb, uargs):
-    c_znn = cmb.cp().bin(['vhbb_Znn_1_13TeV'])
-    c_wmn = cmb.cp().bin(['vhbb_Wmn_1_13TeV'])
-    c_wen = cmb.cp().bin(['vhbb_Wen_1_13TeV'])
-    c_zeelow = cmb.cp().bin(['vhbb_Zee_2_13TeV'])
-    c_zmmlow = cmb.cp().bin(['vhbb_Zmm_2_13TeV'])
-    c_zeehi = cmb.cp().bin(['vhbb_Zee_1_13TeV'])
-    c_zmmhi = cmb.cp().bin(['vhbb_Zmm_1_13TeV'])
+    c_znn = cmb.cp().bin(['vhbb_Znn_1_13TeV2017'])
+    c_wmn = cmb.cp().bin(['vhbb_Wmn_1_13TeV2017'])
+    c_wen = cmb.cp().bin(['vhbb_Wen_1_13TeV2017'])
+    c_zeelow = cmb.cp().bin(['vhbb_Zee_2_13TeV2017'])
+    c_zmmlow = cmb.cp().bin(['vhbb_Zmm_2_13TeV2017'])
+    c_zeehi = cmb.cp().bin(['vhbb_Zee_1_13TeV2017'])
+    c_zmmhi = cmb.cp().bin(['vhbb_Zmm_1_13TeV2017'])
 
     print r"""
 \begin{tabular}{|l|r@{$ \,\,\pm\,\, $}lr@{$ \,\,\pm\,\, $}l|}

@@ -47,6 +47,7 @@ At the moment the options are
 - `--bbb_mode`: toggle to set the bin-by-bin inclusion options. mode 0: do not add bin-by-bins, 1 (default):use autoMCStat mode 
 - `--auto_rebin`: switches on automated rebinning of the input histograms. Off by default.
 - `--zero_out_low`: sets the bin contents in some of the SR bins to 0 (for the purpose of making yield tables). Off by default.
+- `--year`: set to '2017' by default. This governs which filenames to read out of (with -2017 or -2016 postfix!) and appends the year label to the output folder
 
 ## Setting up workspaces
 **Note: from this point on make sure to have called `ulimit -s unlimited` in your shell since logging in. Otherwise any of these manipulations might lead to a seg fault**
@@ -93,7 +94,7 @@ First we need to create a new workspace, set up for channel masking:
 This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
 We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
 
-`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Znn_1_13TeV=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
 
 Now continue as with post-fit expected significance:
 `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
@@ -122,7 +123,7 @@ To make pre- and post fit plots of the CMVA distributions in the CR:\
 `combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/cmb --channel-masks`
 
 Run maximum likelihood fit, masking the SR from the likelihood:
-`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws_masked.root --there --cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Znn_1_13TeV=1 -n .SRMasked `
+`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws_masked.root --there --cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -n .SRMasked `
 
 create the post-fit shapes with uncertainties from the datacard and the MLFit:
 *Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense.
@@ -130,17 +131,17 @@ create the post-fit shapes with uncertainties from the datacard and the MLFit:
 `PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.SRMasked.root:fit_s`
 
 To make pre- and post fit plots of the BDT distributions in the SR:
-`python scripts/makePostFitPlots.py`
+`python scripts/makePostFitPlots<year>.py`
 
 To make pre- and post fit plots of the CMVA distributions in the CR:
-`python scripts/makePostFitPlotsCR.py`
+`python scripts/makePostFitPlotsCR<year>.py`
 
 Note: pre-fit in this case will be pre all fits, post-fit will be CR-only post-fit.
 
 ### Full pre-fit plots only:
 `PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print `
 
-from scripts/makePostFitPlots.py and scripts/makePostFitPlotsCR.py remove 'postfit' from the 'MODE' line and make plots as above. 
+from scripts/makePostFitPlots<year>.py and scripts/makePostFitPlotsCR<year>.py remove 'postfit' from the 'MODE' line and make plots as above. 
 
 
 The underlying plotting scripts is scripts/postFitPlot.py. Cosmetic changes still needed.
@@ -153,7 +154,7 @@ Set up new cards and workspace for which the contents of the bins we want to ign
 `./scripts/VHbb2017.py [options] --zero_out_low`
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder_zeroed_out>/cmb/`
 
-Create the pre- and postfit yield tables:
+Create the pre- and postfit yield tables (note: by default this is setup for 2017. We can add a 2016 version if needed, or just replace 2017 by 2016 in printYieldTables.py) :
 `./scripts/printYieldTables.py --workspace output/<output_folder_zeroed_out>/cmb/ws.root --fit_file output/<output_folder>/cmb/fitDiagnostics.Test.root`
 
 It is *very* important to use fit results for the *full* model, otherwise the uncertainties on the yields will not be correct. <output_folder_zeroed_out> and <output_folder> are therefore explicitly different, unless yield tables are made for the full model too.
@@ -238,6 +239,7 @@ Now make the plot:
 
 ### S-over-B ordered plot
 **Note: this is currently set up to replicate the HIG-16-044 plot. These instructions may be subject to change.**
+**Note: at the moment this is set up for 2017 only. Can adapt as needed**
 
 As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.  
 First we need to set up some datacards with the bins re-ordered according to (pre-fit S)/(post-fit B) 
