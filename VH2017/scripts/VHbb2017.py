@@ -37,7 +37,9 @@ parser.add_argument(
 parser.add_argument(
  '--Wen_fwk', default='AT', help="""Framework the Wen inputs were produced with. Supported options: 'Xbb', 'AT'""")
 parser.add_argument(
- '--Znn_fwk', default='Xbb', help="""Framework the Znn inputs were produced with. Supported options: 'Xbb', 'AT'""")
+ '--Znn_fwk', default='AT', help="""Framework the Znn inputs were produced with. Supported options: 'Xbb', 'AT'""")
+parser.add_argument(
+ '--year', default='2017', help="""Year to produce datacards for (2017 or 2016)""")
 
 
 args = parser.parse_args()
@@ -62,6 +64,11 @@ if 'Wln' in args.channel or 'Wen' in args.channel:
   chns.append('Wen')
 if 'Znn' in args.channel:
   chns.append('Znn')
+
+year = args.year
+if year is not "2016" and not "2017":
+  print "Year ", year, " not supported! Choose from: '2016', '2017'"
+  sys.exit()
 
 input_fwks = {
   'Wen' : args.Wen_fwk, 
@@ -102,7 +109,8 @@ sig_procs = {
   'Wmn' : ['WH_hbb','ZH_hbb'],
   'Zmm' : ['ZH_hbb','ggZH_hbb'],
   'Zee' : ['ZH_hbb','ggZH_hbb'],
-  'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
+  'Znn' : ['ZH_hbb','WH_hbb']
+  #'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
 }
 
 sig_procs_ren = {
@@ -123,7 +131,7 @@ cats = {
     (5, 'Zuu_CRZb_highpt'), (6, 'Zuu_CRZb_lowpt'), (7,'Zuu_CRttbar_highpt'), (8,'Zuu_CRttbar_lowpt')
   ],
   'Znn' : [
-    (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
+    (1, 'Znn_13TeV_SIG'), (3, 'Znn_13TeV_ZLF'), (5, 'Znn_13TeV_ZHF'), (7,'Znn_13TeV_TT')
   ],
  'Wen' : [
     (1, 'WenHighPt'), (3,'wlfWen'), (5,'whfWenHigh'), (6,'whfWenLow'), (7,'ttWen')
@@ -139,7 +147,14 @@ for chn in chns:
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], bkg_procs[chn], cats[chn], False)
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], sig_procs[chn], cats[chn], True)
 
-systs.AddSystematics(cb)
+cb.FilterProcs(lambda x: x.bin_id()==7 and x.channel()=='Znn' and x.process()=='Zj1b')
+
+systs.AddCommonSystematics(cb)
+if year=='2016':
+  systs.AddSystematics2016(cb)
+if year=='2017':
+  systs.AddSystematics2017(cb)
+
 
 if args.bbb_mode==0:
   cb.AddDatacardLineAtEnd("* autoMCStats -1")
@@ -147,7 +162,7 @@ elif args.bbb_mode==1:
   cb.AddDatacardLineAtEnd("* autoMCStats 0")
 
 for chn in chns:
-  file = shapes + input_folders[chn] + "/vhbb_"+chn+".root"
+  file = shapes + input_folders[chn] + "/vhbb_"+chn+"-"+year+".root"
   if input_fwks[chn] == 'Xbb':
     cb.cp().channel([chn]).backgrounds().ExtractShapes(
       file, '$BIN/$PROCESS', '$BIN/$PROCESS$SYSTEMATIC')
@@ -179,8 +194,8 @@ if args.zero_out_low:
 
 ch.SetStandardBinNames(cb)
 
-writer=ch.CardWriter("output/" + args.output_folder + "/$TAG/$BIN.txt",
-                      "output/" + args.output_folder + "/$TAG/vhbb_input.root")
+writer=ch.CardWriter("output/" + args.output_folder + year + "/$TAG/$BIN"+year+".txt",
+                      "output/" + args.output_folder + year +"/$TAG/vhbb_input.root")
 writer.SetWildcardMasses([])
 writer.SetVerbosity(1);
                 
