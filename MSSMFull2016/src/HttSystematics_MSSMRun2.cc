@@ -69,16 +69,16 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     obj->set_attribute("pzeta","high");
   });
 
- cb.cp().channel({"ttbar"}).ForEachObj([&](ch::Object *obj){
-   obj->set_attribute("pzeta","all");
-   obj->set_attribute("mtsel","all");
-   obj->set_attribute("cat","all");
- });
+  cb.cp().channel({"ttbar"}).ForEachObj([&](ch::Object *obj){
+    obj->set_attribute("pzeta","all");
+    obj->set_attribute("mtsel","all");
+    obj->set_attribute("cat","all");
+  });
 
- cb.cp().channel({"zmm"}).ForEachObj([&](ch::Object *obj){
-   obj->set_attribute("mtsel","all");
-   obj->set_attribute("pzeta","all");
- });
+  cb.cp().channel({"zmm"}).ForEachObj([&](ch::Object *obj){
+    obj->set_attribute("mtsel","all");
+    obj->set_attribute("pzeta","all");
+  });
 
 
   std::vector<std::string> SM_procs = {"ggH_SM125", "qqH_SM125", "ZH_SM125", "WminusH_SM125","WplusH_SM125"};
@@ -641,15 +641,6 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"mt"}, {24}, {"W"}, 1.01,0.97)
   );
 
-  /*cb.cp().AddSyst(cb,
-    "CMS_htt_ewkTop_scale_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-    ({"et", "mt", "em", "tt"}, {8, 9, 10, 11, 12, 13, 15, 18, 21, 24, 27, 30}, {"TTT","TTJ","TT","VV", "VVT","VVJ"}, 1.02));*/
-
-  /*cb.cp().AddSyst(cb,
-    "CMS_htt_ewkTop_reso_met_$ERA", "lnN", SystMap<channel, bin_id, process>::init
-    ({"et", "mt", "em", "tt"}, {8, 9, 10, 11, 12, 13, 15, 18, 21, 24, 27, 30}, {"TTT","TTJ","TT","VV", "VVT","VVJ"}, 1.02));*/
-
-
   // Met uncertainties recommended by JetMet POG
   // -----------------
   // For samples without recoil corrections (TT,TTJ,TTT,VV,VVJ,VVT)
@@ -697,6 +688,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
     ({"mt"}, {9}, {"VVJ"}, 0.97,1.03)
     ({"mt"}, {9}, {"VVT"}, 0.99,1.01)
   );
+
   // control region
   cb.cp().AddSyst(cb,
     "CMS_jet_energy_met_unc_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
@@ -816,7 +808,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   } else {
     cb.cp().channel({"zmm"},false).process({"TTT","TTJ","TT"}).AddSyst(cb,
       "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
- }
+  }
 
   // Cross-sections and lumi
   // -----------------------
@@ -827,8 +819,7 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
   cb.cp().process({"W"}).channel({"tt","em","zmm","ttbar"}).AddSyst(cb,
     "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
-  if(zmm_fit)
-  {
+  if(zmm_fit){
     // Add Z crosssection uncertainty on ZL, ZJ and ZLL (not ZTT due to taking into account the zmm control region).
     // Also don't add it for the zmm control region
     cb.SetFlag("filters-use-regex", true);
@@ -846,19 +837,17 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
             (syst->bin_id() == 8 || syst->bin_id() == 9 || syst->bin_id() == 10 || syst->bin_id()==11||syst->bin_id()==12||syst->bin_id()==13))
         );
     });
-  }
-  else
-  {
+  } else{
     cb.cp().process({"ZTT", "ZL", "ZJ", "ZLL", "ZJ_rest"}).AddSyst(cb,
         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
   }
 
- if(ttbar_fit){
-   //Add ttbar cross section uncertainty only to TTJ contribution and TTT in the control regions. Remove
-   //lumi uncert from the data-scaled part
-   cb.cp().process({"TTJ"}).AddSyst(cb,
+  if(ttbar_fit){
+    //Add ttbar cross section uncertainty only to TTJ contribution and TTT in the control regions. Remove
+    //lumi uncert from the data-scaled part
+    cb.cp().process({"TTJ"}).AddSyst(cb,
      "CMS_htt_tjXsec_13TeV","lnN", SystMap<>::init(1.06));
-   cb.cp().process({"TTT"}).bin_id({14,15,16,17,18,19,21,24,26,27,28,29,30,31}).AddSyst(cb,
+    cb.cp().process({"TTT"}).bin_id({14,15,16,17,18,19,21,24,26,27,28,29,30,31}).AddSyst(cb,
      "CMS_htt_tjXsec_13TeV","lnN", SystMap<>::init(1.06));
     cb.FilterSysts([](ch::Systematic *syst) {
       return syst->name() == "lumi_13TeV" &&
@@ -868,10 +857,10 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
             (syst->bin_id() == 8 || syst->bin_id() == 9 || syst->bin_id() == 10 || syst->bin_id()==11||syst->bin_id()==12||syst->bin_id()==13))
         );
     });
- } else {
+  } else{
    cb.cp().process({"TTT","TTJ","TT"}).AddSyst(cb,
      "CMS_htt_tjXsec_13TeV","lnN", SystMap<>::init(1.06));
- }
+  }
   
   // Diboson and ttbar Normalisation - fully correlated
   cb.cp().process({"VV","VVT","VVJ","VVJ_rest"}).AddSyst(cb,
@@ -1157,77 +1146,77 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
       ({"mt"}, {9}, 1.600)
       ({"et"}, {8}, 1.120)
       ({"et"}, {9}, 1.600));
+  }
+  if (control_region == 1) {
+    // QCD rate params come in correctly for free by not adding the additional unneccesariy W control regions
+    // Create rateParams for control regions:
+    //  - [x] 1 rateParam for W in all regions of tight and loose mT selections
+    //  - [x] 1 rateParam for W in all regions of loose iso selection
+    //  - [x] 1 rateParam for QCD in tight low mT
+    //  - [x] 1 rateParam for QCD in loose iso low mT
+    //  - [x] 1 rateParam for QCD in loose mT low mT
+    //  - [x] 1 rateParam for QCD in tight+loose mT high mT
+    //  - [x] 1 rateParam for QCD in loose iso high mT
+    //  - [] lnNs for the QCD OS/SS ratio
+    //         * should account for stat + syst
+    //         * systs should account for: extrap. from anti-iso to iso region,
+    //           possible difference between ratio in low mT and high mT (overkill?)
+    //  - [] lnNs for the W+jets OS/SS ratio
+    //         * should account for stat only if not being accounted for with bbb,
+    //           i.e. because the OS/SS ratio was measured with a relaxed selection
+    //         * systs should account for: changes in low/high mT and OS/SS due to JES
+    //           and btag (if relevant); OS/SS being wrong in the MC (from enriched data?);
+    //           low/high mT being wrong in the MC (fake rate dependence?)
+
+    //Here we use the additional 'tauiso' and 'cat'
+    //attributes to create the W+jets rateParams
+    cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+      "rate_W_$ATTR(tauiso)_$CHANNEL_$ATTR(cat)", "rateParam", SystMap<>::init(1.0));
+
+    // Going to use the regex filtering to select the right subset of
+    // categories for the QCD rate params
+    cb.SetFlag("filters-use-regex", true);
+    for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
+      // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
+      cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"QCD"}).AddSyst(cb,
+        "rate_QCD_lowmT_"+bin, "rateParam", SystMap<>::init(1.0));
+
+      // Regex that matches, e.g. mt_nobtag_wjets_cr or mt_nobtag_wjets_ss_cr
+      cb.cp().bin({bin+"_wjets(|_ss)_cr$"}).process({"QCD"}).AddSyst(cb,
+        "rate_QCD_highmT_"+bin, "rateParam", SystMap<>::init(1.0));
     }
-    if (control_region == 1) {
-      // QCD rate params come in correctly for free by not adding the additional unneccesariy W control regions
-      // Create rateParams for control regions:
-      //  - [x] 1 rateParam for W in all regions of tight and loose mT selections
-      //  - [x] 1 rateParam for W in all regions of loose iso selection
-      //  - [x] 1 rateParam for QCD in tight low mT
-      //  - [x] 1 rateParam for QCD in loose iso low mT
-      //  - [x] 1 rateParam for QCD in loose mT low mT
-      //  - [x] 1 rateParam for QCD in tight+loose mT high mT
-      //  - [x] 1 rateParam for QCD in loose iso high mT
-      //  - [] lnNs for the QCD OS/SS ratio
-      //         * should account for stat + syst
-      //         * systs should account for: extrap. from anti-iso to iso region,
-      //           possible difference between ratio in low mT and high mT (overkill?)
-      //  - [] lnNs for the W+jets OS/SS ratio
-      //         * should account for stat only if not being accounted for with bbb,
-      //           i.e. because the OS/SS ratio was measured with a relaxed selection
-      //         * systs should account for: changes in low/high mT and OS/SS due to JES
-      //           and btag (if relevant); OS/SS being wrong in the MC (from enriched data?);
-      //           low/high mT being wrong in the MC (fake rate dependence?)
-
-      //Here we use the additional 'tauiso' and 'cat'
-      //attributes to create the W+jets rateParams
-      cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
-        "rate_W_$ATTR(tauiso)_$CHANNEL_$ATTR(cat)", "rateParam", SystMap<>::init(1.0));
-
-      // Going to use the regex filtering to select the right subset of
-      // categories for the QCD rate params
-      cb.SetFlag("filters-use-regex", true);
-      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
-        // Regex that matches, e.g. mt_nobtag or mt_nobtag_qcd_cr
-        cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"QCD"}).AddSyst(cb,
-          "rate_QCD_lowmT_"+bin, "rateParam", SystMap<>::init(1.0));
-
-        // Regex that matches, e.g. mt_nobtag_wjets_cr or mt_nobtag_wjets_ss_cr
-        cb.cp().bin({bin+"_wjets(|_ss)_cr$"}).process({"QCD"}).AddSyst(cb,
-          "rate_QCD_highmT_"+bin, "rateParam", SystMap<>::init(1.0));
-       }
       
 
-        /////////////////
-        // Systematics //
-        /////////////////
+    /////////////////
+    // Systematics //
+    /////////////////
 
-        // OS/SS W factor stat. uncertainty
-        // Should affect signal region and OS high mT
-        // Should be correlated between the regions with tight tau iso
-        cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+    // OS/SS W factor stat. uncertainty
+    // Should affect signal region and OS high mT
+    // Should be correlated between the regions with tight tau iso
+    cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_stat_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init        
           ({"mt"}, {8, 10, 14}, 1.018)
           ({"mt"}, {9, 11, 17}, 1.022)
           ({"et"}, {8, 10, 14}, 1.024)
           ({"et"}, {9, 11, 17}, 1.029));
 
-        // OS/SS W factor syst. uncertainty
-        // Based on data/MC for OS/SS ratio in anti-tau iso high mT region
-        // Correlated between regions with tight tau iso but otherwise uncorrelated
-        // even if the uncert will end up being the same
-        cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+    // OS/SS W factor syst. uncertainty
+    // Based on data/MC for OS/SS ratio in anti-tau iso high mT region
+    // Correlated between regions with tight tau iso but otherwise uncorrelated
+    // even if the uncert will end up being the same
+    cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_OS_SS_systt_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10, 14}, 1.012)
           ({"mt"}, {9, 11, 17}, 1.024)
           ({"et"}, {8, 10, 14}, 1.019)
           ({"et"}, {9, 11, 17}, 1.019));
 
-        // low/high mT W factor stat. uncertainty
-        // Should affect signal region and SS low mT
-        // Should be uncorrelated between different tau isol regions now
-      for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
-        cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
+    // low/high mT W factor stat. uncertainty
+    // Should affect signal region and SS low mT
+    // Should be uncorrelated between different tau isol regions now
+    for (auto bin : cb_sig.cp().channel({"et", "mt"}).bin_set()) {
+      cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_stat_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 15}, 1.02)
           ({"mt"}, {9, 18}, 1.08)
@@ -1238,66 +1227,66 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
           ({"et"}, {10, 21}, 1.02)
           ({"et"}, {11, 24}, 1.11));
 
-        // low/high mT W factor syst. uncertainty
-        // Currently to be determined, could be motivated by low vs high mT jet->tau FR
-        cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
+      // low/high mT W factor syst. uncertainty
+      // Currently to be determined, could be motivated by low vs high mT jet->tau FR
+      cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
           "CMS_htt_W_mT_syst_"+bin+"_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"et", "mt"}, {8, 15}, 1.07)
           ({"et", "mt"}, {9, 18}, 1.16)
           ({"et", "mt"}, {10, 21}, 1.02)
           ({"et", "mt"}, {11, 24}, 1.10));
-        }
+    }
 
-        //W b-tag extrapolation factor stat. uncertainty - merged into low mT/high mT and W OS/SS uncertainties
-        //which are now calculated for the full b-tag 
-        /*cb.cp().bin({bin+"(|_qcd_cr)$",bin+"(|_wjets_cr)$",bin+"(|_wjets_ss_cr)$"}).process({"W"}).AddSyst(cb,
-         "CMS_htt_W_extrap_stat_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
-         ({"et"},{9},1.11)
-         ({"et"},{13},1.14)
-         ({"et"},{14},1.21)
-         ({"et"},{15},1.16)
-         ({"mt"},{9},1.12)
-         ({"mt"},{13},1.08)
-         ({"mt"},{14},1.22)
-         ({"mt"},{15},1.14));*/
+    //W b-tag extrapolation factor stat. uncertainty - merged into low mT/high mT and W OS/SS uncertainties
+    //which are now calculated for the full b-tag 
+    /*cb.cp().bin({bin+"(|_qcd_cr)$",bin+"(|_wjets_cr)$",bin+"(|_wjets_ss_cr)$"}).process({"W"}).AddSyst(cb,
+      "CMS_htt_W_extrap_stat_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
+      ({"et"},{9},1.11)
+      ({"et"},{13},1.14)
+      ({"et"},{14},1.21)
+      ({"et"},{15},1.16)
+      ({"mt"},{9},1.12)
+      ({"mt"},{13},1.08)
+      ({"mt"},{14},1.22)
+      ({"mt"},{15},1.14));*/
     
-        //W b-tag extrapolation factor syst uncertainty
-        //Covered later:
-        //1) b-tag efficiency uncertainty
-        /*cb.cp().process({"W"}).AddSyst(cb,
-         "CMS_eff_b_13TeV","lnN", SystMapAsymm<channel, bin_id>::init
-         ({"mt"},{9},0.96,1.01)
-         ({"mt"},{13},0.98,1.04)
-         ({"mt"},{14},1.0,1.06)
-         ({"mt"},{15},0.96,1.01)
-         ({"et"},{9},0.95,1.02)
-         ({"et"},{13},0.99,1.02)
-         ({"et"},{14},0.90,1.00)
-         ({"et"},{15},0.97,1.00));*/
- 
-        //W b-tag extrapolation factor syst uncertainty
-        //Only needed if fitting 1-jet selection at high mT which we're not doing now
-        //2) From difference between MC and data-bkg 'W+'tau'+jet -> W+'tau'+b
-        //extrapolation factor in a high mT tau anti-iso region. Uses 
-        //number for mt for et too as there is a lot more QCD in this
-        //region for et than for mt
-        /*cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
-         "CMS_htt_W_extrap_syst_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
-         ({"et"},{9,14},1.10)
-         ({"mt"},{9,14},1.10));*/
+    //W b-tag extrapolation factor syst uncertainty
+    //Covered later:
+    //1) b-tag efficiency uncertainty
+    /*cb.cp().process({"W"}).AddSyst(cb,
+      "CMS_eff_b_13TeV","lnN", SystMapAsymm<channel, bin_id>::init
+      ({"mt"},{9},0.96,1.01)
+      ({"mt"},{13},0.98,1.04)
+      ({"mt"},{14},1.0,1.06)
+      ({"mt"},{15},0.96,1.01)
+      ({"et"},{9},0.95,1.02)
+      ({"et"},{13},0.99,1.02)
+      ({"et"},{14},0.90,1.00)
+      ({"et"},{15},0.97,1.00));*/
+    
+    //W b-tag extrapolation factor syst uncertainty
+    //Only needed if fitting 1-jet selection at high mT which we're not doing now
+    //2) From difference between MC and data-bkg 'W+'tau'+jet -> W+'tau'+b
+    //extrapolation factor in a high mT tau anti-iso region. Uses 
+    //number for mt for et too as there is a lot more QCD in this
+    //region for et than for mt
+    /*cb.cp().bin({bin+"(|_qcd_cr)$"}).process({"W"}).AddSyst(cb,
+      "CMS_htt_W_extrap_syst_"+bin+"_$ERA","lnN", SystMap<channel, bin_id>::init
+      ({"et"},{9,14},1.10)
+      ({"mt"},{9,14},1.10));*/
     
 
 
-        // OS/SS QCD factor syst. uncertainty
-        // Based on variation in fitted factor from different anti-iso sidebands
-        cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
+    // OS/SS QCD factor syst. uncertainty
+    // Based on variation in fitted factor from different anti-iso sidebands
+    cb.cp().channel({"et","mt"}).process({"W"}).AddSyst(cb,
           "CMS_htt_QCD_OS_SS_syst_$CHANNEL_$ATTR(tauiso)_$ATTR(cat)_$ERA", "lnN", SystMap<channel, bin_id>::init
           ({"mt"}, {8, 10,14}, 1.04)
           ({"mt"}, {9, 11, 17}, 1.32)
           ({"et"}, {8,10, 14}, 1.120)
           ({"et"}, {9, 11,17}, 1.27));
 
-        cb.cp().AddSyst(cb,
+    cb.cp().AddSyst(cb,
           "CMS_scale_j_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
           ({"et"}, {15}, {"TTJ"}, 1.01,0.99)
           ({"et"}, {15}, {"VVJ"}, 1.01,0.99)
@@ -1320,12 +1309,12 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
           ({"mt"}, {24}, {"VVT"}, 1.01,0.98)
           ({"mt"}, {24}, {"ZJ"}, 0.95,1.07)
           ({"mt"}, {24}, {"ZTT"}, 0.98,1.02)
-        );
+    );
 
-      // b-tagging efficiency and fake rate in the control regions
-      // ----------------------------------
+    // b-tagging efficiency and fake rate in the control regions
+    // ----------------------------------
 
-      cb.cp().AddSyst(cb,
+    cb.cp().AddSyst(cb,
          "CMS_eff_b_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
          ({"et"}, {14}, {"TTJ"}, 1.03,0.97)
          ({"et"}, {14}, {"TTT"}, 1.03,0.97)
@@ -1389,9 +1378,9 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
          ({"mt"}, {24}, {"VVJ"}, 0.99,1.01)
          ({"mt"}, {24}, {"VVT"}, 0.95,1.04)
          ({"mt"}, {24}, {"ZJ"}, 0.98,1.02)
-      );
+    );
 
-      cb.cp().AddSyst(cb,
+    cb.cp().AddSyst(cb,
          "CMS_fake_b_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
          ({"et"}, {17}, {"ZL"}, 0.99,1.06)
          ({"et"}, {17}, {"ZTT"}, 0.98,1.01)
@@ -1409,27 +1398,40 @@ void AddMSSMRun2Systematics(CombineHarvester & cb, int control_region, bool zmm_
          ({"mt"}, {18}, {"VVT"}, 0.95,1.01)
          ({"mt"}, {19}, {"VVT"}, 0.97,0.99)
          ({"mt"}, {24}, {"VVT"}, 0.98,1.01)
-      );
+    );
 
-      // Should set a sensible range for our rateParams
-      for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
-        cb.GetParameter(sys)->set_range(0.0, 5.0);
-      }
-      cb.SetFlag("filters-use-regex", false);
+    // Should set a sensible range for our rateParams
+    for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
+      cb.GetParameter(sys)->set_range(0.0, 5.0);
     }
-    if (zmm_fit) {
-        cb.SetFlag("filters-use-regex", true);
-        cb.cp().channel({"et","mt","em","tt"}).attr({"nobtag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.02));
-        cb.cp().bin({"zmm_nobtag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.02));
-        cb.cp().channel({"et","mt","em","tt"}).attr({"btag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.02));
-        cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.02));
-        cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.8, 1.2);
-        cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.95, 1.05);
-        cb.SetFlag("filters-use-regex", false);
-    }
-   if(ttbar_fit) {
-       cb_sig.cp().attr({"nobtag","btag","all"},"cat").process({"TTT","TT"}).AddSyst(cb, "rate_TT","rateParam",SystMap<>::init(1.0));
-       cb.GetParameter("rate_TT")->set_range(0.0,5.0);
-   }
+    cb.SetFlag("filters-use-regex", false);
   }
+  if (zmm_fit) {
+    cb.SetFlag("filters-use-regex", true);
+    cb.cp().channel({"et","mt","em","tt"}).attr({"nobtag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.02));
+    cb.cp().bin({"zmm_nobtag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_nobtag", "rateParam", SystMap<>::init(1.02));
+    cb.cp().channel({"et","mt","em","tt"}).attr({"btag"},"cat").process({"ZTT"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.02));
+    cb.cp().bin({"zmm_btag"}).process({"ZLL"}).AddSyst(cb, "rate_ZMM_ZTT_btag", "rateParam", SystMap<>::init(1.02));
+    cb.GetParameter("rate_ZMM_ZTT_btag")->set_range(0.8, 1.2);
+    cb.GetParameter("rate_ZMM_ZTT_nobtag")->set_range(0.95, 1.05);
+    cb.SetFlag("filters-use-regex", false);
+  }
+  if(ttbar_fit) {
+    cb_sig.cp().attr({"nobtag","btag","all"},"cat").process({"TTT","TT"}).AddSyst(cb, "rate_TT","rateParam",SystMap<>::init(1.0));
+    cb.GetParameter("rate_TT")->set_range(0.0,5.0);
+  }
+
+  //+PROJECTION
+  cb.cp().AddSyst(cb,"lumi", "rateParam", SystMap<>::init(1.0));
+  for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
+    if(sys.find("lumi")!=sys.npos) {
+      cb.GetParameter(sys)->set_range(0.0, 5000.0);
+    }
+  }
+  //-PROJECTION
+
 }
+
+}//end namespace
+
+

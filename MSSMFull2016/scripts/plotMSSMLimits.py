@@ -169,7 +169,8 @@ elif args.by_channel:
     legend.SetTextSize(0.03)
     legend.SetHeader('Expected:')
 else:
-    legend = plot.PositionedLegend(0.15, 0.2, 3, 0.015) #0.25
+#    legend = plot.PositionedLegend(0.15, 0.2, 3, 0.015) #0.25
+    legend = plot.PositionedLegend(0.25, 0.2, 3, 0.015) #0.25
     legend.SetTextSize(0.03)
 
 if args.do_new_ggH:
@@ -263,7 +264,7 @@ for src in args.input:
 
 
 
-axis[0].GetYaxis().SetTitle('95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
+axis[0].GetYaxis().SetTitle('95% CL #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
 if args.process == "bb#phi":
     axis[0].GetYaxis().SetTitle('95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
 if args.y_title is not None:
