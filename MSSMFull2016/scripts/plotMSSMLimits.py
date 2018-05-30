@@ -169,6 +169,7 @@ elif args.by_channel:
     legend.SetTextSize(0.03)
     legend.SetHeader('Expected:')
 else:
+#           def PositionedLegend(width, height, pos, offset, horizontaloffset=None):
 #    legend = plot.PositionedLegend(0.15, 0.2, 3, 0.015) #0.25
     legend = plot.PositionedLegend(0.25, 0.2, 3, 0.015) #0.25
     legend.SetTextSize(0.03)

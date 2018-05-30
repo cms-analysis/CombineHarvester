@@ -1,13 +1,27 @@
-The input shape files for this analysis are stored in an external repository. On a machine with a kerberos token for CERN access (e.g. lxplus), the simplest, and password-free way to get the repository is:
 
-    git clone https://:@gitlab.cern.ch:8443/cms-htt/MSSM-Full-2016.git shapes
+export SCRAM_ARCH=slc6_amd64_gcc481  
+scram project CMSSW CMSSW_7_4_7  
+cd CMSSW_7_4_7/src  
+cmsenv  
 
-Otherwise normal https access requiring a username and password can be done with:
+#git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit  
+#git clone ssh://git@github.com:7999/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit  
+git clone git@github.com:cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit  
+cd HiggsAnalysis/CombinedLimit  
+git fetch origin  
+#git tag #check which tag is most recent  
+git checkout v6.3.2  #v6.3.2 as of May 2018
+cd ../..  
 
-    git clone https://gitlab.cern.ch/cms-htt/MSSM-Full-2016.git shapes
+#git clone https://github.com/mflechl/CombineHarvester.git CombineHarvester  
+#git clone ssh://git@github.com:7999/mflechl/CombineHarvester.git CombineHarvester  
+git clone git@github.com:mflechl/CombineHarvester.git CombineHarvester  
+#cd CombineHarvester/          #not needed anymore, merged to master  
+#git remote add cms git@github.com:cms-analysis/CombineHarvester.git  #not needed atm  
+#git checkout MSSMFull2016-dev #not needed anymore, merged to master  
+#cd ..                         #not needed anymore, merged to master  
+scram b -j 8  
 
-New files as well as updates should be pushed directly to the master branch. To avoid creating unnecessary merge commits, please always do git pull with the --rebase option: 
-
-    git pull --rebase
- 
-This will only fall back to a merge when rebasing your local changes is not possible.
+cd CombineHarvester/MSSMFull2016  
+git clone https://gitlab.cern.ch/cms-htt/MSSM-Full-2016.git shapes  
+git pull --rebase  
