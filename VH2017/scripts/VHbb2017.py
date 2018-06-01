@@ -161,6 +161,20 @@ if args.bbb_mode==0:
 elif args.bbb_mode==1:
   cb.AddDatacardLineAtEnd("* autoMCStats 0")
 
+
+cb.SetGroup('allparams',['.*'])
+cb.SetGroup('signal_xs',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*'])
+cb.SetGroup('bkg_xs',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST'])
+cb.SetGroup('sim_modelling',['.*LHE_weights.*','CMS_vhbb_ptwweights.*'])
+cb.SetGroup('jes',['CMS_scale_j.*'])
+cb.SetGroup('jer',['CMS_res_j.*'])
+cb.SetGroup('b_eff',['.*bTagWeightJES','.*bTagWeightHFStats.*','.*bTagWeightLF'])
+cb.SetGroup('b_fake',['.*bTagWeightLFStats.*','.*bTagWeightHF','.*bTagWeightcErr.*'])
+cb.SetGroup('lumi',['lumi_13TeV'])
+cb.SetGroup('rateparams',['SF.*'])
+#cb.SetGroup('lep_eff',[''])
+#cb.SetGroup('met_uncl',[''])
+
 for chn in chns:
   file = shapes + input_folders[chn] + "/vhbb_"+chn+"-"+year+".root"
   if input_fwks[chn] == 'Xbb':
