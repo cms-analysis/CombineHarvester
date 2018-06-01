@@ -348,6 +348,22 @@ python ../CombineTools/scripts/plotGof.py --statistic saturated --mass 125.0 -o 
 
 ```
 
+## Freezing groups of nuisances
+To determine the effect of addition or removal of a group of nuisances on the signal strength. The nuisance groups are defined in VH2017.py, search for `SetGroup`. Note that a group for the bin-by-bin parameters has to be created during the text2workspace step and cannot be defined at the datacard making stage. You will need to merge this PR: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/478 to be able to do this. The group is called autoMCStats.
+Given the groups defined in VHbb2017.py at the moment of writing these instructions: allparams, signal_xs, bkg_xs, sim_modelling, jes, jer, b_eff, b_Fake, lumi, rateparams
+
+Removal of group rateparams
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles --freezeNuisanceGroups rateparams `
+
+The result of this needs to be compared with a fit with all nuisances:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles `
+
+Addition of group rateparams:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles --freezeNuisanceGroups signal_xs,bkg_xs,sim_modelling,jes,jer,b_eff,b_Fake,lumi,autoMCStats `
+
+Which should be compared with:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles --freezeNuisances all `
+
 
 ## Diagnostic tools
 ### Printing/visualising correlations:
@@ -361,6 +377,24 @@ To save and draw the correlation matrix for a given set of parameters:\
 This plots the correlation matrix as <output_name_string>.pdf/png and saves the TH2 in <output_name_string>.root 
 
 ### FastScan 
+FastScan can be used to get an idea of what the likelihood looks like as a function of the parameters. This assumes you have a FitDiagnostics result with an inaccurate convariance matrix that you want to inspect. Assume the file is called fitDiagnostics.root
+If we want to run this on an asimov dataset, we need to generate a toy first. Assuming we want to generate an asimov dataset with the CRs unblind:
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
 
+then:
+`combineTool.py -M FastScan -w ws_masked.root:w -d higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov -f fitDiagnostics.root:fit_b` (or fit_s, depending on which of the two is giving problems)
+
+The output of this is is a plot of the NLL as a function of each parameter, in addition to the first and second derivative of the NLL as a function of each parameter. Kinks in the likelihood will show up as discontinuities in the derivatives of the NLL. If such a feature is present near the minimum of a particular parameter, that indicates this parameter could be causing the problems in the fit.
+
+## General troubleshooting
+### Covariance matrix not accurate
+After running FitDiagnostics in the steps to make post-fit plots you should always check that the covariance matrix is accurate, as described above. 
+If the quality is `covariance matrix quality: Full matrix, but forced positive-definite` or `covariance matrix quality: Not calculated at all` you should not use this fit result to make post-fit plots because the uncertainties will not make sense. 
+Things to try to solve this include:
+- playing around with the minimizerTolerance (--cminDefaultMinimizerTolerance) and minimizerStrategy (--cminDefaultMinimizerStrategy). The strategy is set to 0 in the instructions at the moment, which is the least likely to give these problems. The minimizerTolerance is 0.1 by default.
+- Checking if any parameters are strongly anti-correlated. 
+- Are any parameters close to their boundaries?
+- Are there discontinuities in the NLL? Try running FastScan to determine this. If this is the case, try freezing the suspicious parameter and see if this solves the problem. Of course one should then check if there are any problems with the input shapes for that parameter for example and try to fix any possible problems.
+
+###To be updated
 To be updated
-
