@@ -4,76 +4,7 @@ def AddCommonSystematics(cb):
   
   signal = cb.cp().signals().process_set()
   #rateParams
-  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
-     'SF_TT_high_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
-
-  cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
-     'SF_Zj0b_high_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
-
-  cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
-     'SF_Zj1b_high_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
-
-  cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
-     'SF_Zj2b_high_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
-
-  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
-     'SF_TT_low_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
-
-  cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
-     'SF_Zj0b_low_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
-
-  cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
-     'SF_Zj1b_low_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
-
-  cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
-     'SF_Zj2b_low_Zll', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
-
-  cb.cp().channel(['Znn']).process(['TT']).AddSyst(cb,
-     'SF_TT_Znn', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
-
-  cb.cp().channel(['Znn']).process(['Zj0b']).AddSyst(cb,
-     'SF_Zj0b_Znn', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
-
-  cb.cp().channel(['Znn']).process(['Zj1b']).AddSyst(cb,
-     'SF_Zj1b_Znn', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
-
-  cb.cp().channel(['Znn']).process(['Zj2b']).AddSyst(cb,
-     'SF_Zj2b_Znn', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
   
-
-  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
-     'SF_TT_Wln', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
-
-  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj0b']).AddSyst(cb,
-     'SF_Wj0b_Wln', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
-
-  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj1b']).AddSyst(cb,
-     'SF_Wj1b_Wln', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
-
-  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj2b']).AddSyst(cb,
-     'SF_Wj2b_Wln', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
-
-
-  #Set a sensible range for the rate params
-  for syst in cb.cp().syst_type(["rateParam"]).syst_name_set():
-    cb.GetParameter(syst).set_range(0.0,5.0)
-
   #Theory uncertainties: signal
   cb.cp().AddSyst(cb,
       'pdf_Higgs_qqbar', 'lnN', ch.SystMap('process')
@@ -243,11 +174,11 @@ def AddCommonSystematics(cb):
 #  cb.cp().process(['VVLF']).AddSyst(cb,
 #      'CMS_LHE_weights_scale_muF_VVLF','shape',ch.SystMap()(1.0))
 
-  cb.cp().process(['QCD']).AddSyst(cb,
-      'CMS_LHE_weights_scale_muR_QCD','shape',ch.SystMap()(1.0))
+#  cb.cp().process(['QCD']).AddSyst(cb,
+#      'CMS_LHE_weights_scale_muR_QCD','shape',ch.SystMap()(1.0))
   
-  cb.cp().process(['QCD']).AddSyst(cb,
-      'CMS_LHE_weights_scale_muF_QCD','shape',ch.SystMap()(1.0))
+#  cb.cp().process(['QCD']).AddSyst(cb,
+#      'CMS_LHE_weights_scale_muF_QCD','shape',ch.SystMap()(1.0))
 
 
   #Experimental uncertainties
@@ -255,6 +186,70 @@ def AddCommonSystematics(cb):
 #      'CMS_vhbb_puWeight','shape',ch.SystMap()(1.0))
 
 def AddSystematics2017(cb):
+  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
+     'SF_TT_high_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
+     'SF_Zj0b_high_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
+     'SF_Zj1b_high_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
+     'SF_Zj2b_high_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
+     'SF_TT_low_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
+     'SF_Zj0b_low_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
+     'SF_Zj1b_low_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
+     'SF_Zj2b_low_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Znn']).process(['TT']).AddSyst(cb,
+     'SF_TT_Znn_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Znn']).process(['Zj0b']).AddSyst(cb,
+     'SF_Zj0b_Znn_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Znn']).process(['Zj1b']).AddSyst(cb,
+     'SF_Zj1b_Znn_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Znn']).process(['Zj2b']).AddSyst(cb,
+     'SF_Zj2b_Znn_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
+     'SF_TT_Wln_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj0b']).AddSyst(cb,
+     'SF_Wj0b_Wln_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj1b']).AddSyst(cb,
+     'SF_Wj1b_Wln_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj2b']).AddSyst(cb,
+     'SF_Wj2b_Wln_2017', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
   #Experimental uncertainties
   cb.cp().AddSyst(
         cb, 'lumi_13TeV','lnN', ch.SystMap()(1.023))
@@ -305,113 +300,186 @@ def AddSystematics2017(cb):
   
   #Jet energy scale
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jer','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesPileUpDataMC','shape',ch.SystMap()(1.0))
+      'CMS_res_j_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesPileUpPtRef','shape',ch.SystMap()(1.0))
+      'CMS_res_j_reg_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesPileUpPtBB','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesPileUpPtEC1','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_PileUpDataMC_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesPileUpPtEC2','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_PileUpPtRef_13TeV','shape',ch.SystMap()(1.0))
+  
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_PileUpPtBB_13TeV','shape',ch.SystMap()(1.0))
+  
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_PileUpPtEC1_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesPileUpPtHF','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_PileUpPtEC2_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeBal','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_PileUpPtHF_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeJEREC1','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeJEREC2','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativeBal_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeJERHF','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativeJEREC1_13TeV','shape',ch.SystMap()(1.0))
+  
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_RelativeJEREC2_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeFSR','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeStatFSR','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeStatEC','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativeJERHF_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativeStatHF','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativeFSR_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativePtBB','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativeStatFSR_13TeV','shape',ch.SystMap()(1.0))
+  
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_RelativeStatEC_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativePtHF','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativeStatHF_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativePtEC1','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativePtBB_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesRelativePtEC2','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativePtHF_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesAbsoluteScale','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_RelativePtEC1_13TeV','shape',ch.SystMap()(1.0))
+
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_RelativePtEC2_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesAbsoluteMPFBias','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_AbsoluteScale_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesAbsoluteStat','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_AbsoluteMPFBias_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesSinglePionECAL','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_AbsoluteStat_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesSinglePionHCAL','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_SinglePionECAL_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesFragmentation','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_SinglePionHCAL_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_jesFlavorQCD','shape',ch.SystMap()(1.0))
+      'CMS_scale_j_Fragmentation_13TeV','shape',ch.SystMap()(1.0))
+  
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_FlavorQCD_13TeV','shape',ch.SystMap()(1.0))
 
   #b-tagging uncertainties
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_JES','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBJES_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_LF','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBLF_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_HF','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBHF_13TeV','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_LFStats1','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBLFStats1_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_LFStats2','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBLFStats2_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_HFStats1','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBHFStats1_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_HFStats2','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBHFStats2_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_cErr1','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBcErr1_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_vhbb_bTagWeightDeepCSV_cErr2','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightDeepBcErr2_13TeV','shape',ch.SystMap()(1.0))
 
 
 def AddSystematics2016(cb):
+  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
+     'SF_TT_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
+     'SF_Zj0b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
+     'SF_Zj1b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
+     'SF_Zj2b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
+     'SF_TT_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
+     'SF_Zj0b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
+     'SF_Zj1b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
+     'SF_Zj2b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+
+  cb.cp().channel(['Znn']).process(['TT']).AddSyst(cb,
+     'SF_TT_Znn_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Znn']).process(['Zj0b']).AddSyst(cb,
+     'SF_Zj0b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Znn']).process(['Zj1b']).AddSyst(cb,
+     'SF_Zj1b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Znn']).process(['Zj2b']).AddSyst(cb,
+     'SF_Zj2b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
+     'SF_TT_Wln_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj0b']).AddSyst(cb,
+     'SF_Wj0b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj1b']).AddSyst(cb,
+     'SF_Wj1b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
+  cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj2b']).AddSyst(cb,
+     'SF_Wj2b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
+     ([1,3,5,6,7],1.0))
+
+
+  #Set a sensible range for the rate params
+  for syst in cb.cp().syst_type(["rateParam"]).syst_name_set():
+    cb.GetParameter(syst).set_range(0.0,5.0)
+
+
   #Experimental uncertainties
   cb.cp().AddSyst(
         cb, 'lumi_13TeV','lnN', ch.SystMap()(1.025))
