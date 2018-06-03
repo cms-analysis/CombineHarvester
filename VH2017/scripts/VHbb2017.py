@@ -216,7 +216,7 @@ if args.zero_out_low:
 ch.SetStandardBinNames(cb)
 
 writer=ch.CardWriter("output/" + args.output_folder + year + "/$TAG/$BIN"+year+".txt",
-                      "output/" + args.output_folder + year +"/$TAG/vhbb_input.root")
+                      "output/" + args.output_folder + year +"/$TAG/vhbb_input_$BIN"+year+".root")
 writer.SetWildcardMasses([])
 writer.SetVerbosity(1);
                 
@@ -229,7 +229,10 @@ for chn in chns:
   writer.WriteCards(chn,cb.cp().channel([chn]))
 
 if 'Znn' in chns:
-  writer.WriteCards("Znn_CRonly",cb.cp().bin_id([3,4,5,6,7,8]).channel(['Znn']))
+  #writer.WriteCards("Znn",cb.cp().FilterAll(lambda x: not (x.channel()=='Znn' or ( (x.channel() in ['Wmn','Wen']) and x.bin_id() in [3,4,5,6,7,8]))))
+  writer.WriteCards("Znn",cb.cp().channel(['Znn']))
+  writer.WriteCards("Znn",cb.cp().bin_id([3,4,5,6,7,8]).channel(['Wmn','Wen']))
+  writer.WriteCards("Znn_CRonly",cb.cp().bin_id([3,4,5,6,7,8]).channel(['Znn','Wmn','Wen']))
 
 #Zll and Wln:
 if 'Wen' in chns and 'Wmn' in chns:
