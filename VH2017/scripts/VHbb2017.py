@@ -19,7 +19,7 @@ def adjust_shape(proc,nbins):
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
- '--channel', default='Zll', help="""Which channels to run? Supported options: 'all', 'Znn', 'Zee', 'Zmm', 'Zll', 'Wen', 'Wmn','Wln'""")
+ '--channel', default='all', help="""Which channels to run? Supported options: 'all', 'Znn', 'Zee', 'Zmm', 'Zll', 'Wen', 'Wmn','Wln'""")
 parser.add_argument(
  '--output_folder', default='vhbb2017', help="""Subdirectory of ./output/ where the cards are written out to""")
 parser.add_argument(
@@ -99,8 +99,8 @@ input_folders = {
 bkg_procs = {
   'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
   'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Zmm' : ['s_Top','TT','VV','Zj0b','Zj1b','Zj2b'],
-  'Zee' : ['s_Top','TT','VV','Zj0b','Zj1b','Zj2b'],
+  'Zmm' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
+  'Zee' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
   'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
 }
 
@@ -109,8 +109,7 @@ sig_procs = {
   'Wmn' : ['WH_hbb','ZH_hbb'],
   'Zmm' : ['ZH_hbb','ggZH_hbb'],
   'Zee' : ['ZH_hbb','ggZH_hbb'],
-  'Znn' : ['ZH_hbb','WH_hbb']
-  #'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
+  'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
 }
 
 sig_procs_ren = {
@@ -123,15 +122,23 @@ sig_procs_ren = {
 
 cats = {
   'Zee' : [
-    (1, 'Zee_BDT_highpt'), (2, 'Zee_BDT_lowpt'), (3, 'Zee_CRZlight_highpt'), (4,'Zee_CRZlight_lowpt'),
-    (5, 'Zee_CRZb_highpt'), (6, 'Zee_CRZb_lowpt'), (7,'Zee_CRttbar_highpt'), (8,'Zee_CRttbar_lowpt')
+    (1, 'ZeeHighPt_13TeV'), (2, 'ZeeLowPt_13TeV'), (3, 'Zlf_high_Zee'), (4,'Zlf_low_Zee'),
+    (5, 'Zhf_high_Zee'), (6, 'Zhf_low_Zee'), (7,'ttbar_high_Zee'), (8,'ttbar_low_Zee')
   ],
   'Zmm' : [
-    (1, 'Zuu_BDT_highpt'), (2, 'Zuu_BDT_lowpt'), (3, 'Zuu_CRZlight_highpt'), (4,'Zuu_CRZlight_lowpt'),
-    (5, 'Zuu_CRZb_highpt'), (6, 'Zuu_CRZb_lowpt'), (7,'Zuu_CRttbar_highpt'), (8,'Zuu_CRttbar_lowpt')
+    (1, 'ZuuHighPt_13TeV'), (2, 'ZuuLowPt_13TeV'), (3, 'Zlf_high_Zuu'), (4,'Zlf_low_Zuu'),
+    (5, 'Zhf_high_Zuu'), (6, 'Zhf_low_Zuu'), (7,'ttbar_high_Zuu'), (8,'ttbar_low_Zuu')
   ],
+  #'Zee' : [
+  #  (1, 'Zee_BDT_highpt'), (2, 'Zee_BDT_lowpt'), (3, 'Zee_CRZlight_highpt'), (4,'Zee_CRZlight_lowpt'),
+  #  (5, 'Zee_CRZb_highpt'), (6, 'Zee_CRZb_lowpt'), (7,'Zee_CRttbar_highpt'), (8,'Zee_CRttbar_lowpt')
+  #],
+  #'Zmm' : [
+  #  (1, 'Zuu_BDT_highpt'), (2, 'Zuu_BDT_lowpt'), (3, 'Zuu_CRZlight_highpt'), (4,'Zuu_CRZlight_lowpt'),
+  #  (5, 'Zuu_CRZb_highpt'), (6, 'Zuu_CRZb_lowpt'), (7,'Zuu_CRttbar_highpt'), (8,'Zuu_CRttbar_lowpt')
+  #],
   'Znn' : [
-    (1, 'Znn_13TeV_SIG'), (3, 'Znn_13TeV_ZLF'), (5, 'Znn_13TeV_ZHF'), (7,'Znn_13TeV_TT')
+    (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
   ],
  'Wen' : [
     (1, 'WenHighPt'), (3,'wlfWen'), (5,'whfWenHigh'), (6,'whfWenLow'), (7,'ttWen')

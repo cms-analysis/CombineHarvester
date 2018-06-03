@@ -195,7 +195,6 @@ for i,t in enumerate(background_schemes[channel]):
     h.SetMarkerSize(0)
     bkg_histos.append(h)
     plot_background_schemes[channel].append(t)
-    print plot_background_schemes[channel]
 
 stack = ROOT.THStack("hs","")
 for hists in bkg_histos:
