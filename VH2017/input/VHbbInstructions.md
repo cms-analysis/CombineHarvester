@@ -128,7 +128,7 @@ Run maximum likelihood fit, masking the SR from the likelihood:
 create the post-fit shapes with uncertainties from the datacard and the MLFit:
 *Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense.
 
-`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.SRMasked.root:fit_s`
+`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print  --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.SRMasked.root:fit_b`
 
 To make pre- and post fit plots of the BDT distributions in the SR:
 `python scripts/makePostFitPlots<year>.py`
