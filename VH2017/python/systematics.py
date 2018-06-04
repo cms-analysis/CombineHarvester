@@ -317,6 +317,9 @@ def AddSystematics2017(cb):
 #  cb.cp().AddSyst(cb,
 #      'CMS_res_j_reg_13TeV','shape',ch.SystMap()(1.0))
 #  
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_13TeV','shape',ch.SystMap()(1.0))
+
 #  cb.cp().AddSyst(cb,
 #      'CMS_scale_j_PileUpDataMC_13TeV','shape',ch.SystMap()(1.0))
 #
