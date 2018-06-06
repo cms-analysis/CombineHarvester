@@ -251,6 +251,10 @@ def AddSystematics2017(cb):
      'SF_Wj2b_Wln_2017', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,6,7],1.0))
 
+  #Set a sensible range for the rate params
+  for syst in cb.cp().syst_type(["rateParam"]).syst_name_set():
+    cb.GetParameter(syst).set_range(0.0,5.0)
+
   #Experimental uncertainties
   cb.cp().AddSyst(
         cb, 'lumi_13TeV','lnN', ch.SystMap()(1.023))
