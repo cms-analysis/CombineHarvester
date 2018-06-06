@@ -284,9 +284,14 @@ class HybridNewGrid(CombineToolBase):
                     CLsErr = hyp_res.CLsplusbError()
                 testStatObs = hyp_res.GetTestStatisticData()
             if precomputed is not None:
-                CLs = precomputed[contour][0]
-                CLsErr = precomputed[contour][1]
-                testStatObs = precomputed[contour][3]
+                if "obs" in precomputed.keys():
+                    CLs = precomputed[contour][0]
+                    CLsErr = precomputed[contour][1]
+                    testStatObs = precomputed[contour][3]
+                else:
+                    CLs = 0
+                    CLsErr = 0
+                    testStatObs = 0
             if ntoys == 0: CLsErr = 0 # If there were no toys then ClsError() will return inf
             dist = 0.
             if CLsErr == 0.:
@@ -560,13 +565,24 @@ class HybridNewGrid(CombineToolBase):
             # has been set to true then we'll write all model points where at least one HypoTestResult
             # is present
             if (res is not None or precomputed is not None) and (ok or incomplete) and self.args.output:
-                output_x.append(float(key[0]))
-                output_y.append(float(key[1]))
-                output_ntoys.append(point_res['ntoys'])
-                for contour in contours:
-                    output_data[contour].append(point_res[contour][0])
-                    output_clserr[contour].append(point_res[contour][1])
-                    output_signif[contour].append(point_res[contour][2])
+                black_listed_points_2D = [(k[0], k[1]) for k in blacklisted_points]
+                if (key[0], key[1]) not in black_listed_points_2D:
+                    output_x.append(float(key[0]))
+                    output_y.append(float(key[1]))
+                    output_ntoys.append(point_res['ntoys'])
+                    for contour in contours:
+                        output_data[contour].append(point_res[contour][0])
+                        output_clserr[contour].append(point_res[contour][1])
+                        output_signif[contour].append(point_res[contour][2])
+                else:
+                    print "Setting point:","(",key[0],",",key[1],") to 0.0"
+                    output_x.append(float(key[0]))
+                    output_y.append(float(key[1]))
+                    output_ntoys.append(0)
+                    for contour in contours:
+                        output_data[contour].append(0.0)
+                        output_clserr[contour].append(0.0)
+                        output_signif[contour].append(0.0)
 
             # Do the job cycle generation if requested
             if not ok and self.args.cycles > 0:

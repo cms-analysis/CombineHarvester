@@ -256,6 +256,8 @@ for src in args.input:
         graphs.append(graph)
         if len(splitsrc) >= 3:
             settings.update({x.split('=')[0]: eval(x.split('=')[1]) for x in splitsrc[2].split(',')})
+        if 'Title' in settings:
+            settings['Title']=settings['Title'].replace('_',' ')
         plot.Set(graphs[-1], **settings)
         if axis is None:
             axis = plot.CreateAxisHists(len(pads), graphs[-1], True)
@@ -267,7 +269,7 @@ for src in args.input:
 
 axis[0].GetYaxis().SetTitle('95% CL #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
 if args.process == "bb#phi":
-    axis[0].GetYaxis().SetTitle('95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
+    axis[0].GetYaxis().SetTitle('95% CL #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)}(pb)')
 if args.y_title is not None:
     axis[0].GetYaxis().SetTitle(args.y_title)
 axis[0].GetXaxis().SetTitle(args.x_title)
