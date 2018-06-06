@@ -182,11 +182,12 @@ def AddCommonSystematics(cb):
 
 
   #Experimental uncertainties
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_puWeight','shape',ch.SystMap()(1.0))
 
 
 def AddSystematics2017(cb):
+  cb.cp().AddSyst(cb,
+      'CMS_vhbb_puWeight','shape',ch.SystMap()(1.0))
+  
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
      'SF_TT_high_Zll_2017', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,7],1.0))
@@ -426,6 +427,9 @@ def AddSystematics2017(cb):
 
 
 def AddSystematics2016(cb):
+  #cb.cp().AddSyst(cb,
+  #    'CMS_vhbb_puWeight_2016','shape',ch.SystMap()(1.0))
+  
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
      'SF_TT_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,7],1.0))
@@ -498,7 +502,7 @@ def AddSystematics2016(cb):
 
   #Experimental uncertainties
   cb.cp().AddSyst(
-        cb, 'lumi_13TeV','lnN', ch.SystMap()(1.025))
+        cb, 'lumi_13TeV_2016','lnN', ch.SystMap()(1.025))
   
 ##  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
 ##      'CMS_vhbb_ptwweights_tt','shape',ch.SystMap()(1.0))
@@ -509,11 +513,11 @@ def AddSystematics2016(cb):
 ##  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
 ##      'CMS_vhbb_ptwweights_wlf','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wen']).AddSyst(cb,
-      'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
+  #cb.cp().channel(['Wen']).AddSyst(cb,
+  #    'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wmn']).AddSyst(cb,
-      'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().channel(['Wmn']).AddSyst(cb,
+#      'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
 
 #  cb.cp().channel(['Zee']).AddSyst(cb,
 #      'CMS_vhbb_eff_e_trigger_Zll_13TeV','shape',ch.SystMap()(1.0))
@@ -548,80 +552,83 @@ def AddSystematics2016(cb):
 #  cb.cp().AddSyst(cb,
 #      'CMS_res_j','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_PileUpDataMC_13TeV','shape',ch.SystMap()(1.0))
+ # cb.cp().AddSyst(cb,
+ #     'CMS_scale_j_13TeV_2016','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_PileUpPtRef_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_PileUpPtBB_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_PileUpPtEC1_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_PileUpDataMC_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_PileUpPtEC2_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_PileUpPtRef_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_PileUpPtBB_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_PileUpPtEC1_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_PileUpPtHF_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_PileUpPtEC2_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativeBal_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_PileUpPtHF_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativeJEREC1_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativeJEREC2_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativeBal_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativeJERHF_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativeJEREC1_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativeJEREC2_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativeFSR_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativeStatFSR_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativeStatEC_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativeJERHF_13TeV','shape',ch.SystMap()(1.0))
+
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativeFSR_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativeStatFSR_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativeStatEC_13TeV','shape',ch.SystMap()(1.0))
 
 #  cb.cp().AddSyst(cb,
 #      'CMS_scale_j_RelativeStatHF_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativePtBB_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativePtBB_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativePtHF_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativePtEC1_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativePtHF_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativePtEC1_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_RelativePtEC2_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_AbsoluteScale_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_AbsoluteMPFBias_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_AbsoluteStat_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_SinglePionECAL_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_SinglePionHCAL_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_Fragmentation_13TeV','shape',ch.SystMap()(1.0))
-  
-  cb.cp().AddSyst(cb,
-      'CMS_scale_j_FlavorQCD_13TeV','shape',ch.SystMap()(1.0))
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_RelativePtEC2_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_AbsoluteScale_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_AbsoluteMPFBias_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_AbsoluteStat_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_SinglePionECAL_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_SinglePionHCAL_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_Fragmentation_13TeV','shape',ch.SystMap()(1.0))
+#  
+#  cb.cp().AddSyst(cb,
+#      'CMS_scale_j_FlavorQCD_13TeV','shape',ch.SystMap()(1.0))
   #Need to filter the uncertainty for processes it doesn't make sense for:
   #cb.FilterSysts(lambda x: x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_FlavorQCD_13TeV')
 
@@ -630,26 +637,26 @@ def AddSystematics2016(cb):
 #      'CMS_bTagWeightJES','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightLF','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightLF_13TeV_2016','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightHF','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightHF_13TeV_2016','shape',ch.SystMap()(1.0))
 
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightLFStats1','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightLFStats1_13TeV_2016','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightLFStats2','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightLFStats2_13TeV_2016','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightHFStats1','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightHFStats1_13TeV_2016','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightHFStats2','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightHFStats2_13TeV_2016','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightcErr1','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightcErr1_13TeV_2016','shape',ch.SystMap()(1.0))
   
   cb.cp().AddSyst(cb,
-      'CMS_bTagWeightcErr2','shape',ch.SystMap()(1.0))
+      'CMS_bTagWeightcErr2_13TeV_2016','shape',ch.SystMap()(1.0))
 
