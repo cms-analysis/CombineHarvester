@@ -285,7 +285,7 @@ main_scan['graph'].Draw('PLSAME')
 
 if args.POI == 'alpha':
   import scipy.stats
-  significance = math.sqrt(scipy.stats.chi2.ppf(scipy.stats.chi2.cdf(main_scan['func'].Eval(1),1),1))
+  significance = math.sqrt(scipy.stats.chi2.ppf(scipy.stats.chi2.cdf(main_scan['func'].Eval(1)-main_scan['func'].Eval(0),1),1))
   latex = ROOT.TLatex()
   latex.SetNDC()
   latex.SetTextSize(0.04)

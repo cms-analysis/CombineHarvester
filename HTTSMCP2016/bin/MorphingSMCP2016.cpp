@@ -89,10 +89,10 @@ int main(int argc, char** argv) {
     ("scale_sig_procs", po::value<string>(&scale_sig_procs)->default_value(""))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
-    ("control_region", po::value<int>(&control_region)->default_value(0))
+    ("control_region", po::value<int>(&control_region)->default_value(1))
     ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
     ("do_embedding", po::value<bool>(&do_embedding)->default_value(false))
-    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
+    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(true))
     ("no_jec_split", po::value<bool>(&no_jec_split)->default_value(true))    
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
 
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
     bkg_procs["et"] = {"ZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
     bkg_procs["mt"] = {"ZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
     bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
-    bkg_procs["em"] = {"ZTT","W", "QCD", "ZLL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
+    bkg_procs["em"] = {"ZTT","W", "QCD", "ZLL", "TT", "VV", "EWKZ"};//, "ggH_hww125", "qqH_hww125"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     
     if(do_embedding){
@@ -346,6 +346,7 @@ int main(int argc, char** argv) {
     cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
         sys->set_type("lnN");
         if(sys->value_d() <0.001) {sys->set_value_d(0.001);};
+        if(sys->value_u() <0.001) {sys->set_value_u(0.001);};
     });
     
     std::vector<std::string> all_prefit_bkgs = {
@@ -427,25 +428,30 @@ int main(int argc, char** argv) {
     
     ////! [part8]
     auto bbb = ch::BinByBinFactory()
-    .SetAddThreshold(0.05)
-    .SetMergeThreshold(0.8)
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetAddThreshold(0.)
+    .SetMergeThreshold(0.4)
     .SetFixNorm(false);
-    bbb.MergeBinErrors(cb.cp().backgrounds());
-    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
-    
-    
+    bbb.MergeBinErrors(cb.cp().backgrounds().FilterProcs(BinIsControlRegion));
+    bbb.AddBinByBin(cb.cp().backgrounds().FilterProcs(BinIsControlRegion), cb);
+
+    auto bbb_sig = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetAddThreshold(0.)
+    .SetMergeThreshold(0.)
+    .SetFixNorm(false);
+    bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
     
     // And now do bbb for the control region with a slightly different config:
     auto bbb_ctl = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
-    .SetMergeThreshold(0.8)
-    .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
+    .SetMergeThreshold(0.4)
+    .SetFixNorm(false)
     .SetVerbosity(1);
     // Will merge but only for non W and QCD processes, to be on the safe side
     bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
     bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
-    cout << " done\n";
     
     
     

@@ -34,17 +34,17 @@ To take the VBF shape as SM and float the rate use:
 Not using the --freezeNuisances will float both the VBF rate and shape by default.
 
 To scan alpha:
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp310118/cmb/125/ws.root --algo grid -t -1 --there -n .alpha`
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp310118/cmb/125/ws.root --algo grid -t -1 --there -n .alpha `
 
 
 To scan muF:
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges muF=0,4 --points 20 --redefineSignalPOIs muF  -d output/cp310818/cmb/125/ws.root --algo grid -t -1 --there -n .muF`
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges muF=0,4 --points 20 --redefineSignalPOIs muF  -d output/cp310818/cmb/125/ws.root --algo grid -t -1 --there -n .muF `
 
 To scan alpha including the constrain on the XS use:
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f,muF --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp310118/cmb/125/ws.root --algo grid -t -1 --there -n .alpha`
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f,muF --setPhysicsModelParameterRanges alpha=0,1 --points 20 --redefineSignalPOIs alpha  -d output/cp310118/cmb/125/ws.root --algo grid -t -1 --there -n .alpha `
 
 Run 2D liklihood scan of muF vs alpha using:
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp310118/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8`
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp310118/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8 `
 
 # Plot scan
 
