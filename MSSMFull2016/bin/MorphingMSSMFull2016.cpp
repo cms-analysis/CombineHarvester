@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(do_w_weighting))
     ("partial_unblinding", po::value<bool>(&partial_unblinding)->default_value(partial_unblinding))
     ("ggHatNLO", po::value<bool>(&ggHatNLO)->default_value(ggHatNLO))
-    ("remove_h", po::value<bool>(&remove_h)->default_value(remove_h));
+    ("remove_h", po::value<bool>(&remove_h)->default_value(remove_h))
     ("mod_indep_use_sm", po::value<bool>(&mod_indep_use_sm)->default_value(mod_indep_use_sm))
     ("mod_indep_h", po::value<string>(&mod_indep_h)->default_value(mod_indep_h));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
