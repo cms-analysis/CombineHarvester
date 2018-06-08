@@ -63,7 +63,7 @@ Or, for example, to just create a workspace for the Zee channel:
 **NOTE:** only use `*` for subdirectories. If you used e.g. `-i output/<output_folder>/Zee/*`, text2workspace would be called successively on every file in the Zee folder, including the
 just-created workspace which leads to problems. 
 
-##Setting up combinations
+## Setting up combinations
 ### Run1 + 2016 + 2017 combination
 Make directory output/cmb-run1run2
 Copy into this directory:
