@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     string postfix="";
     bool useMC = false;
     bool fitEff = false;
-    bool embed_yield_from_data = false;
+    bool ff_fracs = false;
     int mode = 0; //mode = 0 is for ID measurments, mode = 1 is for trigger measurments
     po::variables_map vm;
     po::options_description config("configuration");
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     ("mode", po::value<int>(&mode)->default_value(mode))
     ("useMC", po::value<bool>(&useMC)->default_value(false))
     ("fitEff", po::value<bool>(&fitEff)->default_value(false))
-    ("embed_yield_from_data", po::value<bool>(&embed_yield_from_data)->default_value(false))
+    ("ff_fracs", po::value<bool>(&ff_fracs)->default_value(false))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"));
 
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
@@ -96,38 +96,80 @@ int main(int argc, char** argv) {
     // source the input files containing the datacard shapes
     //    string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/bin/AllROOT_20fb/";
     std::map<string, string> input_dir;
+    if(ff_fracs) input_folder_mt = "Imperial/FFFracs";
     input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mt+"/";  
     input_dir["et"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mt+"/";
+    input_dir["tt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_mt+"/";
     
     
-    VString chns = {"mt","et"};
+    VString chns = {"mt"};
+    if(ff_fracs) chns = {"mt","et"};
     
     map<string, VString> bkg_procs;
     VString sig_procs;
-
-    if(!useMC){
+    
+    if(ff_fracs) {
+      bkg_procs["mt"] = {"QCD","W","ZJ","TTJ","VVJ"};
+      bkg_procs["et"] = {"QCD","W","ZJ","TTJ","VVJ"};    
+      bkg_procs["tt"] = {"QCD","W","ZJ","TTJ","VVJ"};
+      sig_procs = {"ZTT","ZL","TTT","VVT","EWKZ"};
+    }
+    else if(!useMC){
        bkg_procs["mt"] = {"QCD","W","ZL","ZJ","TTT","TTJ","VVT","VVJ"};
        bkg_procs["et"] = {"QCD","W","ZL","ZJ","TTT","TTJ","VVT","VVJ"};
     } else {
       bkg_procs["mt"] = {"QCD","W","ZL","ZJ","TTJ","VVJ"};
       bkg_procs["et"] = {"QCD","W","ZL","ZJ","TTJ","VVJ"};
     }
-    if(!(useMC || fitEff)) sig_procs = {"EmbedZTTpass","EmbedZTTfail"};
-    if(useMC)sig_procs = {"ZTTpass","ZTTfail","TTTpass","TTTfail","VVTpass","VVTfail"};    
-    if(fitEff && !useMC) sig_procs = {"EmbedZTTpass","EmbedZTTfail","TTTpass","TTTfail","VVTpass","VVTfail"};
+    if(!(useMC || fitEff) && !ff_fracs) sig_procs = {"EmbedZTTpass","EmbedZTTfail"};
+    if(useMC && !ff_fracs)sig_procs = {"ZTTpass","ZTTfail","TTTpass","TTTfail","VVTpass","VVTfail"};    
+    if(fitEff && !useMC && !ff_fracs) sig_procs = {"EmbedZTTpass","EmbedZTTfail","TTTpass","TTTfail","VVTpass","VVTfail"};
 
     ch::CombineHarvester cb;
     
     map<string,Categories> cats;
     
-    cats["mt"] = {
-        {1, "mt_pass"},
-        {2, "mt_fail"}
-    }; 
-    cats["et"] = {
-        {1, "et_pass"},
-        {2, "et_fail"}
-    }; 
+    if(ff_fracs){
+      cats["mt"] = {
+          {1, "mt_0jet"},
+          {2, "mt_0jet"},
+          {3, "mt_boosted_low"},
+          {4, "mt_boosted_high"},
+          {5, "mt_dijet_lowboost"},
+          {6, "mt_dijet_boosted"}
+      };
+      cats["et"] = {
+          {1, "et_0jet"},
+          {2, "et_0jet"},
+          {3, "et_boosted_low"},
+          {4, "et_boosted_high"},
+          {5, "et_dijet_lowboost"},
+          {6, "et_dijet_boosted"}
+      };
+      cats["tt"] = {
+          {1, "tt_inclusive_1"},
+          {2, "tt_0jet_1"},
+          {3, "tt_boosted_low_1"},
+          {4, "tt_boosted_high_1"},
+          {5, "tt_dijet_lowboost_1"},
+          {6, "tt_dijet_boosted_1"},
+          {7, "tt_inclusive_2"},
+          {8, "tt_0jet_2"},
+          {9, "tt_boosted_low_2"},
+          {10, "tt_boosted_high_2"},
+          {11, "tt_dijet_lowboost_2"},
+          {12, "tt_dijet_boosted_2"}
+      };
+    } else { 
+      cats["mt"] = {
+          {1, "mt_pass"},
+          {2, "mt_fail"}
+      }; 
+      cats["et"] = {
+          {1, "et_pass"},
+          {2, "et_fail"}
+      }; 
+    }
     
     using ch::syst::bin_id;
     
@@ -139,7 +181,7 @@ int main(int argc, char** argv) {
     }
 
     std::vector<std::string> embed = {"EmbedZTTpass","EmbedZTTfail"};
-    std::vector<std::string> real_tau = {"TTT","VVT","TTTpass","TTTfail","VVTpass","VVTfail"};
+    std::vector<std::string> real_tau = {"TTT","VVT","TTTpass","TTTfail","VVTpass","VVTfail","ZTT", "EWKZ"};
     std::vector<std::string> jetfake = {"W","VVJ","TTJ","ZJ"};
     std::vector<std::string> jetfake_noW = {"VVJ","TTJ","ZJ"};
     std::vector<std::string> zl = {"ZL"};
@@ -148,30 +190,33 @@ int main(int argc, char** argv) {
     
     cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.025));
-    if(!embed_yield_from_data) {
-      cb.cp().process({"EmbedZTT","EmbedZTTpass","EmbedZTTfail"}).AddSyst(cb,
-                                            "lumi_13TeV", "lnN", SystMap<>::init(1.025));    
-    }
+    
+    cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
+                                            "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
     
     cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-                        ({"mt"}, JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}}),  1.02));
+                        ({"mt"}, JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed}),  1.02));
     cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
                         ({"et"}, JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed}),  1.02));   
- 
-    if(embed_yield_from_data) {
-      cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init  
-                          ({"mt"}, embed,  0.98)
-                          ({"et"}, embed,  0.96)
-                          );    
-    } else {
-      cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init  
-                          ({"mt"}, embed,  1.02));    
-    }
-    //cb.cp().AddSyst(cb, "CMS_embed_norm_13TeV", "lnN", SystMap<channel, process>::init
-    //                    ({"mt"}, embed,  1.02));
+    cb.cp().AddSyst(cb, "CMS_embed_norm_13TeV", "lnN", SystMap<channel, process>::init
+                        ({"mt"}, embed,  1.04));
     
-    if(mode==0){
+    //##############################################################################
+    //  trigger   
+    //##############################################################################
+    
+    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed})).channel({"mt"}).AddSyst(cb,
+                                         "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+    
+    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed})).channel({"et"}).AddSyst(cb,
+                                         "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+
+    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"},embed})).channel({"tt"}).AddSyst(cb,
+                                        "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
+
+    
+    if(mode==0 && !ff_fracs){
         // id uncertainties for j->tau and l->tau will be added in physics model
         cb.cp().process(jetfake).bin_id({1,3,5,7,9,11,13,15,17,19}).AddSyst(cb,
                                                "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
@@ -182,19 +227,37 @@ int main(int argc, char** argv) {
         cb.cp().process(zl).channel({"mt"}).AddSyst(cb,
                                                         "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
         cb.cp().process(zl).channel({"et"}).AddSyst(cb,
-                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.10));
     }
-    if(mode==1){
-      cb.cp().process(JoinStr({real_tau,embed})).AddSyst(cb,
-                                               "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.05));
-      cb.cp().process(JoinStr({real_tau,embed})).AddSyst(cb,
+    if(mode==1 || ff_fracs){
+      cb.cp().process(JoinStr({real_tau,embed})).channel({"mt","et"}).AddSyst(cb,
+                                               "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.07));
+      cb.cp().process(JoinStr({real_tau,embed})).channel({"mt","et"}).AddSyst(cb,
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+      
+      cb.cp().process(JoinStr({real_tau,embed})).channel({"tt"}).AddSyst(cb,
+                                               "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.145));
+      cb.cp().process(JoinStr({real_tau,embed})).channel({"tt"}).AddSyst(cb,
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
+      
+      cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt"}).AddSyst(cb,
+                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.07));
+        
+      cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt"}).AddSyst(cb,
+                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+      
       cb.cp().process(jetfake).AddSyst(cb,
                                                "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));  
-      cb.cp().process(jetfake).AddSyst(cb,
+      cb.cp().process({"VVJ","TTJ","ZJ"}).AddSyst(cb,
+                                                        "CMS_htt_jFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
+      cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
                                                         "CMS_htt_jFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
       cb.cp().process(zl).AddSyst(cb,
-                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.20));    
+                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
+      cb.cp().process(zl).channel({"et"}).AddSyst(cb,
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.10));
+      cb.cp().process(zl).channel({"tt"}).AddSyst(cb,
+                                                        "CMS_htt_lFakeTau_13TeV", "lnN", SystMap<>::init(1.20));
     }
     
     cb.cp().process(JoinStr({real_tau,embed,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
@@ -210,14 +273,18 @@ int main(int argc, char** argv) {
     cb.cp().process(embed).channel({"et"}).AddSyst(cb,
                                                  "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
     
-    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
-                                                  "CMS_scale_met_clustered_$ERA", "shape", SystMap<>::init(1.00));
+
     cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
                                                   "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
     
-    cb.cp().process(zl).AddSyst(cb,
+    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
+    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+
+    cb.cp().process(zl).channel({"et","mt"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong_$ERA", "shape", SystMap<>::init(1.00));
-    cb.cp().process(zl).AddSyst(cb,
+    cb.cp().process(zl).channel({"et","mt"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
     
     cb.cp().process({"VVT","VVJ","VVTpass","VVTfail"}).AddSyst(cb,
@@ -225,32 +292,99 @@ int main(int argc, char** argv) {
     
     cb.cp().process({"TTT","TTJ","TTTpass","TTTfail"}).AddSyst(cb,
 					  "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
-    
-    cb.cp().process({"W"}).bin_id({1,3,5,7,9,11,13,15,17,19}).AddSyst(cb,
-                                                   "CMS_htt_W_Extrap_pass_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.1));
 
-    cb.cp().process({"W"}).bin_id({2,4,6,8,10,12,14,16,18,20}).AddSyst(cb,
-                                                   "CMS_htt_W_Extrap_fail_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.05));
-    
+
     cb.cp().process({"ZTT","ZTTpass","ZTTfail","ZL","ZJ"}).AddSyst(cb,
                                                        "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
-    if(!embed_yield_from_data){
-      cb.cp().process({"EmbedZTT","EmbedZTTpass","EmbedZTTfail"}).AddSyst(cb,
-                                                       "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
-    }
-
     
+    cb.cp().process({"W"}).channel({"tt"}).AddSyst(cb,
+                                                   "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));
+
     cb.cp().process({"ZTT","ZTTpass","ZTTfail","ZJ","ZL"}).AddSyst(cb,
                                              "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
     cb.cp().process({"TTJ","TTT","TTTpass","TTTfail"}).AddSyst(cb,
                                         "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
     
-    cb.cp().process({"QCD"}).bin_id({1,3,5,7,9,11,13,15,17,19}).AddSyst(cb,
-                                             "CMS_QCD_OSSS_pass_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.05));
-    cb.cp().process({"QCD"}).bin_id({2,4,6,8,10,12,14,16,18,20}).AddSyst(cb,
-                                             "CMS_QCD_OSSS_fail_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.05));
-
-
+    if(!ff_fracs){
+      cb.cp().process({"QCD"}).AddSyst(cb,
+                                             "CMS_QCD_OSSS_$CHANNEL_$BIN_$ERA", "lnN", SystMap<>::init(1.10));
+    
+      cb.cp().process({"W"}).AddSyst(cb,
+                                                   "CMS_htt_W_Extrap_$CHANNEL_$BIN_13TeV", "lnN", SystMap<>::init(1.10));    
+    } else {
+    
+      cb.cp().process({"QCD"}).channel({"et"}).bin_id({1,2}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_0JET_$ERA", "lnN", SystMap<>::init(1.21));
+      cb.cp().process({"QCD"}).channel({"et"}).bin_id({3,4}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_BOOSTED_$ERA", "lnN", SystMap<>::init(1.33));
+      cb.cp().process({"QCD"}).channel({"et"}).bin_id({5,6}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_DIJET_$ERA", "lnN", SystMap<>::init(1.48));
+      
+      cb.cp().process({"QCD"}).channel({"mt"}).bin_id({1,2}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_0JET_$ERA", "lnN", SystMap<>::init(1.1));
+      cb.cp().process({"QCD"}).channel({"mt"}).bin_id({3,4}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_BOOSTED_$ERA", "lnN", SystMap<>::init(1.1));
+      cb.cp().process({"QCD"}).channel({"mt"}).bin_id({5,6}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_DIJET_$ERA", "lnN", SystMap<>::init(1.1));
+      
+      
+      // based on the Ersatz study
+      cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1,2}).AddSyst(cb,
+                                           "WHighMTtoLowMT_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.033));
+      cb.cp().process({"W"}).channel({"et","mt"}).bin_id({3,4}).AddSyst(cb,
+                                           "WHighMTtoLowMT_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.067));
+      cb.cp().process({"W"}).channel({"et","mt"}).bin_id({5,6}).AddSyst(cb,
+                                           "WHighMTtoLowMT_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.182));
+      cb.cp().process({"W"}).channel({"et","mt"}).bin_id({5,6}).AddSyst(cb,
+                                           "WlowPTtoHighPT_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.279));
+      
+      // W OS/SS systematic uncertainties 
+      cb.cp().process({"W"}).channel({"et"}).bin_id({1,2}).AddSyst(cb,
+                                           "WOSSS_syst_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.002));
+      cb.cp().process({"W"}).channel({"et"}).bin_id({3,4}).AddSyst(cb,
+                                           "WOSSS_syst_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.029));
+      cb.cp().process({"W"}).channel({"et"}).bin_id({5,6}).AddSyst(cb,
+                                           "WOSSS_syst_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.131));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({1,2}).AddSyst(cb,
+                                           "WOSSS_syst_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.012));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({3,4}).AddSyst(cb,
+                                           "WOSSS_syst_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.049));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({5,6}).AddSyst(cb,
+                                           "WOSSS_syst_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.086));
+      
+      // W OS/SS statistical uncertainties
+      cb.cp().process({"W"}).channel({"et"}).bin_id({1,2}).AddSyst(cb,
+                                           "WOSSS_stat_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.035));
+      cb.cp().process({"W"}).channel({"et"}).bin_id({3,4}).AddSyst(cb,
+                                           "WOSSS_stat_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.026));
+      cb.cp().process({"W"}).channel({"et"}).bin_id({5,6}).AddSyst(cb,
+                                           "WOSSS_stat_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.082));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({1,2}).AddSyst(cb,
+                                           "WOSSS_stat_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.026));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({3,4}).AddSyst(cb,
+                                           "WOSSS_stat_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.020));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({5,6}).AddSyst(cb,
+                                           "WOSSS_stat_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.066));
+      
+    }  
+    
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({1,2}).AddSyst(cb,
+                                         "CMS_htt_QCD_0jet_1_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.02));
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({3,4}).AddSyst(cb,
+                                         "CMS_htt_QCD_boosted_1_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.04));
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({5}).AddSyst(cb,
+                                         "CMS_htt_QCD_dijet_lowboost_1_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.08));
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({6}).AddSyst(cb,
+                                         "CMS_htt_QCD_dijet_boosted_1_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.48));
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({7,8}).AddSyst(cb,
+                                         "CMS_htt_QCD_0jet_2_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.02));
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({9,10}).AddSyst(cb,
+                                         "CMS_htt_QCD_boosted_2_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.04));
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({11}).AddSyst(cb,
+                                         "CMS_htt_QCD_dijet_lowboost_2_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.08));
+    cb.cp().process({"QCD"}).channel({"tt"}).bin_id({12}).AddSyst(cb,
+                                         "CMS_htt_QCD_dijet_boosted_2_$CHANNEL_13TeV", "lnN", SystMap<>::init(1.48));
+    
             
     //! [part7]
     for (string chn : cb.channel_set()){
@@ -328,7 +462,7 @@ int main(int argc, char** argv) {
     ////! [part8]
     auto bbb = ch::BinByBinFactory()
     .SetAddThreshold(0.)
-    .SetMergeThreshold(0.4)
+    .SetMergeThreshold(0.)
     .SetFixNorm(false);
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
@@ -343,14 +477,36 @@ int main(int argc, char** argv) {
     // otherwise it will see "*" as the mass value for every object and skip it
     writer.SetWildcardMasses({});
     writer.SetVerbosity(1);
-    writer.WriteCards("mt_pass", cb.cp().channel({"mt"}).bin_id({1}));     
-    writer.WriteCards("mt_fail", cb.cp().channel({"mt"}).bin_id({2}));
-    writer.WriteCards("mt_combined", cb.cp().channel({"mt"}).bin_id({1,2}));
-    
-    writer.WriteCards("et_pass", cb.cp().channel({"et"}).bin_id({1}));
-    writer.WriteCards("et_fail", cb.cp().channel({"et"}).bin_id({2}));
-    writer.WriteCards("et_combined", cb.cp().channel({"et"}).bin_id({1,2}));
-    writer.WriteCards("combined", cb.cp().channel({"et","mt"}).bin_id({1,2}));
+    if(!ff_fracs){
+      writer.WriteCards("mt_pass", cb.cp().channel({"mt"}).bin_id({1}));     
+      writer.WriteCards("mt_fail", cb.cp().channel({"mt"}).bin_id({2}));
+      writer.WriteCards("mt_combined", cb.cp().channel({"mt"}).bin_id({1,2}));
+      
+      writer.WriteCards("et_pass", cb.cp().channel({"et"}).bin_id({1}));
+      writer.WriteCards("et_fail", cb.cp().channel({"et"}).bin_id({2}));
+      writer.WriteCards("et_combined", cb.cp().channel({"et"}).bin_id({1,2}));
+      writer.WriteCards("combined", cb.cp().channel({"et","mt"}).bin_id({1,2}));
+    } else {
+      for (auto chn : chns) {   
+        if(chn != "tt"){  
+          writer.WriteCards(chn+"_inclusive", cb.cp().channel({chn}).bin_id({1}));     
+          writer.WriteCards(chn+"_0jet", cb.cp().channel({chn}).bin_id({2}));
+          writer.WriteCards(chn+"_boosted_low", cb.cp().channel({chn}).bin_id({3}));
+          writer.WriteCards(chn+"_boosted_hi", cb.cp().channel({chn}).bin_id({4}));
+          writer.WriteCards(chn+"_dijet_lowboost", cb.cp().channel({chn}).bin_id({5}));
+          writer.WriteCards(chn+"_dijet_boosted", cb.cp().channel({chn}).bin_id({6}));
+        } else {
+          writer.WriteCards(chn+"_inclusive", cb.cp().channel({chn}).bin_id({1,7}));     
+          writer.WriteCards(chn+"_0jet", cb.cp().channel({chn}).bin_id({2,8}));
+          writer.WriteCards(chn+"_boosted_low", cb.cp().channel({chn}).bin_id({3,9}));
+          writer.WriteCards(chn+"_boosted_hi", cb.cp().channel({chn}).bin_id({4,10}));
+          writer.WriteCards(chn+"_dijet_lowboost", cb.cp().channel({chn}).bin_id({5,11}));
+          writer.WriteCards(chn+"_dijet_boosted", cb.cp().channel({chn}).bin_id({6,12}));
+        }
+        writer.WriteCards(chn+"_combined", cb.cp().channel({chn}).bin_id({2,3,4,5,6,8,9,10,11,12}));
+      }
+  
+    }
 
     cb.PrintAll();
     cout << " done\n";
