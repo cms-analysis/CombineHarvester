@@ -63,6 +63,25 @@ Or, for example, to just create a workspace for the Zee channel:
 **NOTE:** only use `*` for subdirectories. If you used e.g. `-i output/<output_folder>/Zee/*`, text2workspace would be called successively on every file in the Zee folder, including the
 just-created workspace which leads to problems. 
 
+##Setting up combinations
+### Run1 + 2016 + 2017 combination
+Make directory output/cmb-run1run2
+Copy into this directory:
+- The contents of a freshly set up 2017 cmb directory
+- The contents of a freshly set up 2016 cmb directory (or if not available, take the inputs in shapes/HIG16044)
+- The Run1 inputs from shapes/7and8TeV
+
+Make the workspace:
+
+`combineTool.py -M T2W -o "ws_masked.root" -i output/cmb-run1run2/ --channel-masks`
+
+Generate a toy using the CR-only-postfit values of nuisance parameters:
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_1_13TeV2017=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zmm_2_13TeV2017=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_1_13TeV2017=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Zee_2_13TeV2017=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wen_1_13TeV2017=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Wmn_1_13TeV2017=1,mask_vhbb_Znn_1_13TeV=1,mask_vhbb_Znn_1_13TeV2017=1,mask_vhbb_7plus8TeV_vhbb_Wln_7TeV_legacy_ch1_Wenu=1,mask_vhbb_7plus8TeV_vhbb_Wln_7TeV_legacy_ch1_Wenu2=1,mask_vhbb_7plus8TeV_vhbb_Wln_7TeV_legacy_ch2_Wmunu=1,mask_vhbb_7plus8TeV_vhbb_Wln_7TeV_legacy_ch2_Wmunu2=1,mask_vhbb_7plus8TeV_vhbb_Wln_8TeV_legacy_ch1_Wenu=1,mask_vhbb_7plus8TeV_vhbb_Wln_8TeV_legacy_ch1_Wenu2=1,mask_vhbb_7plus8TeV_vhbb_Wln_8TeV_legacy_ch1_Wenu3=1,mask_vhbb_7plus8TeV_vhbb_Wln_8TeV_legacy_ch2_Wmunu=1,mask_vhbb_7plus8TeV_vhbb_Wln_8TeV_legacy_ch2_Wmunu2=1,mask_vhbb_7plus8TeV_vhbb_Wln_8TeV_legacy_ch2_Wmunu3=1,mask_vhbb_7plus8TeV_vhbb_Wtn_8TeV_legacy=1,mask_vhbb_7plus8TeV_vhbb_Zll_7TeV_legacy_card1=1,mask_vhbb_7plus8TeV_vhbb_Zll_7TeV_legacy_card2=1,mask_vhbb_7plus8TeV_vhbb_Zll_7TeV_legacy_card3=1,mask_vhbb_7plus8TeV_vhbb_Zll_7TeV_legacy_card4=1,mask_vhbb_7plus8TeV_vhbb_Zll_8TeV_legacy_ch1=1,mask_vhbb_7plus8TeV_vhbb_Zll_8TeV_legacy_ch3=1,mask_vhbb_7plus8TeV_vhbb_Zll_8TeV_legacy_ch4=1,mask_vhbb_7plus8TeV_vhbb_Znn_7TeV_legacy_ch1=1,mask_vhbb_7plus8TeV_vhbb_Znn_7TeV_legacy_ch2=1,mask_vhbb_7plus8TeV_vhbb_Znn_8TeV_legacy_ZnunuHighPt_8TeV=1,mask_vhbb_7plus8TeV_vhbb_Znn_8TeV_legacy_ZnunuLowPt_8TeV=1,mask_vhbb_7plus8TeV_vhbb_Znn_8TeV_legacy_ZnunuMedPt_8TeV=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/cmb-run1run2/ws_masked.root`
+
+Calculate the expected significance:
+`combineTool.py -M Significance --significance -d output/cmb-run1run2/ws_masked.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
+
+
 ## Fits
 ### Signal strength (without uncertainty):
 Pre-fit:  
