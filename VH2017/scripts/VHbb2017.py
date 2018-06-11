@@ -16,6 +16,18 @@ def adjust_shape(proc,nbins):
     new_hist.SetBinContent(i,0.)
   proc.set_shape(new_hist,True)
 
+def drop_zero_procs(chob,proc):
+  null_yield = not (proc.rate() > 0.)
+  if(null_yield):
+    chob.FilterSysts(lambda sys: matching_proc(proc,sys)) 
+  return null_yield
+
+def matching_proc(p,s):
+  return ((p.bin()==s.bin()) and (p.process()==s.process()) and (p.signal()==s.signal()) 
+         and (p.analysis()==s.analysis()) and  (p.era()==s.era()) 
+         and (p.channel()==s.channel()) and (p.bin_id()==s.bin_id()) and (p.mass()==s.mass()))
+  
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -156,7 +168,7 @@ for chn in chns:
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], bkg_procs[chn], cats[chn], False)
   cb.AddProcesses( ['*'], ['vhbb'], ['13TeV'], [chn], sig_procs[chn], cats[chn], True)
 
-cb.FilterProcs(lambda x: x.bin_id()==7 and x.channel()=='Znn' and x.process()=='Zj1b')
+#cb.FilterProcs(lambda x: x.bin_id()==7 and x.channel()=='Znn' and x.process()=='Zj1b')
 cb.FilterProcs(lambda x: x.bin_id()==1 and x.channel()=='Znn' and x.process()=='QCD')
 
 systs.AddCommonSystematics(cb)
@@ -172,18 +184,6 @@ elif args.bbb_mode==1:
   cb.AddDatacardLineAtEnd("* autoMCStats 0")
 
 
-##cb.SetGroup('allparams',['.*'])
-##cb.SetGroup('signal_xs',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*'])
-##cb.SetGroup('bkg_xs',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST'])
-##cb.SetGroup('sim_modelling',['.*LHE_weights.*','CMS_vhbb_ptwweights.*'])
-##cb.SetGroup('jes',['CMS_scale_j.*'])
-##cb.SetGroup('jer',['CMS_res_j.*'])
-##cb.SetGroup('b_eff',['.*bTagWeightJES','.*bTagWeightHFStats.*','.*bTagWeightLF'])
-##cb.SetGroup('b_fake',['.*bTagWeightLFStats.*','.*bTagWeightHF','.*bTagWeightcErr.*'])
-##cb.SetGroup('lumi',['lumi_13TeV'])
-##cb.SetGroup('rateparams',['SF.*'])
-#cb.SetGroup('lep_eff',[''])
-#cb.SetGroup('met_uncl',[''])
 
 for chn in chns:
   file = shapes + input_folders[chn] + "/vhbb_"+chn+"-"+year+".root"
@@ -200,10 +200,33 @@ for chn in chns:
       file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
 
 
+
+cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
+
+cb.SetGroup('allparams',['.*'])
+cb.SetGroup('signal_xs',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*'])
+cb.SetGroup('bkg_xs',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST'])
+cb.SetGroup('sim_modelling',['.*LHE_weights.*','CMS_vhbb_ptwweights.*'])
+cb.SetGroup('jes',['CMS_scale_j.*'])
+cb.SetGroup('jer',['CMS_res_j.*'])
+cb.SetGroup('b_eff',['.*bTagWeightJES','.*bTagWeightHFStats.*','.*bTagWeightLF'])
+cb.SetGroup('b_fake',['.*bTagWeightLFStats.*','.*bTagWeightHF','.*bTagWeightcErr.*'])
+cb.SetGroup('lumi',['lumi_13TeV'])
+cb.SetGroup('rateparams',['SF.*'])
+#cb.SetGroup('lep_eff',[''])
+#cb.SetGroup('met_uncl',[''])
+
+
+
 #To rename processes:
 #cb.cp().ForEachObj(lambda x: x.set_process("WH_lep") if x.process()=='WH_hbb' else None)
 
 rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMode(1).SetPerformRebin(True).SetVerbosity(1)
+
+#binning=np.linspace(0.2,1.0,num=13)
+#print binning
+
+#cb.cp().bin_id([3,4,5,6,7,8]).VariableRebin(binning)
 
 if args.auto_rebin:
   rebin.Rebin(cb, cb)
