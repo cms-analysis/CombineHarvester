@@ -41,9 +41,9 @@ parser.add_argument(
 parser.add_argument(
  '--zero_out_low', action='store_true', help="""Zero-out lowest SR bins (purely for the purpose of making yield tables""")
 parser.add_argument(
- '--Zmm_fwk', default='Xbb', help="""Framework the Zmm inputs were produced with. Supported options: 'Xbb', 'AT'""")
+ '--Zmm_fwk', default='AT', help="""Framework the Zmm inputs were produced with. Supported options: 'Xbb', 'AT'""")
 parser.add_argument(
- '--Zee_fwk', default='Xbb', help="""Framework the Zee inputs were produced with. Supported options: 'Xbb', 'AT'""")
+ '--Zee_fwk', default='AT', help="""Framework the Zee inputs were produced with. Supported options: 'Xbb', 'AT'""")
 parser.add_argument(
  '--Wmn_fwk', default='AT', help="""Framework the Wmn inputs were produced with. Supported options: 'Xbb', 'AT'""")
 parser.add_argument(
@@ -226,7 +226,7 @@ rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMod
 #binning=np.linspace(0.2,1.0,num=13)
 #print binning
 
-#cb.cp().bin_id([3,4,5,6,7,8]).VariableRebin(binning)
+#cb.cp().bin_id([3,4,5,6,7,8]).ZeroBins(0.,0.5)
 
 if args.auto_rebin:
   rebin.Rebin(cb, cb)
