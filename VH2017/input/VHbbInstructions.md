@@ -92,11 +92,26 @@ Post-fit:
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
 
 ### Signal strength (with reasonably accurate uncertainty)
-Pre-fit:  
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles`
+Pre-fit expected[*]:  
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1`
+
+Post-fit expected:  
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist`
 
 Post-fit:  
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles`
+
+[*]Pre-fit expected with control regions unblind.
+First we need to create a new workspace, set up for channel masking:
+
+`combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/* --channel-masks`
+
+This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
+We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
+
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
+
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_masked.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist` --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
 
 ### Significance:
 Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`\
@@ -116,7 +131,7 @@ We will use this to generate a toy in which the nuisance parameters are set to t
 `combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
 
 Now continue as with post-fit expected significance:
-`combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
+`combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws_masked.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
 
 
 ## Pre- and post-fit plots
@@ -142,12 +157,14 @@ To make pre- and post fit plots of the CMVA distributions in the CR:\
 `combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/cmb --channel-masks`
 
 Run maximum likelihood fit, masking the SR from the likelihood:
-`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws_masked.root --there --cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -n .SRMasked `
+`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws_masked.root --there --cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r=0 -n .SRMasked --redefineSignalPOIs SF_TT_Wln_2017 --freezeParameters r`
+
+Note we are just promoting SF_TT_Wln_2017 to be the POI so that we can freeze r to 0 in the fit and then later, when running PostFitShapesFromWorkspace, freeze r back to 1. If we do not do this we are forced to use the b-only fit, where r just does not exist.
 
 create the post-fit shapes with uncertainties from the datacard and the MLFit:
 *Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense.
 
-`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print  --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.SRMasked.root:fit_b`
+`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws_masked.root -o shapes.root --print --freeze r=1 --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.SRMasked.root:fit_s`
 
 To make pre- and post fit plots of the BDT distributions in the SR:
 `python scripts/makePostFitPlots<year>.py`
