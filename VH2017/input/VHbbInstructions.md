@@ -203,7 +203,7 @@ Make workspace with separate r_ZH/r_WH:
 `combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_proc.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=.*/.*ZH_hbb:r_ZH[1,0,5]' --PO 'map=.*/WH_hbb:r_WH[1,0,5]' `
 
 Make workspace with separate r for 0,1 and 2 lepton channels:
-`combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_channel.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=vhbb_Zee_.*_13TeV/.*H_hbb:r_twolep[1,0,5]' --PO 'map = vhbb_Zmm_.*_13TeV/.*H_hbb:r_twolep[1,0,5]' --PO 'map=vhbb_Znn_.*_13TeV/.*H_hbb:r_zerolep[1,-2,5]' --PO 'map=vhbb_Wen_.*_13TeV/.*H_hbb:r_onelep[1,0,5]' --PO 'map=vhbb_Wmn_.*_13TeV/.*H_hbb:r_onelep[1,0,5]' `
+`combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_channel.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=vhbb_Zee_.*/.*H_hbb:r_twolep[1,0,5]' --PO 'map=vhbb_Zmm_.*/.*H_hbb:r_twolep[1,0,5]' --PO 'map=vhbb_Znn_.*/.*H_hbb:r_zerolep[1,-2,5]' --PO 'map=vhbb_Wen_.*/.*H_hbb:r_onelep[1,0,5]' --PO 'map=vhbb_Wmn_.*/.*H_hbb:r_onelep[1,0,5]' `
 
 Now we need to run MultiDimFit to get the best-fit value and uncertainty for each separate signal strength, as well as the combined signal strength:
 
@@ -235,42 +235,58 @@ Now make the plot:
 
 `./scripts/plotCCC.py -i MultiDimFit_cc.json -o cccPlot`
 
-### Channel compatibility (pre fit)
+### Channel compatibility (pre fit with CRs unblind)
+Make a regular workspace with channel masks if it does not already exist:
+
+`combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/* --channel-masks`
+
 Make workspace with separate r_ZH/r_WH:
 
-`combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_proc.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=.*/.*ZH_hbb:r_ZH[1,0,5]' --PO 'map=.*/WH_hbb:r_WH[1,0,5]' `
+`combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_proc.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=.*/.*ZH_hbb:r_ZH[1,0,5]' --PO 'map=.*/WH_hbb:r_WH[1,0,5]' --channel-masks `
 
 Make workspace with separate r for 0,1 and 2 lepton channels:
-`combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_channel.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=vhbb_Zee_.*_13TeV/.*H_hbb:r_twolep[1,0,5]' --PO 'map = vhbb_Zmm_.*_13TeV/.*H_hbb:r_twolep[1,0,5]' --PO 'map=vhbb_Znn_.*_13TeV/.*H_hbb:r_zerolep[1,-2,5]' --PO 'map=vhbb_Wen_.*_13TeV/.*H_hbb:r_onelep[1,0,5]' --PO 'map=vhbb_Wmn_.*_13TeV/.*H_hbb:r_onelep[1,0,5]' `
+`combineTool.py -M T2W -i output/<output_folder>/cmb/ -o "ws_channel.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=vhbb_Zee_.*/.*H_hbb:r_twolep[1,0,5]' --PO 'map = vhbb_Zmm_.*/.*H_hbb:r_twolep[1,0,5]' --PO 'map=vhbb_Znn_.*/.*H_hbb:r_zerolep[1,-2,5]' --PO 'map=vhbb_Wen_.*/.*H_hbb:r_onelep[1,0,5]' --PO 'map=vhbb_Wmn_.*/.*H_hbb:r_onelep[1,0,5]' --channel-masks `
 
-Now we need to run MultiDimFit to get the best-fit value and uncertainty for each separate signal strength, as well as the combined signal strength:
+
+
+Now generate toys for each workspace:
+```
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root
+
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_ZH=1,r_WH=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_proc.root -n .ToyPerProc
+
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_zerolep=1,r_onelep=1,r_twolep=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_channel.root -n .ToyPerChn
 
 ```
-combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --cminDefaultMinimizerStrategy 0 --algo singles -n .cmb --expectSignal 1 -t -1
-combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_ZH -n .ZH --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal 1 -t -1
-combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_WH -n .WH --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1
 
-combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_zerolep -n .zerolep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1
-combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_onelep -n .onelep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1
-combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_channel.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_twolep -n .twolep --algo singles --cminDefaultMinimizerStrategy 0 --expectSignal -t -1
+Now we need to run MultiDimFit to get the best-fit value and uncertainty for each separate signal strength, as well as the combined signal strength:
+```
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --cminDefaultMinimizerStrategy 0 --algo singles -n .cmb -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --there
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_ZH -n .ZH --algo singles --cminDefaultMinimizerStrategy 0 -t -1 --toysFrequentist --toysFile higgsCombine.ToyPerProc.GenerateOnly.mH120.123456.root --there
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_ZH=1,r_WH=1 --redefineSignalPOIs r_WH -n .WH --algo singles --cminDefaultMinimizerStrategy 0 -t -1 --toysFrequentist --toysFile higgsCombine.ToyPerProc.GenerateOnly.mH120.123456.root --there
+
+
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_zerolep -n .zerolep --algo singles --cminDefaultMinimizerStrategy 0 -t -1 --toysFrequentist --toysFile higgsCombine.ToyPerChn.GenerateOnly.mH120.123456.root --there
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_onelep -n .onelep --algo singles --cminDefaultMinimizerStrategy 0 -t -1 --toysFrequentist --toysFile higgsCombine.ToyPerChn.GenerateOnly.mH120.123456.root --there
+combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_proc.root --setParameters r_zerolep=1,r_onelep=1,r_twolep=1 --redefineSignalPOIs r_twolep -n .twolep --algo singles --cminDefaultMinimizerStrategy 0 -t -1 --toysFrequentist --toysFile higgsCombine.ToyPerChn.GenerateOnly.mH120.123456.root --there
 ```
 
 Next we want to collect all of the fit results in a single json file:
 
 ```
-combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r -i higgsCombine.cmb.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r -i output/<output_folder>/cmb/higgsCombine.cmb.MultiDimFit.mH120.root --algo singles
 
-combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_ZH -i higgsCombine.ZH.MultiDimFit.mH120.root --algo singles
-combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_WH -i higgsCombine.WH.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_ZH -i output/<output_folder>/cmb/higgsCombine.ZH.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_WH -i output/<output_folder>/cmb/higgsCombine.WH.MultiDimFit.mH120.root --algo singles
 
-combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_zerolep -i higgsCombine.zerolep.MultiDimFit.mH120.root --algo singles
-combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_onelep -i higgsCombine.onelep.MultiDimFit.mH120.root --algo singles
-combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_twolep -i higgsCombine.twolep.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_zerolep -i output/<output_folder>/cmb/higgsCombine.zerolep.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_onelep -i output/<output_folder>/cmb/higgsCombine.onelep.MultiDimFit.mH120.root --algo singles
+combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_twolep -i output/<output_folder>/cmb/higgsCombine.twolep.MultiDimFit.mH120.root --algo singles
 ```
 
 Now make the plot:
 
-`./scripts/plotCCC.py -i MultiDimFit_cc.json -o cccPlot`
+`./scripts/plotCCC.py -i MultiDimFit_ccc.json -o cccPlot`
 
 
 ### S-over-B ordered plot
@@ -325,7 +341,8 @@ combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits 
 
 We can submit these fits to a batch system too, by adding:  
 (lxbatch): `--job-mode lxbatch --sub-opts '-q <queuename>' --merge 10`  
-(condor):  `--job-mode condor --sub-opts --sub-opts='+JobFlavour = "workday"'  
+(condor):  `--job-mode condor --sub-opts='+JobFlavour = "workday"' ` 
+
 `--merge N` runs N of the fits in the same job, these fits can take a long time so --merge 5 is probably reasonable. 
 
 Collecting the results in a json file: 
