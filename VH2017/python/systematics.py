@@ -325,7 +325,7 @@ def AddSystematics2017(cb):
   cb.cp().AddSyst(cb,
       'CMS_scale_j_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and (x.channel()=='Zee' or x.channel()=='Zmm') and x.name()=='CMS_scale_j_13TeV')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_scale_j_13TeV')
 
 #  cb.cp().AddSyst(cb,
 #      'CMS_scale_j_PileUpDataMC_13TeV','shape',ch.SystMap()(1.0))
