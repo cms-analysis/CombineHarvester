@@ -92,7 +92,7 @@ parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in forma
 parser.add_argument('--no_signal', action='store_true',help='Do not draw signal')
 parser.add_argument('--x_title', default='BDT output',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
-parser.add_argument('--lumi', default='41.5 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--lumi', default='41.3 fb^{-1} (13 TeV)',help='Lumi label')
 parser.add_argument('--cr', default=False, action='store_true', help='Plot CRs? (Important for QCD in 0-lep')
 
 
