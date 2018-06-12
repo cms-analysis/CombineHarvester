@@ -68,8 +68,8 @@ parser.add_argument('--file', '-f',help='Input file if shape file has already be
 #General plotting options
 parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio plot')
 parser.add_argument('--custom_x_range', help='Fix x axis range', action='store_true', default=False)
-parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=0.0)
-parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
+parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=-2.)
+parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=0.)
 parser.add_argument('--custom_y_range', help='Fix y axis range', action='store_true', default=False)
 parser.add_argument('--y_axis_min',  help='Fix y axis minimum', default=1)
 parser.add_argument('--y_axis_max',  help='Fix y axis maximum', default=100000.0)
@@ -80,7 +80,7 @@ parser.add_argument('--outname',default='sbordered',help='Output plot name')
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.5,1.5")
 parser.add_argument('--x_title', default='log_{10}(S/B)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
-parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--lumi', default='77.2 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
@@ -173,8 +173,8 @@ splusbhist.SetLineColor(0)
 splusbhist.SetMarkerSize(0)
 splusbhist.SetFillStyle(3994)
 splusbhist.DrawCopy("e2same")
-total_datahist.SetMarkerStyle(20)
-total_datahist.Draw("PSAME")
+#total_datahist.SetMarkerStyle(20)
+#total_datahist.Draw("PSAME")
 
 #Setup legend
 legend = plot.PositionedLegend(0.48,0.10,3,0.03)
@@ -182,7 +182,7 @@ plot.Set(legend, NColumns=2)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
 legend.SetFillColor(0)
-legend.AddEntry(total_datahist,"Observation","PE")
+#legend.AddEntry(total_datahist,"Observation","PE")
 legend.AddEntry(bkghist, "Background", "f")
 legend.AddEntry(sighist, "VH(b#bar{b})","f")
 legend.AddEntry(splusbhist, "Background uncertainty","f")
@@ -192,7 +192,7 @@ legend.Draw("same")
 
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
-plot.DrawCMSLogo(pads[0], 'CMS', '', 11, 0.045, 0.05, 1.0, '', 1.0)
+plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], args.lumi, 3)
 
 
@@ -214,7 +214,7 @@ if args.ratio:
   axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
   ratio_bkghist.SetMarkerSize(0)
   ratio_bkghist.DrawCopy("e2same")
-  ratio_datahist.Draw("e0same")
+  #ratio_datahist.Draw("e0same")
   ratio_sighist.Draw("histsame")
   pads[1].RedrawAxis("G")
 

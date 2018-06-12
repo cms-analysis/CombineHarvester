@@ -17,7 +17,7 @@ for MODE in ['prefit','postfit']:
               OUTNAME = "%s" % CHN_DICT_SR[CHN][i][0]
               XAXIS = "%s" % CHN_DICT_SR[CHN][i][2]
               os.system(('./scripts/postFitPlot.py' \
-                  ' --file=shapes_sr.root --ratio --extra_pad=0.53 --file_dir=%(OUTNAME)s ' \
+                  ' --file=shapes.root --ratio --extra_pad=0.53 --file_dir=%(OUTNAME)s ' \
                   ' --ratio_range 0.4,1.6 --empty_bin_error --channel=%(CHN)s --blind' \
                   ' --outname %(OUTNAME)s --mode %(MODE)s --log_y --custom_y_range --y_axis_min "1E-2" '\
                   ' --channel_label "%(LABEL)s" --x_title "%(XAXIS)s" ' % vars()))

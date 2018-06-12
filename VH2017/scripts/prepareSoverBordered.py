@@ -63,11 +63,11 @@ f_fit = ROOT.TFile(args.fitresult)
 fitresult = f_fit.Get('fit_s')
 
 cb_man.UpdateParameters(fitresult)
-cb_man.bin(['vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
+cb_man.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV','vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
  
 #Now let's parse the original full combined datacard that we want to manipulate
 cb.ParseDatacard(args.datacard,"vhbb","13TeV","")
-cb.bin(['vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
+cb.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV','vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
 
 xbins = [-4,-2.25,-1.75,-1.5,-1.25,-1.0,-0.75,-0.5,0]
 reorder_hist = ROOT.TH1F('reorder_hist','reorder_hist',8,array('d',xbins))
@@ -76,14 +76,19 @@ bkg_hist =  ROOT.TH1F()
 sig_hist = ROOT.TH1F()
 
 for b in cb_man.bin_set():
+  print b
   cb_man_bin = cb_man.cp().bin([b])
   bkg_hist = cb_man.cp().bin([b]).backgrounds().GetShape()
   sig_hist = cb_prefit.cp().bin([b]).signals().GetShape()
   bin_dict[b] = {}
   for i in range(1,bkg_hist.GetNbinsX()+1):
+    print i
     c_sig = sig_hist.GetBinContent(i)
     c_bkg = bkg_hist.GetBinContent(i)
-    c_sb = c_sig/c_bkg
+    if c_sig==0 and c_bkg==0:
+      c_sb=0
+    else:
+      c_sb = c_sig/c_bkg
     if c_sb == 0:
       bin_id = 0
     else :
@@ -98,8 +103,8 @@ for b in cb.bin_set():
   cb.cp().bin([b]).ForEachSyst(lambda x : ReorderBinSystematic(x,bin_dict[b],xbins))
 
 
-output = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/VH2017/output/vhbb_sbordered/'
-writer=ch.CardWriter(output+"vhbb_2017.txt",
+output = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/VH2017/output/vhbb_sbordered_12jun/'
+writer=ch.CardWriter(output+"vhbb_20162017.txt",
                       output+ "vhbb_input.root")
 writer.SetWildcardMasses([])
 writer.SetVerbosity(1);

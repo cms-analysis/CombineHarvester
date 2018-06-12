@@ -294,21 +294,33 @@ Now make the plot:
 **Note: at the moment this is set up for 2017 only. Can adapt as needed**
 
 As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.  
-First we need to set up some datacards with the bins re-ordered according to (pre-fit S)/(post-fit B) 
+For 2016+2017 for now we use the contents of a fresh 2017 cmb directory + HIG16044 (from the shapes directory). Put the results in a combined directory output/cmb-sbordered/
 
-`./scripts/prepareSoverBordered.py -w output/<original_output_folder>/cmb/ws.root -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root -d output/<original_output_folder>/cmb/combined.txt.cmb`
+First make the workspace
 
-This writes out S/B ordered datacards for the SR categories only to output/vhbb_sbordered/vhbb_2017.txt
+`combineTool.py -M T2W -o "ws_masked.root" -i output/cmb-sbordered/ --channel-masks`
+
+And run FitDiagnostics (note: have to check that the covariance matrix is accurate):
+
+`combineTool.py -M FitDiagnostics -m 125 -d output/cmb-for-sbordered/ws_masked.root --there --cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_1_13TeV2017=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zmm_2_13TeV2017=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_1_13TeV2017=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Zee_2_13TeV2017=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wen_1_13TeV2017=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Wmn_1_13TeV2017=1,mask_vhbb_Znn_1_13TeV=1,mask_vhbb_Znn_1_13TeV2017=1,r=0 -n .SRMasked --redefineSignalPOIs SF_TT_Wln_2017 --freezeParameters r`
+
+Now we need to set up some datacards with the bins re-ordered according to (pre-fit S)/(post-fit B) 
+
+`python ./scripts/prepareSoverBordered.py -w output/cmb-for-sbordered/ws_masked.root -f output/cmb-for-sbordered/fitDiagnostics.SRMasked.root -d output/cmb-for-sbordered/combined.txt.cmb`
+
+This writes out S/B ordered datacards for the SR categories only to output/vhbb_sbordered_12jun/vhbb_20162017.txt
 
 Make the workspace for these cards:
-`combineTool.py -M T2W -o "ws.root" -i output/vhbb_sbordered/ `
+`combineTool.py -M T2W -o "ws.root" -i output/vhbb_sbordered_12jun/ `
 
 Now we need to run PostFitShapesFromWorkspace on the new S/B ordered workspace we have just made, using the RooFit result we have been using all along:
 
-`PostFitShapesFromWorkspace -d output/vhbb_sbordered/vhbb_2017.txt -w output/vhbb_sbordered/ws.root -o shapes.root --postfit --sampling -f output/<original_output_folder>/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
+`PostFitShapesFromWorkspace -d output/vhbb_sbordered_12jun/vhbb_20162017.txt -w output/vhbb_sbordered_12jun/ws.root -o shapes_sbordered.root --postfit --sampling -f output/cmb-for-sbordered/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
 
 To make the plot:
-`./scripts/plotSoverBordered.py -f shapes.root --log_y --custom_y_range --ratio`
+`./scripts/plotSoverBordered.py -f shapes_sbordered.root --log_y --custom_y_range --ratio`
+
+Note: for now this will NOT plot the data, it is commented in the plotting script.
 
 ### S/(S+B) weighted plot
 a-la-HIG-16-044 we would need multiple steps. First we have to extract S/(S+B) weights from the existing model:
