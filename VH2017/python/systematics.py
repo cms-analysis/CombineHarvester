@@ -493,6 +493,14 @@ def AddSystematics2016(cb):
   
   cb.cp().channel(['Wmn','Wen','Zee','Zmm']).process(['Wj2b']).AddSyst(cb,
       'CMS_LHE_weights_scale_muF_Wj2b','shape',ch.SystMap()(1.0))
+
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muF_Wj0b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muR_Wj0b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muF_Wj1b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muR_Wj1b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muF_Wj2b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muR_Wj2b')
+
   
   cb.cp().channel(['Wmn','Wen','Zee','Zmm']).process(['TT']).AddSyst(cb,
       'CMS_LHE_weights_scale_muR_TT','shape',ch.SystMap()(1.0))

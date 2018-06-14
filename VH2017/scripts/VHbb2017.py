@@ -203,18 +203,16 @@ for chn in chns:
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
 
-cb.SetGroup('allparams',['.*'])
-cb.SetGroup('signal_xs',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*'])
-cb.SetGroup('bkg_xs',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST'])
-cb.SetGroup('sim_modelling',['.*LHE_weights.*','CMS_vhbb_ptwweights.*'])
+cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
+cb.SetGroup('bkg_theory',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST','.*LHE_weights.*TT.*','.*LHE_weights.*VV.*','.*LHE_weights.*Zj0b.*','LHE_weights.*Zj1b.*','LHE_weights.*Zj2b.*','LHE_weights.*Wj0b.*','LHE_weights.*Wj1b.*','LHE_weights.*Wj2b.*','LHE_weights.*s_Top.*','LHE_weights.*QCD.*'])
+cb.SetGroup('sim_modelling',['CMS_vhbb_ptwweights.*'])
 cb.SetGroup('jes',['CMS_scale_j.*'])
 cb.SetGroup('jer',['CMS_res_j.*'])
-cb.SetGroup('b_eff',['.*bTagWeightJES','.*bTagWeightHFStats.*','.*bTagWeightLF'])
-cb.SetGroup('b_fake',['.*bTagWeightLFStats.*','.*bTagWeightHF','.*bTagWeightcErr.*'])
-cb.SetGroup('lumi',['lumi_13TeV'])
-cb.SetGroup('rateparams',['SF.*'])
-#cb.SetGroup('lep_eff',[''])
-#cb.SetGroup('met_uncl',[''])
+cb.SetGroup('btag',['.*bTagWeight.*JES.*','.*bTagWeight.*HFStats.*','.*bTagWeight.*LF_.*','.*bTagWeight.*cErr.*'])
+cb.SetGroup('mistag',['.*bTagWeight.*LFStats.*','.*bTagWeight.*HF_.*'])
+cb.SetGroup('lumi',['lumi_13TeV','.*puWeight.*'])
+cb.SetGroup('lep_eff',['.*eff_e.*','.*eff_m.*'])
+cb.SetGroup('met',['.*MET.*'])
 
 
 
