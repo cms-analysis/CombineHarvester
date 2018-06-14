@@ -415,19 +415,36 @@ python ../CombineTools/scripts/plotGof.py --statistic saturated --mass 125.0 -o 
 
 ## Freezing groups of nuisances
 To determine the effect of addition or removal of a group of nuisances on the signal strength. The nuisance groups are defined in VH2017.py, search for `SetGroup`. Note that a group for the bin-by-bin parameters has to be created during the text2workspace step and cannot be defined at the datacard making stage. You will need to merge this PR: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/478 to be able to do this. The group is called autoMCStats.
-Given the groups defined in VHbb2017.py at the moment of writing these instructions: allparams, signal_xs, bkg_xs, sim_modelling, jes, jer, b_eff, b_Fake, lumi, rateparams
+With that in hand the groups defined now are: signal_theory, bkg_theory, sim_modelling, jes, jer, btag, mistag, lumi, lep_eff, met, autoMCStats.
 
-Removal of group rateparams
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles --freezeNuisanceGroups rateparams `
+### Effect of addition/removal of nuisance parameters (SR blind)
 
-The result of this needs to be compared with a fit with all nuisances:
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles `
+First we need to generate the usual toy:
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
 
-Addition of group rateparams:
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles --freezeNuisanceGroups signal_xs,bkg_xs,sim_modelling,jes,jer,b_eff,b_Fake,lumi,autoMCStats `
+Now we need to run the nominal fit and save a snapshot with the best-fit values of the parameters:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_masked.root --there --cminDefaultMinimizerStrategy 0  -t -1 --expectSignal 1 --toysFrequentist --saveWorkspace -n .snapshot --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root `
 
-Which should be compared with:
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles --freezeNuisances all `
+#### Removal of a group of nuisances
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/higgsCombine.snapshot.MultiDimFit.mH120.123456.root --cminDefaultMinimizerStrategy 0 --snapshotName MultiDimFit --algo singles -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --freezeNuisanceGroups <groupname> --there -n .freeze<groupname> --robustFit 1 `
+
+This should be compared with the total uncertainty:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/higgsCombine.snapshot.MultiDimFit.mH120.123456.root --cminDefaultMinimizerStrategy 0 --snapshotName MultiDimFit --algo singles -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --there -n .freeze<groupname> --robustFit 1 ` (note: we do not technically need the snapshot etc. here, but it also does not hurt to do it)
+
+The effect of the removal of this group on the uncertainty is then: sqrt((total uncertainty)^2 - (uncertainty with frozen group)^2)
+#### Addition of a group of nuisances
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/higgsCombine.snapshot.MultiDimFit.mH120.123456.root --cminDefaultMinimizerStrategy 0 --snapshotName MultiDimFit --algo singles -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --freezeNuisanceGroups ^<groupname> --there -n .nofreeze<groupname> --robustFit 1 ` NOTE THE '^', this means 'freeze everything apart from this nuisance'.
+
+This should be compared with the uncertainty with all nuisances frozen:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/higgsCombine.snapshot.MultiDimFit.mH120.123456.root --cminDefaultMinimizerStrategy 0 --snapshotName MultiDimFit --algo singles -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --there --freezeParameters all -n .freezeall --robustFit 1 `
+
+The effect of addition of this group on the uncertainty is sqrt((uncertainty without frozen group)^2-(uncertainty with all params frozen)^2).
+
+
+With that in hand the groups defined now are: signal_theory, bkg_theory, sim_modelling, jes, jer, btag, mistag, lumi, lep_eff, met, autoMCStats.
+
+A handy thing we can do is to run everything in one go just generating the fits separately and running it in the background, or submitting to the batch/condor once the fit starts taking longer:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/higgsCombine.snapshot.MultiDimFit.mH120.123456.root --cminDefaultMinimizerStrategy 0 --snapshotName MultiDimFit --algo singles -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --there --robustFit 1 --generate 'freezeNuisanceGroups;n;;!,fr.nominal;signal_theory,fr.signaltheory;bkg_theory,fr.bkgtheory;sim_modelling,fr.modelling;jes,fr.jes;jer,fr.jer;btag,fr.btag;mistag,fr.mistag;lumi,fr.lumi;lep_eff,fr.lep_eff;met,fr.met;autoMCStats,fr.autoMCStats;^signal_theory,nofr.signaltheory;^bkg_theory,nofr.bkgtheory;^sim_modelling,nofr.modelling;^jes,nofr.jes;^jer,nofr.jer;^btag,nofr.btag;^mistag,nofr.mistag;^lumi,nofr.lumi;^lep_eff,nofr.lep_eff;^met,nofr.met;^autoMCStats,nofr.autoMCStats'
 
 
 ## Diagnostic tools
