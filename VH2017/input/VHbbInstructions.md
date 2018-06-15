@@ -4,6 +4,16 @@ This file collects instructions for producing the statistical results for the VH
 
 http://cms-analysis.github.io/CombineHarvester/
 
+## Important points to remember
+[15/06/18]
+Analysis is still blind, please use the CR-only-postfit versions of the commands below.
+In the previous version of 2016 cards some of the uncertainties had to be excluded for some of the regions because there were problems with the shapes. Once this is fixed please enable the uncertainties again (in python/systematics.py). It concerns the JER, and a few of the LHE_scale_weight uncertainties.
+In the previous version of the 2017 cards no factorised JECs were present. Please enable them again, along with the JER, and disable the inclusive JEC.
+MET unclustered energy needs to be added when it is in the input histograms, both for 2016 and 2017 (only affects 1-lep and 0-lep).
+Split b-tagging uncertainties also need to be included when in the cards.
+Some instructions for adding/disabling systematics, renaming them if needed for the combination, and more can be found at the bottom of this page.
+
+
 ## Setting up the area
 
     export SCRAM_ARCH=slc6_amd64_gcc530
