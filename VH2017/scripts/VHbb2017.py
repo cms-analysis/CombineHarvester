@@ -52,6 +52,9 @@ parser.add_argument(
  '--Znn_fwk', default='AT', help="""Framework the Znn inputs were produced with. Supported options: 'Xbb', 'AT'""")
 parser.add_argument(
  '--year', default='2017', help="""Year to produce datacards for (2017 or 2016)""")
+parser.add_argument(
+ '--extra_folder', default='', help="""Additional folder where cards are""")
+
 
 
 args = parser.parse_args()
@@ -96,8 +99,8 @@ for chn in chns:
     sys.exit()
 
 folder_map = {
-  'Xbb' : 'Xbb',
-  'AT'  : 'AT'
+  'Xbb' : 'Xbb/'+args.extra_folder,
+  'AT'  : 'AT/'+args.extra_folder
 }
 
 input_folders = {
