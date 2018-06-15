@@ -5,12 +5,13 @@ This file collects instructions for producing the statistical results for the VH
 http://cms-analysis.github.io/CombineHarvester/
 
 ## Important points to remember
+**PLEASE ALWAYS** check that the covariance matrix is positive definite before using a fitDiagnostics result for plotting or to extract parameter uncertainties. If the covariance matrix is not positive definite the uncertainties that you get out are **nonsense**.
 [15/06/18]
 Analysis is still blind, please use the CR-only-postfit versions of the commands below.
 In the previous version of 2016 cards some of the uncertainties had to be excluded for some of the regions because there were problems with the shapes. Once this is fixed please enable the uncertainties again (in python/systematics.py). It concerns the JER, and a few of the LHE_scale_weight uncertainties.
 In the previous version of the 2017 cards no factorised JECs were present. Please enable them again, along with the JER, and disable the inclusive JEC.
 MET unclustered energy needs to be added when it is in the input histograms, both for 2016 and 2017 (only affects 1-lep and 0-lep).
-Split b-tagging uncertainties also need to be included when in the cards.
+Split b-tagging uncertainties also need to be included when in the inputs.
 Some instructions for adding/disabling systematics, renaming them if needed for the combination, and more can be found at the bottom of this page.
 
 
@@ -490,3 +491,45 @@ Things to try to solve this include:
 
 ###To be updated
 To be updated
+
+## Quick guide to adding/removing/renaming systematics
+
+Some examples:
+
+Here we have *added* a shape systematics CMS_scale_j_13TeV for every channel and every category. We then immediately disable it in the signal regions (bin_id() 1 and 2) for all channels: 
+```
+  cb.cp().AddSyst(cb,
+      'CMS_scale_j_13TeV','shape',ch.SystMap()(1.0))
+
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_scale_j_13TeV')
+```
+
+Similar to the above, here we want to drop this uncertainty for the 0-lepton channel only, in all 0-lepton categories:
+```
+  cb.cp().AddSyst(cb,
+      'CMS_vhbb_puWeight_2016','shape',ch.SystMap()(1.0))
+
+  cb.FilterSysts(lambda x: (x.channel()=='Znn') and x.name()=='CMS_vhbb_puWeight_2016')
+```
+
+In this example we add an uncertainy only for a particular process in a subset of the channels:
+
+```
+cb.cp().channel(['Wmn','Wen','Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
+      'CMS_LHE_weights_scale_muR_Zj1b','shape',ch.SystMap()(1.0))
+```
+
+If we want to rename an uncertainty, say 'CMS_scale_j_13TeV' to 'CMS_scale_j_13TeV_2017':
+```
+cb.cp().RenameSystematic(cb,'CMS_scale_j_13TeV','CMS_scale_j_13TeV_2017')
+```
+This should be done between the call to 'ExtractShapes' and the creation of the CardWriter in scripts/VHbb2017.py.
+
+To rename a process, for example 'WH_hbb' to 'WH_lep':
+```
+cb.cp().ForEachObj(lambda x: x.set_process("WH_lep") if x.process()=='WH_hbb' else None)
+```
+This should again be done between the call to 'ExtractShapes' and the creation of the CardWriter in scripts/VHbb2017.py.
+
+
+
