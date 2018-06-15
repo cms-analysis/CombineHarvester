@@ -25,6 +25,9 @@ parser.add_argument("--pullDef",  default=None, help="Choose the definition of t
 parser.add_argument('--POI', default=None, help='Specify a POI to draw')
 args = parser.parse_args()
 
+if args.transparent:
+    print 'plotImpacts.py: --transparent is now always enabled, the option will be removed in a future update'
+
 externalPullDef = False
 if args.pullDef is not None:
     externalPullDef = True
@@ -267,10 +270,24 @@ for page in xrange(n):
 
     # And back to the second pad to draw the impacts graphs
     pads[1].cd()
-    alpha = 0.7 if args.transparent else 1.0
-    g_impacts_hi.SetFillColor(plot.CreateTransparentColor(46, alpha))
+    alpha = 0.7
+
+    lo_color = {
+        'default': 38,
+        'hesse': ROOT.kOrange - 3,
+        'robust': ROOT.kGreen + 1
+    }
+    hi_color = {
+        'default': 46,
+        'hesse': ROOT.kBlue,
+        'robust': ROOT.kAzure - 5
+    }
+    method = 'default'
+    if 'method' in data and data['method'] in lo_color:
+        method = data['method']
+    g_impacts_hi.SetFillColor(plot.CreateTransparentColor(hi_color[method], alpha))
     g_impacts_hi.Draw('2SAME')
-    g_impacts_lo.SetFillColor(plot.CreateTransparentColor(38, alpha))
+    g_impacts_lo.SetFillColor(plot.CreateTransparentColor(lo_color[method], alpha))
     g_impacts_lo.Draw('2SAME')
     pads[1].RedrawAxis()
 
