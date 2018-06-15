@@ -112,7 +112,8 @@ Post-fit expected:
 Post-fit:  
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles`
 
-[*]Pre-fit expected with control regions unblind.
+[*]CR-only-postfit:
+
 First we need to create a new workspace, set up for channel masking:
 
 `combineTool.py -M T2W -o "ws_masked.root" -i output/<output_folder>/* --channel-masks`
@@ -129,7 +130,7 @@ Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<o
 Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist`\
 Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there`\
 
-[*] To calculate the pre-fit expected significance with the control regions unblind we have to do slightly more work.
+[*] CR-only-postfit:
 However, this is the fairer thing to do as the CR fit can have quite a large effect on the background predictions in the SR:
 
 First we need to create a new workspace, set up for channel masking:
@@ -141,7 +142,7 @@ We will use this to generate a toy in which the nuisance parameters are set to t
 
 `combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
 
-Now continue as with post-fit expected significance:
+Finally evaluate the cr-only-post-fit expected significance:
 `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws_masked.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
 
 
@@ -156,7 +157,7 @@ create the post-fit shapes with uncertainties from the datacard and the MLFit:\
 
 `PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s `
 
-*Note*: PostFitShapesFromWorkspace can be sped up by using the option --skip-proc-errs, which doesn't evaluate the uncertainty for the individual processes, only for the total background/total s+b/total signal. Most of the time this would suffice. In addition, if you are only interested in the post-fit distributions, --skip-prefit will not extract the pre-fit shapes and uncertainties.
+*Note*: PostFitShapesFromWorkspace can be sped up by using the option --skip-proc-errs, which does not evaluate the uncertainty for the individual processes, only for the total background/total s+b/total signal. Most of the time this would suffice. In addition, if you are only interested in the post-fit distributions, --skip-prefit will not extract the pre-fit shapes and uncertainties.
 
 To make pre- and post fit plots of the BDT distributions in the SR:\
 `python scripts/makePostFitPlots.py`\
@@ -192,13 +193,10 @@ Note: pre-fit in this case will be pre all fits, post-fit will be CR-only post-f
 
 from scripts/makePostFitPlots<year>.py and scripts/makePostFitPlotsCR<year>.py remove 'postfit' from the 'MODE' line and make plots as above. 
 
-
-The underlying plotting scripts is scripts/postFitPlot.py. Cosmetic changes still needed.
-
 ## Yield tables
 First run the maximum likelihood fit as described above for the post-fit plots.
 
-Set up new cards and workspace for which the contents of the bins we want to ignore are set to 0 (NOTE: this implementation in the datacard production script still to be improved)
+Set up new cards and workspace for which the discriminator range we want to ignore is zeroed out. The ranges are defined in scripts/VHbb2017.py
 
 `python scripts/VHbb2017.py [options] --zero_out_low`
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder_zeroed_out>/cmb/`
@@ -493,6 +491,7 @@ Things to try to solve this include:
 To be updated
 
 ## Quick guide to adding/removing/renaming systematics
+The map of which bin_id number corresponds to which region can be found in scripts/VHbb2017.py . The map is called 'cats'.
 
 Some examples:
 

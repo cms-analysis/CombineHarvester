@@ -227,18 +227,15 @@ rebin = ch.AutoRebin().SetBinThreshold(0.).SetBinUncertFraction(1.0).SetRebinMod
 #binning=np.linspace(0.2,1.0,num=13)
 #print binning
 
-#cb.cp().bin_id([3,4,5,6,7,8]).ZeroBins(0.,0.5)
 
 if args.auto_rebin:
   rebin.Rebin(cb, cb)
 
 if args.zero_out_low:
-  nbins_to_keep = {'Wen':[[1,5]],'Wmn':[[1,5]],'Znn':[[1,5]],'Zee':[[1,5],[2,3]],'Zmm':[[1,5],[2,3]]}
+  range_to_drop = {'Wen':[[1,0,0.5]],'Wmn':[[1,0,0.5]],'Znn':[[1,0,0.5]],'Zee':[[1,0,0.5],[2,0,0.5]],'Zmm':[[1,0,0.5],[2,0,0.5]]} #First number is bin_id, second number lower bound of range to drop, third number upper bound of range to drop
   for chn in chns:
     for i in range(len(nbins_to_keep[chn])):
-      print nbins_to_keep[chn][i]
-      cb.cp().channel([chn]).bin_id([nbins_to_keep[chn][i][0]]).ForEachProc(lambda x: adjust_shape(x,nbins_to_keep[chn][i][1]))
-      cb.cp().channel([chn]).bin_id([nbins_to_keep[chn][i][0]]).ForEachObs(lambda x: adjust_shape(x,nbins_to_keep[chn][i][1]))
+      cb.cp().channel([chn]).bin_id([range_to_drop][chn][i][0]).ZeroBins(range_to_drop[chn][i][1],range_to_drop[chn][i][2])
 
 ch.SetStandardBinNames(cb)
 
