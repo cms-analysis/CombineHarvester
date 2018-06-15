@@ -38,7 +38,7 @@ Access to this repository is linked to the higgs-vlephbb e-group.
 
 ## Setting up datacards
 
-./scripts/VHbb2017.py [options]
+python scripts/VHbb2017.py [options]
 
 This creates .txt datacards in the 'output' directory, both combined and per channel (Zee,Zmm,Wen,Wmn,Znn,Wln,Zll), all in separate subdirectories.
 At the moment the options are
@@ -93,10 +93,10 @@ Post-fit:
 
 ### Signal strength (with reasonably accurate uncertainty)
 Pre-fit expected[*]:  
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1`
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --robustFit 1`
 
 Post-fit expected:  
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist`
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist --robustFit 1`
 
 Post-fit:  
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --algo singles`
@@ -111,7 +111,7 @@ We will use this to generate a toy in which the nuisance parameters are set to t
 
 `combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
 
-`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_masked.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist` --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_masked.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --robustFit 1`
 
 ### Significance:
 Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`\
@@ -141,9 +141,11 @@ First run the maximum likelihood fit:
 `combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`
 
 create the post-fit shapes with uncertainties from the datacard and the MLFit:\
-*Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense.
+*Important:* before doing this, check that the covariance matrix is positive definite. If not, the plotted uncertainties will be nonsense. This can be done by opening up the fitDiagnostics result and calling fit_s->Print() (or fit_b->Print() if that is the fit result of interest). At the very top of the printout there should be a line that says 'Covariance matrix quality: Full, accurate covariance matrix'. In that case everything is ok. If it says 'Full matrix, but forced positive definite' or 'Not calculated at all' the uncertainties are no good. 
 
-`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s`
+`PostFitShapesFromWorkspace -d output/<output_folder>/cmb/combined.txt.cmb -w output/<output_folder>/cmb/ws.root -o shapes.root --print --postfit --sampling -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s `
+
+*Note*: PostFitShapesFromWorkspace can be sped up by using the option --skip-proc-errs, which doesn't evaluate the uncertainty for the individual processes, only for the total background/total s+b/total signal. Most of the time this would suffice. In addition, if you are only interested in the post-fit distributions, --skip-prefit will not extract the pre-fit shapes and uncertainties.
 
 To make pre- and post fit plots of the BDT distributions in the SR:\
 `python scripts/makePostFitPlots.py`\
@@ -187,7 +189,7 @@ First run the maximum likelihood fit as described above for the post-fit plots.
 
 Set up new cards and workspace for which the contents of the bins we want to ignore are set to 0 (NOTE: this implementation in the datacard production script still to be improved)
 
-`./scripts/VHbb2017.py [options] --zero_out_low`
+`python scripts/VHbb2017.py [options] --zero_out_low`
 `combineTool.py -M T2W -o "ws.root" -i output/<output_folder_zeroed_out>/cmb/`
 
 Create the pre- and postfit yield tables (note: by default this is setup for 2017. We can add a 2016 version if needed, or just replace 2017 by 2016 in printYieldTables.py) :
@@ -286,12 +288,11 @@ combineTool.py -M PrintFit --json MultiDimFit_ccc.json -P r_twolep -i output/<ou
 
 Now make the plot:
 
-`./scripts/plotCCC.py -i MultiDimFit_ccc.json -o cccPlot`
+`python scripts/plotCCC.py -i MultiDimFit_ccc.json -o cccPlot`
 
 
 ### S-over-B ordered plot
-**Note: this is currently set up to replicate the HIG-16-044 plot. These instructions may be subject to change.**
-**Note: at the moment this is set up for 2017 only. Can adapt as needed**
+**Note: at the moment this is set up for HIG-16-044 and 2017 only. Can adapt as needed - to run with re-loaded 2016 the category names in prepareSoverBordered will need to be adapted**
 
 As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.  
 For 2016+2017 for now we use the contents of a fresh 2017 cmb directory + HIG16044 (from the shapes directory). Put the results in a combined directory output/cmb-sbordered/
@@ -318,7 +319,7 @@ Now we need to run PostFitShapesFromWorkspace on the new S/B ordered workspace w
 `PostFitShapesFromWorkspace -d output/vhbb_sbordered_12jun/vhbb_20162017.txt -w output/vhbb_sbordered_12jun/ws.root -o shapes_sbordered.root --postfit --sampling -f output/cmb-for-sbordered/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
 
 To make the plot:
-`./scripts/plotSoverBordered.py -f shapes_sbordered.root --log_y --custom_y_range --ratio`
+`python ./scripts/plotSoverBordered.py -f shapes_sbordered.root --log_y --custom_y_range --ratio`
 
 Note: for now this will NOT plot the data, it is commented in the plotting script.
 
@@ -441,7 +442,6 @@ This should be compared with the uncertainty with all nuisances frozen:
 The effect of addition of this group on the uncertainty is sqrt((uncertainty without frozen group)^2-(uncertainty with all params frozen)^2).
 
 
-With that in hand the groups defined now are: signal_theory, bkg_theory, sim_modelling, jes, jer, btag, mistag, lumi, lep_eff, met, autoMCStats.
 
 A handy thing we can do is to run everything in one go just generating the fits separately and running it in the background, or submitting to the batch/condor once the fit starts taking longer:
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/higgsCombine.snapshot.MultiDimFit.mH120.123456.root --cminDefaultMinimizerStrategy 0 --snapshotName MultiDimFit --algo singles -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --there --robustFit 1 --generate 'freezeNuisanceGroups;n;;!,fr.nominal;signal_theory,fr.signaltheory;bkg_theory,fr.bkgtheory;sim_modelling,fr.modelling;jes,fr.jes;jer,fr.jer;btag,fr.btag;mistag,fr.mistag;lumi,fr.lumi;lep_eff,fr.lep_eff;met,fr.met;autoMCStats,fr.autoMCStats;^signal_theory,nofr.signaltheory;^bkg_theory,nofr.bkgtheory;^sim_modelling,nofr.modelling;^jes,nofr.jes;^jer,nofr.jer;^btag,nofr.btag;^mistag,nofr.mistag;^lumi,nofr.lumi;^lep_eff,nofr.lep_eff;^met,nofr.met;^autoMCStats,nofr.autoMCStats'
