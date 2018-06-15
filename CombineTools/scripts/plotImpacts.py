@@ -192,8 +192,11 @@ for page in xrange(n):
         max_impact = max(
             max_impact, abs(imp[1] - imp[0]), abs(imp[2] - imp[1]))
         col = colors.get(tp, 2)
-        if args.color_groups is not None and len(pdata[p]['groups']) == 1:
-            col = color_groups.get(pdata[p]['groups'][0], 1)
+        if args.color_groups is not None and len(pdata[p]['groups']) >= 1:
+            for p_grp in pdata[p]['groups']:
+                if p_grp in color_groups:
+                    col = color_groups[p_grp]
+                    break
         h_pulls.GetYaxis().SetBinLabel(
             i + 1, ('#color[%i]{%s}'% (col, Translate(pdata[p]['name'], translate))))
 
