@@ -234,8 +234,8 @@ if args.auto_rebin:
 if args.zero_out_low:
   range_to_drop = {'Wen':[[1,0,0.5]],'Wmn':[[1,0,0.5]],'Znn':[[1,0,0.5]],'Zee':[[1,0,0.5],[2,0,0.5]],'Zmm':[[1,0,0.5],[2,0,0.5]]} #First number is bin_id, second number lower bound of range to drop, third number upper bound of range to drop
   for chn in chns:
-    for i in range(len(nbins_to_keep[chn])):
-      cb.cp().channel([chn]).bin_id([range_to_drop][chn][i][0]).ZeroBins(range_to_drop[chn][i][1],range_to_drop[chn][i][2])
+    for i in range(len(range_to_drop[chn])):
+      cb.cp().channel([chn]).bin_id([range_to_drop[chn][i][0]]).ZeroBins(range_to_drop[chn][i][1],range_to_drop[chn][i][2])
 
 ch.SetStandardBinNames(cb)
 
