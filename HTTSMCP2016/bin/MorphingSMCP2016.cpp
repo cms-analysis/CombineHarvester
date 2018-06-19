@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
     bool do_embedding = false;
     bool auto_rebin = false;
     bool no_jec_split = false;    
+    bool do_jetfakes = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -92,13 +93,15 @@ int main(int argc, char** argv) {
     ("control_region", po::value<int>(&control_region)->default_value(1))
     ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
     ("do_embedding", po::value<bool>(&do_embedding)->default_value(false))
+    ("do_jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(true))
     ("no_jec_split", po::value<bool>(&no_jec_split)->default_value(true))    
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
 
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
     po::notify(vm);
-    
+   
+    if(do_jetfakes) control_region = 0; 
     
     typedef vector<string> VString;
     typedef vector<pair<int, string>> Categories;
@@ -121,7 +124,7 @@ int main(int argc, char** argv) {
     bkg_procs["et"] = {"ZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
     bkg_procs["mt"] = {"ZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "EWKZ", "W"};
     bkg_procs["tt"] = {"ZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
-    bkg_procs["em"] = {"ZTT","W", "QCD", "ZLL", "TT", "VV", "EWKZ"};//, "ggH_hww125", "qqH_hww125"};
+    bkg_procs["em"] = {"ZTT","W", "QCD", "ZLL", "TT", "VV", "EWKZ", "ggH_hww125", "qqH_hww125"};
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     
     if(do_embedding){
@@ -129,6 +132,21 @@ int main(int argc, char** argv) {
       bkg_procs["mt"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT", "VVJ", "W"};
       bkg_procs["tt"] = {"EmbedZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ"};
       // Not use embedding for em channel currently
+      //bkg_procs["em"] = {"EmbedZTT","W", "QCD", "ZLL", "TT", "VV", "ggH_hww125", "qqH_hww125"};
+      //bkg_procs["ttbar"] = {"EmbedZTT", "W", "QCD", "ZLL", "TT", "VV"};
+    }
+
+    if(do_jetfakes){
+      bkg_procs["et"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["mt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+
+      if(do_embedding){
+        bkg_procs["et"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
+        bkg_procs["mt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
+        bkg_procs["tt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
+      }
+
     }
 
     ch::CombineHarvester cb;
@@ -438,7 +456,7 @@ int main(int argc, char** argv) {
     auto bbb_sig = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
-    .SetMergeThreshold(0.)
+    .SetMergeThreshold(0.4)
     .SetFixNorm(false);
     bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
     
