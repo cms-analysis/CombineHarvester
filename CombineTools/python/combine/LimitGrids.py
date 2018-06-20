@@ -96,12 +96,10 @@ class AsymptoticGrid(CombineToolBase):
       if len(val) == 0:
         print 'Going to run limit for point %s' % (key,)
         set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
-        print 'XXX1',to_freeze
         if 'all' in to_freeze:
           freeze_arg = 'all'
         else:
           freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
-        print 'XXX2',freeze_arg
         point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
         cmd = ' '.join(['combine -M Asymptotic', opts, point_args] + self.passthru)
         self.job_queue.append(cmd)
