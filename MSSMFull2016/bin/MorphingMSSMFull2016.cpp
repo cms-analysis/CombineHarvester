@@ -708,6 +708,38 @@ int main(int argc, char** argv) {
   cb.AddWorkspace(ws);
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
 
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/YR2018Systematics
+  cb.SetGroup("bbb", {"^CMS_htt_.*bin_[0-9]+$"});
+  cb.SetGroup("scales_with_lumi", {"^CMS_.*$"});
+
+  // Muon eff scales by at most 1/4 to 0.5%, electron eff 1/2 to 1.0%
+  cb.RemoveGroup("scales_with_lumi", {"^CMS_eff_[em]$"});
+  cb.SetGroup("eff_m", {"^CMS_eff_m$"});
+  cb.SetGroup("eff_e", {"^CMS_eff_e$"});
+
+  // Tau efficiencies do not scale? Or by 1/2 at most?
+  cb.RemoveGroup("scales_with_lumi", {"^CMS_eff_t_.*$"});
+  cb.SetGroup("eff_t", {"^CMS_eff_t_.*$"});
+
+  // B-tagging efficiency does scale, but by 1/2 at most (2% now, 1% limiting)
+  cb.RemoveGroup("scales_with_lumi", {"^CMS_eff_b_13TeV$"});
+  cb.SetGroup("eff_b", {"^CMS_eff_b_13TeV$"});
+
+  // B-tagging fake rate doesn't scale (staying around 5%)
+  cb.RemoveGroup("scales_with_lumi", {"^CMS_fake_b_13TeV$"});
+
+  // Background cross sections go by 1/2 with the signal theory
+  cb.RemoveGroup("scales_with_lumi", {"^CMS_htt_.*Xsec.*$"});
+  cb.SetGroup("theory", {"^CMS_htt_.*Xsec.*$"});
+  cb.SetGroup("theory", {"^QCDScale.*$"});
+
+  // Or if we want to go back to scaling everything with lumi (except theory & lumi uncert)
+  cb.SetGroup("all_scales_with_lumi", {"^CMS_.*$"});
+  cb.RemoveGroup("all_scales_with_lumi", {"^CMS_htt_.*Xsec.*$"});
+
+  // Should scale to 1.0%, i.e. 1.0/2.7
+  cb.SetGroup("lumi", {"^lumi_13TeV$"});
+
   if (partial_unblinding) {
     cb.FilterAll([&](ch::Object *obj) {
       if (obj->channel() == "et" || obj->channel() == "mt") return !ch::contains({10, 11}, obj->bin_id());
