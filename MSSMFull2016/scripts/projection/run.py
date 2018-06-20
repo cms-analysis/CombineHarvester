@@ -240,3 +240,5 @@ if __name__ == '__main__':
 
 #combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH.?$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_201017_scale-bbb/* --X-nuisance-function 'CMS_htt_.*bin_[0-9]+' '"expr::lumisyst(\"1/sqrt(@0)\",lumiscale[1])"' &> output/mssm_201017_scale-bbb/log_ws.txt
 #combineTool.py -M T2W -o "ws.root" -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/ggH.?$:r_ggH[0,0,200]"' --PO '"map=^.*/bbH$:r_bbH[0,0,200]"' -i output/mssm_201017_scale-all/* --X-nuisance-function 'CMS_+' '"expr::lumisyst(\"1/sqrt(@0)\",lumiscale[1])"' --X-nuisance-function 'lumi_+' '"expr::lumisyst(\"1/sqrt(@0)\",lumiscale[1])"' &> output/mssm_201017_scale-all/log_ws.txt
+
+#for i in jun15*; do cp -p $i/asymptotic_grid.root asymptotic_grid_$i.root ; done
