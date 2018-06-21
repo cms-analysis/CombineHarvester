@@ -46,7 +46,7 @@ def prefit_from_workspace(file, workspace, params, setPars=None):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.WARNING)
     if setPars is not None:
       parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]
-      for par,val in parsToSet:
+      for par, val in parsToSet:
         print 'Setting paramter %s to %g' % (par, float(val))
         ws.var(par).setVal(float(val))
 
@@ -112,6 +112,39 @@ def get_singles_results(file, scanned, columns):
             res[param][col] = [
                 allvals[i * 2 + 1], allvals[0], allvals[i * 2 + 2]]
     return res
+
+
+def get_roofitresult(rfr, params, others):
+    res = {}
+    if rfr.covQual() != 3:
+        print 'Error: the covariance matrix in the RooFitResult is not accurate and cannot be used'
+        return None
+    for i, param in enumerate(params):
+        res[param] = {}
+        for j, other in enumerate(others):
+            pj = rfr.floatParsFinal().find(other)
+            vj = pj.getVal()
+            ej = pj.getError()
+            c = rfr.correlation(param, other)
+            res[param][other] = [vj - ej * c, vj, vj + ej * c]
+    return res
+
+
+def get_robusthesse(floatParams, corr, params, others):
+    res = {}
+    for i, param in enumerate(params):
+        res[param] = {}
+        idx_p = corr.GetXaxis().FindBin(param)
+        for j, other in enumerate(others):
+            pj = floatParams.find(other)
+            vj = pj.getVal()
+            ej = pj.getError()
+            idx = corr.GetXaxis().FindBin(other)
+            c = corr.GetBinContent(idx_p, idx)
+            res[param][other] = [vj - ej * c, vj, vj + ej * c]
+    return res
+
+
 
 def get_none_results(file, params):
     """Extracts the output from the MultiDimFit none (just fit)  mode"""
