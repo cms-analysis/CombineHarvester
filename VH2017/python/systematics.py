@@ -262,14 +262,14 @@ def AddSystematics2017(cb):
   cb.cp().AddSyst(
         cb, 'lumi_13TeV','lnN', ch.SystMap()(1.023))
   
-##  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
-##      'CMS_vhbb_ptwweights_tt','shape',ch.SystMap()(1.0))
-##
-##  cb.cp().channel(['Wen','Wmn']).process(['s_Top','Wj1b','Wj2b'])AddSyst(cb,
-##      'CMS_vhbb_ptwweights_whf','shape',ch.SystMap()(1.0))
-##
-##  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
-##      'CMS_vhbb_ptwweights_wlf','shape',ch.SystMap()(1.0))
+#  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
+#      'CMS_vhbb_ptwweights_tt','shape',ch.SystMap()(1.0))
+#
+#  cb.cp().channel(['Wen','Wmn']).process(['s_Top','Wj1b','Wj2b'])AddSyst(cb,
+#      'CMS_vhbb_ptwweights_whf','shape',ch.SystMap()(1.0))
+#
+#  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
+#      'CMS_vhbb_ptwweights_wlf','shape',ch.SystMap()(1.0))
 
 #  cb.cp().channel(['Wen']).AddSyst(cb,
 #      'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
@@ -279,8 +279,10 @@ def AddSystematics2017(cb):
   # cb.cp().channel(['Wmn']).AddSyst(cb,
        # 'CMS_vhbb_eff_m_Wln_13TeV','lnN',ch.SystMap()(1.02))
 
+  # cb.cp().channel(['Wen']).AddSyst(cb,
+       # 'CMS_vhbb_eff_e_Wln_13TeV','lnN',ch.SystMap()(1.02))
   cb.cp().channel(['Wen']).AddSyst(cb,
-       'CMS_vhbb_eff_e_Wln_13TeV','lnN',ch.SystMap()(1.02))
+       'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
 
   # cb.cp().channel(['Zmm']).AddSyst(cb,
        # 'CMS_vhbb_eff_m_Zll_13TeV','lnN',ch.SystMap()(1.04))
@@ -315,7 +317,7 @@ def AddSystematics2017(cb):
   cb.cp().channel(['Znn']).AddSyst(cb,
       'CMS_vhbb_trigger_MET_13TeV','lnN',ch.SystMap()(1.005))
 
-  cb.cp().channel(['Wen','Wmn','Znn']).AddSyst(cb,
+  cb.cp().AddSyst(cb,
       'CMS_vhbb_topptreweighting_13TeV','shape',ch.SystMap()(1.0))
   
   cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
@@ -742,14 +744,14 @@ def AddSystematics2016(cb):
   cb.cp().AddSyst(
         cb, 'lumi_13TeV_2016','lnN', ch.SystMap()(1.025))
   
-##  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
-##      'CMS_vhbb_ptwweights_tt','shape',ch.SystMap()(1.0))
-##
-##  cb.cp().channel(['Wen','Wmn']).process(['s_Top','Wj1b','Wj2b'])AddSyst(cb,
-##      'CMS_vhbb_ptwweights_whf','shape',ch.SystMap()(1.0))
-##
-##  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
-##      'CMS_vhbb_ptwweights_wlf','shape',ch.SystMap()(1.0))
+#  cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
+#      'CMS_vhbb_ptwweights_tt','shape',ch.SystMap()(1.0))
+#
+#  cb.cp().channel(['Wen','Wmn']).process(['s_Top','Wj1b','Wj2b'])AddSyst(cb,
+#      'CMS_vhbb_ptwweights_whf','shape',ch.SystMap()(1.0))
+#
+#  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
+#      'CMS_vhbb_ptwweights_wlf','shape',ch.SystMap()(1.0))
 
   #cb.cp().channel(['Wen']).AddSyst(cb,
   #    'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
