@@ -2,12 +2,12 @@ import os,sys,ROOT
 import datetime,time
 
 ##############################################
-def stamp()
+def stamp():
     ts = time.time()
     print '\n\n'
     print datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S');sys.stdout.flush()
 
-def execute(command)
+def execute(command):
     print(command)
     os.system(command)
 
