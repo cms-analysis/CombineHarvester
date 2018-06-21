@@ -52,12 +52,13 @@ def AddCommonSystematics(cb):
 
   cb.cp().AddSyst(cb,
       'QCDscale_ttbar', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm'],['s_Top'], 1.06)
-      (['Znn'],['TT'],1.06)) 
+      (['Zee','Zmm','Wen','Wmn','Znn'],['s_Top'], 1.06)
+      # (['Zee','Zmm','Wen','Wmn','Znn'],['TT'],1.06)
+      ) 
 
   cb.cp().AddSyst(cb,
       'QCDscale_VV', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm','Znn'],['VVLF','VVHF','VV'], 1.04)) 
+      (['Zee','Zmm','Wen','Wmn','Znn'],['VVLF','VVHF','VV'], 1.04)) 
 
   # measured cross section uncertainties because we don't have SF
   cb.cp().process(['VV','VVHF','VVLF']).AddSyst(cb,
@@ -106,8 +107,7 @@ def AddCommonSystematics(cb):
 ###########################################
 
 def AddSystematics2017(cb):
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_puWeight','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_vhbb_puWeight','shape',ch.SystMap()(1.0))
 
   cb.cp().process(['ZH_hbb']).AddSyst(cb,'CMS_LHE_weights_scale_muR_ZH','shape',ch.SystMap()(1.0))
   cb.cp().process(['ZH_hbb']).AddSyst(cb,'CMS_LHE_weights_scale_muF_ZH','shape',ch.SystMap()(1.0))
@@ -133,19 +133,20 @@ def AddSystematics2017(cb):
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muR_TT','shape',ch.SystMap()(1.0))
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muF_TT','shape',ch.SystMap()(1.0))
 
-  cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_vjetnlodetajjrw_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().process(['Zj0b','Zj1b','Zj2b','Wj0b','Wj1b','Wj2b']).AddSyst(cb,
+                    'CMS_vhbb_vjetnlodetajjrw_13TeV','shape',ch.SystMap()(1.0))
 
   # SCALE FACTORS RATEPARAM
   
   # TT Zll
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
-     'SF_TT_low_Zll_2017', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
-  
-  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
      'SF_TT_high_Zll_2017', 'rateParam', ch.SystMap('bin_id')
      ([1,3,5,7],1.0))
 
+  cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
+     'SF_TT_low_Zll_2017', 'rateParam', ch.SystMap('bin_id')
+     ([2,4,6,8],1.0))
+  
   # Zj0b Zll
   cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
      'SF_Zj0b_high_Zll_2017', 'rateParam', ch.SystMap('bin_id')
@@ -277,7 +278,7 @@ def AddSystematics2017(cb):
   # cb.cp().AddSyst(cb,'CMS_scale_j_13TeV','shape',ch.SystMap()(1.0))
   # cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_scale_j_13TeV')
 
-  # differential in pt/eta
+  # split as JET/MET recommends
   cb.cp().AddSyst(cb,'CMS_scale_j_PileUpDataMC_13TeV','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_scale_j_PileUpPtRef_13TeV','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_scale_j_PileUpPtBB_13TeV','shape',ch.SystMap()(1.0))
@@ -486,7 +487,9 @@ def AddSystematics2016(cb):
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muR_TT','shape',ch.SystMap()(1.0))
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muF_TT','shape',ch.SystMap()(1.0))
 
-  cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_vjetnlodetajjrw_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().process(['Zj0b','Zj1b','Zj2b','Wj0b','Wj1b','Wj2b']).AddSyst(cb,
+                  'CMS_vhbb_vjetnlodetajjrw_13TeV_2016','shape',ch.SystMap()(1.0))
+
   
   # SCALE FACTORS RATEPARAM
   
@@ -621,10 +624,11 @@ def AddSystematics2016(cb):
   
   #Jet energy scale
   cb.cp().AddSyst(cb,'CMS_res_j_13TeV_2016','shape',ch.SystMap()(1.0))
-  # cb.cp().AddSyst(cb,'CMS_res_j_reg_13TeV','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,'CMS_res_j_reg_13TeV_2016','shape',ch.SystMap()(1.0))
   
   # cb.cp().AddSyst(cb,'CMS_scale_j_13TeV_2016','shape',ch.SystMap()(1.0))
 
+  # split as JET/MET recommends
   cb.cp().AddSyst(cb,'CMS_scale_j_PileUpDataMC_13TeV_2016','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_scale_j_PileUpPtRef_13TeV_2016','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_scale_j_PileUpPtBB_13TeV_2016','shape',ch.SystMap()(1.0))
