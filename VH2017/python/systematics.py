@@ -133,6 +133,7 @@ def AddSystematics2017(cb):
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muR_TT','shape',ch.SystMap()(1.0))
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muF_TT','shape',ch.SystMap()(1.0))
 
+  cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_vjetnlodetajjrw_13TeV','shape',ch.SystMap()(1.0))
 
   # SCALE FACTORS RATEPARAM
   
@@ -485,7 +486,8 @@ def AddSystematics2016(cb):
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muR_TT','shape',ch.SystMap()(1.0))
   cb.cp().process(['TT']).AddSyst(cb,'CMS_LHE_weights_scale_muF_TT','shape',ch.SystMap()(1.0))
 
-
+  cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_vjetnlodetajjrw_13TeV_2016','shape',ch.SystMap()(1.0))
+  
   # SCALE FACTORS RATEPARAM
   
   # TT Zll
