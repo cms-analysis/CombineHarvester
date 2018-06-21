@@ -6,10 +6,10 @@ def AddCommonSystematics(cb):
   # rateParams
   
   # Theory uncertainties: signal
-  cb.cp().AddSyst(cb,
-      'pdf_Higgs_qqbar', 'lnN', ch.SystMap('process')
-       (['ZH_hbb'],1.016)
-       (['WH_hbb'],1.019))
+  # cb.cp().AddSyst(cb,
+      # 'pdf_Higgs_qqbar', 'lnN', ch.SystMap('process')
+       # (['ZH_hbb'],1.016)
+       # (['WH_hbb'],1.019))
 
   cb.cp().process(['ggZH_hbb']).AddSyst(cb,
       'pdf_Higgs_gg', 'lnN', ch.SystMap()(1.024))
