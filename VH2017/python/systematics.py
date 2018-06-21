@@ -508,6 +508,15 @@ def AddSystematics2016(cb):
   cb.cp().channel(['Wmn','Wen','Zee','Zmm']).process(['TT']).AddSyst(cb,
       'CMS_LHE_weights_scale_muF_TT','shape',ch.SystMap()(1.0))
 
+  # added by Luca for 2016
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muF_TT')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muF_Zj1b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muR_TT')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muF_Zj0b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muR_Zj0b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muR_Zj1b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muF_Zj2b')
+  cb.FilterSysts(lambda x: (x.bin_id()==2 or x.bin_id()==1) and x.name()=='CMS_LHE_weights_scale_muR_Zj2b')
 
 
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
@@ -713,30 +722,168 @@ def AddSystematics2016(cb):
   #cb.FilterSysts(lambda x: x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_FlavorQCD_13TeV')
 
   #b-tagging uncertainties
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightJES_13TeV_2016','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightLF_13TeV_2016','shape',ch.SystMap()(1.0))
+  # inclusive in pt/eta
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightJES_13TeV_2016','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightHF_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightLF_13TeV_2016','shape',ch.SystMap()(1.0))
+  
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightHF_13TeV_2016','shape',ch.SystMap()(1.0))
 
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightLFStats1_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightLFStats1_13TeV_2016','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightLFStats2_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightLFStats2_13TeV_2016','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightHFStats1_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightHFStats1_13TeV_2016','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightHFStats2_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightHFStats2_13TeV_2016','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightcErr1_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightcErr1_13TeV_2016','shape',ch.SystMap()(1.0))
   
-  cb.cp().AddSyst(cb,
-      'CMS_bTagWeightcErr2_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().AddSyst(cb,
+      # 'CMS_bTagWeightcErr2_13TeV_2016','shape',ch.SystMap()(1.0))
 
+  # differential in pt/eta
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightJES_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHF_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLF_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats1_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats1_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightHFStats2_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightLFStats2_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr1_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt0_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt0_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt0_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt1_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt1_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt1_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt2_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt2_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt2_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt3_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt3_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt3_eta2','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
+  cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
