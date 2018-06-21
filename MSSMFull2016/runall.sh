@@ -1,1 +1,0 @@
-scripts/projection/runall.sh

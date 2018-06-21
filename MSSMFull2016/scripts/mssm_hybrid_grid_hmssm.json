@@ -1,6 +1,6 @@
 {
   "verbose" : false,
-  "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --redefineSignalPOIs x --setPhysicsModelParameters r=1 --freezeNuisances r --clsAcc 0 --fork 0 --minimizerTolerance 0.1 --verbose -1 --fullBToys",
+  "opts" : "--testStat=TEV --frequentist --singlePoint 1.0 --saveHybridResult --redefineSignalPOIs x --setPhysicsModelParameters r=1 --freezeNuisances r --clsAcc 0 --fork 0",
   "POIs" : ["mA", "tanb"],
   "grids" : [
     ["130:200|10", "1:20|1", ""],
@@ -9,14 +9,10 @@
     ["250:450|50", "20:60|2", "0.0"],
     ["500:1400|50", "1:20|1", ""],
     ["500:1400|50", "20:60|2", ""],
-    ["500:700|50", "20:60|2", "0.0"],
-    ["700:900|50", "26:60|2", "0.0"],
-    ["900:1000|50", "30:60|2", "0.0"],
-    ["1000:1200|50", "40:60|2", "0.0"],
     ["1400:2000|50", "1:60|5", ""],
     ["1400:2000|50", "60", ""]
   ],
-  "toys_per_cycle"  : 500,
+  "toys_per_cycle"  : 800,
   "min_toys"        : 1000,
   "max_toys"        : 200000,
   "signif"          : 3.0,

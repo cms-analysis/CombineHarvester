@@ -99,7 +99,6 @@ int main(int argc, char** argv) {
   bool postfit_plot = false;
   bool partial_unblinding = false;
   bool ggHatNLO = true;
-  bool remove_h = false;
   bool mod_indep_use_sm = true;  // Use the SM fractions of t:b:i for ggH at NLO
   string mod_indep_h = "h";
   string sm_gg_fractions = "shapes/Models/higgs_pt_v3.root";
@@ -131,7 +130,6 @@ int main(int argc, char** argv) {
     ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(do_w_weighting))
     ("partial_unblinding", po::value<bool>(&partial_unblinding)->default_value(partial_unblinding))
     ("ggHatNLO", po::value<bool>(&ggHatNLO)->default_value(ggHatNLO))
-    ("remove_h", po::value<bool>(&remove_h)->default_value(remove_h))
     ("mod_indep_use_sm", po::value<bool>(&mod_indep_use_sm)->default_value(mod_indep_use_sm))
     ("mod_indep_h", po::value<string>(&mod_indep_h)->default_value(mod_indep_h));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
@@ -291,18 +289,10 @@ int main(int argc, char** argv) {
   vector<string> masses = {"90","100","110","120","130","140","160","180", "200", "250", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
   if(bbH_nlo) masses = {"90","100","110","120","130","140","160","180", "200", "250", "350", "400", "450", "500", "600", "700", "800", "900","1000","1200","1400","1600","1800","2000","2300","2600","2900","3200"};
 
-  map<string, VString> signal_types ;
-  if(remove_h) {
-    signal_types = {
-      {"ggH", {"ggH_Htautau", "ggA_Atautau"}},
-      {"bbH", {"bbH_Htautau", "bbA_Atautau"}}
-    };
-  } else {
-    signal_types = {
-      {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
-      {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
-    };
-  }
+  map<string, VString> signal_types = {
+    {"ggH", {"ggh_htautau", "ggH_Htautau", "ggA_Atautau"}},
+    {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
+  };
 
   // List the mappings from the NLO gluon fusion process names to the histogram
   // names in the shape files
@@ -317,17 +307,10 @@ int main(int argc, char** argv) {
   };
 
   if(ggHatNLO){
-    if(remove_h) {
-      signal_types = {
-	{"ggH", {"ggHt_Htautau", "ggHb_Htautau", "ggHi_Htautau", "ggAt_Atautau", "ggAb_Atautau", "ggAi_Atautau"}},
-	{"bbH", {"bbH_Htautau", "bbA_Atautau"}}
-      };
-    } else{
-      signal_types = {
-	{"ggH", {"gght_htautau", "gghb_htautau", "gghi_htautau", "ggHt_Htautau", "ggHb_Htautau", "ggHi_Htautau", "ggAt_Atautau", "ggAb_Atautau", "ggAi_Atautau"}},
-	{"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
-      };
-    }
+    signal_types = {
+      {"ggH", {"gght_htautau", "gghb_htautau", "gghi_htautau", "ggHt_Htautau", "ggHb_Htautau", "ggHi_Htautau", "ggAt_Atautau", "ggAb_Atautau", "ggAi_Atautau"}},
+      {"bbH", {"bbh_htautau", "bbH_Htautau", "bbA_Atautau"}}
+    };
   }
   if(mass=="MH"){
     if(ggHatNLO){
@@ -639,20 +622,10 @@ int main(int argc, char** argv) {
   TFile demo("htt_mssm_demo.root", "RECREATE");
 
   bool do_morphing = true;
-
-  map<string, RooAbsReal *> mass_var;
-  if(remove_h) {
-    mass_var = {
-      {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA}, {"ggHt_Htautau", &mH}, {"ggAt_Atautau", &mA}, {"ggHb_Htautau", &mH}, {"ggAb_Atautau", &mA}, {"ggHi_Htautau", &mH}, {"ggAi_Atautau", &mA},
-      {"bbH_Htautau", &mH}, {"bbA_Atautau", &mA}
-    };
-  } else {
-    mass_var = {
-      {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA}, {"gght_htautau", &mh}, {"ggHt_Htautau", &mH}, {"ggAt_Atautau", &mA}, {"gghb_htautau", &mh}, {"ggHb_Htautau", &mH}, {"ggAb_Atautau", &mA}, {"gghi_htautau", &mh}, {"ggHi_Htautau", &mH}, {"ggAi_Atautau", &mA},
-      {"bbh_htautau", &mh}, {"bbH_Htautau", &mH}, {"bbA_Atautau", &mA}
-    };
-  }
-
+  map<string, RooAbsReal *> mass_var = {
+    {"ggh_htautau", &mh}, {"ggH_Htautau", &mH}, {"ggA_Atautau", &mA}, {"gght_htautau", &mh}, {"ggHt_Htautau", &mH}, {"ggAt_Atautau", &mA}, {"gghb_htautau", &mh}, {"ggHb_Htautau", &mH}, {"ggAb_Atautau", &mA}, {"gghi_htautau", &mh}, {"ggHi_Htautau", &mH}, {"ggAi_Atautau", &mA},
+    {"bbh_htautau", &mh}, {"bbH_Htautau", &mH}, {"bbA_Atautau", &mA}
+  };
   if(mass=="MH"){
     mass_var = {
       {"ggH", &mA}, {"ggHt", &mA}, {"ggHb", &mA}, {"ggHi", &mA},
@@ -707,38 +680,6 @@ int main(int argc, char** argv) {
   demo.Close();
   cb.AddWorkspace(ws);
   cb.cp().process(ch::JoinStr({signal_types["ggH"], signal_types["bbH"]})).ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
-
-  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/YR2018Systematics
-  cb.SetGroup("bbb", {"^CMS_htt_.*bin_[0-9]+$"});
-  cb.SetGroup("scales_with_lumi", {"^CMS_.*$"});
-
-  // Muon eff scales by at most 1/4 to 0.5%, electron eff 1/2 to 1.0%
-  cb.RemoveGroup("scales_with_lumi", {"^CMS_eff_[em]$"});
-  cb.SetGroup("eff_m", {"^CMS_eff_m$"});
-  cb.SetGroup("eff_e", {"^CMS_eff_e$"});
-
-  // Tau efficiencies do not scale? Or by 1/2 at most?
-  cb.RemoveGroup("scales_with_lumi", {"^CMS_eff_t_.*$"});
-  cb.SetGroup("eff_t", {"^CMS_eff_t_.*$"});
-
-  // B-tagging efficiency does scale, but by 1/2 at most (2% now, 1% limiting)
-  cb.RemoveGroup("scales_with_lumi", {"^CMS_eff_b_13TeV$"});
-  cb.SetGroup("eff_b", {"^CMS_eff_b_13TeV$"});
-
-  // B-tagging fake rate doesn't scale (staying around 5%)
-  cb.RemoveGroup("scales_with_lumi", {"^CMS_fake_b_13TeV$"});
-
-  // Background cross sections go by 1/2 with the signal theory
-  cb.RemoveGroup("scales_with_lumi", {"^CMS_htt_.*Xsec.*$"});
-  cb.SetGroup("theory", {"^CMS_htt_.*Xsec.*$"});
-  cb.SetGroup("theory", {"^QCDScale.*$"});
-
-  // Or if we want to go back to scaling everything with lumi (except theory & lumi uncert)
-  cb.SetGroup("all_scales_with_lumi", {"^CMS_.*$"});
-  cb.RemoveGroup("all_scales_with_lumi", {"^CMS_htt_.*Xsec.*$"});
-
-  // Should scale to 1.0%, i.e. 1.0/2.7
-  cb.SetGroup("lumi", {"^lumi_13TeV$"});
 
   if (partial_unblinding) {
     cb.FilterAll([&](ch::Object *obj) {
