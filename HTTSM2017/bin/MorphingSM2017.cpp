@@ -71,8 +71,8 @@ int main(int argc, char** argv) {
     string input_folder_tt="Vienna/";
     string input_folder_mm="Vienna/";
     string input_folder_ttbar="Vienna/";
-    string chan="";
-    string postfix="";
+    string chan="all";
+    string postfix="-ML";
     bool auto_rebin = false;
     bool manual_rebin = false;
     bool real_data = false;
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     bool do_w_weighting = false;
     bool mm_fit = false;
     bool ttbar_fit = false;
-    bool do_jetfakes = false;
+    bool do_jetfakes = true;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -95,20 +95,20 @@ int main(int argc, char** argv) {
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("Vienna"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("Vienna"))
     
-    ("postfix", po::value<string>(&postfix)->default_value("-ML"))
-    ("channel", po::value<string>(&chan)->default_value("et"))
-    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
-    ("real_data", po::value<bool>(&real_data)->default_value(true))
-    ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(false))
-    ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
+    ("postfix", po::value<string>(&postfix)->default_value(postfix))
+    ("channel", po::value<string>(&chan)->default_value(chan))
+    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(auto_rebin))
+    ("real_data", po::value<bool>(&real_data)->default_value(real_data))
+    ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
+    ("output_folder", po::value<string>(&output_folder)->default_value(output_folder))
     ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
-    ("control_region", po::value<int>(&control_region)->default_value(0))
-    ("mm_fit", po::value<bool>(&mm_fit)->default_value(false)) //mf
-    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(false)) //mf
-    ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
-    ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(false))
-    ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(false))
-    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(false));
+    ("control_region", po::value<int>(&control_region)->default_value(control_region))
+    ("mm_fit", po::value<bool>(&mm_fit)->default_value(mm_fit))
+    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(ttbar_fit))
+    ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(do_jetfakes))
+    ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(check_neg_bins))
+    ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(poisson_bbb))
+    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(do_w_weighting));
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
     po::notify(vm);
     
@@ -130,20 +130,12 @@ int main(int argc, char** argv) {
     input_dir["mm"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2017/shapes/"+input_folder_mm+"/";
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2017/shapes/"+input_folder_ttbar+"/";
     
-    
-    
-    //mf    VString chns = {"mt","et","tt","em"};
-    //    VString chns = {"et"}; //mf
-    //mf  if (mm_fit) chns.push_back("mm");
-    //mf  if (ttbar_fit) chns.push_back("ttbar");
-    
     VString chns;
     if ( chan.find("mt") != std::string::npos ) chns.push_back("mt");
     if ( chan.find("et") != std::string::npos ) chns.push_back("et");
     if ( chan.find("em") != std::string::npos ) chns.push_back("em");
     if ( chan.find("tt") != std::string::npos ) chns.push_back("tt");
     if ( chan=="all" ) chns = {"mt","et","tt","em"};
-
 
     map<string, VString> bkg_procs;
     if (do_jetfakes){
@@ -169,38 +161,43 @@ int main(int argc, char** argv) {
     
     map<string,Categories> cats;
     cats["et"] = {
-        { 2, "et_ggH"},
-        { 3, "et_qqH"},
+        { 2, "et_ggh"},
+        { 3, "et_qqh"},
         {11, "et_w"},
         {12, "et_ztt"},
         {13, "et_tt"},
-        {14, "et_qcd"},
+        {14, "et_ss"},
         {15, "et_zll"},
         {16, "et_misc"},
     };
     
     cats["mt"] = {
-        { 2, "mt_ggH"},
-        { 3, "mt_qqH"},
+        { 2, "mt_ggh"},
+        { 3, "mt_qqh"},
         {11, "mt_w"},
         {12, "mt_ztt"},
         {13, "mt_tt"},
-        {14, "mt_qcd"},
+        {14, "mt_ss"},
         {15, "mt_zll"},
         {16, "mt_misc"},
     };
     
     cats["em"] = {
-        {1, "em_0jet"},
-        {2, "em_boosted"},
-        {3, "em_vbf"}};
-    
+        { 2, "em_ggh"},
+        { 3, "em_qqh"},
+        {11, "em_w"},
+        {12, "em_ztt"},
+        {13, "em_tt"},
+        {14, "em_ss"},
+        {15, "em_zll"},
+        {16, "em_misc"},
+    };
     
     cats["tt"] = {
-        { 2, "tt_ggH"},
-        { 3, "tt_qqH"},
+        { 2, "tt_ggh"},
+        { 3, "tt_qqh"},
         {12, "tt_ztt"},
-        {14, "tt_qcd"},
+        {14, "tt_ss"},
         {16, "tt_misc"},
     };  
     
@@ -367,8 +364,6 @@ int main(int argc, char** argv) {
     });
 
 
-    //MF begin
-
     //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding
     //    auto bins = cb.cp().bin_set();
     // For control region bins data (should) = sum of bkgs already
@@ -383,9 +378,6 @@ int main(int argc, char** argv) {
       }
     }
 
-    //MF end
-    
-    
     //     //Merge to one bin for control region bins
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
     //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
@@ -399,7 +391,6 @@ int main(int argc, char** argv) {
       }
     }
 
-    //MF begin    
     // At this point we can fix the negative bins
     std::cout << "Fixing negative bins\n";
     cb.ForEachProc([](ch::Process *p) {
@@ -438,8 +429,6 @@ int main(int argc, char** argv) {
 	  // s->shape_d()->Print("range");
 	}
       });
-    //MF end
-
     
     //! [part8]
     auto bbb = ch::BinByBinFactory()
