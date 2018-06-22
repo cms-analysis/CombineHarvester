@@ -169,38 +169,43 @@ int main(int argc, char** argv) {
     
     map<string,Categories> cats;
     cats["et"] = {
-        { 2, "et_ggH"},
-        { 3, "et_qqH"},
+        { 2, "et_ggh"},
+        { 3, "et_qqh"},
         {11, "et_w"},
         {12, "et_ztt"},
         {13, "et_tt"},
-        {14, "et_qcd"},
+        {14, "et_ss"},
         {15, "et_zll"},
         {16, "et_misc"},
     };
     
     cats["mt"] = {
-        { 2, "mt_ggH"},
-        { 3, "mt_qqH"},
+        { 2, "mt_ggh"},
+        { 3, "mt_qqh"},
         {11, "mt_w"},
         {12, "mt_ztt"},
         {13, "mt_tt"},
-        {14, "mt_qcd"},
+        {14, "mt_ss"},
         {15, "mt_zll"},
         {16, "mt_misc"},
     };
     
     cats["em"] = {
-        {1, "em_0jet"},
-        {2, "em_boosted"},
-        {3, "em_vbf"}};
-    
+        { 2, "em_ggh"},
+        { 3, "em_qqh"},
+        {11, "em_w"},
+        {12, "em_ztt"},
+        {13, "em_tt"},
+        {14, "em_ss"},
+        {15, "em_zll"},
+        {16, "em_misc"},
+    };
     
     cats["tt"] = {
-        { 2, "tt_ggH"},
-        { 3, "tt_qqH"},
+        { 2, "tt_ggh"},
+        { 3, "tt_qqh"},
         {12, "tt_ztt"},
-        {14, "tt_qcd"},
+        {14, "tt_ss"},
         {16, "tt_misc"},
     };  
     
