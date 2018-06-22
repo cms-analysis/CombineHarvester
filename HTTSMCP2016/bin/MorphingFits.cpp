@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     
     
     VString chns = {"mt"};
-    if(ff_fracs) chns = {"mt","et"};
+    if(ff_fracs) chns = {"mt","et","tt"};
     
     map<string, VString> bkg_procs;
     VString sig_procs;
@@ -136,7 +136,8 @@ int main(int argc, char** argv) {
           {3, "mt_boosted_low"},
           {4, "mt_boosted_high"},
           {5, "mt_dijet_lowboost"},
-          {6, "mt_dijet_boosted"}
+          {6, "mt_dijet_boosted"},
+          {7, "mt_btag"}
       };
       cats["et"] = {
           {1, "et_0jet"},
@@ -144,7 +145,8 @@ int main(int argc, char** argv) {
           {3, "et_boosted_low"},
           {4, "et_boosted_high"},
           {5, "et_dijet_lowboost"},
-          {6, "et_dijet_boosted"}
+          {6, "et_dijet_boosted"},
+          {7, "et_btag"}
       };
       cats["tt"] = {
           {1, "tt_inclusive_1"},
@@ -215,6 +217,11 @@ int main(int argc, char** argv) {
     cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"},embed})).channel({"tt"}).AddSyst(cb,
                                         "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
 
+    // btag efficiencies
+    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).channel({"et","mt"}).AddSyst(cb,
+                                               "CMS_fake_b_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).channel({"et","mt"}).AddSyst(cb,
+                                               "CMS_eff_b_$ERA", "shape", SystMap<>::init(1.00));
     
     if(mode==0 && !ff_fracs){
         // id uncertainties for j->tau and l->tau will be added in physics model
@@ -319,13 +326,16 @@ int main(int argc, char** argv) {
                                                "CMS_QCD_OSSS_$CHANNEL_BOOSTED_$ERA", "lnN", SystMap<>::init(1.33));
       cb.cp().process({"QCD"}).channel({"et"}).bin_id({5,6}).AddSyst(cb,
                                                "CMS_QCD_OSSS_$CHANNEL_DIJET_$ERA", "lnN", SystMap<>::init(1.48));
-      
+      cb.cp().process({"QCD"}).channel({"et"}).bin_id({7}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_BTAG_$ERA", "lnN", SystMap<>::init(1.27));
       cb.cp().process({"QCD"}).channel({"mt"}).bin_id({1,2}).AddSyst(cb,
                                                "CMS_QCD_OSSS_$CHANNEL_0JET_$ERA", "lnN", SystMap<>::init(1.1));
       cb.cp().process({"QCD"}).channel({"mt"}).bin_id({3,4}).AddSyst(cb,
                                                "CMS_QCD_OSSS_$CHANNEL_BOOSTED_$ERA", "lnN", SystMap<>::init(1.1));
       cb.cp().process({"QCD"}).channel({"mt"}).bin_id({5,6}).AddSyst(cb,
                                                "CMS_QCD_OSSS_$CHANNEL_DIJET_$ERA", "lnN", SystMap<>::init(1.1));
+      cb.cp().process({"QCD"}).channel({"mt"}).bin_id({7}).AddSyst(cb,
+                                               "CMS_QCD_OSSS_$CHANNEL_BTAG_$ERA", "lnN", SystMap<>::init(1.32));
       
       
       // based on the Ersatz study
@@ -337,6 +347,8 @@ int main(int argc, char** argv) {
                                            "WHighMTtoLowMT_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.182));
       cb.cp().process({"W"}).channel({"et","mt"}).bin_id({5,6}).AddSyst(cb,
                                            "WlowPTtoHighPT_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.279));
+      cb.cp().process({"W"}).channel({"et","mt"}).bin_id({5,6}).AddSyst(cb,
+                                           "WHighMTtoLowMT_btag_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.2));
       
       // W OS/SS systematic uncertainties 
       cb.cp().process({"W"}).channel({"et"}).bin_id({1,2}).AddSyst(cb,
@@ -345,12 +357,16 @@ int main(int argc, char** argv) {
                                            "WOSSS_syst_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.029));
       cb.cp().process({"W"}).channel({"et"}).bin_id({5,6}).AddSyst(cb,
                                            "WOSSS_syst_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.131));
+      cb.cp().process({"W"}).channel({"2t"}).bin_id({7}).AddSyst(cb,
+                                           "WOSSS_syst_btag_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.019));
       cb.cp().process({"W"}).channel({"mt"}).bin_id({1,2}).AddSyst(cb,
                                            "WOSSS_syst_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.012));
       cb.cp().process({"W"}).channel({"mt"}).bin_id({3,4}).AddSyst(cb,
                                            "WOSSS_syst_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.049));
       cb.cp().process({"W"}).channel({"mt"}).bin_id({5,6}).AddSyst(cb,
                                            "WOSSS_syst_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.086));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({7}).AddSyst(cb,
+                                           "WOSSS_syst_btag_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.024));
       
       // W OS/SS statistical uncertainties
       cb.cp().process({"W"}).channel({"et"}).bin_id({1,2}).AddSyst(cb,
@@ -359,12 +375,16 @@ int main(int argc, char** argv) {
                                            "WOSSS_stat_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.026));
       cb.cp().process({"W"}).channel({"et"}).bin_id({5,6}).AddSyst(cb,
                                            "WOSSS_stat_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.082));
+      cb.cp().process({"W"}).channel({"et"}).bin_id({7}).AddSyst(cb,
+                                           "WOSSS_stat_btag_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.029));
       cb.cp().process({"W"}).channel({"mt"}).bin_id({1,2}).AddSyst(cb,
                                            "WOSSS_stat_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.026));
       cb.cp().process({"W"}).channel({"mt"}).bin_id({3,4}).AddSyst(cb,
                                            "WOSSS_stat_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.020));
       cb.cp().process({"W"}).channel({"mt"}).bin_id({5,6}).AddSyst(cb,
                                            "WOSSS_stat_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.066));
+      cb.cp().process({"W"}).channel({"mt"}).bin_id({7}).AddSyst(cb,
+                                           "WOSSS_stat_btag_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.022));
       
     }  
     
@@ -466,6 +486,12 @@ int main(int argc, char** argv) {
     .SetFixNorm(false);
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+    
+    auto bbb_sig = ch::BinByBinFactory()
+    .SetAddThreshold(0.)
+    .SetMergeThreshold(0.4)
+    .SetFixNorm(false);
+    bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
 
     ch::SetStandardBinNames(cb);
     
@@ -495,6 +521,8 @@ int main(int argc, char** argv) {
           writer.WriteCards(chn+"_boosted_hi", cb.cp().channel({chn}).bin_id({4}));
           writer.WriteCards(chn+"_dijet_lowboost", cb.cp().channel({chn}).bin_id({5}));
           writer.WriteCards(chn+"_dijet_boosted", cb.cp().channel({chn}).bin_id({6}));
+          writer.WriteCards(chn+"_btag", cb.cp().channel({chn}).bin_id({7}));
+          writer.WriteCards(chn+"_combined", cb.cp().channel({chn}).bin_id({2,3,4,5,6,7}));
         } else {
           writer.WriteCards(chn+"_inclusive", cb.cp().channel({chn}).bin_id({1,7}));     
           writer.WriteCards(chn+"_0jet", cb.cp().channel({chn}).bin_id({2,8}));
@@ -502,8 +530,8 @@ int main(int argc, char** argv) {
           writer.WriteCards(chn+"_boosted_hi", cb.cp().channel({chn}).bin_id({4,10}));
           writer.WriteCards(chn+"_dijet_lowboost", cb.cp().channel({chn}).bin_id({5,11}));
           writer.WriteCards(chn+"_dijet_boosted", cb.cp().channel({chn}).bin_id({6,12}));
+          writer.WriteCards(chn+"_combined", cb.cp().channel({chn}).bin_id({2,3,4,5,6,8,9,10,11,12}));
         }
-        writer.WriteCards(chn+"_combined", cb.cp().channel({chn}).bin_id({2,3,4,5,6,8,9,10,11,12}));
       }
   
     }
