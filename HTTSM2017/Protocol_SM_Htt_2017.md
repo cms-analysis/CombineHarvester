@@ -1,8 +1,8 @@
 # THIS NEEDS FURTHER UPDATES - work-in-progress
 
-# Link to the CombineHarvester twiki:
+# Links
 [CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)
-
+[Combine gitbook](https://cms-hcomb.gitbooks.io/combine/content/)
 
 # Creating datacards
 
