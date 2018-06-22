@@ -234,17 +234,18 @@ def AddSystematics2017(cb):
      # 'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
 
   # lepton efficiencies
-  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
-  # cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','lnN',ch.SystMap()(1.02))
+  # cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','lnN',ch.SystMap()(1.02))
 
-  cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
-  # cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','lnN',ch.SystMap()(1.02))
+  # cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','lnN',ch.SystMap()(1.02))
 
-  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','shape',ch.SystMap()(1.0))
-  # cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','lnN',ch.SystMap()(1.04))
+  # TO BE PUT IN AGAIN!!!
+  # cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','lnN',ch.SystMap()(1.04))
 
-  cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','shape',ch.SystMap()(1.0))
-  # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','lnN',ch.SystMap()(1.04))
+  # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','lnN',ch.SystMap()(1.04))
 
   # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_trigger_Zll_13TeV','shape',ch.SystMap()(1.0))
   # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_MVAID_Zll_13TeV','shape',ch.SystMap()(1.0))
@@ -258,12 +259,12 @@ def AddSystematics2017(cb):
   cb.cp().channel(['Znn']).AddSyst(cb,'CMS_vhbb_trigger_MET_13TeV','lnN',ch.SystMap()(1.005))
 
   # VpT reweightings
-  cb.cp().AddSyst(cb,'CMS_vhbb_topptreweighting_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_topptreweighting_13TeV','shape',ch.SystMap()(1.0))
   
-  cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
+  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
       'CMS_vhbb_ptwweights_wlf_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
+  cb.cp().channel(['Wen','Wmn']).process(['Wj1b' 'Wj2b' 's_Top']).AddSyst(cb,
       'CMS_vhbb_ptwweights_whf_13TeV','shape',ch.SystMap()(1.0))
 
   # cb.cp().AddSyst(cb,
@@ -590,13 +591,17 @@ def AddSystematics2016(cb):
      # 'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
  
   # lepton efficiencies
-  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV_2016','lnN',ch.SystMap()(1.02))
 
-  cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV_2016','lnN',ch.SystMap()(1.02))
 
-  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV_2016','lnN',ch.SystMap()(1.04))
 
-  cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV_2016','shape',ch.SystMap()(1.0))
+  # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV_2016','lnN',ch.SystMap()(1.04))
 
   # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_trigger_Zll_13TeV','shape',ch.SystMap()(1.0))
   # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_MVAID_Zll_13TeV','shape',ch.SystMap()(1.0))
@@ -610,7 +615,7 @@ def AddSystematics2016(cb):
   cb.cp().channel(['Znn']).AddSyst(cb,'CMS_vhbb_trigger_MET_13TeV_2016','lnN',ch.SystMap()(1.02))
 
   # VpT reweightings
-  cb.cp().AddSyst(cb,'CMS_vhbb_topptreweighting_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_topptreweighting_13TeV_2016','shape',ch.SystMap()(1.0))
 
   cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
      'CMS_vhbb_ptwweights_wlf_13TeV_2016','shape',ch.SystMap()(1.0))
