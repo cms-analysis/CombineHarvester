@@ -234,17 +234,17 @@ def AddSystematics2017(cb):
      # 'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
 
   # lepton efficiencies
-  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
-  # cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','lnN',ch.SystMap()(1.02))
+  
+  # Lepton shapes buggy in shapes/AT/UNBLINDINGVHbb, using lnN
+  # cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','lnN',ch.SystMap()(1.02))
 
-  # Electron shapes buggy in shapes/AT/UNBLINDINGVHbb
   # cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
   cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','lnN',ch.SystMap()(1.02))
 
-  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','shape',ch.SystMap()(1.0))
-  # cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','lnN',ch.SystMap()(1.04))
+  # cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','lnN',ch.SystMap()(1.04))
 
-  # Electron shapes buggy in shapes/AT/UNBLINDINGVHbb
   # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','shape',ch.SystMap()(1.0))
   cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','lnN',ch.SystMap()(1.04))
 
@@ -463,6 +463,12 @@ def AddSystematics2017(cb):
                         x.process() in ['s_Top','TT','Wj0b','Wj1b','Wj2b','Zj0b','Zj1b','Zj2b','VVHF','VVLF','WH_hbb','ZH_hbb'] and 
                         x.bin_id() in [1,3,5,6,7] and 
                         x.name() in 'CMS_scale_j_PileUpPtBB_13TeV'
+                        )
+  cb.FilterSysts(lambda x: 
+                        x.channel() in ['Znn'] and 
+                        x.process() in ['Zj0b'] and 
+                        x.bin_id() in [1,3] and 
+                        x.name() in 'CMS_res_j_13TeV'
                         )
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_RelativePtHF_13TeV')
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta0')
