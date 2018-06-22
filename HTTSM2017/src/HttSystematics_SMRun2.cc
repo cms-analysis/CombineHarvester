@@ -194,14 +194,6 @@ namespace ch {
                                                   "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_truetau})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
-	/* mf
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-                                                  "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-                                                  "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
-                                                  "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
-	*/
 
         //##############################################################################
         //  jet and met energy Scale
@@ -303,7 +295,7 @@ namespace ch {
          
          
          }*/
-	/* MF
+	/*
         for (string uncert:uncertNames){
             
             cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et"}).bin_id({10,11,14}).AddSyst(cb,
@@ -411,7 +403,7 @@ namespace ch {
         
         
         //This should affect only shape (normalized to nominal values)
-	/* MF MISSING
+	/* MISSING SO FAR
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
                                              "WSFUncert_$CHANNEL_0jet_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2}).AddSyst(cb,
@@ -456,15 +448,10 @@ namespace ch {
         //##############################################################################
         // ZL shape  and electron/muon  to tau fake only in  mt and et channels (updated March 22)
         //##############################################################################
-        /* MF MISSING
         cb.cp().process( {"ZL"}).channel({"mt","et"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZL"}).channel({"mt","et"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-	*/
-        
-        
-        
         
         
 
@@ -474,7 +461,6 @@ namespace ch {
 //        cb.cp().process({"ZL"}).channel({"et"}).AddSyst(cb,
 //                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
         
-        /* MF
         cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
                                                                      "CMS_mFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1,2,3}).AddSyst(cb,
@@ -483,7 +469,6 @@ namespace ch {
                                                                      "CMS_eFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZL"}).channel({"et"}).bin_id({1,2,3}).AddSyst(cb,
                                                                      "CMS_eFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
-	*/
         
 //        
 //        cb.cp().process( {"ZL"}).channel({"mt"}).bin_id({1}).AddSyst(cb,
@@ -512,10 +497,8 @@ namespace ch {
         //##############################################################################
         
         //scale_gg on signal
-	/* MF MISSING
         cb.cp().process( {"ggH"}).channel({"et","mt","tt","em"}).AddSyst(cb,
                                              "CMS_scale_gg_$ERA", "shape", SystMap<>::init(1.00));
-	*/
         
         // Scale uncertainty on signal Applies to ggH in boosted and VBF. Event-by-event weight applied as a func(on of pth or mjj. Fully correlated between categories and final states.
         
@@ -706,11 +689,8 @@ namespace ch {
         
         
         //   Additonal uncertainties applied to the paper i.e. top mass 
-	/* MF MISSING
         cb.cp().process( {"ggH"}).channel({"et","mt","em","tt"}).AddSyst(cb,
                                                                          "TopMassTreatment_$ERA", "shape", SystMap<>::init(1.00));
-	*/
-        
         
         cb.cp().AddSyst(cb, "CMS_ggH_STXSmig01", "lnN", SystMap<channel, bin_id, process>::init
                         ({"em"},{1},{"ggH"}, 0.959)
@@ -836,13 +816,10 @@ namespace ch {
 //            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
 //                                            "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
-            /* MF MISSING
             cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt","et","mt"}).bin_id({3}).AddSyst(cb,
                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
             cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-	    */
-
 
             // Add the zmumu extrapolation uncertainties to Drell-Yan in CRs
             // if applicable
@@ -871,12 +848,10 @@ namespace ch {
                 cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({12}).AddSyst(cb,
                                                  "CMS_htt_zmm_norm_extrap_VBF_tt_$ERA", "lnN", SystMap<>::init(1.10));
 
-		/* MF MISSING
                 cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"mt","et"}).bin_id({12,15}).AddSyst(cb,
                                                  "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
                 cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({12,15}).AddSyst(cb,
                                                  "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-		*/
 
             }
             

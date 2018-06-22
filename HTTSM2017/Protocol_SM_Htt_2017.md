@@ -6,9 +6,9 @@
 
 # Creating datacards
 
-    MorphingSM2017 --input_folder_mt=Vienna/ --input_folder_et=Vienna/ --input_folder_tt=Vienna/ --input_folder_em=Vienna/ --input_folder_mm=Vienna/ --input_folder_ttbar=Vienna/  --channel="mt" --jetfakes=false --postfix="-ML" --auto_rebin=true --real_data=false --output_folder test &>log_dc.txt
-    MorphingSM2017 --input_folder_mt=Vienna/ --channel="mt" --jetfakes=false --postfix="-ML" --auto_rebin=true --real_data=false --output_folder test &>log_dc.txt   #same for just one channel
-    MorphingSM2017 --input_folder_mt=Vienna/ --input_folder_et=Vienna/ --channel="mt,et" --jetfakes=false --postfix="-ML" --auto_rebin=true --real_data=false --output_folder test &>log_dc.txt   #same for a few channels
+    MorphingSM2017 --input_folder_mt=Vienna/ --input_folder_et=Vienna/ --input_folder_tt=Vienna/ --input_folder_em=Vienna/ --input_folder_mm=Vienna/ --input_folder_ttbar=Vienna/  --channel="mt" --jetfakes=true --postfix="-ML" --auto_rebin=true --real_data=false --output_folder test &>log_dc.txt
+    MorphingSM2017 --input_folder_mt=Vienna/ --channel="mt" --jetfakes=true --postfix="-ML" --auto_rebin=true --real_data=false --output_folder test &>log_dc.txt   #same for just one channel
+    MorphingSM2017 --input_folder_mt=Vienna/ --input_folder_et=Vienna/ --channel="mt,et" --jetfakes=true --postfix="-ML" --auto_rebin=true --real_data=false --output_folder test &>log_dc.txt   #same for a few channels
 
 
 # Building the workspaces:
