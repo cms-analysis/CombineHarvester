@@ -234,16 +234,17 @@ def AddSystematics2017(cb):
      # 'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
 
   # lepton efficiencies
-  # cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
-  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','lnN',ch.SystMap()(1.02))
+  cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','shape',ch.SystMap()(1.0))
+  # cb.cp().channel(['Wmn']).AddSyst(cb,'CMS_vhbb_eff_m_Wln_13TeV','lnN',ch.SystMap()(1.02))
 
+  # Electron shapes buggy in shapes/AT/UNBLINDINGVHbb
   # cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','shape',ch.SystMap()(1.0))
   cb.cp().channel(['Wen']).AddSyst(cb,'CMS_vhbb_eff_e_Wln_13TeV','lnN',ch.SystMap()(1.02))
 
-  # TO BE PUT IN AGAIN!!!
-  # cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','shape',ch.SystMap()(1.0))
-  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','lnN',ch.SystMap()(1.04))
+  cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','shape',ch.SystMap()(1.0))
+  # cb.cp().channel(['Zmm']).AddSyst(cb,'CMS_vhbb_eff_m_Zll_13TeV','lnN',ch.SystMap()(1.04))
 
+  # Electron shapes buggy in shapes/AT/UNBLINDINGVHbb
   # cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','shape',ch.SystMap()(1.0))
   cb.cp().channel(['Zee']).AddSyst(cb,'CMS_vhbb_eff_e_Zll_13TeV','lnN',ch.SystMap()(1.04))
 
@@ -456,6 +457,22 @@ def AddSystematics2017(cb):
   cb.cp().AddSyst(cb,'CMS_bTagWeightDeepBcErr2_13TeV_pt4_eta1','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_bTagWeightDeepBcErr2_13TeV_pt4_eta2','shape',ch.SystMap()(1.0))
 
+  # EXCLUDE PROBLEMATIC NUISANCES for 2017 shapes shapes/AT/UNBLINDINGVHbb
+  cb.FilterSysts(lambda x: 
+                        x.channel() in ['Wen','Wmn'] and 
+                        x.process() in ['s_Top','TT','Wj0b','Wj1b','Wj2b','Zj0b','Zj1b','Zj2b','VVHF','VVLF','WH_hbb','ZH_hbb'] and 
+                        x.bin_id() in [1,3,5,6,7] and 
+                        x.name() in 'CMS_scale_j_PileUpPtBB_13TeV'
+                        )
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_RelativePtHF_13TeV')
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta0')
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta1')
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and 'CMS_bTagWeightDeepBJES_13TeV_pt' in x.name() )
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and 'CMS_bTagWeightDeepBHF_13TeV_pt' in x.name() )
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and 'CMS_bTagWeightDeepBLF_13TeV_pt' in x.name() )
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBHF_13TeV_pt0_eta2')
+  
+  
 ###########################################
 ### Uncertainties for 2016
 ###########################################
