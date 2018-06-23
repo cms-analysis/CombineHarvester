@@ -1,42 +1,52 @@
 import os,sys,ROOT
 import datetime,time
+channels=""
 
 ##############################################
 def stamp():
     ts = time.time()
-    print '\n\n'
+    print '\n\n';sys.stdout.flush()
     print datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S');sys.stdout.flush()
 
 def execute(command):
-    print(command)
+    print(command);sys.stdout.flush()
     os.system(command)
 
 ##############################################
 
-output_folder = "testJun20_"
-year = "2017"
+output_folder = "forUnblindingJun22_"
+year = "2016"
+extra_folder = "--extra_folder UNBLINDINGVHbb"
+channels = "--channel Znn"
 
 print 'change dir to submission';sys.stdout.flush()
 os.chdir('/afs/cern.ch/work/p/perrozzi/private/git/Hbb/combination/CMSSW_8_1_0/src/CombineHarvester/VH2017/')
+print 'creating output dir if needed';sys.stdout.flush()
+if not os.path.exists('output/'+output_folder+''+year):
+    os.makedirs('output/'+output_folder+''+year)
 
-stamp()
-print 'create datacards';sys.stdout.flush()
-command = 'python scripts/VHbb2017.py --output_folder '+output_folder+' --year '+year+''
-execute(command)
+# stamp()
+# print 'create datacards';sys.stdout.flush()
+# command = 'python scripts/VHbb2017.py --output_folder '+output_folder+' --year '+year+' '+extra_folder+' '+channels
+# execute(command)
 
 # os.system('combineTool.py -M T2W -o "ws.root" -i output/'+output_folder+''+year+'/*')
 
+# DO NOT COMMENT!
+channels = channels.replace("--channel ",'');
+if channels == '': channels = '*'
+
 stamp()
 print 'create masked workspaces';sys.stdout.flush()
-command = 'combineTool.py -M T2W -o "ws_masked.root" -i output/'+output_folder+''+year+'/* --channel-masks'
+command = 'combineTool.py -M T2W -o "ws_masked.root" -i output/'+output_folder+''+year+'/'+channels+' --channel-masks'
 execute(command)
 
 stamp()
 print 'start channel loop';sys.stdout.flush()
-for channel in ['Zll','Wln','Znn','cmb']:
-# for channel in ['Zll']:
-    print '\n\n'
-    print datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S');sys.stdout.flush()
+# for channel in ['Zll','Wln','Znn','cmb']:
+for channel in channels.split(','):
+    print '\n\n';sys.stdout.flush()
+    stamp()
     print 'channel',channel;sys.stdout.flush()
     print 'build asimov dataset';sys.stdout.flush()
     command = 'combineTool.py -M GenerateOnly --setParameters '\
