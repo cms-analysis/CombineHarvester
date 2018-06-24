@@ -121,14 +121,14 @@ First we need to create a new workspace, set up for channel masking:
 This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
 We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
 
-`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root --cminDefaultMinimizerStrategy 0`
 
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_masked.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --robustFit 1`
 
 ### Significance:
-Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`\
-Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist`\
-Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there`\
+Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --cminDefaultMinimizerStrategy 0`\
+Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist --cminDefaultMinimizerStrategy 0`\
+Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`\
 
 [*] CR-only-postfit:
 However, this is the fairer thing to do as the CR fit can have quite a large effect on the background predictions in the SR:
@@ -140,10 +140,10 @@ First we need to create a new workspace, set up for channel masking:
 This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
 We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
 
-`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root --cminDefaultMinimizerStrategy 0`
 
 Finally evaluate the cr-only-post-fit expected significance:
-`combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws_masked.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
+`combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws_masked.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --cminDefaultMinimizerStrategy 0`
 
 
 ## Pre- and post-fit plots
@@ -262,11 +262,11 @@ Make workspace with separate r for 0,1 and 2 lepton channels:
 
 Now generate toys for each workspace:
 ```
-combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root --cminDefaultMinimizerStrategy 0
 
-combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_ZH=1,r_WH=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_proc.root -n .ToyPerProc
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_ZH=1,r_WH=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_proc.root -n .ToyPerProc --cminDefaultMinimizerStrategy 0
 
-combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_zerolep=1,r_onelep=1,r_twolep=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_channel.root -n .ToyPerChn
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_zerolep=1,r_onelep=1,r_twolep=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_channel.root -n .ToyPerChn --cminDefaultMinimizerStrategy 0
 
 ```
 
