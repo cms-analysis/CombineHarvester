@@ -21,6 +21,7 @@ class Impacts(CombineToolBase):
         group.add_argument('-d', '--datacard', required=True)
         group.add_argument('--redefineSignalPOIs')
         group.add_argument('--setPhysicsModelParameters')
+        group.add_argument('--setParameters')
         group.add_argument('--name', '-n', default='Test')
 
     def attach_args(self, group):
@@ -43,8 +44,12 @@ class Impacts(CombineToolBase):
             listed as nuisance parameters""")
         group.add_argument('--output', '-o', help="""write output json to a
             file""")
+        group.add_argument('--approx', default=None, choices=['hesse', 'robust'],
+            help="""Calculate impacts using the covariance matrix instead""")
 
     def run_method(self):
+        if self.args.allPars:
+            print 'Info: the behaviour of --allPars is now always enabled and the option will be removed in a future update'
         passthru = self.passthru
         mh = self.args.mass
         ws = self.args.datacard
@@ -57,45 +62,105 @@ class Impacts(CombineToolBase):
         passthru.extend(['-d', ws])
         if self.args.setPhysicsModelParameters is not None:
             passthru.extend(['--setPhysicsModelParameters', self.args.setPhysicsModelParameters])
+        if self.args.setParameters is not None:
+            passthru.extend(['--setParameters', self.args.setParameters])
+            self.args.setPhysicsModelParameters = self.args.setParameters
         pass_str = ' '.join(passthru)
+
         paramList = []
         if self.args.redefineSignalPOIs is not None:
             poiList = self.args.redefineSignalPOIs.split(',')
         else:
             poiList = utils.list_from_workspace(ws, 'w', 'ModelConfig_POI')
-        # print 'Have nuisance parameters: ' + str(paramList)
         print 'Have POIs: ' + str(poiList)
         poistr = ','.join(poiList)
+
+        if self.args.approx == 'hesse' and self.args.doFits:
+            self.job_queue.append(
+                'combine -M MultiDimFit -n _approxFit_%(name)s --algo none --redefineSignalPOIs %(poistr)s --floatOtherPOIs 1 --saveInactivePOI 1 --saveFitResult %(pass_str)s' % {
+                    'name': name,
+                    'poistr': poistr,
+                    'pass_str': pass_str
+                })
+            self.flush_queue()
+            sys.exit(0)
+        elif self.args.approx == 'robust' and self.args.doFits:
+            self.job_queue.append(
+                'combine -M MultiDimFit -n _approxFit_%(name)s --algo none --redefineSignalPOIs %(poistr)s --floatOtherPOIs 1 --saveInactivePOI 1 --robustHesse 1 %(pass_str)s' % {
+                    'name': name,
+                    'poistr': poistr,
+                    'pass_str': pass_str
+                })
+            self.flush_queue()
+            sys.exit(0)
+
+        ################################################
+        # Generate the initial fit(s)
+        ################################################
+        if self.args.doInitialFit and self.args.approx is not None:
+            print 'No --initialFit needed with --approx, use --output directly'
+            sys.exit(0)
         if self.args.doInitialFit:
             if self.args.splitInitial:
                 for poi in poiList:
                     self.job_queue.append(
-                        'combine -M MultiDimFit -n _initialFit_%(name)s_POI_%(poi)s --algo singles --redefineSignalPOIs %(poistr)s --floatOtherPOIs 1 --saveInactivePOI 1 -P %(poi)s %(pass_str)s' % vars())
+                        'combine -M MultiDimFit -n _initialFit_%(name)s_POI_%(poi)s --algo singles --redefineSignalPOIs %(poistr)s --floatOtherPOIs 1 --saveInactivePOI 1 -P %(poi)s %(pass_str)s' % {
+                            'name': name,
+                            'poi': poi,
+                            'poistr': poistr,
+                            'pass_str': pass_str
+                        })
             else:
                 self.job_queue.append(
-                    'combine -M MultiDimFit -n _initialFit_%(name)s --algo singles --redefineSignalPOIs %(poistr)s %(pass_str)s' % vars())
+                    'combine -M MultiDimFit -n _initialFit_%(name)s --algo singles --redefineSignalPOIs %(poistr)s %(pass_str)s' % {
+                        'name': name,
+                        'poistr': poistr,
+                        'pass_str': pass_str
+                    })
             self.flush_queue()
             sys.exit(0)
-        if self.args.splitInitial:
-            initialRes = {}
+
+        # Read the initial fit results
+        initialRes = {}
+        if self.args.approx is not None:
+            if self.args.approx == 'hesse':
+                fResult = ROOT.TFile('multidimfit_approxFit_%(name)s.root' % {'name': name})
+                rfr = fResult.Get('fit_mdf')
+                fResult.Close()
+                initialRes = utils.get_roofitresult(rfr, poiList, poiList)
+            elif self.args.approx == 'robust':
+                fResult = ROOT.TFile('robustHesse_approxFit_%(name)s.root' % {'name': name})
+                floatParams = fResult.Get('floatParsFinal')
+                rfr = fResult.Get('h_correlation')
+                rfr.SetDirectory(0)
+                fResult.Close()
+                initialRes = utils.get_robusthesse(floatParams, rfr, poiList, poiList)
+        elif self.args.splitInitial:
             for poi in poiList:
                 initialRes.update(utils.get_singles_results(
                 'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
         else:
             initialRes = utils.get_singles_results(
                 'higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
+
+        ################################################
+        # Build the parameter list
+        ################################################
         if len(named) > 0:
             paramList = named
-        elif self.args.allPars:
-            paramList = self.all_free_parameters(ws, 'w', 'ModelConfig', poiList)
         else:
-            paramList = utils.list_from_workspace(
-                ws, 'w', 'ModelConfig_NuisParams')
+            paramList = self.all_free_parameters(ws, 'w', 'ModelConfig', poiList)
+        # else:
+        #     paramList = utils.list_from_workspace(
+        #         ws, 'w', 'ModelConfig_NuisParams')
+
+        # Exclude some parameters
         if self.args.exclude is not None:
             exclude = self.args.exclude.split(',')
             paramList = [x for x in paramList if x not in exclude]
 
-        print 'Have nuisance parameters: ' + str(len(paramList))
+        print 'Have parameters: ' + str(len(paramList))
+
         prefit = utils.prefit_from_workspace(ws, 'w', paramList, self.args.setPhysicsModelParameters)
         res = {}
         res["POIs"] = []
@@ -112,8 +177,16 @@ class Impacts(CombineToolBase):
                 self.job_queue.append(
                     'combine -M MultiDimFit -n _paramFit_%(name)s_%(param)s --algo impact --redefineSignalPOIs %(poistr)s -P %(param)s --floatOtherPOIs 1 --saveInactivePOI 1 %(pass_str)s' % vars())
             else:
-                paramScanRes = utils.get_singles_results(
-                    'higgsCombine_paramFit_%(name)s_%(param)s.MultiDimFit.mH%(mh)s.root' % vars(), [param], poiList + [param])
+                if self.args.approx == 'hesse':
+                    paramScanRes = utils.get_roofitresult(rfr, [param], poiList + [param])
+                elif self.args.approx == 'robust':
+                    if floatParams.find(param):
+                        paramScanRes = utils.get_robusthesse(floatParams, rfr, [param], poiList + [param])
+                    else:
+                        paramScanRes = None
+                else:
+                    paramScanRes = utils.get_singles_results(
+                        'higgsCombine_paramFit_%(name)s_%(param)s.MultiDimFit.mH%(mh)s.root' % vars(), [param], poiList + [param])
                 if paramScanRes is None:
                     missing.append(param)
                     continue
@@ -123,6 +196,13 @@ class Impacts(CombineToolBase):
                                 param][p][1] for x in (paramScanRes[param][p][2], paramScanRes[param][p][0]))))})
             res['params'].append(pres)
         self.flush_queue()
+
+        if self.args.approx == 'hesse':
+                res['method'] = 'hesse'
+        elif self.args.approx == 'robust':
+                res['method'] = 'robust'
+        else:
+                res['method'] = 'default'
         jsondata = json.dumps(
             res, sort_keys=True, indent=2, separators=(',', ': '))
         # print jsondata
