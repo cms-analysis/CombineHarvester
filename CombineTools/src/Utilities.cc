@@ -368,6 +368,7 @@ void ZeroLargeErrorBins(TH1 *h) {
   for (int i = 1; i <= h->GetNbinsX(); ++i) {
     if (h->GetBinContent(i) < h->GetBinError(i)) {
       h->SetBinContent(i, 0.);
+      h->SetBinError(i, 0.);
     }
   }
 }
