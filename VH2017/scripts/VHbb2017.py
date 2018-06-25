@@ -61,6 +61,10 @@ args = parser.parse_args()
 
 cb = ch.CombineHarvester()
 
+cb.SetFlag('zero-negative-bins-on-import', 1)
+cb.SetFlag('check-large-weights-bins-on-import', 1)
+cb.SetFlag('zero-large-weights-bins-on-import', 1)
+
 shapes = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/VH2017/shapes/'
 
 mass = ['125']
