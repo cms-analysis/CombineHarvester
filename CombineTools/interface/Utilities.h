@@ -168,6 +168,9 @@ bool HasNegativeBins(TH1 const* h);
 
 void ZeroNegativeBins(TH1 *h);
 
+void HasLargeErrorBins(TH1 const* h);
+void ZeroLargeErrorBins(TH1 *h);
+
 // ---------------------------------------------------------------------------
 // Tuple Printing
 // ---------------------------------------------------------------------------

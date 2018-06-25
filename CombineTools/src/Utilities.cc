@@ -353,4 +353,23 @@ void ZeroNegativeBins(TH1 *h) {
     }
   }
 }
+
+bool HasLargeErrorBins(TH1 const* h) {
+  bool has_large = false;
+  for (int i = 1; i <= h->GetNbinsX(); ++i) {
+    if (h->GetBinContent(i) < h->GetBinError(i)) {
+      has_large = true;
+    }
+  }
+  return has_large;
+}
+
+void ZeroLargeErrorBins(TH1 *h) {
+  for (int i = 1; i <= h->GetNbinsX(); ++i) {
+    if (h->GetBinContent(i) < h->GetBinError(i)) {
+      h->SetBinContent(i, 0.);
+    }
+  }
+}
+
 }
