@@ -406,6 +406,7 @@ void CombineHarvester::LoadShapes(Process* entry,
         LOGLINE(log(), "Warning: process shape has negative bins");
         log() << Process::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h.get());
         }
       }
@@ -551,6 +552,7 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         LOGLINE(log(), "Warning: Systematic shape has negative bins");
         log() << Systematic::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h.get());
         }
       }
@@ -559,6 +561,7 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         LOGLINE(log(), "Warning: Systematic shape_u has negative bins");
         log() << Systematic::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h_u.get());
         }
       }
@@ -567,6 +570,7 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         LOGLINE(log(), "Warning: Systematic shape_d has negative bins");
         log() << Systematic::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h_d.get());
         }
       }
