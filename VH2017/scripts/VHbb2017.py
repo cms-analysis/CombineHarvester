@@ -61,9 +61,10 @@ args = parser.parse_args()
 
 cb = ch.CombineHarvester()
 
-cb.SetFlag('zero-negative-bins-on-import', 1)
-cb.SetFlag('check-large-weights-bins-on-import', 1)
-cb.SetFlag('reduce-large-weights-bins-on-import', 1)
+# uncomment to play with negative bins or large error bins with bin.error > bin.content
+# cb.SetFlag('zero-negative-bins-on-import', 1)
+# cb.SetFlag('check-large-weights-bins-on-import', 1)
+# cb.SetFlag('reduce-large-weights-bins-on-import', 1)
 
 shapes = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/VH2017/shapes/'
 
@@ -206,6 +207,10 @@ for chn in chns:
     cb.cp().channel([chn]).signals().ExtractShapes(
       file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
 
+# uncomment to play with rebinning (cutting, in reality) of the mva shape in signal region
+# binning=np.linspace(0.2,1.0,num=13)
+# print 'binning in SR for fitting variable:',binning
+# cb.cp().bin_id([1,2]).VariableRebin(binning)
 
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
