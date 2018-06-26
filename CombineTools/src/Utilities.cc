@@ -357,18 +357,17 @@ void ZeroNegativeBins(TH1 *h) {
 bool HasLargeErrorBins(TH1 const* h) {
   bool has_large = false;
   for (int i = 1; i <= h->GetNbinsX(); ++i) {
-    if (h->GetBinContent(i) < h->GetBinError(i)) {
+    if (h->GetBinError(i) > h->GetBinContent(i)) {
       has_large = true;
     }
   }
   return has_large;
 }
 
-void ZeroLargeErrorBins(TH1 *h) {
+void ReduceLargeErrorBins(TH1 *h) {
   for (int i = 1; i <= h->GetNbinsX(); ++i) {
-    if (h->GetBinContent(i) < h->GetBinError(i)) {
-      h->SetBinContent(i, 0.);
-      h->SetBinError(i, 0.);
+    if (h->GetBinError(i) > h->GetBinContent(i)) {
+      h->SetBinError(i, 0.99*h->GetBinContent(i));
     }
   }
 }
