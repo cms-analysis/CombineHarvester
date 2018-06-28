@@ -467,24 +467,10 @@ def AddSystematics2017(cb):
   cb.FilterSysts(lambda x: 
                         x.channel() in ['Znn'] and 
                         x.process() in ['Zj0b'] and 
-                        # x.bin_id() in [1,3] and 
-                        x.name() in ['CMS_res_j_13TeV','CMS_res_j_reg_13TeV','CMS_scale_j_AbsoluteMPFBias_13TeV']
+                        x.bin_id() in [1,3] and 
+                        x.name() in 'CMS_res_j_13TeV'
                         )
-  cb.FilterSysts(lambda x: 
-                        # x.channel() in ['Znn'] and 
-                        # x.process() in ['Zj0b'] and 
-                        # x.bin_id() in [1,3] and 
-                        # x.name() in ['CMS_vhbb_puWeight']
-                        x.name() in ['CMS_res_j_13TeV']
-                        )
-  cb.FilterSysts(lambda x: 
-                        x.process() in ['VVLF'] and 
-                        # x.process() in ['Zj0b'] and 
-                        # x.bin_id() in [1,3] and 
-                        # x.name() in ['CMS_vhbb_puWeight']
-                        x.type() in ['shape']
-                        )
-  cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj0b' and x.bin_id()==1 and x.name()=='CMS_LHE_weights_scale_muF_Zj0b')
+  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_RelativePtHF_13TeV')
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta0')
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta1')
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and 'CMS_bTagWeightDeepBJES_13TeV_pt' in x.name() )
@@ -534,83 +520,83 @@ def AddSystematics2016(cb):
   # TT Zll
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
      'SF_TT_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
      'SF_TT_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8],1.2))
 
   # Zj0b Zll
   cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
      'SF_Zj0b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
      'SF_Zj0b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8],1.2))
 
   # Zj1b Zll
   cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
      'SF_Zj1b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
      'SF_Zj1b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8],1.2))
 
   # Zj2b Zll
   cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
      'SF_Zj2b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
      'SF_Zj2b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8],1.2))
 
   # TT Znn
   cb.cp().channel(['Znn']).process(['TT']).AddSyst(cb,
      'SF_TT_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   # Zj0b Znn
   cb.cp().channel(['Znn']).process(['Zj0b']).AddSyst(cb,
      'SF_Zj0b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   # Zj1b Znn
   cb.cp().channel(['Znn']).process(['Zj1b']).AddSyst(cb,
      'SF_Zj1b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   # Zj2b Znn
   cb.cp().channel(['Znn']).process(['Zj2b']).AddSyst(cb,
      'SF_Zj2b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7],1.2))
 
   # TT Wln
   cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
      'SF_TT_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     ([1,3,5,6,7],1.2))
 
   # Wj0b Wln
   cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj0b']).AddSyst(cb,
      'SF_Wj0b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     ([1,3,5,6,7],1.2))
 
   # Wj1b Wln
   cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj1b']).AddSyst(cb,
      'SF_Wj1b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     ([1,3,5,6,7],1.2))
 
   # Wj2b Wln
   cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj2b']).AddSyst(cb,
      'SF_Wj2b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     ([1,3,5,6,7],1.2))
 
 
   #Set a sensible range for the rate params
   for syst in cb.cp().syst_type(["rateParam"]).syst_name_set():
-    cb.GetParameter(syst).set_range(0.0,5.0)
+    cb.GetParameter(syst).set_range(0.5,3.0)
 
   #Experimental uncertainties
   cb.cp().AddSyst( cb,'lumi_13TeV_2016','lnN', ch.SystMap()(1.025))
@@ -654,11 +640,9 @@ def AddSystematics2016(cb):
   # VpT reweightings
   cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_topptreweighting_13TeV_2016','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
-     'CMS_vhbb_ptwweights_wlf_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,'CMS_vhbb_ptwweights_wlf_13TeV_2016','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
-     'CMS_vhbb_ptwweights_whf_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen','Wmn']).process(['Wj1b' 'Wj2b' 's_Top']).AddSyst(cb,'CMS_vhbb_ptwweights_whf_13TeV_2016','shape',ch.SystMap()(1.0))
 
 #  cb.cp().AddSyst(cb,
 #      'CMS_vhbb_EWK_Zll','shape',ch.SystMap('channel','bin_id','process')
@@ -849,11 +833,3 @@ def AddSystematics2016(cb):
   cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
-
-  cb.FilterSysts(lambda x: 
-                        x.channel() in ['Wen','Wmn'] and 
-                        x.process() in ['s_Top','TT','Wj0b','Wj1b','Wj2b','Zj0b','Zj1b','Zj2b','VVHF','VVLF','WH_hbb','ZH_hbb'] and 
-                        # x.bin_id() in [1,3,5,6,7] and 
-                        # x.bin_id() in [3] and 
-                        'ptwweights' in x.name()
-                        )
