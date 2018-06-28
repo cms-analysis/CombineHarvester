@@ -470,6 +470,10 @@ def AddSystematics2017(cb):
                         # x.bin_id() in [1,3] and 
                         x.name() in 'CMS_res_j_13TeV'
                         )
+  cb.FilterSysts(lambda x: 
+                        x.process() in ['VVLF'] and 
+                        x.type() in 'shape'
+                        )
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_RelativePtHF_13TeV')
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta0')
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta1')
@@ -837,4 +841,8 @@ def AddSystematics2016(cb):
   # EXCLUDE PROBLEMATIC NUISANCES for 2016 shapes
   cb.FilterSysts(lambda x: 
                         x.name() in 'CMS_res_j_13TeV_2016'
+                        )
+  cb.FilterSysts(lambda x: 
+                        x.process() in ['VVLF'] and 
+                        x.type() in 'shape'
                         )
