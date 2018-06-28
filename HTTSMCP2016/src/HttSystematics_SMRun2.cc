@@ -180,10 +180,10 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
                                              "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(embed).channel({"em","et"}).AddSyst(cb,
-                                             "CMS_scale_embedded_e_$ERA", "shape", SystMap<>::init(1.00));
+                                             "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().process(embed).channel({"em","mt"}).AddSyst(cb,
-                                             "CMS_scale_embedded_m_$ERA", "shape", SystMap<>::init(1.00));
+                                             "CMS_scale_m_$ERA", "shape", SystMap<>::init(1.00));
         
         // Decay Mode based TES Settings
         cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
@@ -194,11 +194,11 @@ namespace ch {
                                                 "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
         cb.cp().process(embed).channel({"et","mt","tt"}).AddSyst(cb,
-                                                "CMS_scale_embedded_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
+                                                "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(embed).channel({"et","mt","tt"}).AddSyst(cb,
-                                                "CMS_scale_embedded_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+                                                "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(embed).channel({"et","mt","tt"}).AddSyst(cb,
-                                                "CMS_scale_embedded_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
+                                                "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
         //##############################################################################
         //  Embedded uncertainty on ttbar contamination
