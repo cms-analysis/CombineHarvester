@@ -1,7 +1,7 @@
 import os,sys,ROOT
 import datetime,time
 from pyteetime import tee
-channels=""
+channels="--channel Zll,Wmn,Znn,cmb"
 
 ##############################################
 def stamp():
@@ -18,26 +18,37 @@ def execute(command):
 ##############################################
 
 # FOLDERS / CHANNELS
-output_folder = "test_symmetry_" # specify output folder prefix
+output_folder = "test_Jun28_" # specify output folder prefix
 year = "2016" # select 2016 or 2017
 extra_folder = "--extra_folder 2016_June19_forUnblinding_DNNTransformed" # specify sub-folder for AT shapes
 # year = "2017" # select 2016 or 2017
 # extra_folder = "--extra_folder 2017_June19_forUnblinding_DNNPirminTransform" # specify sub-folder for AT shapes
-channels = "--channel Zll" # separate channels by comma without space, comment line for all channels
+# channels = "--channel cmb" # separate channels by comma without space, comment line for all channels
 # channels = "--channel Zll,Wmn,Znn"
 
 # DATACARDS, WS, TOYS
-create_datacards = True
+# create_datacards = True
+create_datacards = False
 create_masked_ws = True
+# create_masked_ws = False
 build_asimov_dataset = True
-# FITS
-significance_without_systematics = True
-significance_prefit = True
-significance_postfit_cr = True
-# DIAGNOSTIC
-diagnostic_postfit_cr = True
-dump_diagnostic_overconstraints = True
+# build_asimov_dataset = False
 
+# FITS
+# significance_without_systematics = True
+significance_without_systematics = True
+# significance_prefit = True
+significance_prefit = False
+# significance_postfit_cr = True
+significance_postfit_cr = False
+
+# DIAGNOSTIC
+# diagnostic_postfit_cr = True
+diagnostic_postfit_cr = False
+# dump_diagnostic_overconstraints = True
+dump_diagnostic_overconstraints = False
+
+# NOT USED / TO BE TESTED
 create_unmasked_ws = False
 diagnostic_postfit_cr_ws = False
 
@@ -76,6 +87,8 @@ if create_masked_ws:
         command = 'combineTool.py -M T2W -o "ws_masked.root" -i output/'+output_folder+''+year+'/'+channel+' --channel-masks'
         execute(command)
 
+if channels == '*': channels = 'Zll,Wln,Znn,cmb'
+
 stamp()
 print 'start channel loop';sys.stdout.flush()
 # for channel in ['Zll','Wln','Znn','cmb']:
@@ -86,7 +99,7 @@ for channel in channels.split(','):
         stamp()
         print 'channel',channel;sys.stdout.flush()
         print 'build asimov dataset';sys.stdout.flush()
-        command = 'combineTool.py -M GenerateOnly --setParameters --cminDefaultMinimizerStrategy 0'\
+        command = 'combineTool.py -M GenerateOnly --setParameters '\
                                           'mask_vhbb_Zmm_1_13TeV'+year+'=1,mask_vhbb_Zmm_2_13TeV'+year+'=1,'\
                                           'mask_vhbb_Zee_1_13TeV'+year+'=1,mask_vhbb_Zee_2_13TeV'+year+'=1,'\
                                           'mask_vhbb_Wen_1_13TeV'+year+'=1,mask_vhbb_Wmn_1_13TeV'+year+'=1,'\
