@@ -457,7 +457,7 @@ def AddSystematics2017(cb):
   cb.cp().AddSyst(cb,'CMS_bTagWeightDeepBcErr2_13TeV_pt4_eta1','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_bTagWeightDeepBcErr2_13TeV_pt4_eta2','shape',ch.SystMap()(1.0))
 
-  # EXCLUDE PROBLEMATIC NUISANCES for 2017 shapes shapes/AT/UNBLINDINGVHbb
+  # EXCLUDE PROBLEMATIC NUISANCES for 2017 shapes
   cb.FilterSysts(lambda x: 
                         x.channel() in ['Wen','Wmn'] and 
                         x.process() in ['s_Top','TT','Wj0b','Wj1b','Wj2b','Zj0b','Zj1b','Zj2b','VVHF','VVLF','WH_hbb','ZH_hbb'] and 
@@ -465,10 +465,14 @@ def AddSystematics2017(cb):
                         x.name() in 'CMS_scale_j_PileUpPtBB_13TeV'
                         )
   cb.FilterSysts(lambda x: 
-                        x.channel() in ['Znn'] and 
-                        x.process() in ['Zj0b'] and 
-                        x.bin_id() in [1,3] and 
+                        # x.channel() in ['Znn'] and 
+                        # x.process() in ['Zj0b'] and 
+                        # x.bin_id() in [1,3] and 
                         x.name() in 'CMS_res_j_13TeV'
+                        )
+  cb.FilterSysts(lambda x: 
+                        x.process() in ['VVLF'] and 
+                        x.type() in 'shape'
                         )
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_RelativePtHF_13TeV')
   # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta0')
@@ -640,11 +644,9 @@ def AddSystematics2016(cb):
   # VpT reweightings
   cb.cp().process(['TT']).AddSyst(cb,'CMS_vhbb_topptreweighting_13TeV_2016','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
-     'CMS_vhbb_ptwweights_wlf_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,'CMS_vhbb_ptwweights_wlf_13TeV_2016','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wen','Wmn']).AddSyst(cb,
-     'CMS_vhbb_ptwweights_whf_13TeV_2016','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen','Wmn']).process(['Wj1b' 'Wj2b' 's_Top']).AddSyst(cb,'CMS_vhbb_ptwweights_whf_13TeV_2016','shape',ch.SystMap()(1.0))
 
 #  cb.cp().AddSyst(cb,
 #      'CMS_vhbb_EWK_Zll','shape',ch.SystMap('channel','bin_id','process')
@@ -835,3 +837,12 @@ def AddSystematics2016(cb):
   cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta0','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta1','shape',ch.SystMap()(1.0))
   cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
+
+  # EXCLUDE PROBLEMATIC NUISANCES for 2016 shapes
+  cb.FilterSysts(lambda x: 
+                        x.name() in 'CMS_res_j_13TeV_2016'
+                        )
+  cb.FilterSysts(lambda x: 
+                        x.process() in ['VVLF'] and 
+                        x.type() in 'shape'
+                        )

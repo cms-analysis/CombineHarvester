@@ -19,6 +19,8 @@ CombineHarvester::CombineHarvester() : verbosity_(0), log_(&(std::cout)) {
   // }
   flags_["check-negative-bins-on-import"] = true;
   flags_["zero-negative-bins-on-import"] = false;
+  flags_["check-large-weights-bins-on-import"] = false;
+  flags_["reduce-large-weights-bins-on-import"] = false;
   flags_["allow-missing-shapes"] = true;
   flags_["workspaces-use-clone"] = false;
   flags_["workspace-uuid-recycle"] = true;
@@ -406,7 +408,18 @@ void CombineHarvester::LoadShapes(Process* entry,
         LOGLINE(log(), "Warning: process shape has negative bins");
         log() << Process::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h.get());
+        }
+      }
+    }
+    if (flags_.at("check-large-weights-bins-on-import")) {
+      if (HasLargeErrorBins(h.get())) {
+        LOGLINE(log(), "Warning: process shape has large error bins with (bin.error > bin.content)");
+        log() << Process::PrintHeader << *entry << "\n";
+        if (flags_.at("reduce-large-weights-bins-on-import")) {
+          LOGLINE(log(), "Warning: reducing large error bins with (bin.error > bin.content) to (bin.error = 0.99*bin.content)");
+          ReduceLargeErrorBins(h.get());
         }
       }
     }
@@ -551,6 +564,7 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         LOGLINE(log(), "Warning: Systematic shape has negative bins");
         log() << Systematic::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h.get());
         }
       }
@@ -559,6 +573,7 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         LOGLINE(log(), "Warning: Systematic shape_u has negative bins");
         log() << Systematic::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h_u.get());
         }
       }
@@ -567,7 +582,36 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         LOGLINE(log(), "Warning: Systematic shape_d has negative bins");
         log() << Systematic::PrintHeader << *entry << "\n";
         if (flags_.at("zero-negative-bins-on-import")) {
+          LOGLINE(log(), "Warning: zero-ing negative bins");
           ZeroNegativeBins(h_d.get());
+        }
+      }
+    }
+    if (flags_.at("check-large-weights-bins-on-import")) {
+      if (HasLargeErrorBins(h.get())) {
+        LOGLINE(log(), "Warning: process shape has large error bins with (bin.error > bin.content)");
+        log() << Systematic::PrintHeader << *entry << "\n";
+        if (flags_.at("reduce-large-weights-bins-on-import")) {
+          LOGLINE(log(), "Warning: reducing large error bins with (bin.error > bin.content) to (bin.error = 0.99*bin.content)");
+          ReduceLargeErrorBins(h.get());
+        }
+      }
+
+      if (HasLargeErrorBins(h_u.get())) {
+        LOGLINE(log(), "Warning: Systematic shape_u has large error bins with (bin.error > bin.content)");
+        log() << Systematic::PrintHeader << *entry << "\n";
+        if (flags_.at("reduce-large-weights-bins-on-import")) {
+          LOGLINE(log(), "Warning: reducing large error bins with (bin.error > bin.content) to (bin.error = 0.99*bin.content)");
+          ReduceLargeErrorBins(h_u.get());
+        }
+      }
+
+      if (HasLargeErrorBins(h_d.get())) {
+        LOGLINE(log(), "Warning: Systematic shape_d has large error bins with (bin.error > bin.content)");
+        log() << Systematic::PrintHeader << *entry << "\n";
+        if (flags_.at("reduce-large-weights-bins-on-import")) {
+          LOGLINE(log(), "Warning: reducing large error bins with (bin.error > bin.content) to (bin.error = 0.99*bin.content)");
+          ReduceLargeErrorBins(h_d.get());
         }
       }
     }
