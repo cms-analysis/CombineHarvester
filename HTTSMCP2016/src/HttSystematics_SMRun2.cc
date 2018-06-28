@@ -391,15 +391,19 @@ namespace ch {
         
         
         // QCD OS/SS uncertainty should include also extrapolation from non-iso -> iso (update me)
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({1,10}).AddSyst(cb,
-                                             "QCD_OSSS_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.1));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({2,13}).AddSyst(cb,
-                                             "QCD_OSSS_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.15));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({3,16}).AddSyst(cb,
-                                             "QCD_OSSS_dijet_lowboost_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.20));
-        cb.cp().process({"QCD"}).channel({"et","mt"}).bin_id({4}).AddSyst(cb,
-                                             "QCD_OSSS_dijet_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.30));
-        
+        cb.cp().process({"QCD"}).channel({"et"}).bin_id({1,10}).AddSyst(cb,
+                                             "QCD_OSSS_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.21));											 
+        cb.cp().process({"QCD"}).channel({"et"}).bin_id({2,13}).AddSyst(cb,
+                                             "QCD_OSSS_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.33));										 
+        cb.cp().process({"QCD"}).channel({"et"}).bin_id({3,4,16}).AddSyst(cb,
+                                             "QCD_OSSS_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.48));
+
+	cb.cp().process({"QCD"}).channel({"mt"}).bin_id({1,10}).AddSyst(cb,
+	                                     "QCD_OSSS_0jet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.09));											 
+        cb.cp().process({"QCD"}).channel({"mt"}).bin_id({2,13}).AddSyst(cb,
+	                                     "QCD_OSSS_boosted_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.07));										 
+        cb.cp().process({"QCD"}).channel({"mt"}).bin_id({3,4,16}).AddSyst(cb,
+	                                     "QCD_OSSS_dijet_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.08));       
         
         // based on the Ersatz study
         cb.cp().process({"W"}).channel({"et","mt"}).bin_id({1,11}).AddSyst(cb,
