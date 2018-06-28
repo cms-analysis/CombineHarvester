@@ -14,11 +14,13 @@ def execute(command):
     os.system(command)
 
 ##############################################
+###### START OF STEERABLE PARAMETERS #########
+##############################################
 
-output_folder = "test_symmetry_"
-year = "2016"
-extra_folder = "--extra_folder 2016forUnblinding_retry_June25"
-channels = "--channel Zll"
+output_folder = "test_symmetry_" # specify output folder prefix
+year = "2016" # select 2016 or 2017
+extra_folder = "--extra_folder 2016forUnblinding_retry_June25" # specify sub-folder for AT shapes
+channels = "--channel Zll" # separate channels by comma without space, comment line for all channels
 # channels = "--channel Wmn"
 
 # DATACARDS, WS, TOYS
@@ -34,6 +36,10 @@ diagnostic_postfit_cr = True
 dump_diagnostic_overconstraints = True
 
 create_unmasked_ws = False
+
+###############################################
+######### END OF STEERABLE PARAMETERS #########
+###############################################
 
 # LOGFILE = tee.stdout_start('log_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_'+year+'_'+channels.replace("--channel ",'').replace(',','_')+'_STDOUT.log',append=False) # STDOUT
 # tee.stderr_start('log_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_'+year+'_'+channels.replace("--channel ",'').replace(',','_')+'_STDERR.log',append=False) # STDERR
