@@ -17,11 +17,14 @@ def execute(command):
 ###### START OF STEERABLE PARAMETERS #########
 ##############################################
 
+# FOLDERS / CHANNELS
 output_folder = "test_symmetry_" # specify output folder prefix
 year = "2016" # select 2016 or 2017
-extra_folder = "--extra_folder 2016forUnblinding_retry_June25" # specify sub-folder for AT shapes
+extra_folder = "--extra_folder 2016_June19_forUnblinding_DNNTransformed" # specify sub-folder for AT shapes
+# year = "2017" # select 2016 or 2017
+# extra_folder = "--extra_folder 2017_June19_forUnblinding_DNNPirminTransform" # specify sub-folder for AT shapes
 channels = "--channel Zll" # separate channels by comma without space, comment line for all channels
-# channels = "--channel Wmn"
+# channels = "--channel Zll,Wmn,Znn"
 
 # DATACARDS, WS, TOYS
 create_datacards = True
@@ -36,6 +39,7 @@ diagnostic_postfit_cr = True
 dump_diagnostic_overconstraints = True
 
 create_unmasked_ws = False
+diagnostic_postfit_cr_ws = False
 
 ###############################################
 ######### END OF STEERABLE PARAMETERS #########
@@ -107,6 +111,13 @@ for channel in channels.split(','):
         print 'Post-fit CR-only significance (run the maximum likelihood fit)';sys.stdout.flush()
         command = 'combineTool.py -M Significance --cminDefaultMinimizerStrategy 0 --cminPreFit=1 --significance -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root '\
                                                       '--there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root'
+        execute(command)
+
+    if diagnostic_postfit_cr_ws:
+        stamp()
+        print 'Post-fit CR-only significance (run the maximum likelihood fit)';sys.stdout.flush()
+        command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root --there '\
+              '--cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV2017=1,mask_vhbb_Zmm_2_13TeV2017=1,mask_vhbb_Zee_1_13TeV2017=1,mask_vhbb_Zee_2_13TeV2017=1,mask_vhbb_Wen_1_13TeV2017=1,mask_vhbb_Wmn_1_13TeV2017=1,mask_vhbb_Znn_1_13TeV2017=1,r=0 -n .SRMasked --redefineSignalPOIs SF_TT_Wln_2017 --freezeParameters r,CMS_res_j_13TeV'
         execute(command)
 
     if diagnostic_postfit_cr:
