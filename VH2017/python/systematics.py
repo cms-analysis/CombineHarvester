@@ -474,13 +474,19 @@ def AddSystematics2017(cb):
                         x.process() in ['VVLF'] and 
                         x.type() in 'shape'
                         )
-  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_scale_j_RelativePtHF_13TeV')
-  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta0')
-  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='Zj1b' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBcErr2_13TeV_pt3_eta1')
-  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and 'CMS_bTagWeightDeepBJES_13TeV_pt' in x.name() )
-  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and 'CMS_bTagWeightDeepBHF_13TeV_pt' in x.name() )
-  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and 'CMS_bTagWeightDeepBLF_13TeV_pt' in x.name() )
-  # cb.FilterSysts(lambda x: x.channel()=='Znn' and x.process()=='ggZH_hbb' and x.bin_id()==7 and x.name()=='CMS_bTagWeightDeepBHF_13TeV_pt0_eta2')
+
+  # TT vhbb_Zee_8_13TeV2017 CMS_vhbb_puWeight 
+  cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'TT' and x.bin_id()==8 and x.name()=='CMS_vhbb_puWeight')
+  # VVLF vhbb_Zee_7_13TeV2017 CMS_vhbb_puWeight 
+  cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'VVLF' and x.bin_id()==7 and x.name()=='CMS_vhbb_puWeight')
+  # Zj0b vhbb_Zee_2_13TeV2017 CMS_vhbb_puWeight 
+  # Zj0b vhbb_Zee_3_13TeV2017 CMS_vhbb_puWeight 
+  # Zj0b vhbb_Zee_4_13TeV2017 CMS_vhbb_puWeight 
+  cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'Zj0b' and x.bin_id() in [2,3,4] and x.name()=='CMS_vhbb_puWeight')
+  # Zj0b vhbb_Zmm_1_13TeV2017 CMS_vhbb_puWeight 
+  # Zj0b vhbb_Zmm_2_13TeV2017 CMS_vhbb_puWeight 
+  # Zj0b vhbb_Zmm_4_13TeV2017 CMS_vhbb_puWeight
+  cb.FilterSysts(lambda x: x.channel() in ['Zmm'] and x.process() in 'Zj0b' and x.bin_id() in [1,2,4] and x.name()=='CMS_vhbb_puWeight')
   
   
 ###########################################
