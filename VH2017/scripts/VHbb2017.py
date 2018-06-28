@@ -22,6 +22,14 @@ def drop_zero_procs(chob,proc):
     chob.FilterSysts(lambda sys: matching_proc(proc,sys)) 
   return null_yield
 
+def drop_zero_systs(syst):
+  null_yield = (not (syst.value_u() > 0. and syst.value_d()>0.) ) and syst.type() in 'shape'
+  if(null_yield):
+    print 'Dropping systematic ',syst.name(),' for region ', syst.bin(), ' ,process ', syst.process(), '. up norm is ', syst.value_u() , ' and down norm is ', syst.value_d()
+    #chob.FilterSysts(lambda sys: matching_proc(proc,sys)) 
+  return null_yield
+
+
 def matching_proc(p,s):
   return ((p.bin()==s.bin()) and (p.process()==s.process()) and (p.signal()==s.signal()) 
          and (p.analysis()==s.analysis()) and  (p.era()==s.era()) 
@@ -214,6 +222,7 @@ for chn in chns:
 
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
+cb.FilterSysts(lambda x: drop_zero_systs(x))
 
 cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
 cb.SetGroup('bkg_theory',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST','.*LHE_weights.*TT.*','.*LHE_weights.*VV.*','.*LHE_weights.*Zj0b.*','LHE_weights.*Zj1b.*','LHE_weights.*Zj2b.*','LHE_weights.*Wj0b.*','LHE_weights.*Wj1b.*','LHE_weights.*Wj2b.*','LHE_weights.*s_Top.*','LHE_weights.*QCD.*'])
@@ -251,7 +260,7 @@ ch.SetStandardBinNames(cb)
 writer=ch.CardWriter("output/" + args.output_folder + year + "/$TAG/$BIN"+year+".txt",
                       "output/" + args.output_folder + year +"/$TAG/vhbb_input_$BIN"+year+".root")
 writer.SetWildcardMasses([])
-writer.SetVerbosity(1);
+writer.SetVerbosity(0);
                 
 #Combined:
 writer.WriteCards("cmb",cb);

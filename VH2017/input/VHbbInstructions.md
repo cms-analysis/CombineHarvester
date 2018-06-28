@@ -121,14 +121,14 @@ First we need to create a new workspace, set up for channel masking:
 This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
 We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
 
-`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root --cminDefaultMinimizerStrategy 0`
 
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_masked.root --there -t -1 --cminDefaultMinimizerStrategy 0 --algo singles --expectSignal 1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --robustFit 1`
 
 ### Significance:
-Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1`\
-Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist`\
-Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there`\
+Pre-fit expected[*]: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --cminDefaultMinimizerStrategy 0`\
+Post-fit expected: `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there -t -1 --expectSignal 1 --toysFrequentist --cminDefaultMinimizerStrategy 0`\
+Observed : `combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0`\
 
 [*] CR-only-postfit:
 However, this is the fairer thing to do as the CR fit can have quite a large effect on the background predictions in the SR:
@@ -140,10 +140,10 @@ First we need to create a new workspace, set up for channel masking:
 This adds additional parameters to the workspace which we can use to mask certain regions (=remove them from the likelihood).
 We will use this to generate a toy in which the nuisance parameters are set to their best-fit values (from effectively a b-only fit to the control regions):
 
-`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root`
+`combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root --cminDefaultMinimizerStrategy 0`
 
 Finally evaluate the cr-only-post-fit expected significance:
-`combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws_masked.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root`
+`combineTool.py -M Significance --significance -d output/<output_folder>/cmb/ws_masked.root --there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --cminDefaultMinimizerStrategy 0`
 
 
 ## Pre- and post-fit plots
@@ -262,11 +262,11 @@ Make workspace with separate r for 0,1 and 2 lepton channels:
 
 Now generate toys for each workspace:
 ```
-combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1 -t -1 --toysFrequentist  --expectSignal 1 --saveToys --there -d output/<output_folder>/cmb/ws_masked.root --cminDefaultMinimizerStrategy 0
 
-combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_ZH=1,r_WH=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_proc.root -n .ToyPerProc
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_ZH=1,r_WH=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_proc.root -n .ToyPerProc --cminDefaultMinimizerStrategy 0
 
-combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_zerolep=1,r_onelep=1,r_twolep=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_channel.root -n .ToyPerChn
+combineTool.py -M GenerateOnly --setParameters mask_vhbb_Zmm_1_13TeV<year>=1,mask_vhbb_Zmm_2_13TeV<year>=1,mask_vhbb_Zee_1_13TeV<year>=1,mask_vhbb_Zee_2_13TeV<year>=1,mask_vhbb_Wen_1_13TeV<year>=1,mask_vhbb_Wmn_1_13TeV<year>=1,mask_vhbb_Znn_1_13TeV<year>=1,r_zerolep=1,r_onelep=1,r_twolep=1 -t -1 --toysFrequentist  --saveToys --there -d output/<output_folder>/cmb/ws_channel.root -n .ToyPerChn --cminDefaultMinimizerStrategy 0
 
 ```
 
@@ -353,19 +353,19 @@ First set up the datacards as above and create the workspace.
 
 Run the initial fit:
 ```
-combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doInitialFit --robustFit 1 --setParameterRanges r=0,3
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doInitialFit --robustFit 1 --setParameterRanges r=0,3 --cminDefaultMinimizerStrategy 0 --X-rtd FITTER_DYN_STEP
 ```
 
 Then run fits for all nuisance parameters:
 ```
-combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars --cminDefaultMinimizerStrategy 0 --X-rtd FITTER_DYN_STEP [--job-mode condor --sub-opts='+JobFlavour = "workday"' --merge 5]
 ```
 
-We can submit these fits to a batch system too, by adding:  
+We can submit these fits to a batch system, by adding:  
 (lxbatch): `--job-mode lxbatch --sub-opts '-q <queuename>' --merge 10`  
 (condor):  `--job-mode condor --sub-opts='+JobFlavour = "workday"' ` 
 
-`--merge N` runs N of the fits in the same job, these fits can take a long time so --merge 5 is probably reasonable. 
+`--merge N` runs N of the fits in the same job, these fits can take a long time so --merge 5 is probably reasonable. This is given in square brackets as an example above 
 
 Collecting the results in a json file: 
 `combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --allPars -o impacts.json`
@@ -378,13 +378,67 @@ First set up the datacards as above and create the workspace.
 
 Run the initial fit:
 ```
-combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doInitialFit --robustFit 1 --setParameterRanges r=0,3 -t -1 --expectSignal 1
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doInitialFit --robustFit 1 --setParameterRanges r=0,3 -t -1 --expectSignal 1 --cminDefaultMinimizerStrategy 0 --X-rtd FITTER_DYN_STEP
 ```
 
-Then run fits for all nuisance parameters:
+Then run fits for all nuisance parameters (remember to submit them to the batch!):
 ```
-combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars -t -1 --expectSignal 1
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars -t -1 --expectSignal 1 --cminDefaultMinimizerStrategy 0 --X-rtd FITTER_DYN_STEP [--job-mode condor --sub-opts='+JobFlavour = "workday"' --merge 5]
 ```
+Collecting the results in a json file: 
+`combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --allPars -o impacts.json`
+
+Plotting:  
+`plotImpacts.py -i impacts.json -o impacts_out --transparent`
+
+## Impacts (approximation):
+Instructions based on slide 14 here: https://indico.cern.ch/event/718592/contributions/3042780/attachments/1669046/2676739/HFuture-Proj-June.pdf 
+
+To use it, you will have to change both your **combine** branch and you **CombineHarvester** branch:
+
+**To switch combine branch:**
+Go to $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit and do:
+
+```
+git checkout -b ajgilbert-81x-root606-yr 
+git pull https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit.git 81x-root606-yr
+```
+
+Then go to $CMSSW_BASE/src/CombineHarvester/ (make sure you have no local changes) and do:
+
+```
+git pull origin master
+```
+
+(NB if someone pushes these changes to the main HIG16044-dev branch this last step can be skipped)
+
+Finally go back to $CMSSW_BASE/src and re-compile with scram
+
+### Impacts (approximation) post-fit:
+
+```
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars --cminDefaultMinimizerStrategy 0 --X-rtd FITTER_DYN_STEP --approx robust
+```
+NOTE: in this case there is only one fit, therefore no need to submit to the batch
+
+Collecting the results in a json file: 
+`combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --allPars --approx robust -o impacts_approx.json`
+
+Plotting:  
+`plotImpacts.py -i impacts_approx.json -o impacts_out --transparent`
+
+### Impacts (approximation) pre-fit:
+
+```
+combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --doFits --robustFit 1 --setParameterRanges r=0,3 --allPars --cminDefaultMinimizerStrategy 0 --X-rtd FITTER_DYN_STEP --approx robust -t -1 --expectSignal 1
+```
+NOTE: in this case there is only one fit, therefore no need to submit to the batch
+
+Collecting the results in a json file: 
+`combineTool.py -M Impacts -d output/<output_folder>/cmb/ws.root -m 125 --allPars --approx robust -o impacts_approx.json`
+
+Plotting:  
+`plotImpacts.py -i impacts_approx.json -o impacts_out --transparent`
 
 ## Goodness-of-Fit
 **NOTE: There is no such thing as a blind goodness-of-fit test, so only run once it is ok to unblind**  
