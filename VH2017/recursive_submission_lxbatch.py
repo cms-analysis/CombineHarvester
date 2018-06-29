@@ -20,6 +20,7 @@ def execute(command,usebatch,bash_script_name,queue,lxbatch_jobs_submitted):
         file.write('cd '+os.getcwd()+'\n') 
         file.write('eval `scramv1 runtime -sh`\n') 
         file.write('ulimit -s unlimited\n') 
+        file.write('echo "'+command.replace('"','\"')+'"\n')          
         file.write(command+'\n')          
         file.close()
         submitted = os.popen('chmod +x '+bash_script_name+'; bsub -u pippo123 -C 0 -q '+queue+' '+bash_script_name).read();
@@ -49,41 +50,45 @@ usebatch = True
 queue = '1nh'
 # usebatch = False
 
-# FOLDERS / CHANNELS
+# FOLDERS 
 output_folder = "test_Jun29_rebinCR_onlyZll" # specify output folder prefix
 # year = "2016" # select 2016 or 2017
 # extra_folder = "--extra_folder 2016_June19_forUnblinding_DNNTransformed" # specify sub-folder for AT shapes
 year = "2017" # select 2016 or 2017
 extra_folder = "--extra_folder 2017_June19_forUnblinding_DNNPirminTransform" # specify sub-folder for AT shapes
+
+# CHANNELS
 channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without space, comment line for all channels
 # channels = "--channel Znn" # separate channels by comma without space, comment line for all channels
 # channels = "--channel Zll,Wln,Znn"
 
 # DATACARDS, WS, TOYS
-create_datacards = True
-# create_datacards = False
-create_masked_ws = True
-# create_masked_ws = False
-create_unmasked_ws = True
-# create_unmasked_ws = False
-build_asimov_dataset = True
-# build_asimov_dataset = False
+# create_datacards = True
+create_datacards = False
+# create_masked_ws = True
+create_masked_ws = False
+# create_unmasked_ws = True
+create_unmasked_ws = False
+# build_asimov_dataset = True
+build_asimov_dataset = False
 
 # FITS
-# significance_without_systematics = True
-significance_without_systematics = False
-# significance_prefit = True
-significance_prefit = False
-# significance_postfit_cr = True
-significance_postfit_cr = False
-# significance_postfit_cr_sr_blind = True
-significance_postfit_cr_sr_blind = False
+significance_without_systematics = True
+# significance_without_systematics = False
+significance_prefit = True
+# significance_prefit = False
+significance_postfit_cr = True
+# significance_postfit_cr = False
+diagnostic_postfit_cr_sr_blind = True
+# diagnostic_postfit_cr_sr_blind = False
 
 # DIAGNOSTIC
-# diagnostic_postfit_cr = True
-diagnostic_postfit_cr = False
-# dump_diagnostic_overconstraints = True
-dump_diagnostic_overconstraints = False
+diagnostic_postfit_cr = True
+# diagnostic_postfit_cr = False
+# dump_diagnostic_overconstraints_cr = True
+dump_diagnostic_overconstraints_cr = False
+# dump_diagnostic_overconstraints_cr_sr = True
+dump_diagnostic_overconstraints_cr_sr = False
 
 # NOT USED / TO BE TESTED
 diagnostic_postfit_cr_ws = False
@@ -210,7 +215,16 @@ if diagnostic_postfit_cr:
         fit_b.Print()
 
 
-if dump_diagnostic_overconstraints:
+if diagnostic_postfit_cr_sr_blind:
+    stamp()
+    print 'Post-fit CR+SR (blind) significance (run the maximum likelihood fit)';sys.stdout.flush()
+    for channel in channels_loop.split(','):
+        print 'channel',channel;sys.stdout.flush()
+        POI = channel if (not 'cmb' in channel) else 'Zll'
+        command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws.root --there --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs SF_TT_'+POI+'_2017 --freezeParameters r --setParameters r=1'
+        execute(command,usebatch,'significance_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
+
+if dump_diagnostic_overconstraints_cr:
     stamp()
     print 'Dump over-constrained nuisances';sys.stdout.flush()
     for channel in channels_loop.split(','):
@@ -219,14 +233,13 @@ if dump_diagnostic_overconstraints:
                                                   'output/'+output_folder+''+year+'/'+channel+'/'+channel+'_diffNuisances.htm'
         execute(command,False,'dump_diagnostic_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
-
-if significance_postfit_cr_sr_blind:
+if dump_diagnostic_overconstraints_cr_sr:
     stamp()
-    print 'Post-fit CR+SR (blind) significance (run the maximum likelihood fit)';sys.stdout.flush()
+    print 'Dump over-constrained nuisances';sys.stdout.flush()
     for channel in channels_loop.split(','):
         print 'channel',channel;sys.stdout.flush()
-        command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws.root --there --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs SF_TT_Wln_2017 --freezeParameters r --setParameters r=1'
-        execute(command,usebatch,'significance_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
-
+        command = 'python diffNuisances.py -f html output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root > '\
+                                                  'output/'+output_folder+''+year+'/'+channel+'/'+channel+'_diffNuisances.htm'
+        execute(command,False,'dump_diagnostic_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
         
 if usebatch: check_running(lxbatch_jobs_submitted)
