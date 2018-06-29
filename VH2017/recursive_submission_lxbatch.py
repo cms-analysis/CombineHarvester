@@ -42,7 +42,7 @@ output_folder = "test_Jun29_rebinCR_onlyZll" # specify output folder prefix
 # extra_folder = "--extra_folder 2016_June19_forUnblinding_DNNTransformed" # specify sub-folder for AT shapes
 year = "2017" # select 2016 or 2017
 extra_folder = "--extra_folder 2017_June19_forUnblinding_DNNPirminTransform" # specify sub-folder for AT shapes
-channels = "--channel Znn,Wln,Zll" # separate channels by comma without space, comment line for all channels
+channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without space, comment line for all channels
 # channels = "--channel Znn" # separate channels by comma without space, comment line for all channels
 # channels = "--channel Zll,Wln,Znn"
 
@@ -99,7 +99,7 @@ if create_datacards:
     print 'create datacards';sys.stdout.flush()
     for channel in channels_loop.split(','):
         print 'channel',channel;sys.stdout.flush()
-        command = 'python scripts/VHbb2017.py --output_folder '+output_folder+' --year '+year+' '+extra_folder+' '+channels
+        command = 'python scripts/VHbb2017.py --output_folder '+output_folder+' --year '+year+' '+extra_folder+' '+channel
         execute(command,usebatch,'create_datacards_'+bash_script_name,queue,lxbatch_jobs_submitted)
 
 if create_unmasked_ws:
