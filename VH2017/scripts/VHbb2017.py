@@ -218,7 +218,7 @@ for chn in chns:
       file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
 
 # play with rebinning (and/or cutting) of the shapes
-if argz.rebinning_scheme == 'v1': # Zll only: 1bin in TT/LF, 2bins in HF
+if args.rebinning_scheme == 'v1': # Zll only: 1bin in TT/LF, 2bins in HF
     binning=np.linspace(0.0,1.0,num=2)
     print 'binning in CR for LF,TT fitting variable:',binning
     cb.cp().channel(['Zee','Zmm']).bin_id([3,4,7,8]).VariableRebin(binning)
@@ -226,7 +226,7 @@ if argz.rebinning_scheme == 'v1': # Zll only: 1bin in TT/LF, 2bins in HF
     print 'binning in CR for HF fitting variable:',binning
     cb.cp().channel(['Zee','Zmm']).bin_id([5,6]).VariableRebin(binning)
 
-elif argz.rebinning_scheme == 'v2': # all channels: 1bin in TT/LF, 2bins in HF
+elif args.rebinning_scheme == 'v2': # all channels: 1bin in TT/LF, 2bins in HF
     binning=np.linspace(0.0,1.0,num=2)
     print 'binning in CR for LF,TT fitting variable:',binning
     cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
@@ -234,12 +234,12 @@ elif argz.rebinning_scheme == 'v2': # all channels: 1bin in TT/LF, 2bins in HF
     print 'binning in CR for HF fitting variable:',binning
     cb.cp().bin_id([5,6]).VariableRebin(binning)
     
-elif argz.rebinning_scheme == 'v3': # all channels: 1bin in TT/LF, no rebin in HF
+elif args.rebinning_scheme == 'v3': # all channels: 1bin in TT/LF, no rebin in HF
     binning=np.linspace(0.0,1.0,num=2)
     print 'binning in CR for LF,TT fitting variable:',binning
     cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
     
-elif argz.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
+elif args.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
     binning=np.linspace(0.2,1.0,num=13)
     print 'binning in SR for fitting variable:',binning
     cb.cp().bin_id([1,2]).VariableRebin(binning)

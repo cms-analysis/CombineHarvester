@@ -43,7 +43,7 @@ def check_running(lxbatch_jobs_submitted):
         list_common = list(set(bjobs_all).intersection(lxbatch_jobs_submitted))
         if len(list_common)>0:
             still_running = True
-            print len(lxbatch_jobs_submitted),'jobs submitted, ',list_common,', to go',len(list_common),', running',len(bjobs_running),'. Waiting 30 sec and check again\r'
+            print len(lxbatch_jobs_submitted),'jobs submitted, ',list_common,',',len(list_common),'to go,',len(bjobs_running)'running. Waiting 30 sec and checking again\r'
             os.system('rm -rf LSFJOB_* 2>&1 > /dev/null')
             time.sleep(30)
         else:
@@ -58,13 +58,13 @@ queue = '1nh'
 # usebatch = False
 
 # FOLDERS 
-output_folder = "test_Jun29_rebinCR_onlyZll" # specify output folder prefix
+output_folder = "test_Jun29_rebinCR_v2" # specify output folder prefix
 # year = "2016" # select 2016 or 2017
 # extra_folder = "--extra_folder 2016_June19_forUnblinding_DNNTransformed" # specify sub-folder for AT shapes
 year = "2017" # select 2016 or 2017
 extra_folder = "--extra_folder 2017_June19_forUnblinding_DNNPirminTransform" # specify sub-folder for AT shapes
 
-rebinning_scheme = '' # '' no rebinning , 'v1', 'v2','v3'
+rebinning_scheme = 'v2' # '' no rebinning , 'v1', 'v2','v3'
 
 # CHANNELS
 channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without space, comment line for all channels
@@ -72,9 +72,9 @@ channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without spac
 # channels = "--channel Zll,Wln,Znn"
 
 # DATACARDS, WS, TOYS
-# create_datacards = True
+create_datacards = True
 # create_masked_ws = True
-create_unmasked_ws = True
+# create_unmasked_ws = True
 # build_asimov_dataset = True
 
 # FITS
