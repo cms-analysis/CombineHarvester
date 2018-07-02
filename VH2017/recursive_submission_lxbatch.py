@@ -33,12 +33,18 @@ def execute(command,usebatch,bash_script_name,queue,lxbatch_jobs_submitted,fitdi
 def check_running(lxbatch_jobs_submitted):
     still_running = True
     while still_running:
-        running = os.popen("bjobs | awk '{print $1}'").read();
-        running = running.split('\n')
-        list_common = list(set(running).intersection(lxbatch_jobs_submitted))
+        os.system("bjobs -w")
+        bjobs_running = os.popen("bjobs -w | grep $USER | grep RUN | awk '{print $1}'").read();
+        bjobs_running = bjobs_running.split('\n')
+        bjobs_running = filter(None, bjobs_running)
+        bjobs_all = os.popen("bjobs -w | grep $USER | awk '{print $1}'").read();
+        bjobs_all = bjobs_all.split('\n')
+        bjobs_all = filter(None, bjobs_all)
+        list_common = list(set(bjobs_all).intersection(lxbatch_jobs_submitted))
         if len(list_common)>0:
             still_running = True
-            print 'jobs',list_common,'still running, waiting 30 sec and check again\r'
+            print len(lxbatch_jobs_submitted),'jobs submitted, ',list_common,', to go',len(list_common),', running',len(bjobs_running),'. Waiting 30 sec and check again\r'
+            os.system('rm -rf LSFJOB_* 2>&1 > /dev/null')
             time.sleep(30)
         else:
             still_running = False
@@ -58,6 +64,8 @@ output_folder = "test_Jun29_rebinCR_onlyZll" # specify output folder prefix
 year = "2017" # select 2016 or 2017
 extra_folder = "--extra_folder 2017_June19_forUnblinding_DNNPirminTransform" # specify sub-folder for AT shapes
 
+rebinning_scheme = '' # '' no rebinning , 'v1', 'v2','v3'
+
 # CHANNELS
 channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without space, comment line for all channels
 # channels = "--channel Znn" # separate channels by comma without space, comment line for all channels
@@ -66,7 +74,7 @@ channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without spac
 # DATACARDS, WS, TOYS
 # create_datacards = True
 # create_masked_ws = True
-# create_unmasked_ws = True
+create_unmasked_ws = True
 # build_asimov_dataset = True
 
 # FITS
@@ -90,7 +98,7 @@ channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without spac
 # LOGFILE = tee.stdout_start('log_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_'+year+'_'+channels.replace("--channel ",'').replace(',','_')+'_STDOUT.log',append=False) # STDOUT
 # tee.stderr_start('log_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_'+year+'_'+channels.replace("--channel ",'').replace(',','_')+'_STDERR.log',append=False) # STDERR
 
-bash_script_name = 'submit_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_'+year+'_CHANNEL.sh'
+bash_script_name = 'submit_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_rebin_'+rebinning_scheme+'_'+year+'_CHANNEL.sh'
 # print 'This text will appear on screen and also in the logfile'
 
 channels_loop = channels.replace("--channel ",'');
@@ -107,7 +115,7 @@ if 'create_datacards' in globals() and create_datacards:
     for channel in channels_loop.split(','):
         if channel == 'cmb': continue
         print 'create datacards','channel',channel;sys.stdout.flush()
-        command = 'python scripts/VHbb2017.py --output_folder '+output_folder+' --year '+year+' '+extra_folder+' --channel '+channel
+        command = 'python scripts/VHbb2017.py --rebinning_scheme '+rebinning_scheme+' --output_folder '+output_folder+' --year '+year+' '+extra_folder+' --channel '+channel
         execute(command,usebatch,'create_datacards_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
 if usebatch: check_running(lxbatch_jobs_submitted)

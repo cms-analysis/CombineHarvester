@@ -62,6 +62,8 @@ parser.add_argument(
  '--year', default='2017', help="""Year to produce datacards for (2017 or 2016)""")
 parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
+parser.add_argument(
+ '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
 
 
 
@@ -215,16 +217,32 @@ for chn in chns:
     cb.cp().channel([chn]).signals().ExtractShapes(
       file, 'BDT_$BIN_$PROCESS', 'BDT_$BIN_$PROCESS_$SYSTEMATIC')
 
-# uncomment to play with rebinning (cutting, in reality) of the mva shape in signal region
-# binning=np.linspace(0.2,1.0,num=13)
-# print 'binning in SR for fitting variable:',binning
-# cb.cp().bin_id([1,2]).VariableRebin(binning)
-binning=np.linspace(0.0,1.0,num=2)
-print 'binning in CR for LF,TT fitting variable:',binning
-cb.cp().channel(['Zee','Zmm']).bin_id([3,4,7,8]).VariableRebin(binning)
-binning=np.linspace(0.0,1.0,num=3)
-print 'binning in CR for HF fitting variable:',binning
-cb.cp().channel(['Zee','Zmm']).bin_id([5,6]).VariableRebin(binning)
+# play with rebinning (and/or cutting) of the shapes
+if argz.rebinning_scheme == 'v1': # Zll only: 1bin in TT/LF, 2bins in HF
+    binning=np.linspace(0.0,1.0,num=2)
+    print 'binning in CR for LF,TT fitting variable:',binning
+    cb.cp().channel(['Zee','Zmm']).bin_id([3,4,7,8]).VariableRebin(binning)
+    binning=np.linspace(0.0,1.0,num=3)
+    print 'binning in CR for HF fitting variable:',binning
+    cb.cp().channel(['Zee','Zmm']).bin_id([5,6]).VariableRebin(binning)
+
+elif argz.rebinning_scheme == 'v2': # all channels: 1bin in TT/LF, 2bins in HF
+    binning=np.linspace(0.0,1.0,num=2)
+    print 'binning in CR for LF,TT fitting variable:',binning
+    cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
+    binning=np.linspace(0.0,1.0,num=3)
+    print 'binning in CR for HF fitting variable:',binning
+    cb.cp().bin_id([5,6]).VariableRebin(binning)
+    
+elif argz.rebinning_scheme == 'v3': # all channels: 1bin in TT/LF, no rebin in HF
+    binning=np.linspace(0.0,1.0,num=2)
+    print 'binning in CR for LF,TT fitting variable:',binning
+    cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
+    
+elif argz.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
+    binning=np.linspace(0.2,1.0,num=13)
+    print 'binning in SR for fitting variable:',binning
+    cb.cp().bin_id([1,2]).VariableRebin(binning)
 
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
