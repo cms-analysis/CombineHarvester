@@ -21,8 +21,10 @@ def execute(command,usebatch,bash_script_name,queue,lxbatch_jobs_submitted,fitdi
         file.write('eval `scramv1 runtime -sh`\n') 
         file.write('ulimit -s unlimited\n') 
         file.write('echo "'+bash_script_name+'"\n')          
-        file.write('echo "'+command.replace('"','\"')+'"\n')          
         file.write(command+' 2>&1 | tee '+os.getcwd()+'/logs/'+bash_script_name.replace('.sh','.log')+' \n')          
+        file.write('echo ""\n')          
+        file.write('echo "command was:"\n')          
+        file.write('echo "'+command.replace('"','\"')+'" >> '+os.getcwd()+'/logs/'+bash_script_name.replace('.sh','.log')+'\n')          
         file.close()
         submitted = os.popen('chmod +x '+bash_script_name+'; bsub -u pippo123 -C 0 -q '+queue+' '+bash_script_name).read();
         os.system('sleep 1')
@@ -64,7 +66,7 @@ output_folder = "test_Jun29_rebinCR_v2" # specify output folder prefix
 year = "2017" # select 2016 or 2017
 extra_folder = "--extra_folder 2017_June19_forUnblinding_DNNPirminTransform" # specify sub-folder for AT shapes
 
-rebinning_scheme = 'v2' # '' no rebinning , 'v1', 'v2','v3'
+rebinning_scheme = 'v3' # '' no rebinning , 'v1', 'v2','v3'
 
 # CHANNELS
 channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without space, comment line for all channels
@@ -72,14 +74,14 @@ channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without spac
 # channels = "--channel Zll,Wln,Znn"
 
 # DATACARDS, WS, TOYS
-create_datacards = True
+# create_datacards = True
 # create_masked_ws = True
 # create_unmasked_ws = True
 # build_asimov_dataset = True
 
 # FITS
-# significance_without_systematics = True
-# significance_prefit = True
+significance_without_systematics = True
+significance_prefit = True
 # significance_postfit_cr = True
 
 # DIAGNOSTIC
@@ -98,7 +100,7 @@ create_datacards = True
 # LOGFILE = tee.stdout_start('log_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_'+year+'_'+channels.replace("--channel ",'').replace(',','_')+'_STDOUT.log',append=False) # STDOUT
 # tee.stderr_start('log_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_'+year+'_'+channels.replace("--channel ",'').replace(',','_')+'_STDERR.log',append=False) # STDERR
 
-bash_script_name = 'submit_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_rebin_'+rebinning_scheme+'_'+year+'_CHANNEL.sh'
+bash_script_name = 'CHANNEL_submit_from_'+extra_folder.replace('--extra_folder ','')+'_to_'+output_folder+'_rebin_'+rebinning_scheme+'_'+year+'.sh'
 # print 'This text will appear on screen and also in the logfile'
 
 channels_loop = channels.replace("--channel ",'');

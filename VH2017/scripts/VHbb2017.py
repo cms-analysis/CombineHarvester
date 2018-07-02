@@ -220,23 +220,23 @@ for chn in chns:
 # play with rebinning (and/or cutting) of the shapes
 if args.rebinning_scheme == 'v1': # Zll only: 1bin in TT/LF, 2bins in HF
     binning=np.linspace(0.0,1.0,num=2)
-    print 'binning in CR for LF,TT fitting variable:',binning
+    print 'binning in CR for LF,TT fitting variable:',binning,'for channels',['Zee','Zmm']
     cb.cp().channel(['Zee','Zmm']).bin_id([3,4,7,8]).VariableRebin(binning)
     binning=np.linspace(0.0,1.0,num=3)
-    print 'binning in CR for HF fitting variable:',binning
+    print 'binning in CR for HF fitting variable:',binning,'for channels',['Zee','Zmm']
     cb.cp().channel(['Zee','Zmm']).bin_id([5,6]).VariableRebin(binning)
 
 elif args.rebinning_scheme == 'v2': # all channels: 1bin in TT/LF, 2bins in HF
     binning=np.linspace(0.0,1.0,num=2)
-    print 'binning in CR for LF,TT fitting variable:',binning
+    print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
     cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
     binning=np.linspace(0.0,1.0,num=3)
-    print 'binning in CR for HF fitting variable:',binning
+    print 'binning in CR for HF fitting variable:',binning,'for all the channels'
     cb.cp().bin_id([5,6]).VariableRebin(binning)
     
 elif args.rebinning_scheme == 'v3': # all channels: 1bin in TT/LF, no rebin in HF
     binning=np.linspace(0.0,1.0,num=2)
-    print 'binning in CR for LF,TT fitting variable:',binning
+    print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
     cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
     
 elif args.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
