@@ -10,7 +10,7 @@ def stamp():
     print '\n\n';sys.stdout.flush()
     print datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S');sys.stdout.flush()
 
-def execute(command,usebatch,bash_script_name,queue,lxbatch_jobs_submitted):
+def execute(command,usebatch,bash_script_name,queue,lxbatch_jobs_submitted,fitdiagnostic=''):
     print(command);sys.stdout.flush()
     if not usebatch:
         os.system(command)
@@ -20,8 +20,9 @@ def execute(command,usebatch,bash_script_name,queue,lxbatch_jobs_submitted):
         file.write('cd '+os.getcwd()+'\n') 
         file.write('eval `scramv1 runtime -sh`\n') 
         file.write('ulimit -s unlimited\n') 
+        file.write('echo "'+bash_script_name+'"\n')          
         file.write('echo "'+command.replace('"','\"')+'"\n')          
-        file.write(command+'\n')          
+        file.write(command+' 2>&1 | tee '+os.getcwd()+'/logs/'+bash_script_name.replace('.sh','.log')+' \n')          
         file.close()
         submitted = os.popen('chmod +x '+bash_script_name+'; bsub -u pippo123 -C 0 -q '+queue+' '+bash_script_name).read();
         os.system('sleep 1')
@@ -73,18 +74,18 @@ create_unmasked_ws = False
 build_asimov_dataset = False
 
 # FITS
-significance_without_systematics = True
-# significance_without_systematics = False
-significance_prefit = True
-# significance_prefit = False
-significance_postfit_cr = True
-# significance_postfit_cr = False
-diagnostic_postfit_cr_sr_blind = True
-# diagnostic_postfit_cr_sr_blind = False
+# significance_without_systematics = True
+significance_without_systematics = False
+# significance_prefit = True
+significance_prefit = False
+# significance_postfit_cr = True
+significance_postfit_cr = False
 
 # DIAGNOSTIC
 diagnostic_postfit_cr = True
 # diagnostic_postfit_cr = False
+diagnostic_postfit_cr_sr_blind = True
+# diagnostic_postfit_cr_sr_blind = False
 # dump_diagnostic_overconstraints_cr = True
 dump_diagnostic_overconstraints_cr = False
 # dump_diagnostic_overconstraints_cr_sr = True
@@ -192,7 +193,7 @@ if significance_postfit_cr:
         print 'channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M Significance --cminDefaultMinimizerStrategy 1 --cminPreFit=1 --significance -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root '\
                                                       '--there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root'
-        execute(command,usebatch,'significance_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
+        execute(command,usebatch,'significance_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
 if diagnostic_postfit_cr_ws:
     stamp()
@@ -201,7 +202,7 @@ if diagnostic_postfit_cr_ws:
         print 'channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root --there '\
               '--cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV2017=1,mask_vhbb_Zmm_2_13TeV2017=1,mask_vhbb_Zee_1_13TeV2017=1,mask_vhbb_Zee_2_13TeV2017=1,mask_vhbb_Wen_1_13TeV2017=1,mask_vhbb_Wmn_1_13TeV2017=1,mask_vhbb_Znn_1_13TeV2017=1,r=0 -n .SRMasked --redefineSignalPOIs SF_TT_Wln_2017 --freezeParameters r,CMS_res_j_13TeV'
-        execute(command,usebatch,'diagnostic_postfit_cr_ws_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
+        execute(command,usebatch,'diagnostic_postfit_cr_ws_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
 if diagnostic_postfit_cr:
     stamp()
@@ -209,26 +210,26 @@ if diagnostic_postfit_cr:
     for channel in channels_loop.split(','):
         print 'channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M FitDiagnostics -m 125 --cminDefaultMinimizerStrategy 0 --cminPreFit=1 -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root --there'
-        execute(command,usebatch,'diagnostic_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
-        f = ROOT.TFile('output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root')
-        fit_b = f.Get('fit_b')
-        fit_b.Print()
-
+        execute(command,usebatch,'diagnostic_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
 if diagnostic_postfit_cr_sr_blind:
     stamp()
     print 'Post-fit CR+SR (blind) significance (run the maximum likelihood fit)';sys.stdout.flush()
     for channel in channels_loop.split(','):
         print 'channel',channel;sys.stdout.flush()
-        POI = channel if (not 'cmb' in channel) else 'Zll'
-        command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws.root --there --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs SF_TT_'+POI+'_2017 --freezeParameters r --setParameters r=1'
-        execute(command,usebatch,'significance_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
+        POI = channel if (not 'cmb' in channel) else 'Wln'
+        if channel == 'Zll': POI = POI.replace('Zll','high_Zll')
+        command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws.root --there --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs SF_TT_'+POI+'_'+year+' --freezeParameters r --setParameters r=1'
+        execute(command,usebatch,'significance_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
 if dump_diagnostic_overconstraints_cr:
     stamp()
     print 'Dump over-constrained nuisances';sys.stdout.flush()
     for channel in channels_loop.split(','):
         print 'channel',channel;sys.stdout.flush()
+        f = ROOT.TFile('output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root')
+        fit_b = f.Get('fit_b')
+        fit_b.Print()
         command = 'python diffNuisances.py -f html output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root > '\
                                                   'output/'+output_folder+''+year+'/'+channel+'/'+channel+'_diffNuisances.htm'
         execute(command,False,'dump_diagnostic_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
@@ -238,6 +239,14 @@ if dump_diagnostic_overconstraints_cr_sr:
     print 'Dump over-constrained nuisances';sys.stdout.flush()
     for channel in channels_loop.split(','):
         print 'channel',channel;sys.stdout.flush()
+        f = ROOT.TFile('output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root')
+        fit_b = f.Get('fit_b')
+        # temp = sys.stdout
+        # sys.stdout = sys.stderr
+        # sys.stderr = temp
+
+        'significance_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),
+        fit_b.Print() 
         command = 'python diffNuisances.py -f html output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root > '\
                                                   'output/'+output_folder+''+year+'/'+channel+'/'+channel+'_diffNuisances.htm'
         execute(command,False,'dump_diagnostic_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
