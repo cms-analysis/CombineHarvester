@@ -407,17 +407,17 @@ for i, x in enumerate(impacts['params']):
                     impacts['params'][i]['groups'].extend([att, 'ExptCommon'])
                     nassigned += 1
                     break
-        for pattern in attributes['sigTheory']:
-            if re.match(pattern + '$', name):
-                impacts['params'][i]['groups'].extend(['sigTheory'])
-                for ana in param_dict_rev[name]:
-                    dump_dict[ana]['sigTheory'].append(name)
-                nassigned += 1
-                break
+        for oth_group in ['sigTheory', 'bkgTheory']:
+            for pattern in attributes[oth_group]:
+                if re.match(pattern + '$', name):
+                    impacts['params'][i]['groups'].extend([oth_group])
+                    for ana in param_dict_rev[name]:
+                        dump_dict[ana][oth_group].append(name)
+                    nassigned += 1
+                    break
         if nassigned == 0:
             for ana in param_dict_rev[name]:
                 dump_dict[ana]['unassigned'].append(name)
-
 
 
 
