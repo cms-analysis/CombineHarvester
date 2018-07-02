@@ -221,10 +221,10 @@ for chn in chns:
 # cb.cp().bin_id([1,2]).VariableRebin(binning)
 binning=np.linspace(0.0,1.0,num=2)
 print 'binning in CR for LF,TT fitting variable:',binning
-cb.cp().process(['Zee','Zmm']).bin_id([3,4,7,8]).VariableRebin(binning)
+cb.cp().channel(['Zee','Zmm']).bin_id([3,4,7,8]).VariableRebin(binning)
 binning=np.linspace(0.0,1.0,num=3)
 print 'binning in CR for HF fitting variable:',binning
-cb.cp().process(['Zee','Zmm']).bin_id([5,6]).VariableRebin(binning)
+cb.cp().channel(['Zee','Zmm']).bin_id([5,6]).VariableRebin(binning)
 
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
