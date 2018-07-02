@@ -43,7 +43,7 @@ def check_running(lxbatch_jobs_submitted):
         list_common = list(set(bjobs_all).intersection(lxbatch_jobs_submitted))
         if len(list_common)>0:
             still_running = True
-            print len(lxbatch_jobs_submitted),'jobs submitted, ',list_common,',',len(list_common),'to go,',len(bjobs_running)'running. Waiting 30 sec and checking again\r'
+            print len(lxbatch_jobs_submitted),'jobs submitted, ',list_common,',',len(list_common),'to go,',len(bjobs_running),'running. Waiting 30 sec and checking again\r'
             os.system('rm -rf LSFJOB_* 2>&1 > /dev/null')
             time.sleep(30)
         else:
