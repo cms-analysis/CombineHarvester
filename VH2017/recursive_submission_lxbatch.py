@@ -65,34 +65,23 @@ channels = "--channel Znn,Wln,Zll,cmb" # separate channels by comma without spac
 
 # DATACARDS, WS, TOYS
 # create_datacards = True
-create_datacards = False
 # create_masked_ws = True
-create_masked_ws = False
 # create_unmasked_ws = True
-create_unmasked_ws = False
 # build_asimov_dataset = True
-build_asimov_dataset = False
 
 # FITS
 # significance_without_systematics = True
-significance_without_systematics = False
 # significance_prefit = True
-significance_prefit = False
 # significance_postfit_cr = True
-significance_postfit_cr = False
 
 # DIAGNOSTIC
-diagnostic_postfit_cr = True
-# diagnostic_postfit_cr = False
-diagnostic_postfit_cr_sr_blind = True
-# diagnostic_postfit_cr_sr_blind = False
+# diagnostic_postfit_cr = True
+# diagnostic_postfit_cr_sr_blind = True
 # dump_diagnostic_overconstraints_cr = True
-dump_diagnostic_overconstraints_cr = False
 # dump_diagnostic_overconstraints_cr_sr = True
-dump_diagnostic_overconstraints_cr_sr = False
 
 # NOT USED / TO BE TESTED
-diagnostic_postfit_cr_ws = False
+# diagnostic_postfit_cr_ws = True
 
 ###############################################
 ######### END OF STEERABLE PARAMETERS #########
@@ -113,34 +102,31 @@ print 'creating output dir if needed';sys.stdout.flush()
 if not os.path.exists('output/'+output_folder+''+year):
     os.makedirs('output/'+output_folder+''+year)
 
-if create_datacards:
+if 'create_datacards' in globals() and create_datacards:
     stamp()
-    print 'create datacards';sys.stdout.flush()
     for channel in channels_loop.split(','):
         if channel == 'cmb': continue
-        print 'channel',channel;sys.stdout.flush()
+        print 'create datacards','channel',channel;sys.stdout.flush()
         command = 'python scripts/VHbb2017.py --output_folder '+output_folder+' --year '+year+' '+extra_folder+' --channel '+channel
         execute(command,usebatch,'create_datacards_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
 if usebatch: check_running(lxbatch_jobs_submitted)
 lxbatch_jobs_submitted = []
 
-if create_unmasked_ws:
+if 'create_unmasked_ws' in globals() and create_unmasked_ws:
     stamp()
-    print 'create unmasked workspaces';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'create unmasked workspaces','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M T2W -o "ws.root" -i output/'+output_folder+''+year+'/'+channel
         execute(command,usebatch,'create_unmasked_workspaces_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
 if usebatch: check_running(lxbatch_jobs_submitted)
 lxbatch_jobs_submitted = []
 
-if create_masked_ws:
+if 'create_masked_ws' in globals() and  create_masked_ws:
     stamp()
-    print 'create masked workspaces';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'create masked workspaces','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M T2W -o "ws_masked.root" -i output/'+output_folder+''+year+'/'+channel+' --channel-masks'
         execute(command,usebatch,'create_masked_workspaces_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
@@ -153,12 +139,11 @@ if channels_loop == '*': channels_loop = 'Zll,Wln,Znn,cmb'
 # print 'start channel loop';sys.stdout.flush()
 # for channel in ['Zll','Wln','Znn','cmb']:
       
-if build_asimov_dataset:
-    print '\n\n';sys.stdout.flush()
-    print 'build asimov dataset';sys.stdout.flush()
+if 'build_asimov_dataset' in globals() and  build_asimov_dataset:
+    # print '\n\n';sys.stdout.flush()
     stamp()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'build asimov dataset','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M GenerateOnly --setParameters '\
                                           'mask_vhbb_Zmm_1_13TeV'+year+'=1,mask_vhbb_Zmm_2_13TeV'+year+'=1,'\
                                           'mask_vhbb_Zee_1_13TeV'+year+'=1,mask_vhbb_Zee_2_13TeV'+year+'=1,'\
@@ -170,63 +155,56 @@ if build_asimov_dataset:
 if usebatch: check_running(lxbatch_jobs_submitted)
 lxbatch_jobs_submitted = []
 
-if significance_without_systematics:
+if 'significance_without_systematics' in globals() and  significance_without_systematics:
     stamp()
-    print 'Fit significance without systematics (run the maximum likelihood fit)';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Fit significance without systematics (run the maximum likelihood fit)','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M Significance --cminDefaultMinimizerStrategy 0 --freezeParameters all --cminPreFit=1 --significance -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root --there -t -1 --expectSignal 1'
         execute(command,usebatch,'significance_nosyst_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
-if significance_prefit:
+if 'significance_prefit' in globals() and  significance_prefit:
     stamp()
-    print 'Pre-fit significance (run the maximum likelihood fit)';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Pre-fit significance (run the maximum likelihood fit)','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M Significance --cminDefaultMinimizerStrategy 0 --cminPreFit=1 --significance -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root --there -t -1 --expectSignal 1'
         execute(command,usebatch,'significance_prefit_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
-if significance_postfit_cr:
+if 'significance_postfit_cr' in globals() and  significance_postfit_cr:
     stamp()
-    print 'Post-fit CR-only significance (run the maximum likelihood fit)';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Post-fit CR-only significance (run the maximum likelihood fit)','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M Significance --cminDefaultMinimizerStrategy 1 --cminPreFit=1 --significance -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root '\
                                                       '--there --toysFrequentist -t -1 --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root'
         execute(command,usebatch,'significance_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
-if diagnostic_postfit_cr_ws:
+if 'diagnostic_postfit_cr_ws' in globals() and  diagnostic_postfit_cr_ws:
     stamp()
-    print 'Post-fit CR-only significance (run the maximum likelihood fit)';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Post-fit CR-only significance (run the maximum likelihood fit)','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root --there '\
               '--cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV2017=1,mask_vhbb_Zmm_2_13TeV2017=1,mask_vhbb_Zee_1_13TeV2017=1,mask_vhbb_Zee_2_13TeV2017=1,mask_vhbb_Wen_1_13TeV2017=1,mask_vhbb_Wmn_1_13TeV2017=1,mask_vhbb_Znn_1_13TeV2017=1,r=0 -n .SRMasked --redefineSignalPOIs SF_TT_Wln_2017 --freezeParameters r,CMS_res_j_13TeV'
         execute(command,usebatch,'diagnostic_postfit_cr_ws_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
-if diagnostic_postfit_cr:
+if 'diagnostic_postfit_cr' in globals() and  diagnostic_postfit_cr:
     stamp()
-    print 'Post-fit CR-only diagnostic';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Post-fit CR-only diagnostic','channel',channel;sys.stdout.flush()
         command = 'combineTool.py -M FitDiagnostics -m 125 --cminDefaultMinimizerStrategy 0 --cminPreFit=1 -d output/'+output_folder+''+year+'/'+channel+'/ws_masked.root --there'
         execute(command,usebatch,'diagnostic_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
-if diagnostic_postfit_cr_sr_blind:
+if 'diagnostic_postfit_cr_sr_blind' in globals() and  diagnostic_postfit_cr_sr_blind:
     stamp()
-    print 'Post-fit CR+SR (blind) significance (run the maximum likelihood fit)';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Post-fit CR+SR (blind) significance (run the maximum likelihood fit)','channel',channel;sys.stdout.flush()
         POI = channel if (not 'cmb' in channel) else 'Wln'
         if channel == 'Zll': POI = POI.replace('Zll','high_Zll')
         command = 'combineTool.py -M FitDiagnostics -m 125 -d output/'+output_folder+''+year+'/'+channel+'/ws.root --there --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs SF_TT_'+POI+'_'+year+' --freezeParameters r --setParameters r=1'
         execute(command,usebatch,'significance_postfit_crsr_'+bash_script_name.replace('CHANNEL',channel),'8nh',lxbatch_jobs_submitted)
 
-if dump_diagnostic_overconstraints_cr:
+if 'dump_diagnostic_overconstraints_cr' in globals() and  dump_diagnostic_overconstraints_cr:
     stamp()
-    print 'Dump over-constrained nuisances';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Dump over-constrained nuisances','channel',channel;sys.stdout.flush()
         f = ROOT.TFile('output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root')
         fit_b = f.Get('fit_b')
         fit_b.Print()
@@ -234,11 +212,10 @@ if dump_diagnostic_overconstraints_cr:
                                                   'output/'+output_folder+''+year+'/'+channel+'/'+channel+'_diffNuisances.htm'
         execute(command,False,'dump_diagnostic_postfit_cr_'+bash_script_name.replace('CHANNEL',channel),queue,lxbatch_jobs_submitted)
 
-if dump_diagnostic_overconstraints_cr_sr:
+if 'dump_diagnostic_overconstraints_cr_sr' in globals() and  dump_diagnostic_overconstraints_cr_sr:
     stamp()
-    print 'Dump over-constrained nuisances';sys.stdout.flush()
     for channel in channels_loop.split(','):
-        print 'channel',channel;sys.stdout.flush()
+        print 'Dump over-constrained nuisances','channel',channel;sys.stdout.flush()
         f = ROOT.TFile('output/'+output_folder+''+year+'/'+channel+'/fitDiagnostics.Test.root')
         fit_b = f.Get('fit_b')
         # temp = sys.stdout
