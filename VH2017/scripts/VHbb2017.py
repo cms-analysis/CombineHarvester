@@ -239,7 +239,7 @@ elif args.rebinning_scheme == 'v2-wh-hf-dnn': # all channels: 1bin in TT/LF, 2bi
     print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
     cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
     binning=np.linspace(0.0,1.0,num=3)
-    print 'binning in CR for HF fitting variable:',binning,'for all the channels'
+    print 'binning in CR for HF fitting variable:',binning,'for all Zll and Znn channels'
     cb.cp().channel(['Zee','Zmm','Znn']).bin_id([5,6]).VariableRebin(binning)
     binning=np.linspace(0.0,5.0,num=6)
     print 'binning in CR for HF fitting variable:',binning,'for all the channels'
