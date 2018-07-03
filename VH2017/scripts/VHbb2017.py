@@ -239,6 +239,14 @@ elif args.rebinning_scheme == 'v3': # all channels: 1bin in TT/LF, no rebin in H
     print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
     cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
     
+elif args.rebinning_scheme == 'v4': # all channels: 1bin in TT/LF, no rebin in HF
+    binning=np.linspace(0.0,1.0,num=3)
+    print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
+    cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
+    binning=np.linspace(0.0,1.0,num=5)
+    print 'binning in CR for HF fitting variable:',binning,'for all the channels'
+    cb.cp().bin_id([5,6]).VariableRebin(binning)
+    
 elif args.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
     binning=np.linspace(0.2,1.0,num=13)
     print 'binning in SR for fitting variable:',binning
