@@ -159,14 +159,6 @@ cats = {
     (1, 'SR_high_Zuu'), (2, 'SR_low_Zuu'), (3, 'Zlf_high_Zuu'), (4,'Zlf_low_Zuu'),
     (5, 'Zhf_high_Zuu'), (6, 'Zhf_low_Zuu'), (7,'ttbar_high_Zuu'), (8,'ttbar_low_Zuu')
   ],
-  #'Zee' : [
-  #  (1, 'Zee_BDT_highpt'), (2, 'Zee_BDT_lowpt'), (3, 'Zee_CRZlight_highpt'), (4,'Zee_CRZlight_lowpt'),
-  #  (5, 'Zee_CRZb_highpt'), (6, 'Zee_CRZb_lowpt'), (7,'Zee_CRttbar_highpt'), (8,'Zee_CRttbar_lowpt')
-  #],
-  #'Zmm' : [
-  #  (1, 'Zuu_BDT_highpt'), (2, 'Zuu_BDT_lowpt'), (3, 'Zuu_CRZlight_highpt'), (4,'Zuu_CRZlight_lowpt'),
-  #  (5, 'Zuu_CRZb_highpt'), (6, 'Zuu_CRZb_lowpt'), (7,'Zuu_CRttbar_highpt'), (8,'Zuu_CRttbar_lowpt')
-  #],
   'Znn' : [
     (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
   ],
@@ -179,7 +171,9 @@ cats = {
 
 }
 
-
+if args.rebinning_scheme == 'v2-wh-hf-dnn':
+    cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
+    cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
 
 for chn in chns:
   cb.AddObservations( ['*'], ['vhbb'], ['13TeV'], [chn], cats[chn])
