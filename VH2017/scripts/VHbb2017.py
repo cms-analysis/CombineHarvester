@@ -88,9 +88,9 @@ if 'Zll' in args.channel or 'Zmm' in args.channel:
   chns.append('Zmm')
 if 'Zll' in args.channel  or 'Zee' in args.channel:
   chns.append('Zee')
-if 'Wln' in args.channel or 'Wmn' in args.channel:
+if 'Wln' in args.channel or 'Wmn' in args.channel or 'Znn' in args.channel:
   chns.append('Wmn')
-if 'Wln' in args.channel or 'Wen' in args.channel:
+if 'Wln' in args.channel or 'Wen' in args.channel or 'Znn' in args.channel:
   chns.append('Wen')
 if 'Znn' in args.channel:
   chns.append('Znn')
@@ -234,6 +234,17 @@ elif args.rebinning_scheme == 'v2': # all channels: 1bin in TT/LF, 2bins in HF
     print 'binning in CR for HF fitting variable:',binning,'for all the channels'
     cb.cp().bin_id([5,6]).VariableRebin(binning)
     
+elif args.rebinning_scheme == 'v2-wh-hf-dnn': # all channels: 1bin in TT/LF, 2bins in HF
+    binning=np.linspace(0.0,1.0,num=2)
+    print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
+    cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
+    binning=np.linspace(0.0,1.0,num=3)
+    print 'binning in CR for HF fitting variable:',binning,'for all the channels'
+    cb.cp().channel(['Zee','Zmm','Znn']).bin_id([5,6]).VariableRebin(binning)
+    binning=np.linspace(0.0,5.0,num=6)
+    print 'binning in CR for HF fitting variable:',binning,'for all the channels'
+    cb.cp().channel(['Wmn','Wen']).bin_id([5,6]).VariableRebin(binning) 
+   
 elif args.rebinning_scheme == 'v3': # all channels: 1bin in TT/LF, no rebin in HF
     binning=np.linspace(0.0,1.0,num=2)
     print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
