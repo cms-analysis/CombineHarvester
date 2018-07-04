@@ -89,8 +89,6 @@ parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
 parser.add_argument(
  '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
-parser.add_argument(
- '--drop_pu_norm', action='store_true', help="""Remove norm effect for puWeight uncertainty""")
 
 
 
@@ -306,7 +304,7 @@ if year=='2016':
     cb.cp().syst_name(["CMS_res_j_13TeV_2016"]).ForEachProc(lambda x:symmetrise_syst(cb,x,'CMS_res_j_13TeV_2016'))
 
 
-if args.drop_pu_norm:
+if year=='2017':
     cb.cp().ForEachSyst(lambda x: remove_norm_effect(x) if x.name()=='CMS_vhbb_puWeight' else None)
 
 cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
