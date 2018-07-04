@@ -34,8 +34,10 @@ def matching_proc(p,s):
   return ((p.bin()==s.bin()) and (p.process()==s.process()) and (p.signal()==s.signal()) 
          and (p.analysis()==s.analysis()) and  (p.era()==s.era()) 
          and (p.channel()==s.channel()) and (p.bin_id()==s.bin_id()) and (p.mass()==s.mass()))
-  
 
+def remove_norm_effect(syst):
+  syst.set_value_u(1.0)
+  syst.set_value_d(1.0)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -64,6 +66,9 @@ parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
 parser.add_argument(
  '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
+parser.add_argument(
+ '--drop_pu_norm', action='store_true', help="""Remove norm effect for puWeight uncertainty""")
+
 
 
 
@@ -171,7 +176,7 @@ cats = {
 
 }
 
-if args.rebinning_scheme == 'v2-wh-hf-dnn':
+if args.rebinning_scheme == 'v2-wh-hf-dnn' or args.rebinning_scheme == 'v2-whznnh-hf-dnn':
     cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
     cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
 
@@ -271,6 +276,9 @@ elif args.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
 cb.FilterSysts(lambda x: drop_zero_systs(x))
+
+if args.drop_pu_norm:
+    cb.cp().ForEachSyst(lambda x: remove_norm_effect(x) if x.name()=='CMS_vhbb_puWeight' else None)
 
 cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
 cb.SetGroup('bkg_theory',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST','.*LHE_weights.*TT.*','.*LHE_weights.*VV.*','.*LHE_weights.*Zj0b.*','LHE_weights.*Zj1b.*','LHE_weights.*Zj2b.*','LHE_weights.*Wj0b.*','LHE_weights.*Wj1b.*','LHE_weights.*Wj2b.*','LHE_weights.*s_Top.*','LHE_weights.*QCD.*'])
