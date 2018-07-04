@@ -159,14 +159,6 @@ cats = {
     (1, 'SR_high_Zuu'), (2, 'SR_low_Zuu'), (3, 'Zlf_high_Zuu'), (4,'Zlf_low_Zuu'),
     (5, 'Zhf_high_Zuu'), (6, 'Zhf_low_Zuu'), (7,'ttbar_high_Zuu'), (8,'ttbar_low_Zuu')
   ],
-  #'Zee' : [
-  #  (1, 'Zee_BDT_highpt'), (2, 'Zee_BDT_lowpt'), (3, 'Zee_CRZlight_highpt'), (4,'Zee_CRZlight_lowpt'),
-  #  (5, 'Zee_CRZb_highpt'), (6, 'Zee_CRZb_lowpt'), (7,'Zee_CRttbar_highpt'), (8,'Zee_CRttbar_lowpt')
-  #],
-  #'Zmm' : [
-  #  (1, 'Zuu_BDT_highpt'), (2, 'Zuu_BDT_lowpt'), (3, 'Zuu_CRZlight_highpt'), (4,'Zuu_CRZlight_lowpt'),
-  #  (5, 'Zuu_CRZb_highpt'), (6, 'Zuu_CRZb_lowpt'), (7,'Zuu_CRttbar_highpt'), (8,'Zuu_CRttbar_lowpt')
-  #],
   'Znn' : [
     (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
   ],
@@ -179,7 +171,9 @@ cats = {
 
 }
 
-
+if args.rebinning_scheme == 'v2-wh-hf-dnn':
+    cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
+    cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
 
 for chn in chns:
   cb.AddObservations( ['*'], ['vhbb'], ['13TeV'], [chn], cats[chn])
@@ -244,6 +238,17 @@ elif args.rebinning_scheme == 'v2-wh-hf-dnn': # all channels: 1bin in TT/LF, 2bi
     binning=np.linspace(0.0,5.0,num=6)
     print 'binning in CR for HF fitting variable:',binning,'for all the channels'
     cb.cp().channel(['Wmn','Wen']).bin_id([5,6]).VariableRebin(binning) 
+   
+elif args.rebinning_scheme == 'v2-whznnh-hf-dnn': # all channels: 1bin in TT/LF, 2bins in HF
+    binning=np.linspace(0.0,1.0,num=2)
+    print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
+    cb.cp().bin_id([3,4,7,8]).VariableRebin(binning)
+    binning=np.linspace(0.0,1.0,num=3)
+    print 'binning in CR for HF fitting variable:',binning,'for all Zll and Znn channels'
+    cb.cp().channel(['Zee','Zmm']).bin_id([5,6]).VariableRebin(binning)
+    binning=np.linspace(0.0,5.0,num=6)
+    print 'binning in CR for HF fitting variable:',binning,'for all the channels'
+    cb.cp().channel(['Wmn','Wen','Znn']).bin_id([5,6]).VariableRebin(binning) 
    
 elif args.rebinning_scheme == 'v3': # all channels: 1bin in TT/LF, no rebin in HF
     binning=np.linspace(0.0,1.0,num=2)
