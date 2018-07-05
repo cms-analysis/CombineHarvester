@@ -41,14 +41,11 @@ int main(int argc, char **argv) {
   string input_folder_mt = "Vienna/";
   string input_folder_tt = "Vienna/";
   string input_folder_mm = "Vienna/";
-  string input_folder_ttbar = "Vienna/";
   string chan = "all";
   string postfix = "-ML";
   bool auto_rebin = false;
   bool manual_rebin = false;
   bool real_data = false;
-  bool mm_fit = false;
-  bool ttbar_fit = false;
   bool do_jetfakes = true;
   bool verbose = false;
   po::variables_map vm;
@@ -84,12 +81,6 @@ int main(int argc, char **argv) {
   input_dir["tt"] = string(getenv("CMSSW_BASE")) +
                     "/src/CombineHarvester/HTTSM2017/shapes/" +
                     input_folder_tt + "/";
-  input_dir["mm"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_mm + "/";
-  input_dir["ttbar"] = string(getenv("CMSSW_BASE")) +
-                       "/src/CombineHarvester/HTTSM2017/shapes/" +
-                       input_folder_ttbar + "/";
 
   // Define channels
   VString chns;
@@ -178,7 +169,9 @@ int main(int argc, char **argv) {
 
   // Add systematics
   int dummy_control_region = 0;
-  ch::AddSMRun2Systematics(cb, dummy_control_region, mm_fit, ttbar_fit);
+  bool dummy_mm_fit = false;
+  bool dummy_ttbar_fit = false;
+  ch::AddSMRun2Systematics(cb, dummy_control_region, dummy_mm_fit, dummy_ttbar_fit);
 
   // Extract shapes from input ROOT files
   for (string chn : chns) {
