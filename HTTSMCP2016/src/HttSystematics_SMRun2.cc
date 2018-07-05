@@ -28,9 +28,9 @@ namespace ch {
         //
         
         
-        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt"};
+        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt","qqH_htt125""qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125","WH_htt125","ZH_htt125"};
         std::vector<std::string> ggH_sig_procs = {"ggH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
-        std::vector<std::string> qqH_sig_procs = {"qqH_htt""qqHsm_htt", "qqHps_htt", "qqHmm_htt"};
+        std::vector<std::string> qqH_sig_procs = {"qqH_htt""qqHsm_htt", "qqHps_htt", "qqHmm_htt", "qqH_htt125""qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125","WH_htt125","ZH_htt125"};
         
         // N.B. when adding this list of backgrounds to a nuisance, only
         // the backgrounds that are included in the background process
@@ -115,7 +115,7 @@ namespace ch {
         cb.cp().AddSyst(cb, "CMS_eff_m_embedsel", "lnN", SystMap<channel, process>::init
                         ({"et","tt","em","mt"}, embed,  1.04)); 
         
-        cb.cp().AddSyst(cb, "CMS_eff_embedded_e", "lnN", SystMap<channel, process>::init
+        cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
                         ({"et"}, JoinStr({sig_procs, all_mc_bkgs_no_W}),  1.02)
                         ({"em","ttbar"}, JoinStr({sig_procs, all_mc_bkgs}),       1.02));
         
@@ -456,8 +456,8 @@ namespace ch {
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_w_dm0_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_w_dm1_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_w_dm1_njet1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_tt_dm0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_tt_dm1_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_tt_dm0_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_tt_dm1_njet0_$CHANNEL_stat", "shape", SystMap<>::init(1.00));
 
         cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_qcd_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).AddSyst(cb, "ff_w_syst", "shape", SystMap<>::init(1.00));
@@ -469,10 +469,10 @@ namespace ch {
         cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb,"ff_w_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt"}).AddSyst(cb,"ff_tt_frac_$CHANNEL_syst", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_sub_syst_$CHANNEL_0jet", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_sub_syst_$CHANNEL_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_boosted", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({1}).AddSyst(cb, "ff_sub_syst_$CHANNEL_0jet", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({2}).AddSyst(cb, "ff_sub_syst_$CHANNEL_boosted", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({3}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_lowboost", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({4}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_boosted", "shape", SystMap<>::init(1.00));
         
         //##############################################################################
         //  DY LO->NLO reweighting, Between no and twice the correction.

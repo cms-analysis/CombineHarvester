@@ -410,15 +410,15 @@ int main(int argc, char** argv) {
       if (ch::HasNegativeBins(p->shape())) {
          std::cout << "[Negative bins] Fixing negative bins for " << p->bin()
                    << "," << p->process() << "\n";
-         std::cout << "[Negative bins] Before:\n";
-         p->shape()->Print("range");
+         //std::cout << "[Negative bins] Before:\n";
+         //p->shape()->Print("range");
         auto newhist = p->ClonedShape();
         ch::ZeroNegativeBins(newhist.get());
         // Set the new shape but do not change the rate, we want the rate to still
         // reflect the total integral of the events
         p->set_shape(std::move(newhist), false);
-         std::cout << "[Negative bins] After:\n";
-         p->shape()->Print("range");
+         //std::cout << "[Negative bins] After:\n";
+         //p->shape()->Print("range");
       }
     });
   
@@ -427,9 +427,9 @@ int main(int argc, char** argv) {
       if (ch::HasNegativeBins(s->shape_u()) || ch::HasNegativeBins(s->shape_d())) {
          std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
                << "," << s->process() << "," << s->name() << "\n";
-         std::cout << "[Negative bins] Before:\n";
-         s->shape_u()->Print("range");
-         s->shape_d()->Print("range");
+         //std::cout << "[Negative bins] Before:\n";
+         //s->shape_u()->Print("range");
+         //s->shape_d()->Print("range");
         auto newhist_u = s->ClonedShapeU();
         auto newhist_d = s->ClonedShapeD();
         ch::ZeroNegativeBins(newhist_u.get());
@@ -437,9 +437,9 @@ int main(int argc, char** argv) {
         // Set the new shape but do not change the rate, we want the rate to still
         // reflect the total integral of the events
         s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
-         std::cout << "[Negative bins] After:\n";
-         s->shape_u()->Print("range");
-         s->shape_d()->Print("range");
+         //std::cout << "[Negative bins] After:\n";
+         //s->shape_u()->Print("range");
+         //s->shape_d()->Print("range");
       }
   });
       
@@ -447,16 +447,18 @@ int main(int argc, char** argv) {
     ////! [part8]
     auto bbb = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
-    .SetAddThreshold(0.)
-    .SetMergeThreshold(0.4)
+    .SetAddThreshold(0.05)
+    .SetMergeThreshold(0.8)
     .SetFixNorm(false);
     bbb.MergeBinErrors(cb.cp().backgrounds().FilterProcs(BinIsControlRegion));
     bbb.AddBinByBin(cb.cp().backgrounds().FilterProcs(BinIsControlRegion), cb);
+    // To be on the safe side we don't want to merge any bin uncertainties for Higgs events
+    bbb.MergeBinErrors(cb.cp().process({"qqH_htt","qqHsm_htt","qqHmm_htt","qqHps_htt","WH_htt","WHsm_htt","WHps_htt","WHmm_htt","ZH_htt","ZHsm_htt","ZHmm_htt","ZHps_htt","qqH_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125","WH_htt125","WHsm_htt125","WHps_htt125","WHmm_htt125","ZH_htt125","ZHsm_htt125","ZHmm_htt125","ZHps_htt125"}, false).FilterProcs(BinIsNotControlRegion));
 
     auto bbb_sig = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
-    .SetAddThreshold(0.)
-    .SetMergeThreshold(0.4)
+    .SetAddThreshold(0.05)
+    .SetMergeThreshold(0.0)
     .SetFixNorm(false);
     bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
     
@@ -464,7 +466,7 @@ int main(int argc, char** argv) {
     auto bbb_ctl = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
-    .SetMergeThreshold(0.4)
+    .SetMergeThreshold(0.8)
     .SetFixNorm(false)
     .SetVerbosity(1);
     // Will merge but only for non W and QCD processes, to be on the safe side
