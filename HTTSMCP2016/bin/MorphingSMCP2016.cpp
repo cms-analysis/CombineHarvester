@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
     bool do_embedding = false;
     bool auto_rebin = false;
     bool no_jec_split = false;    
+    bool do_jetfakes = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -89,16 +90,18 @@ int main(int argc, char** argv) {
     ("scale_sig_procs", po::value<string>(&scale_sig_procs)->default_value(""))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
-    ("control_region", po::value<int>(&control_region)->default_value(0))
+    ("control_region", po::value<int>(&control_region)->default_value(1))
     ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
     ("do_embedding", po::value<bool>(&do_embedding)->default_value(false))
-    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
+    ("do_jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
+    ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(true))
     ("no_jec_split", po::value<bool>(&no_jec_split)->default_value(true))    
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
 
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
     po::notify(vm);
-    
+   
+    if(do_jetfakes) control_region = 0; 
     
     typedef vector<string> VString;
     typedef vector<pair<int, string>> Categories;
@@ -129,6 +132,21 @@ int main(int argc, char** argv) {
       bkg_procs["mt"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT", "VVJ", "W"};
       bkg_procs["tt"] = {"EmbedZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ"};
       // Not use embedding for em channel currently
+      //bkg_procs["em"] = {"EmbedZTT","W", "QCD", "ZLL", "TT", "VV", "ggH_hww125", "qqH_hww125"};
+      //bkg_procs["ttbar"] = {"EmbedZTT", "W", "QCD", "ZLL", "TT", "VV"};
+    }
+
+    if(do_jetfakes){
+      bkg_procs["et"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["mt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+      bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+
+      if(do_embedding){
+        bkg_procs["et"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
+        bkg_procs["mt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
+        bkg_procs["tt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
+      }
+
     }
 
     ch::CombineHarvester cb;
@@ -346,6 +364,7 @@ int main(int argc, char** argv) {
     cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
         sys->set_type("lnN");
         if(sys->value_d() <0.001) {sys->set_value_d(0.001);};
+        if(sys->value_u() <0.001) {sys->set_value_u(0.001);};
     });
     
     std::vector<std::string> all_prefit_bkgs = {
@@ -391,15 +410,15 @@ int main(int argc, char** argv) {
       if (ch::HasNegativeBins(p->shape())) {
          std::cout << "[Negative bins] Fixing negative bins for " << p->bin()
                    << "," << p->process() << "\n";
-         std::cout << "[Negative bins] Before:\n";
-         p->shape()->Print("range");
+         //std::cout << "[Negative bins] Before:\n";
+         //p->shape()->Print("range");
         auto newhist = p->ClonedShape();
         ch::ZeroNegativeBins(newhist.get());
         // Set the new shape but do not change the rate, we want the rate to still
         // reflect the total integral of the events
         p->set_shape(std::move(newhist), false);
-         std::cout << "[Negative bins] After:\n";
-         p->shape()->Print("range");
+         //std::cout << "[Negative bins] After:\n";
+         //p->shape()->Print("range");
       }
     });
   
@@ -408,9 +427,9 @@ int main(int argc, char** argv) {
       if (ch::HasNegativeBins(s->shape_u()) || ch::HasNegativeBins(s->shape_d())) {
          std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
                << "," << s->process() << "," << s->name() << "\n";
-         std::cout << "[Negative bins] Before:\n";
-         s->shape_u()->Print("range");
-         s->shape_d()->Print("range");
+         //std::cout << "[Negative bins] Before:\n";
+         //s->shape_u()->Print("range");
+         //s->shape_d()->Print("range");
         auto newhist_u = s->ClonedShapeU();
         auto newhist_d = s->ClonedShapeD();
         ch::ZeroNegativeBins(newhist_u.get());
@@ -418,34 +437,41 @@ int main(int argc, char** argv) {
         // Set the new shape but do not change the rate, we want the rate to still
         // reflect the total integral of the events
         s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
-         std::cout << "[Negative bins] After:\n";
-         s->shape_u()->Print("range");
-         s->shape_d()->Print("range");
+         //std::cout << "[Negative bins] After:\n";
+         //s->shape_u()->Print("range");
+         //s->shape_d()->Print("range");
       }
   });
       
     
     ////! [part8]
     auto bbb = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.05)
     .SetMergeThreshold(0.8)
     .SetFixNorm(false);
-    bbb.MergeBinErrors(cb.cp().backgrounds());
-    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
-    
-    
+    bbb.MergeBinErrors(cb.cp().backgrounds().FilterProcs(BinIsControlRegion));
+    bbb.AddBinByBin(cb.cp().backgrounds().FilterProcs(BinIsControlRegion), cb);
+    // To be on the safe side we don't want to merge any bin uncertainties for Higgs events
+    bbb.MergeBinErrors(cb.cp().process({"qqH_htt","qqHsm_htt","qqHmm_htt","qqHps_htt","WH_htt","WHsm_htt","WHps_htt","WHmm_htt","ZH_htt","ZHsm_htt","ZHmm_htt","ZHps_htt","qqH_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125","WH_htt125","WHsm_htt125","WHps_htt125","WHmm_htt125","ZH_htt125","ZHsm_htt125","ZHmm_htt125","ZHps_htt125"}, false).FilterProcs(BinIsNotControlRegion));
+
+    auto bbb_sig = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetAddThreshold(0.05)
+    .SetMergeThreshold(0.0)
+    .SetFixNorm(false);
+    bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
     
     // And now do bbb for the control region with a slightly different config:
     auto bbb_ctl = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
     .SetAddThreshold(0.)
     .SetMergeThreshold(0.8)
-    .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
+    .SetFixNorm(false)
     .SetVerbosity(1);
     // Will merge but only for non W and QCD processes, to be on the safe side
     bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
     bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
-    cout << " done\n";
     
     
     
