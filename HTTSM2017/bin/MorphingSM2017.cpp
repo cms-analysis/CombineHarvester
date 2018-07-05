@@ -29,32 +29,6 @@ using namespace std;
 using boost::starts_with;
 namespace po = boost::program_options;
 
-template <typename T>
-void To1Bin(T* proc)
-{
-    std::unique_ptr<TH1> originalHist = proc->ClonedScaledShape();
-    TH1F *hist = new TH1F("hist","hist",1,0,1);
-    double err = 0;
-    double rate =
-    originalHist->IntegralAndError(0, originalHist->GetNbinsX() + 1, err);
-    hist->SetDirectory(0);
-    hist->SetBinContent(1, rate);
-    hist->SetBinError(1, err);
-    proc->set_shape(*hist, true);  // True means adjust the process rate to the
-    // integral of the hist
-}
-
-bool BinIsControlRegion(ch::Object const* obj)
-{
-    return (boost::regex_search(obj->bin(),boost::regex{"_cr$"}) || (obj->channel() == std::string("mm")));
-}
-
-// Useful to have the inverse sometimes too
-bool BinIsNotControlRegion(ch::Object const* obj)
-{
-    return !BinIsControlRegion(obj);
-}
-
 int main(int argc, char** argv) {
     // Define program options
     string output_folder = "sm_run2";
@@ -92,8 +66,7 @@ int main(int argc, char** argv) {
     typedef vector<string> VString;
     typedef vector<pair<int, string>> Categories;
 
-    //! [part1]
-    // First define the location of the "auxiliaries" directory where we can
+    // Define the location of the "auxiliaries" directory where we can
     // source the input files containing the datacard shapes
     std::map<string, string> input_dir;
     input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2017/shapes/"+input_folder_em+"/";
@@ -170,22 +143,13 @@ int main(int argc, char** argv) {
         {16, "tt_misc"},
     };
 
-    cats["mm"] = {
-        {1, "mm_0jet"},
-        {2, "mm_1jet"},
-        {3, "mm_vbf"}
-    };
-    cats["ttbar"] = {
-        {1, "ttbar_all"}
-    };
-
-    // Or equivalently, specify the mass points explicitly:
+    // Specify signal processes and masses
     vector<string> sig_procs = {"ggH","qqH"};
     vector<string> masses = {"125"};
 
     using ch::syst::bin_id;
 
-    //! [part2]
+    // Add observations and processes
     for (auto chn : chns) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
@@ -195,7 +159,7 @@ int main(int argc, char** argv) {
     int dummy_control_region = 0;
     ch::AddSMRun2Systematics(cb, dummy_control_region, mm_fit, ttbar_fit);
 
-    //! [part7]
+    // Extract shapes from input ROOT files
     for (string chn:chns){
         cb.cp().channel({chn}).backgrounds().ExtractShapes(
                                                             input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
@@ -207,9 +171,9 @@ int main(int argc, char** argv) {
                                                             "$BIN/$PROCESS$MASS_$SYSTEMATIC");
     }
 
-    //Now delete processes with 0 yield
+    // Delete processes with 0 yield
     cb.FilterProcs([&](ch::Process *p) {
-        bool null_yield = !(p->rate() > 0. || BinIsControlRegion(p));
+        bool null_yield = !(p->rate() > 0.0);
         if (null_yield){
             std::cout << "[Null yield] Removing process with null yield: \n ";
             std::cout << ch::Process::PrintHeader << *p << "\n";
@@ -221,11 +185,11 @@ int main(int argc, char** argv) {
         return null_yield;
     });
 
-    //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding
+    // Replacing observation with the sum of the backgrounds (Asimov data)
     // useful to be able to check this, so don't do the replacement
     // for these
     if(!real_data){
-      for (auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+      for (auto b : cb.cp().bin_set()) {
 	std::cout << " - Replacing data with asimov in bin " << b << "\n";
 	cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
             obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape()+cb.cp().bin({b}).signals().GetShape(), true);
@@ -234,7 +198,7 @@ int main(int argc, char** argv) {
     }
 
     if(manual_rebin) {
-      for(auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
+      for(auto b : cb.cp().bin_set()) {
 	std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
 	cb.cp().bin({b}).VariableRebin(binning);
       }
@@ -261,7 +225,8 @@ int main(int argc, char** argv) {
 	}
       });
 
-    //! [part8]
+    // Merge bins and set bin-by-bin uncertainties
+    // FIXME: Why this is done only for the backgrounds?
     auto bbb = ch::BinByBinFactory()
     .SetAddThreshold(0.05)
     .SetMergeThreshold(0.8)
