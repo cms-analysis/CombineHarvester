@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
     bool mm_fit = false;
     bool ttbar_fit = false;
     bool do_jetfakes = true;
+    bool verbose = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -58,6 +59,7 @@ int main(int argc, char** argv) {
         ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(auto_rebin))
         ("real_data", po::value<bool>(&real_data)->default_value(real_data))
         ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
+        ("verbose", po::value<bool>(&verbose)->default_value(verbose))
         ("output_folder", po::value<string>(&output_folder)->default_value(output_folder))
         ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(do_jetfakes));
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
@@ -250,7 +252,7 @@ int main(int argc, char** argv) {
     // We're not using mass as an identifier - which we need to tell the CardWriter
     // otherwise it will see "*" as the mass value for every object and skip it
     //    writer.SetWildcardMasses({});
-    //    writer.SetVerbosity(1);
+    if(verbose) writer.SetVerbosity(1);
 
     // Write datacards combined and per channel
     writer.WriteCards("cmb", cb);
@@ -259,6 +261,7 @@ int main(int argc, char** argv) {
         writer.WriteCards(chn, cb.cp().channel({chn}));
     }
 
-    // cb.PrintAll();
+    if(verbose) cb.PrintAll();
+
     cout << "[INFO] Done.\n";
 }
