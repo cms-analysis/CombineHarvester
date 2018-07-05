@@ -55,16 +55,11 @@ bool BinIsNotControlRegion(ch::Object const* obj)
     return !BinIsControlRegion(obj);
 }
 
-
-
 int main(int argc, char** argv) {
-    // First define the location of the "auxiliaries" directory where we can
-    // source the input files containing the datacard shapes
+    // Define program options
     string SM125= "";
     string mass = "mA";
     string output_folder = "sm_run2";
-    // TODO: option to pick up cards from different dirs depending on channel?
-    // ^ Something like line 90?
     string input_folder_em="Vienna/";
     string input_folder_et="Vienna/";
     string input_folder_mt="Vienna/";
@@ -112,16 +107,12 @@ int main(int argc, char** argv) {
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
     po::notify(vm);
 
-
-
-
-
     typedef vector<string> VString;
     typedef vector<pair<int, string>> Categories;
+
     //! [part1]
     // First define the location of the "auxiliaries" directory where we can
     // source the input files containing the datacard shapes
-    //    string aux_shapes = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/CombineTools/bin/AllROOT_20fb/";
     std::map<string, string> input_dir;
     input_dir["em"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2017/shapes/"+input_folder_em+"/";
     input_dir["mt"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2017/shapes/"+input_folder_mt+"/";
@@ -141,10 +132,8 @@ int main(int argc, char** argv) {
     if (do_jetfakes){
       bkg_procs["et"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
       bkg_procs["mt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-      //      bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes", "W_rest", "ZJ_rest", "TTJ_rest","VVJ_rest"};
       bkg_procs["tt"] = {"ZTT",   "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
     }else{
-      //      bkg_procs["et"] = {"W", "ZTT",   "QCD", "ZL", "TTT","TTJ"}; //FIXME!
       bkg_procs["et"] = {"W", "ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ","VVJ","VVT"};
       bkg_procs["mt"] = {"W", "ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ","VVJ","VVT"};
       bkg_procs["tt"] = {"W", "ZTT",   "QCD", "ZL", "ZJ","TTT","TTJ"};
@@ -156,8 +145,6 @@ int main(int argc, char** argv) {
     vector<double> binning = {0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
 
     ch::CombineHarvester cb;
-
-
 
     map<string,Categories> cats;
     cats["et"] = {
@@ -210,7 +197,6 @@ int main(int argc, char** argv) {
         {1, "ttbar_all"}
     };
 
-
     if (control_region > 0){
         // for each channel use the categories >= 10 for the control regions
         // the control regions are ordered in triples (10,11,12),(13,14,15)...
@@ -249,15 +235,9 @@ int main(int argc, char** argv) {
         }
     } // end CR et mt > 0
 
-
-
-
     // Or equivalently, specify the mass points explicitly:
-    //    vector<string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt"};
     vector<string> sig_procs = {"ggH","qqH"};
-    //vector<string> masses = {"110","120","125","130","140"};
     vector<string> masses = {"125"};
-    //vector<string> masses = {""};
 
     using ch::syst::bin_id;
 
@@ -266,13 +246,7 @@ int main(int argc, char** argv) {
         cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
         cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn], false);
         cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs, cats[chn], true);
-        //Needed to add ewkz and W as these are not not available/Negative in qcd cR
     }
-
-//    //Add EWKZ and W manually !!!!!!
-//
-//    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"EWKZ"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
-//    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"EWKZ"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
 
     if (control_region > 0){
       cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},
@@ -282,31 +256,6 @@ int main(int argc, char** argv) {
                                     {10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},
                                     {13, "mt_antiiso_0jet_cr"},{14, "mt_antiiso_boosted_cr"}}, false);
     }
-    /*
-    else if (!do_jetfakes){
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"}}, false);
-      cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"}}, false);
-    }
-    */
-
-    //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"mt"}, {"W"}, {{1, "mt_0jet"},{2, "mt_boosted"},{3, "mt_vbf"},{10, "mt_wjets_0jet_cr"},{11, "mt_wjets_boosted_cr"},{12, "mt_wjets_vbf_cr"}}, false);
-    //    cb.AddProcesses(   {"*"}, {"htt"}, {"13TeV"}, {"et"}, {"W"}, {{1, "et_0jet"},{2, "et_boosted"},{3, "et_vbf"},{10, "et_wjets_0jet_cr"},{11, "et_wjets_boosted_cr"},{12, "et_wjets_vbf_cr"}}, false);
-
-
-
-    //! [part4]
-
-
-    //Some of the code for this is in a nested namespace, so
-    // we'll make some using declarations first to simplify things a bit.
-    //    using ch::syst::SystMap;
-    //    using ch::syst::era;
-    //    using ch::syst::channel;
-    //    using ch::syst::bin_id;
-    //    using ch::syst::process;
-
-
-
 
     if ((control_region > 0) || mm_fit){
         // Since we now account for QCD in the high mT region we only
@@ -316,28 +265,19 @@ int main(int argc, char** argv) {
         });
     }
 
-
     ch::AddSMRun2Systematics(cb, control_region, mm_fit, ttbar_fit);
-
-
-
-
 
     //! [part7]
     for (string chn:chns){
         cb.cp().channel({chn}).backgrounds().ExtractShapes(
-                                                           input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-                                                           "$BIN/$PROCESS",
-                                                           "$BIN/$PROCESS_$SYSTEMATIC");
+                                                            input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                            "$BIN/$PROCESS",
+                                                            "$BIN/$PROCESS_$SYSTEMATIC");
         cb.cp().channel({chn}).process(sig_procs).ExtractShapes(
-                                                                input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-                                                                "$BIN/$PROCESS$MASS",
-                                                                "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+                                                            input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                            "$BIN/$PROCESS$MASS",
+                                                            "$BIN/$PROCESS$MASS_$SYSTEMATIC");
     }
-
-
-
-
 
     //Now delete processes with 0 yield
     cb.FilterProcs([&](ch::Process *p) {
@@ -353,19 +293,13 @@ int main(int argc, char** argv) {
         return null_yield;
     });
 
-
-
-
-
     // And convert any shapes in the CRs to lnN:
     // Convert all shapes to lnN at this stage
     cb.cp().FilterSysts(BinIsNotControlRegion).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
         sys->set_type("lnN");
     });
 
-
     //Replacing observation with the sum of the backgrounds (asimov) - nice to ensure blinding
-    //    auto bins = cb.cp().bin_set();
     // For control region bins data (should) = sum of bkgs already
     // useful to be able to check this, so don't do the replacement
     // for these
@@ -378,15 +312,9 @@ int main(int argc, char** argv) {
       }
     }
 
-    //     //Merge to one bin for control region bins
-    //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachProc(To1Bin<ch::Process>);
-    //    cb.cp().FilterAll(BinIsNotControlRegion).ForEachObs(To1Bin<ch::Observation>);
-
-
     if(manual_rebin) {
       for(auto b : cb.cp().FilterAll(BinIsControlRegion).bin_set()) {
 	std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
-	//	cb.cp().bin({b}).VariableRebin(binning[b]);
 	cb.cp().bin({b}).VariableRebin(binning);
       }
     }
@@ -395,38 +323,20 @@ int main(int argc, char** argv) {
     std::cout << "Fixing negative bins\n";
     cb.ForEachProc([](ch::Process *p) {
 	if (ch::HasNegativeBins(p->shape())) {
-	  // std::cout << "[Negative bins] Fixing negative bins for " << p->bin()
-	  //           << "," << p->process() << "\n";
-	  // std::cout << "[Negative bins] Before:\n";
-	  // p->shape()->Print("range");
 	  auto newhist = p->ClonedShape();
 	  ch::ZeroNegativeBins(newhist.get());
-	  // Set the new shape but do not change the rate, we want the rate to still
-	  // reflect the total integral of the events
 	  p->set_shape(std::move(newhist), false);
-	  // std::cout << "[Negative bins] After:\n";
-	  // p->shape()->Print("range");
 	}
       });
 
     cb.ForEachSyst([](ch::Systematic *s) {
 	if (s->type().find("shape") == std::string::npos) return;
 	if (ch::HasNegativeBins(s->shape_u()) || ch::HasNegativeBins(s->shape_d())) {
-	  // std::cout << "[Negative bins] Fixing negative bins for syst" << s->bin()
-	  //           << "," << s->process() << "," << s->name() << "\n";
-	  // std::cout << "[Negative bins] Before:\n";
-	  // s->shape_u()->Print("range");
-	  // s->shape_d()->Print("range");
 	  auto newhist_u = s->ClonedShapeU();
 	  auto newhist_d = s->ClonedShapeD();
 	  ch::ZeroNegativeBins(newhist_u.get());
 	  ch::ZeroNegativeBins(newhist_d.get());
-	  // Set the new shape but do not change the rate, we want the rate to still
-	  // reflect the total integral of the events
 	  s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
-	  // std::cout << "[Negative bins] After:\n";
-	  // s->shape_u()->Print("range");
-	  // s->shape_d()->Print("range");
 	}
       });
 
@@ -438,8 +348,6 @@ int main(int argc, char** argv) {
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
-
-
     // And now do bbb for the control region with a slightly different config:
     auto bbb_ctl = ch::BinByBinFactory()
     .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
@@ -447,70 +355,24 @@ int main(int argc, char** argv) {
     .SetMergeThreshold(0.8)
     .SetFixNorm(false)  // contrary to signal region, bbb *should* change yield here
     .SetVerbosity(1);
+
     // Will merge but only for non W and QCD processes, to be on the safe side
     bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
     bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
     cout << " done\n";
 
-
-
-
     // This function modifies every entry to have a standardised bin name of
     // the form: {analysis}_{channel}_{bin_id}_{era}
     // which is commonly used in the htt analyses
     ch::SetStandardBinNames(cb);
-    //! [part8]
-
-    //! [part9]
-    // First we generate a set of bin names:
-    //    set<string> bins = cb.bin_set();
-    // This method will produce a set of unique bin names by considering all
-    // Observation, Process and Systematic entries in the CombineHarvester
-    // instance.
-
-    // We create the output root file that will contain all the shapes.
-    // Here we define a CardWriter with a template for how the text datacard
-    // and the root files should be named.
-    //    ch::CardWriter writer("$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt",
-    //                          "$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root");
-    //    // writer.SetVerbosity(1);
-    //    writer.WriteCards("output/htt_cards8_20fb_22Sep/cmb", cb);
-    //    for (auto chn : cb.channel_set()) {
-    //        writer.WriteCards("output/htt_cards8_20fb_22Sep/" + chn, cb.cp().channel({chn}));
-    //    }
-    //    TFile output("output/htt_cards8_20fb_22Sep/htt.input.root", "RECREATE");
-
-
-    // Add a theory group to the bottom of the DCs for use with CH Uncertainty Breakdown
-    //string theoryUncertsString = "CMS_scale_gg_.*|CMS_qqH_QCDUnc.*|CMS_ggH_PDF.*|CMS_qqH_PDF.*|CMS_ggH_UEPS.*|CMS_qqH_UEPS.*|BR_htt_THU.*|BR_htt_PU_mq.*|BR_htt_PU_alphas.*|BR_hww_THU.*|BR_hww_PU_mq.*|BR_hww_PU_alphas.*|QCDScale_ggH.*|QCDScale_qqH.*|QCDScale_VH.*|QCDScale_VH.*|pdf_Higgs_gg.*|pdf_Higgs_qq.*|pdf_Higgs_VH.*|pdf_Higgs_VH.*|";
-
-    ////cb.SetGroup("NonThySyst", {".*"});
-    ////cb.RemoveGroup("NonThySyst", {theoryUncertsString});
-    ////cb.SetGroup("JES", {"CMS_scale_j.*"});
-    //cb.SetGroup("all", {".*"});
-    //cb.SetGroup("BinByBin", {"CMS_htt_.*_bin_.*"});
-
-    //// 4 Component Breakdown
-    //cb.SetGroup("Theory", {theoryUncertsString});
-    //cb.SetGroup("TheoryAndBBB", {theoryUncertsString,"CMS_htt_.*_bin_.*"});
-
-
-
-
-    //! [part9]
-    // First we generate a set of bin names:
-
 
     //Write out datacards. Naming convention important for rest of workflow. We
     //make one directory per chn-cat, one per chn and cmb. In this code we only
     //store the individual datacards for each directory to be combined later, but
     //note that it's also possible to write out the full combined card with CH
     string output_prefix = "output/";
-    //    string output_prefix = "";
-    if(output_folder.compare(0,1,"/") == 0) output_prefix="";
     ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$MASS/$BIN.txt",
                           output_prefix + output_folder + "/$TAG/common/htt_input.root");
-
 
     // We're not using mass as an identifier - which we need to tell the CardWriter
     // otherwise it will see "*" as the mass value for every object and skip it
@@ -590,30 +452,6 @@ int main(int argc, char** argv) {
         }
     }
 
-    // This part is required in case we need to have limit for each separted categories
-    // For all categories want to include control regions. This will
-    // work even if the extra categories aren't there.
-    //    writer.WriteCards("htt_cmb_1_13TeV", cb.cp().bin_id({1,10,13}));
-    //    writer.WriteCards("htt_cmb_2_13TeV", cb.cp().bin_id({2,10,13}));
-    //    writer.WriteCards("htt_cmb_3_13TeV", cb.cp().bin_id({3,11,14}));
-    //    writer.WriteCards("htt_cmb_4_13TeV", cb.cp().bin_id({4,11,14}));
-    //    writer.WriteCards("htt_cmb_5_13TeV", cb.cp().bin_id({5,12,15}));
-    //    writer.WriteCards("htt_cmb_6_13TeV", cb.cp().bin_id({6,12,15}));
-
-    //
-    //
-    //
-    //
-    //    set<string> bins = cb.cp().channel({"mt","mm"}).bin_id({1,10,13}).bin_set();
-    //    std::set<string>::iterator it;
-    //    for (it=bins.begin(); it!=bins.end(); ++it){
-    //        std::cout << " ==================>>>>>>>>   " << *it<<"\n\n\n\n";   //htt_et_10_13TeV
-    //    }
-
-
-
     cb.PrintAll();
     cout << " done\n";
-
-
 }
