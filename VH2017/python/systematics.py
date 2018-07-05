@@ -6,16 +6,16 @@ def AddCommonSystematics(cb):
   # rateParams
   
   # Theory uncertainties: signal
-  # cb.cp().AddSyst(cb,
-      # 'pdf_Higgs_qqbar', 'lnN', ch.SystMap('process')
-       # (['ZH_hbb'],1.016)
-       # (['WH_hbb'],1.019))
+   cb.cp().AddSyst(cb,
+       'pdf_Higgs_qqbar', 'lnN', ch.SystMap('process')
+        (['ZH_hbb'],1.016)
+        (['WH_hbb'],1.019))
 
   cb.cp().process(['ggZH_hbb']).AddSyst(cb,
       'pdf_Higgs_gg', 'lnN', ch.SystMap()(1.024))
 
   cb.cp().process(signal).AddSyst(cb,
-      'BR_hbb', 'lnN', ch.SystMap()((1.012,0.987)))
+      'BR_hbb', 'lnN', ch.SystMap()(1.005))
 
   cb.cp().process(['ggZH_hbb']).AddSyst(cb,
       'QCDscale_ggZH', 'lnN',ch.SystMap()((1.251,0.811)))
@@ -33,32 +33,32 @@ def AddCommonSystematics(cb):
       (['Wen','Wmn'],['WH_hbb','ZH_hbb'],1.02)) 
 
   # To be checked: LUCAP: IN MY OPINION NEEDS TO BE REMOVED!!!
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_boost_QCD_13TeV', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm'],['ZH_hbb'], 1.05)
-      (['Znn'],['ZH_hbb','WH_hbb','ggZH_hbb'],1.05)) 
+  #cb.cp().AddSyst(cb,
+  #    'CMS_vhbb_boost_QCD_13TeV', 'lnN', ch.SystMap('channel','process') 
+  #    (['Zee','Zmm'],['ZH_hbb'], 1.05)
+  #    (['Znn'],['ZH_hbb','WH_hbb','ggZH_hbb'],1.05)) 
 
   # Theory uncertainties: backgrounds -> to be checked!
-  # cb.cp().AddSyst(cb,
-      # 'pdf_qqbar', 'lnN', ch.SystMap('channel','process') 
-       # (['Zee','Zmm'],['Zj0b','Zj1b','Zj2b','VVLF','VVHF','VV'], 1.01)
-       # (['Znn'],['VVLF','VVHF'],1.01)
-       # (['Wen','Wmn'],['VVLF','VVHF'],1.01)) 
+   cb.cp().AddSyst(cb,
+       'pdf_qqbar', 'lnN', ch.SystMap('channel','process') 
+        (['Zee','Zmm'],['Zj0b','Zj1b','Zj2b','VVLF','VVHF','VV'], 1.01)
+        (['Znn'],['VVLF','VVHF'],1.01)
+        (['Wen','Wmn'],['VVLF','VVHF'],1.01)) 
 
-  # cb.cp().AddSyst(cb,
-      # 'pdf_gg', 'lnN', ch.SystMap('channel','process')
-      # (['Zee','Zmm','Znn'],['TT','s_Top','QCD'], 1.01)
-      # (['Wen','Wmn'], ['s_Top'],1.01))
+   cb.cp().AddSyst(cb,
+       'pdf_gg', 'lnN', ch.SystMap('channel','process')
+       (['Zee','Zmm','Znn'],['TT','s_Top','QCD'], 1.01)
+       (['Wen','Wmn'], ['s_Top'],1.01))
 
   cb.cp().AddSyst(cb,
       'QCDscale_ttbar', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm','Wen','Wmn','Znn'],['s_Top'], 1.06)
-      # (['Zee','Zmm','Wen','Wmn','Znn'],['TT'],1.06)
+      #(['Zee','Zmm','Wen','Wmn','Znn'],['s_Top'], 1.06)
+       (['Zee','Zmm','Wen','Wmn','Znn'],['TT'],1.06)
       ) 
 
-  cb.cp().AddSyst(cb,
-      'QCDscale_VV', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm','Wen','Wmn','Znn'],['VVLF','VVHF','VV'], 1.04)) 
+  #cb.cp().AddSyst(cb,
+  #    'QCDscale_VV', 'lnN', ch.SystMap('channel','process') 
+  #    (['Zee','Zmm','Wen','Wmn','Znn'],['VVLF','VVHF','VV'], 1.04)) 
 
   # measured cross section uncertainties because we don't have SF
   cb.cp().process(['VV','VVHF','VVLF']).AddSyst(cb,
