@@ -57,8 +57,6 @@ bool BinIsNotControlRegion(ch::Object const* obj)
 
 int main(int argc, char** argv) {
     // Define program options
-    string SM125= "";
-    string mass = "mA";
     string output_folder = "sm_run2";
     string input_folder_em="Vienna/";
     string input_folder_et="Vienna/";
@@ -72,23 +70,17 @@ int main(int argc, char** argv) {
     bool manual_rebin = false;
     bool real_data = false;
     int control_region = 0;
-    bool check_neg_bins = false;
-    bool poisson_bbb = false;
-    bool do_w_weighting = false;
     bool mm_fit = false;
     bool ttbar_fit = false;
     bool do_jetfakes = true;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("mass,m", po::value<string>(&mass)->default_value(mass))
 
     ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Vienna"))
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Vienna"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Vienna"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Vienna"))
-    ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("Vienna"))
-    ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("Vienna"))
 
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("channel", po::value<string>(&chan)->default_value(chan))
@@ -96,14 +88,8 @@ int main(int argc, char** argv) {
     ("real_data", po::value<bool>(&real_data)->default_value(real_data))
     ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
     ("output_folder", po::value<string>(&output_folder)->default_value(output_folder))
-    ("SM125,h", po::value<string>(&SM125)->default_value(SM125))
     ("control_region", po::value<int>(&control_region)->default_value(control_region))
-    ("mm_fit", po::value<bool>(&mm_fit)->default_value(mm_fit))
-    ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(ttbar_fit))
     ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(do_jetfakes))
-    ("check_neg_bins", po::value<bool>(&check_neg_bins)->default_value(check_neg_bins))
-    ("poisson_bbb", po::value<bool>(&poisson_bbb)->default_value(poisson_bbb))
-    ("w_weighting", po::value<bool>(&do_w_weighting)->default_value(do_w_weighting));
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
     po::notify(vm);
 
