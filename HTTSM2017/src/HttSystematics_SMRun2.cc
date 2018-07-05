@@ -136,14 +136,12 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
                                              "CMS_scale_e_$CHANNEL_$ERA", "shape", SystMap<>::init(1.00));
         // Decay Mode based TES Settings
-        /* // FIXME: Readd me
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_truetau})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_truetau})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs_truetau})).channel({"et","mt","tt"}).AddSyst(cb,
                                                   "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
-        */
 
         //##############################################################################
         //  jet and met energy Scale
@@ -157,10 +155,8 @@ namespace ch {
 
 
         // Standard JES
-    /* // FIXME: Readd me
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","mt","tt"}).AddSyst(cb,
 						           "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
-    */
 
         // JES factorization in 27 shapes
         /*
