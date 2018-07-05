@@ -19,8 +19,6 @@ namespace ch {
     using ch::JoinStr;
 
     void AddSMRun2Systematics(CombineHarvester & cb, int control_region, bool mm_fit, bool ttbar_fit) {
-        // FIXME: Pass processes from MorphingSM2017 script down here (code duplication)
-
       std::vector<std::string> sig_procs = {"ggH","qqH","WH_htt","ZH_htt"};
         // N.B. when adding this list of backgrounds to a nuisance, only
         // the backgrounds that are included in the background process
@@ -48,7 +46,7 @@ namespace ch {
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.025));
         cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
-        //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
+        //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC // FIXME: This does not make sense anymore.
         cb.cp().process({"W"}).channel({"tt","em","mm","ttbar"}).AddSyst(cb,
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
@@ -110,6 +108,7 @@ namespace ch {
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
 
         //######################## Tau Id shape uncertainty (added March 08)
+        // FIXME: Do we need these?
         cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
                                                             "CMS_tauDMReco_1prong_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"ZTT"}).channel({"et","mt"}).bin_id({1}).AddSyst(cb,
@@ -341,6 +340,7 @@ namespace ch {
         cb.cp().process( {"TTJ","ZJ","VVJ","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt","mt","et"}).AddSyst(cb,
                                                                             "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
 
+        // FIXME: This does not make sense anymore?
         cb.cp().process( {"W"}).channel({"tt","mt","et"}).bin_id({1,2,3,13,14,15}).AddSyst(cb,
                                                                 "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
 
@@ -577,7 +577,7 @@ namespace ch {
                         ({"tt"},{3},{"ggH"}, 1.200)
                         );
 
-        //  // Recoil corrections
+        //  // Recoil corrections // FIXME: Why this is not used?
         //  // ------------------
         //  // These should not be applied to the W in all control regions becasuse we should
         //  // treat it as an uncertainty on the low/high mT factor.
@@ -589,7 +589,7 @@ namespace ch {
         //    ({"et", "mt", "em", "tt"}, {1, 2, 3, 4,5,6}, JoinStr({signal, {"ZTT", "W"}}), 1.02));
         //
 
-            // Z->mumu CR normalization propagation
+            // Z->mumu CR normalization propagation // FIXME: This does not make sense anymore
             // 0jet normalization only
             cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_0jet_$CHANNEL_$ERA", "lnN",
@@ -689,4 +689,4 @@ namespace ch {
 
 
     }
-}
+} // namespace ch
