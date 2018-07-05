@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
     cb.FilterProcs([&](ch::Process *p) {
         bool null_yield = !(p->rate() > 0.0);
         if (null_yield){
-            std::cout << "[Null yield] Removing process with null yield: \n ";
+            std::cout << "[INFO] Removing process with null yield: \n ";
             std::cout << ch::Process::PrintHeader << *p << "\n";
             cb.FilterSysts([&](ch::Systematic *s){
                 bool remove_syst = (MatchingProcess(*p,*s));
@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
     // for these
     if(!real_data){
       for (auto b : cb.cp().bin_set()) {
-	std::cout << " - Replacing data with asimov in bin " << b << "\n";
+	std::cout << "[INFO] Replacing data with asimov in bin " << b << "\n";
 	cb.cp().bin({b}).ForEachObs([&](ch::Observation *obs) {
             obs->set_shape(cb.cp().bin({b}).backgrounds().GetShape()+cb.cp().bin({b}).signals().GetShape(), true);
           });
@@ -199,13 +199,13 @@ int main(int argc, char** argv) {
 
     if(manual_rebin) {
       for(auto b : cb.cp().bin_set()) {
-	std::cout << "Rebinning by hand for bin: " << b <<  std::endl;
+	std::cout << "[INFO] Rebinning by hand for bin: " << b <<  std::endl;
 	cb.cp().bin({b}).VariableRebin(binning);
       }
     }
 
     // At this point we can fix the negative bins
-    std::cout << "Fixing negative bins\n";
+    std::cout << "[INFO] Fixing negative bins.\n";
     cb.ForEachProc([](ch::Process *p) {
 	if (ch::HasNegativeBins(p->shape())) {
 	  auto newhist = p->ClonedShape();
@@ -252,8 +252,13 @@ int main(int argc, char** argv) {
     //    writer.SetWildcardMasses({});
     //    writer.SetVerbosity(1);
 
-    // Write datacards
+    // Write datacards combined and per channel
     writer.WriteCards("cmb", cb);
-    cb.PrintAll();
-    cout << " done\n";
+
+    for (auto chn : chns) {
+        writer.WriteCards(chn, cb.cp().channel({chn}));
+    }
+
+    // cb.PrintAll();
+    cout << "[INFO] Done.\n";
 }
