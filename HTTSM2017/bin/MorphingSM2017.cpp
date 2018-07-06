@@ -46,8 +46,11 @@ int main(int argc, char **argv) {
   bool auto_rebin = false;
   bool manual_rebin = false;
   bool real_data = false;
-  bool do_jetfakes = true;
+  bool jetfakes = true;
+  bool embedding = false;
   bool verbose = false;
+  int stxs_signals = 0;
+  int stxs_categories = 0;
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -62,16 +65,16 @@ int main(int argc, char **argv) {
       ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
       ("verbose", po::value<bool>(&verbose)->default_value(verbose))
       ("output_folder", po::value<string>(&output_folder)->default_value(output_folder))
-      ("jetfakes", po::value<bool>(&do_jetfakes)->default_value(do_jetfakes));
+      ("stxs_signals", po::value<int>(&stxs_signals)->default_value(stxs_signals))
+      ("stxs_categories", po::value<int>(&stxs_categories)->default_value(stxs_categories))
+      ("jetfakes", po::value<bool>(&jetfakes)->default_value(jetfakes))
+      ("embedding", po::value<bool>(&embedding)->default_value(embedding));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
   // Define the location of the "auxiliaries" directory where we can
   // source the input files containing the datacard shapes
   std::map<string, string> input_dir;
-  input_dir["em"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_em + "/";
   input_dir["mt"] = string(getenv("CMSSW_BASE")) +
                     "/src/CombineHarvester/HTTSM2017/shapes/" +
                     input_folder_mt + "/";
@@ -88,71 +91,111 @@ int main(int argc, char **argv) {
     chns.push_back("mt");
   if (chan.find("et") != std::string::npos)
     chns.push_back("et");
-  if (chan.find("em") != std::string::npos)
-    chns.push_back("em");
   if (chan.find("tt") != std::string::npos)
     chns.push_back("tt");
   if (chan == "all")
-    chns = {"mt", "et", "tt", "em"};
+    chns = {"mt", "et", "tt"};
 
   // Define background processes
   map<string, VString> bkg_procs;
-  if (do_jetfakes) {
+  if (jetfakes) {
     bkg_procs["et"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
     bkg_procs["mt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
     bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
   } else {
-    bkg_procs["et"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT"};
-    bkg_procs["mt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT"};
-    bkg_procs["tt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ"}; // FIXME: Why do we skip VVT and VVJ here?
+    bkg_procs["et"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+    bkg_procs["mt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+    bkg_procs["tt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
   }
-  bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV",  "EWKZ", "ggH_hww125", "qqH_hww125"};
 
   // Define categories
   map<string, Categories> cats;
-  cats["et"] = {
-      { 2, "et_ggh"},
-      { 3, "et_qqh"},
-      {11, "et_w"},
-      {12, "et_ztt"},
-      {13, "et_tt"},
-      {14, "et_ss"},
-      {15, "et_zll"},
-      {16, "et_misc"},
-  };
-
-  cats["mt"] = {
-      { 2, "mt_ggh"},
-      { 3, "mt_qqh"},
-      {11, "mt_w"},
-      {12, "mt_ztt"},
-      {13, "mt_tt"},
-      {14, "mt_ss"},
-      {15, "mt_zll"},
-      {16, "mt_misc"},
-  };
-
-  cats["em"] = {
-      { 2, "em_ggh"},
-      { 3, "em_qqh"},
-      {11, "em_w"},
-      {12, "em_ztt"},
-      {13, "em_tt"},
-      {14, "em_ss"},
-      {15, "em_zll"},
-      {16, "em_misc"},
-  };
-
-  cats["tt"] = {
-      { 2, "tt_ggh"},
-      { 3, "tt_qqh"},
-      {12, "tt_ztt"},
-      {14, "tt_noniso"},
-      {16, "tt_misc"},
-  };
+  // STXS stage 0 categories (optimized on ggH and VBF)
+  if(stxs_categories == 0){
+    cats["et"] = {
+        { 1, "et_ggh"},
+        { 2, "et_qqh"},
+        {11, "et_w"},
+        {12, "et_ztt"},
+        {13, "et_tt"},
+        {14, "et_ss"},
+        {15, "et_zll"},
+        {16, "et_misc"},
+    };
+     cats["mt"] = {
+        { 1, "mt_ggh"},
+        { 2, "mt_qqh"},
+        {11, "mt_w"},
+        {12, "mt_ztt"},
+        {13, "mt_tt"},
+        {14, "mt_ss"},
+        {15, "mt_zll"},
+        {16, "mt_misc"},
+    };
+     cats["tt"] = {
+        { 1, "tt_ggh"},
+        { 2, "tt_qqh"},
+        {12, "tt_ztt"},
+        {16, "tt_misc"},
+        {17, "tt_noniso"},
+    };
+  }
+  // STXS stage 1 categories (optimized on STXS stage 1 splits of ggH and VBF)
+  else if(stxs_categories == 1){
+    cats["et"] = {
+        { 3, "et_ggh_0jet"},
+        { 4, "et_ggh_1jet"},
+        { 5, "et_ggh_ge2jets"},
+        { 6, "et_qqh_l2jets"},
+        { 7, "et_qqh_2jets"},
+        { 8, "et_qqh_g2jets"},
+        {11, "et_w"},
+        {12, "et_ztt"},
+        {13, "et_tt"},
+        {14, "et_ss"},
+        {15, "et_zll"},
+        {16, "et_misc"},
+    };
+     cats["mt"] = {
+        { 3, "mt_ggh_0jet"},
+        { 4, "mt_ggh_1jet"},
+        { 5, "mt_ggh_ge2jets"},
+        { 6, "mt_qqh_l2jets"},
+        { 7, "mt_qqh_2jets"},
+        { 8, "mt_qqh_g2jets"},
+        {11, "mt_w"},
+        {12, "mt_ztt"},
+        {13, "mt_tt"},
+        {14, "mt_ss"},
+        {15, "mt_zll"},
+        {16, "mt_misc"},
+    };
+     cats["tt"] = {
+        { 3, "tt_ggh_0jet"},
+        { 4, "tt_ggh_1jet"},
+        { 5, "tt_ggh_ge2jets"},
+        { 6, "tt_qqh_l2jets"},
+        { 7, "tt_qqh_2jets"},
+        { 8, "tt_qqh_g2jets"},
+        {12, "tt_ztt"},
+        {16, "tt_misc"},
+        {17, "tt_noniso"},
+    };
+  }
+  else throw std::runtime_error("Given STXS categories are not known.");
 
   // Specify signal processes and masses
-  vector<string> sig_procs = {"ggH", "qqH"};
+  vector<string> sig_procs;
+  // STXS stage 0: ggH and VBF processes
+  if(stxs_signals == 0) sig_procs = {"ggH", "qqH"};
+  // STXS stage 1: Splits of ggH and VBF processes
+  // References:
+  // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGFiducialAndSTXS
+  // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWG2
+  else if(stxs_signals == 1) sig_procs = {
+      "ggH_0J", "ggH_1J", "ggH_GE2J", "ggH_VBFTOPO",
+      "qqH_VBFTOPO_JET3", "qqH_VBFTOPO_JET3VETO", "qqH_REST", "qqH_PTJET1_GT200"};
+  else throw std::runtime_error("Given STXS signals are not known.");
   vector<string> masses = {"125"};
 
   // Create combine harverster object
@@ -168,10 +211,7 @@ int main(int argc, char **argv) {
   }
 
   // Add systematics
-  int dummy_control_region = 0;
-  bool dummy_mm_fit = false;
-  bool dummy_ttbar_fit = false;
-  ch::AddSMRun2Systematics(cb, dummy_control_region, dummy_mm_fit, dummy_ttbar_fit);
+  ch::AddSMRun2Systematics(cb, jetfakes, embedding);
 
   // Extract shapes from input ROOT files
   for (string chn : chns) {
@@ -244,7 +284,6 @@ int main(int argc, char **argv) {
   });
 
   // Merge bins and set bin-by-bin uncertainties
-  // FIXME: Why this is done only for the backgrounds?
   auto bbb = ch::BinByBinFactory()
                  .SetAddThreshold(0.05)
                  .SetMergeThreshold(0.8)
@@ -254,13 +293,11 @@ int main(int argc, char **argv) {
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
-  // which is commonly used in the htt analyses
   ch::SetStandardBinNames(cb);
 
   // Write out datacards. Naming convention important for rest of workflow. We
   // make one directory per chn-cat, one per chn and cmb. In this code we only
-  // store the individual datacards for each directory to be combined later, but
-  // note that it's also possible to write out the full combined card with CH
+  // store the individual datacards for each directory to be combined later.
   string output_prefix = "output/";
   ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$MASS/$BIN.txt",
                         output_prefix + output_folder +
@@ -283,5 +320,5 @@ int main(int argc, char **argv) {
   if (verbose)
     cb.PrintAll();
 
-  cout << "[INFO] Done.\n";
+  cout << "[INFO] Done producing datacards.\n";
 }
