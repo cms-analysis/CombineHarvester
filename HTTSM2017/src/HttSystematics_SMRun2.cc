@@ -28,14 +28,14 @@ namespace ch {
 
         std::vector<std::string> all_mc_bkgs = {
             "ZL","ZJ","ZTT","TTJ","TTT","TT",
-            "W","VV","VVT","VVJ",
+            "W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
             "ggH_hww125","qqH_hww125","EWKZ"};
         std::vector<std::string> all_mc_bkgs_truetau = {
             "ZTT","TTT","TT","VV","VVT",
             "ggH_hww125","qqH_hww125","EWKZ"};
         std::vector<std::string> all_mc_bkgs_no_W = {
             "ZL","ZJ","ZTT","TTJ","TTT","TT",
-            "VV","VVT","VVJ",
+            "ZJ_rest","TTJ_rest","VVJ_rest","VV","VVT","VVJ",
             "ggH_hww125","qqH_hww125","EWKZ"};
 
         //##############################################################################
@@ -44,6 +44,7 @@ namespace ch {
 
         cb.cp().process(JoinStr({sig_procs, {"VV","VVT","VVJ","ggH_hww125","qqH_hww125"}})).AddSyst(cb,
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.025));
+        cb.cp().process({"W_rest", "ZJ_rest", "TTJ_rest", "VVJ_rest"}).channel({"tt"}).AddSyst(cb,"lumi_13TeV", "lnN", SystMap<>::init(1.025));
 
         //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC // FIXME: This does not make sense anymore.
         cb.cp().process({"W"}).channel({"tt","em","mm","ttbar"}).AddSyst(cb,
@@ -100,10 +101,10 @@ namespace ch {
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
 
         // TauTau - 1+ jet to tau fakes
-        cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt"}).AddSyst(cb,
+        cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
                                              "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.06));
 
-        cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt"}).AddSyst(cb,
+        cb.cp().process({"TTJ","ZJ","VVJ","W","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt"}).AddSyst(cb,
                                              "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
 
         //######################## Tau Id shape uncertainty (added March 08)
@@ -228,10 +229,10 @@ namespace ch {
         //##############################################################################
 
         //   Diboson  Normalisation - fully correlated
-        cb.cp().process({"VV","VVT","VVJ"}).AddSyst(cb,
+        cb.cp().process({"VV","VVT","VVJ","VVJ_rest"}).AddSyst(cb,
                                         "CMS_htt_vvXsec_13TeV", "lnN", SystMap<>::init(1.05));
         //   ttbar Normalisation - fully correlated
-	    cb.cp().process({"TT","TTT","TTJ"}).AddSyst(cb,
+	    cb.cp().process({"TT","TTT","TTJ","TTJ_rest"}).AddSyst(cb,
 					  "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
 
         // W norm, just for em, tt and the mm region where MC norm is from MC // FIXME: This needs to be done everywhere.
@@ -292,7 +293,7 @@ namespace ch {
         //  DY LO->NLO reweighting, Between no and twice the correction.
         //##############################################################################
 
-        cb.cp().process( {"ZTT","ZJ","ZL"}).channel({"et","mt","tt"}).AddSyst(cb,
+        cb.cp().process( {"ZTT","ZJ","ZL","ZJ_rest"}).channel({"et","mt","tt"}).AddSyst(cb,
                                              "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"ZTT","ZL"}).channel({"em"}).AddSyst(cb,
                                              "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
@@ -302,7 +303,7 @@ namespace ch {
         // Ttbar shape reweighting, Between no and twice the correction
         //##############################################################################
 
-        cb.cp().process( {"TTJ","TTT"}).channel({"tt"}).AddSyst(cb,
+        cb.cp().process( {"TTJ","TTT","TTJ_rest"}).channel({"tt"}).AddSyst(cb,
                                         "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process( {"TTJ","TTT"}).channel({"et","mt"}).AddSyst(cb,
                                         "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
@@ -332,7 +333,7 @@ namespace ch {
         // jet  to tau fake only in tt, mt and et channels
         //##############################################################################
 
-        cb.cp().process( {"TTJ","ZJ","VVJ"}).channel({"tt","mt","et"}).AddSyst(cb,
+        cb.cp().process( {"TTJ","ZJ","VVJ","W_rest","ZJ_rest","TTJ_rest","VVJ_rest"}).channel({"tt","mt","et"}).AddSyst(cb,
                                                                             "CMS_htt_jetToTauFake_$ERA", "shape", SystMap<>::init(1.00));
 
         // FIXME: This does not make sense anymore?
@@ -586,40 +587,40 @@ namespace ch {
 
             // Z->mumu CR normalization propagation // FIXME: This does not make sense anymore
             // 0jet normalization only
-            cb.cp().process({"ZTT", "ZL", "ZJ", "EWKZ"}).AddSyst(cb,
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_0jet_$CHANNEL_$ERA", "lnN",
                                              SystMap<channel, bin_id>::init({"em","tt"},{1}, 1.07));
-            cb.cp().process({"ZTT", "ZL", "ZJ", "EWKZ"}).AddSyst(cb,
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_0jet_lt_$ERA", "lnN",
                                              SystMap<channel, bin_id>::init({"et","mt"},{1}, 1.07));
 
             // boosted normalization only
-            cb.cp().process({"ZTT", "ZL", "ZJ", "EWKZ"}).AddSyst(cb,
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_boosted_$CHANNEL_$ERA", "lnN",
                                              SystMap<channel, bin_id>::init({"em","tt"},{2}, 1.07));
-            cb.cp().process({"ZTT", "ZL", "ZJ", "EWKZ"}).AddSyst(cb,
+            cb.cp().process({"ZTT", "ZL", "ZJ", "ZJ_rest", "EWKZ"}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_boosted_lt_$ERA", "lnN",
                                              SystMap<channel, bin_id>::init({"et","mt"},{2}, 1.07));
 
             // VBF norm and shape for et/mt/tt
-            cb.cp().process( {"ZL","ZTT","ZJ", "EWKZ"}).channel({"em"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"em"}).bin_id({3}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_VBF_em_$ERA", "lnN", SystMap<>::init(1.15));
-            cb.cp().process( {"ZL","ZTT","ZJ", "EWKZ"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"et","mt"}).bin_id({3}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_VBF_lt_$ERA", "lnN", SystMap<>::init(1.15));
-            cb.cp().process( {"ZL","ZTT","ZJ", "EWKZ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
                                              "CMS_htt_zmm_norm_extrap_VBF_tt_$ERA", "lnN", SystMap<>::init(1.10));
 
 //            // FIXME should have EWKZ in all // FIXME: This is important for us?
-//            cb.cp().process( {"ZL","ZTT","ZJ", "EWKZ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
+//            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt"}).bin_id({3}).AddSyst(cb,
 //                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-//            cb.cp().process( {"ZL","ZTT","ZJ", "EWKZ"}).channel({"mt","et"}).bin_id({3}).AddSyst(cb,
+//            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"mt","et"}).bin_id({3}).AddSyst(cb,
 //                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-//            cb.cp().process( {"ZL","ZTT","ZJ"}).channel({"em"}).bin_id({3}).AddSyst(cb,
+//            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
 //                                            "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
-            cb.cp().process( {"ZL","ZTT","ZJ", "EWKZ"}).channel({"tt","et","mt"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest", "EWKZ"}).channel({"tt","et","mt"}).bin_id({3}).AddSyst(cb,
                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
-            cb.cp().process( {"ZL","ZTT","ZJ" }).channel({"em"}).bin_id({3}).AddSyst(cb,
+            cb.cp().process( {"ZL","ZTT","ZJ", "ZJ_rest"}).channel({"em"}).bin_id({3}).AddSyst(cb,
                                             "CMS_htt_zmumuShape_VBF_$ERA", "shape", SystMap<>::init(1.00));
 
 	//jet fakes: shape uncertainties
