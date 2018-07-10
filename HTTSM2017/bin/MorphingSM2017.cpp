@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
   } else {
     bkg_procs["et"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT"};
     bkg_procs["mt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT"};
-    bkg_procs["tt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT"};
+    bkg_procs["tt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ"}; // FIXME: Why do we skip VVT and VVJ here?
   }
   bkg_procs["em"] = {"ZTT", "W", "QCD", "ZL", "TT", "VV",  "EWKZ", "ggH_hww125", "qqH_hww125"};
 
