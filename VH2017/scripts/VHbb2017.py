@@ -302,7 +302,8 @@ cb.FilterProcs(lambda x: drop_znnqcd(cb,x))
 
 if year=='2016':
     cb.cp().syst_name(["CMS_res_j_13TeV_2016"]).ForEachProc(lambda x:symmetrise_syst(cb,x,'CMS_res_j_13TeV_2016'))
-
+if year=='2017':
+    cb.cp().syst_name(["CMS_res_j_13TeV"]).ForEachProc(lambda x:symmetrise_syst(cb,x,'CMS_res_j_13TeV'))
 
 if year=='2017':
     cb.cp().ForEachSyst(lambda x: remove_norm_effect(x) if x.name()=='CMS_vhbb_puWeight' else None)
