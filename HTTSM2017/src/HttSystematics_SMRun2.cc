@@ -68,7 +68,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // ##########################################################################
 
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
       .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<>::init(1.025));
 
@@ -94,6 +94,11 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .process(mc_processes)
       .AddSyst(cb, "CMS_eff_trigger_tt_$ERA", "lnN", SystMap<>::init(1.02));
 
+  cb.cp()
+      .channel({"em"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_eff_trigger_em_$ERA", "lnN", SystMap<>::init(1.02));
+
   // ##########################################################################
   // Uncertainty: Electron, muon and tau ID efficiency
   // References:
@@ -105,13 +110,13 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
 
   // Electron ID
   cb.cp()
-      .channel({"et"})
+      .channel({"et", "em"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_eff_e_$ERA", "lnN", SystMap<>::init(1.02));
 
   // Muon ID
   cb.cp()
-      .channel({"mt"})
+      .channel({"mt", "em"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<>::init(1.02));
 
@@ -166,6 +171,18 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .AddSyst(cb, "CMS_htt_mistag_b_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
+  // Uncertainty: Electron energy scale
+  // References:
+  // Notes:
+  // - FIXME: References?
+  // ##########################################################################
+
+  cb.cp()
+      .channel({"em"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
+
+  // ##########################################################################
   // Uncertainty: Tau energy scale
   // References:
   // Notes:
@@ -211,7 +228,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // ##########################################################################
 
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
 
@@ -229,25 +246,25 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
 
   // VV
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"VVT", "VVJ"})
       .AddSyst(cb, "CMS_htt_vvXsec_$ERA", "lnN", SystMap<>::init(1.05));
 
   // TT
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"TTT", "TTJ"})
       .AddSyst(cb, "CMS_htt_tjXsec_$ERA", "lnN", SystMap<>::init(1.06));
 
   // W
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"W"})
       .AddSyst(cb, "CMS_htt_wjXsec_$ERA", "lnN", SystMap<>::init(1.04));
 
   // Z
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"ZTT", "ZL", "ZJ"})
       .AddSyst(cb, "CMS_htt_zjXsec_$ERA", "lnN", SystMap<>::init(1.04));
 
@@ -273,7 +290,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // ##########################################################################
 
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"ZTT", "ZL", "ZJ"})
       .AddSyst(cb, "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(1.00));
 
@@ -285,7 +302,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // ##########################################################################
 
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"TTT", "TTJ"})
       .AddSyst(cb, "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
 
@@ -361,43 +378,43 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
 
   // Uncertainty on branching ratio for HTT at 125 GeV
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(signals)
       .AddSyst(cb, "BR_htt_THU", "lnN", SystMap<>::init(1.017));
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(signals)
       .AddSyst(cb, "BR_htt_PU_mq", "lnN", SystMap<>::init(1.0099));
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(signals)
       .AddSyst(cb, "BR_htt_PU_alphas", "lnN", SystMap<>::init(1.0062));
 
   // QCD scale
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(signals_ggH)
       .AddSyst(cb, "QCDScale_ggH", "lnN", SystMap<>::init(1.039));
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(signals_qqH)
       .AddSyst(cb, "QCDScale_qqH", "lnN", SystMap<>::init(1.004));
 
   // PDF
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(signals_ggH)
       .AddSyst(cb, "pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(signals_qqH)
       .AddSyst(cb, "pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"WH_htt"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.019));
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process({"ZH_htt"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
 
