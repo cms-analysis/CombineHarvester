@@ -246,6 +246,14 @@ Now make the plot:
 
 `./scripts/plotCCC.py -i MultiDimFit_cc.json -o cccPlot`
 
+To evaluate the compatibility with the SM:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --cminApproxPreFitTolerance 100 --algo fixed --fixedPointPOIs r=1 -n .compatiblityWithSM `
+The quantileExpected branch in the output file this produces contains the p-value
+
+To evaluate the compatibility of the mu values per channel with the overall one:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_chan.root --there --cminDefaultMinimizerStrategy 0 --cminApproxPreFitTolerance 100 --algo fixed --fixedPointPOIs r_zerolep=X,r_onelep=X,r_twolep=X -n .compatibilityWithBestFit` 
+Where X is the best-fit value of the overall mu.
+
 ### Channel compatibility (pre fit with CRs unblind)
 Make a regular workspace with channel masks if it does not already exist:
 
