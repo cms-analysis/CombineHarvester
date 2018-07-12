@@ -40,7 +40,6 @@ int main(int argc, char **argv) {
   string input_folder_et = "Vienna/";
   string input_folder_mt = "Vienna/";
   string input_folder_tt = "Vienna/";
-  string input_folder_mm = "Vienna/";
   string chan = "all";
   string postfix = "-ML";
   bool auto_rebin = false;
@@ -84,6 +83,9 @@ int main(int argc, char **argv) {
   input_dir["tt"] = string(getenv("CMSSW_BASE")) +
                     "/src/CombineHarvester/HTTSM2017/shapes/" +
                     input_folder_tt + "/";
+  input_dir["em"] = string(getenv("CMSSW_BASE")) +
+                    "/src/CombineHarvester/HTTSM2017/shapes/" +
+                    input_folder_em + "/";
 
   // Define channels
   VString chns;
@@ -93,6 +95,9 @@ int main(int argc, char **argv) {
     chns.push_back("et");
   if (chan.find("tt") != std::string::npos)
     chns.push_back("tt");
+  if (chan.find("em") != std::string::npos)
+    chns.push_back("em");
+  //TODO: add back "em" below once it is ready
   if (chan == "all")
     chns = {"mt", "et", "tt"};
 
@@ -102,10 +107,12 @@ int main(int argc, char **argv) {
     bkg_procs["et"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
     bkg_procs["mt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
     bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
+    bkg_procs["em"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
   } else {
     bkg_procs["et"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
     bkg_procs["mt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
     bkg_procs["tt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+    bkg_procs["em"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
   }
 
   // Define categories
@@ -138,6 +145,9 @@ int main(int argc, char **argv) {
         {12, "tt_ztt"},
         {16, "tt_misc"},
         {17, "tt_noniso"},
+    };
+     cats["em"] = {
+        // TODO
     };
   }
   // STXS stage 1 categories (optimized on STXS stage 1 splits of ggH and VBF)
@@ -180,6 +190,9 @@ int main(int argc, char **argv) {
         {12, "tt_ztt"},
         {16, "tt_misc"},
         {17, "tt_noniso"},
+    };
+     cats["em"] = {
+        // TODO
     };
   }
   else throw std::runtime_error("Given STXS categories are not known.");
