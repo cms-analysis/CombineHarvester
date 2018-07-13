@@ -384,6 +384,7 @@ for chn, pars in param_dict.iteritems():
 pprint.pprint(dict(param_dict_rev), indent=4)
 
 dump_dict = {}
+dump_dict_all = defaultdict(list)
 for ana in channel_bin_dict:
     dump_dict[ana] = defaultdict(list)
 
@@ -404,6 +405,7 @@ for i, x in enumerate(impacts['params']):
                 if re.match(pattern + '$', name):
                     for ana in param_dict_rev[name]:
                         dump_dict[ana][att].append(name)
+                    dump_dict_all[att].append(name)
                     impacts['params'][i]['groups'].extend([att, 'ExptCommon'])
                     nassigned += 1
                     break
@@ -413,11 +415,14 @@ for i, x in enumerate(impacts['params']):
                     impacts['params'][i]['groups'].extend([oth_group])
                     for ana in param_dict_rev[name]:
                         dump_dict[ana][oth_group].append(name)
+                    dump_dict_all[oth_group].append(name)
                     nassigned += 1
                     break
         if nassigned == 0:
             for ana in param_dict_rev[name]:
                 dump_dict[ana]['unassigned'].append(name)
+            if str(x['type']) == 'Gaussian':
+                dump_dict_all['pOther'].append(name)
 
 
 
@@ -433,4 +438,7 @@ if args.dump:
             dump_dict[ana], sort_keys=True, indent=2, separators=(',', ': '))
         with open('proj_np_groups_%s.json' % ana, 'w') as out_file:
             out_file.write(jsondata)
+        with open('proj_np_groups.txt', 'w') as out_file:
+            for grp in dump_dict_all:
+                out_file.write('%s group = %s\n' % (grp, ' '.join(dump_dict_all[grp])))
 
