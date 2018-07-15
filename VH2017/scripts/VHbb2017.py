@@ -88,7 +88,7 @@ parser.add_argument(
 parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
 parser.add_argument(
- '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
+ '--rebinning_scheme', default='v2-whznnh-hf-dnn', help="""Rebinning scheme for CR and SR distributions""")
 
 
 
