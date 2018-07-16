@@ -88,8 +88,9 @@ parser.add_argument(
 parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
 parser.add_argument(
- '--rebinning_scheme', default='v2-whznnh-hf-dnn', help="""Rebinning scheme for CR and SR distributions""")
-
+ '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
+parser.add_argument(
+ '--doVV', default=False, help="""if True assume we are running the VZ(bb) analysis""")
 
 
 
@@ -152,29 +153,55 @@ input_folders = {
   'Znn' : folder_map[input_fwks['Znn']] 
 }
 
-bkg_procs = {
-  'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Zmm' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
-  'Zee' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
-  'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
-}
+if not args.doVV:
+  bkg_procs = {
+    'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
+    'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
+    'Zmm' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
+    'Zee' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
+    'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
+  }
+else:
+  bkg_procs = {
+    'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','WH_hbb','ZH_hbb'],
+    'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','WH_hbb','ZH_hbb'],
+    'Zmm' : ['s_Top','TT','VVLF','Zj0b','Zj1b','Zj2b','ZH_hbb','ggZH_hbb'],
+    'Zee' : ['s_Top','TT','VVLF','Zj0b','Zj1b','Zj2b','ZH_hbb','ggZH_hbb'],
+    'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','QCD','WH_hbb','ZH_hbb','ggZH_hbb']
+  }
 
-sig_procs = {
-  'Wen' : ['WH_hbb','ZH_hbb'],
-  'Wmn' : ['WH_hbb','ZH_hbb'],
-  'Zmm' : ['ZH_hbb','ggZH_hbb'],
-  'Zee' : ['ZH_hbb','ggZH_hbb'],
-  'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
-}
+if not args.doVV:
+  sig_procs = {
+    'Wen' : ['WH_hbb','ZH_hbb'],
+    'Wmn' : ['WH_hbb','ZH_hbb'],
+    'Zmm' : ['ZH_hbb','ggZH_hbb'],
+    'Zee' : ['ZH_hbb','ggZH_hbb'],
+    'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
+  }
 
-sig_procs_ren = {
-  'Wen' : ['WH_lep','ZH_hbb'],
-  'Wmn' : ['WH_lep','ZH_hbb'],
-  'Zmm' : ['ZH_hbb','ggZH_hbb'],
-  'Zee' : ['ZH_hbb','ggZH_hbb'],
-  'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
-}
+  sig_procs_ren = {
+    'Wen' : ['WH_lep','ZH_hbb'],
+    'Wmn' : ['WH_lep','ZH_hbb'],
+    'Zmm' : ['ZH_hbb','ggZH_hbb'],
+    'Zee' : ['ZH_hbb','ggZH_hbb'],
+    'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
+  }
+else:
+  sig_procs = {
+    'Wen' : ['VVHF'],
+    'Wmn' : ['VVHF'],
+    'Zmm' : ['VVHF'],
+    'Zee' : ['VVHF'],
+    'Znn' : ['VVHF']
+  }
+
+  #sig_procs_ren = {
+  #  'Wen' : ['WH_lep','ZH_hbb'],
+  #  'Wmn' : ['WH_lep','ZH_hbb'],
+  #  'Zmm' : ['ZH_hbb','ggZH_hbb'],
+  #  'Zee' : ['ZH_hbb','ggZH_hbb'],
+  #  'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
+ # }
 
 cats = {
   'Zee' : [
@@ -307,6 +334,9 @@ if year=='2017':
 
 if year=='2017':
     cb.cp().ForEachSyst(lambda x: remove_norm_effect(x) if x.name()=='CMS_vhbb_puWeight' else None)
+
+if doVV:
+    cb.FilterSysts(lambda x: x.name() in "CMS_vhbb_VV")
 
 cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
 cb.SetGroup('bkg_theory',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST','.*LHE_weights.*TT.*','.*LHE_weights.*VV.*','.*LHE_weights.*Zj0b.*','LHE_weights.*Zj1b.*','LHE_weights.*Zj2b.*','LHE_weights.*Wj0b.*','LHE_weights.*Wj1b.*','LHE_weights.*Wj2b.*','LHE_weights.*s_Top.*','LHE_weights.*QCD.*'])
