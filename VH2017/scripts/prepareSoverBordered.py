@@ -113,4 +113,3 @@ writer.SetWildcardMasses([])
 writer.SetVerbosity(1);
 
 writer.WriteCards("cmb",cb);
-
