@@ -63,11 +63,11 @@ f_fit = ROOT.TFile(args.fitresult)
 fitresult = f_fit.Get('fit_s')
 
 cb_man.UpdateParameters(fitresult)
-cb_man.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV','vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
+cb_man.bin(['vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
  
 #Now let's parse the original full combined datacard that we want to manipulate
 cb.ParseDatacard(args.datacard,"vhbb","13TeV","")
-cb.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV','vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
+cb.bin(['vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
 
 xbins = [-4,-2.25,-1.75,-1.5,-1.25,-1.0,-0.75,-0.5,0]
 reorder_hist = ROOT.TH1F('reorder_hist','reorder_hist',8,array('d',xbins))
@@ -85,6 +85,7 @@ for b in cb_man.bin_set():
     print i
     c_sig = sig_hist.GetBinContent(i)
     c_bkg = bkg_hist.GetBinContent(i)
+    print c_sig,c_bkg
     if c_sig==0 and c_bkg==0:
       c_sb=0
     else:
@@ -93,6 +94,7 @@ for b in cb_man.bin_set():
       bin_id = 0
     else :
       bin_id = reorder_hist.FindFixBin(math.log10(c_sb))
+    print "bin_id = ",bin_id
     if bin_id==0: bin_id=1
     bin_dict[b][i] = bin_id
 
