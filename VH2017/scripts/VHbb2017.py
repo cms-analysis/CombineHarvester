@@ -335,7 +335,7 @@ if year=='2017':
 if year=='2017':
     cb.cp().ForEachSyst(lambda x: remove_norm_effect(x) if x.name()=='CMS_vhbb_puWeight' else None)
 
-if doVV:
+if args.doVV:
     cb.FilterSysts(lambda x: x.name() in "CMS_vhbb_VV")
 
 cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
