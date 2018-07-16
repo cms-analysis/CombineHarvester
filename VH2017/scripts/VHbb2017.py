@@ -22,6 +22,13 @@ def drop_zero_procs(chob,proc):
     chob.FilterSysts(lambda sys: matching_proc(proc,sys)) 
   return null_yield
 
+def drop_znnqcd(chob,proc):
+  drop_process =  proc.process()=='QCD' and proc.channel()=='Znn' and proc.bin_id()==5
+  if(drop_process):
+    chob.FilterSysts(lambda sys: matching_proc(proc,sys)) 
+  return drop_process
+
+
 def drop_zero_systs(syst):
   null_yield = (not (syst.value_u() > 0. and syst.value_d()>0.) ) and syst.type() in 'shape'
   if(null_yield):
@@ -34,8 +41,26 @@ def matching_proc(p,s):
   return ((p.bin()==s.bin()) and (p.process()==s.process()) and (p.signal()==s.signal()) 
          and (p.analysis()==s.analysis()) and  (p.era()==s.era()) 
          and (p.channel()==s.channel()) and (p.bin_id()==s.bin_id()) and (p.mass()==s.mass()))
-  
 
+def remove_norm_effect(syst):
+  syst.set_value_u(1.0)
+  syst.set_value_d(1.0)
+
+def symm(syst,nominal):
+  print 'Symmetrising systematic ', syst.name(), ' in region ', syst.bin(), ' for process ', syst.process()
+  hist_u = syst.ShapeUAsTH1F()
+  hist_u.Scale(nominal.Integral()*syst.value_u())
+  hist_d = nominal.Clone()
+  hist_d.Scale(2)
+  hist_d.Add(hist_u,-1)
+  syst.set_shapes(hist_u,hist_d,nominal)
+  
+  
+def symmetrise_syst(chob,proc,sys_name):
+  nom_hist = proc.ShapeAsTH1F()
+  nom_hist.Scale(proc.rate())
+  chob.ForEachSyst(lambda s: symm(s,nom_hist) if (s.name()==sys_name and matching_proc(proc,s)) else None)
+  
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -199,7 +224,7 @@ cats = {
 
 }
 
-if args.rebinning_scheme == 'v2-wh-hf-dnn':
+if args.rebinning_scheme == 'v2-wh-hf-dnn' or args.rebinning_scheme == 'v2-whznnh-hf-dnn':
     cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
     cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
 
@@ -299,6 +324,16 @@ elif args.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
 cb.FilterSysts(lambda x: drop_zero_systs(x))
+#Drop QCD in Z+HF CR
+cb.FilterProcs(lambda x: drop_znnqcd(cb,x))
+
+if year=='2016':
+    cb.cp().syst_name(["CMS_res_j_13TeV_2016"]).ForEachProc(lambda x:symmetrise_syst(cb,x,'CMS_res_j_13TeV_2016'))
+if year=='2017':
+    cb.cp().syst_name(["CMS_res_j_13TeV"]).ForEachProc(lambda x:symmetrise_syst(cb,x,'CMS_res_j_13TeV'))
+
+if year=='2017':
+    cb.cp().ForEachSyst(lambda x: remove_norm_effect(x) if x.name()=='CMS_vhbb_puWeight' else None)
 
 if doVV:
     cb.FilterSysts(lambda x: x.name() in "CMS_vhbb_VV")

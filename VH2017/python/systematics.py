@@ -6,16 +6,16 @@ def AddCommonSystematics(cb):
   # rateParams
   
   # Theory uncertainties: signal
-  # cb.cp().AddSyst(cb,
-      # 'pdf_Higgs_qqbar', 'lnN', ch.SystMap('process')
-       # (['ZH_hbb'],1.016)
-       # (['WH_hbb'],1.019))
+  cb.cp().AddSyst(cb,
+       'pdf_Higgs_qqbar', 'lnN', ch.SystMap('process')
+        (['ZH_hbb'],1.016)
+        (['WH_hbb'],1.019))
 
   cb.cp().process(['ggZH_hbb']).AddSyst(cb,
       'pdf_Higgs_gg', 'lnN', ch.SystMap()(1.024))
 
   cb.cp().process(signal).AddSyst(cb,
-      'BR_hbb', 'lnN', ch.SystMap()((1.012,0.987)))
+      'BR_hbb', 'lnN', ch.SystMap()(1.005))
 
   cb.cp().process(['ggZH_hbb']).AddSyst(cb,
       'QCDscale_ggZH', 'lnN',ch.SystMap()((1.251,0.811)))
@@ -33,32 +33,32 @@ def AddCommonSystematics(cb):
       (['Wen','Wmn'],['WH_hbb','ZH_hbb'],1.02)) 
 
   # To be checked: LUCAP: IN MY OPINION NEEDS TO BE REMOVED!!!
-  cb.cp().AddSyst(cb,
-      'CMS_vhbb_boost_QCD_13TeV', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm'],['ZH_hbb'], 1.05)
-      (['Znn'],['ZH_hbb','WH_hbb','ggZH_hbb'],1.05)) 
+  #cb.cp().AddSyst(cb,
+  #    'CMS_vhbb_boost_QCD_13TeV', 'lnN', ch.SystMap('channel','process') 
+  #    (['Zee','Zmm'],['ZH_hbb'], 1.05)
+  #    (['Znn'],['ZH_hbb','WH_hbb','ggZH_hbb'],1.05)) 
 
   # Theory uncertainties: backgrounds -> to be checked!
-  # cb.cp().AddSyst(cb,
-      # 'pdf_qqbar', 'lnN', ch.SystMap('channel','process') 
-       # (['Zee','Zmm'],['Zj0b','Zj1b','Zj2b','VVLF','VVHF','VV'], 1.01)
-       # (['Znn'],['VVLF','VVHF'],1.01)
-       # (['Wen','Wmn'],['VVLF','VVHF'],1.01)) 
+  cb.cp().AddSyst(cb,
+       'pdf_qqbar', 'lnN', ch.SystMap('channel','process') 
+        (['Zee','Zmm'],['Zj0b','Zj1b','Zj2b','VVLF','VVHF','VV'], 1.01)
+        (['Znn'],['VVLF','VVHF'],1.01)
+        (['Wen','Wmn'],['VVLF','VVHF'],1.01)) 
 
-  # cb.cp().AddSyst(cb,
-      # 'pdf_gg', 'lnN', ch.SystMap('channel','process')
-      # (['Zee','Zmm','Znn'],['TT','s_Top','QCD'], 1.01)
-      # (['Wen','Wmn'], ['s_Top'],1.01))
+  cb.cp().AddSyst(cb,
+       'pdf_gg', 'lnN', ch.SystMap('channel','process')
+       (['Zee','Zmm','Znn'],['TT','s_Top','QCD'], 1.01)
+       (['Wen','Wmn'], ['s_Top'],1.01))
 
   cb.cp().AddSyst(cb,
       'QCDscale_ttbar', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm','Wen','Wmn','Znn'],['s_Top'], 1.06)
-      # (['Zee','Zmm','Wen','Wmn','Znn'],['TT'],1.06)
+      #(['Zee','Zmm','Wen','Wmn','Znn'],['s_Top'], 1.06)
+       (['Zee','Zmm','Wen','Wmn','Znn'],['TT'],1.06)
       ) 
 
-  cb.cp().AddSyst(cb,
-      'QCDscale_VV', 'lnN', ch.SystMap('channel','process') 
-      (['Zee','Zmm','Wen','Wmn','Znn'],['VVLF','VVHF','VV'], 1.04)) 
+  #cb.cp().AddSyst(cb,
+  #    'QCDscale_VV', 'lnN', ch.SystMap('channel','process') 
+  #    (['Zee','Zmm','Wen','Wmn','Znn'],['VVLF','VVHF','VV'], 1.04)) 
 
   # measured cross section uncertainties because we don't have SF
   cb.cp().process(['VV','VVHF','VVLF']).AddSyst(cb,
@@ -464,42 +464,42 @@ def AddSystematics2017(cb):
                         x.bin_id() in [1,3,5,6,7] and 
                         x.name() in 'CMS_scale_j_PileUpPtBB_13TeV'
                         )
-  cb.FilterSysts(lambda x: 
-                        # x.channel() in ['Znn'] and 
-                        # x.process() in ['Zj0b'] and 
-                        # x.bin_id() in [1,3] and 
-                        x.name() in 'CMS_res_j_13TeV'
-                        )
-  cb.FilterSysts(lambda x: 
-                        x.process() in ['VVLF'] and 
-                        x.type() in 'shape'
-                        )
+  #cb.FilterSysts(lambda x: 
+  #                      # x.channel() in ['Znn'] and 
+  #                      # x.process() in ['Zj0b'] and 
+  #                      # x.bin_id() in [1,3] and 
+  #                      x.name() in 'CMS_res_j_13TeV'
+  #                      )
+  #cb.FilterSysts(lambda x: 
+  #                      x.process() in ['VVLF'] and 
+  #                      x.type() in 'shape'
+  #                      )
 
   # TT vhbb_Zee_8_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'TT' and x.bin_id()==8 and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'TT' and x.bin_id()==8 and x.name()=='CMS_vhbb_puWeight')
   # VVLF vhbb_Zee_7_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'VVLF' and x.bin_id()==7 and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'VVLF' and x.bin_id()==7 and x.name()=='CMS_vhbb_puWeight')
   # Zj0b vhbb_Zee_2_13TeV2017 CMS_vhbb_puWeight 
   # Zj0b vhbb_Zee_3_13TeV2017 CMS_vhbb_puWeight 
   # Zj0b vhbb_Zee_4_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'Zj0b' and x.bin_id() in [2,3,4] and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Zee'] and x.process() in 'Zj0b' and x.bin_id() in [2,3,4] and x.name()=='CMS_vhbb_puWeight')
   # Zj0b vhbb_Zmm_1_13TeV2017 CMS_vhbb_puWeight 
   # Zj0b vhbb_Zmm_2_13TeV2017 CMS_vhbb_puWeight 
   # Zj0b vhbb_Zmm_4_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Zmm'] and x.process() in 'Zj0b' and x.bin_id() in [1,2,4] and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Zmm'] and x.process() in 'Zj0b' and x.bin_id() in [1,2,4] and x.name()=='CMS_vhbb_puWeight')
   # TT vhbb_Wmn_7_13TeV2017 CMS_vhbb_puWeight 
   # TT vhbb_Wen_7_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Wmn','Wen'] and x.process() in 'TT' and x.bin_id() in [7] and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Wmn','Wen'] and x.process() in 'TT' and x.bin_id() in [7] and x.name()=='CMS_vhbb_puWeight')
   # TT vhbb_Wmn_1_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Wmn'] and x.process() in 'TT' and x.bin_id() in [1] and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Wmn'] and x.process() in 'TT' and x.bin_id() in [1] and x.name()=='CMS_vhbb_puWeight')
   # Wj0b vhbb_Wen_3_13TeV2017 CMS_vhbb_puWeight 
   # Wj0b vhbb_Wmn_3_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Wmn','Wen'] and x.process() in 'Wj0b' and x.bin_id() in [3] and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Wmn','Wen'] and x.process() in 'Wj0b' and x.bin_id() in [3] and x.name()=='CMS_vhbb_puWeight')
   # Wj0b vhbb_Wen_6_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Wen'] and x.process() in 'Wj0b' and x.bin_id() in [6] and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Wen'] and x.process() in 'Wj0b' and x.bin_id() in [6] and x.name()=='CMS_vhbb_puWeight')
   # Wj0b vhbb_Znn_3_13TeV2017 CMS_vhbb_puWeight 
   # Zj0b vhbb_Znn_3_13TeV2017 CMS_vhbb_puWeight 
-  cb.FilterSysts(lambda x: x.channel() in ['Znn'] and x.process() in ['Wj0b','Zj0b'] and x.bin_id() in [3] and x.name()=='CMS_vhbb_puWeight')
+  #cb.FilterSysts(lambda x: x.channel() in ['Znn'] and x.process() in ['Wj0b','Zj0b'] and x.bin_id() in [3] and x.name()=='CMS_vhbb_puWeight')
   
   
   
@@ -860,9 +860,9 @@ def AddSystematics2016(cb):
   cb.cp().AddSyst(cb,'CMS_bTagWeightcErr2_13TeV_2016_pt4_eta2','shape',ch.SystMap()(1.0))
 
   # EXCLUDE PROBLEMATIC NUISANCES for 2016 shapes
-  cb.FilterSysts(lambda x: 
-                        x.name() in 'CMS_res_j_13TeV_2016'
-                        )
+  # cb.FilterSysts(lambda x: 
+  #                       x.name() in 'CMS_res_j_13TeV_2016'
+  #                       )
   cb.FilterSysts(lambda x: 
                         x.process() in ['VVLF'] and 
                         x.type() in 'shape'

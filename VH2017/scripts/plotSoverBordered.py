@@ -77,10 +77,10 @@ parser.add_argument('--log_y', action='store_true',help='Use log for y axis')
 parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='sbordered',help='Output plot name')
-parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.5,1.5")
+parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.4,1.6")
 parser.add_argument('--x_title', default='log_{10}(S/B)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
-parser.add_argument('--lumi', default='77.2 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--lumi', default='41.3 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
@@ -100,7 +100,7 @@ histo_file = ROOT.TFile(args.file)
 bkghist = getHistogram(histo_file,'TotalBkg','', 'postfit', logx=log_x)[0]
 splusbhist = getHistogram(histo_file,'TotalProcs','','postfit',logx=log_x)[0]
 total_datahist = getHistogram(histo_file,"data_obs",'','postfit', logx=log_x)[0]
-sighist = getHistogram(histo_file,'TotalSig', '', 'prefit',logx=log_x)[0]
+sighist = getHistogram(histo_file,'TotalSig', '', 'postfit',logx=log_x)[0]
 sighist_forratio = sighist.Clone()
 sighist_forratio.SetName("sighist_forratio")
 
@@ -173,8 +173,8 @@ splusbhist.SetLineColor(0)
 splusbhist.SetMarkerSize(0)
 splusbhist.SetFillStyle(3994)
 splusbhist.DrawCopy("e2same")
-#total_datahist.SetMarkerStyle(20)
-#total_datahist.Draw("PSAME")
+total_datahist.SetMarkerStyle(20)
+total_datahist.Draw("PSAME")
 
 #Setup legend
 legend = plot.PositionedLegend(0.48,0.10,3,0.03)
@@ -185,7 +185,7 @@ legend.SetFillColor(0)
 #legend.AddEntry(total_datahist,"Observation","PE")
 legend.AddEntry(bkghist, "Background", "f")
 legend.AddEntry(sighist, "VH(b#bar{b})","f")
-legend.AddEntry(splusbhist, "Background uncertainty","f")
+legend.AddEntry(splusbhist, "S+B uncertainty","f")
 
 legend.Draw("same")
 
@@ -201,6 +201,9 @@ if args.ratio:
   ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
   ratio_bkghist.SetFillColor(ROOT.kGray)
   ratio_bkghist.SetFillStyle(3944)
+  ratio_splusbhist = plot.MakeRatioHist(splusbhist,splusbhist,True,False)
+  ratio_splusbhist.SetFillColor(ROOT.kGray)
+  ratio_splusbhist.SetFillStyle(3944)
   ratio_datahist = plot.MakeRatioHist(total_datahist,bkghist,True,False)
   ratio_sighist = plot.MakeRatioHist(sighist_forratio,bkghist,True,False)
   ratio_sighist.SetLineColor(ROOT.kRed)
@@ -214,7 +217,7 @@ if args.ratio:
   axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
   ratio_bkghist.SetMarkerSize(0)
   ratio_bkghist.DrawCopy("e2same")
-  #ratio_datahist.Draw("e0same")
+  ratio_datahist.Draw("e0same")
   ratio_sighist.Draw("histsame")
   pads[1].RedrawAxis("G")
 

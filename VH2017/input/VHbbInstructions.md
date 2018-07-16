@@ -246,6 +246,14 @@ Now make the plot:
 
 `./scripts/plotCCC.py -i MultiDimFit_cc.json -o cccPlot`
 
+To evaluate the compatibility with the SM:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --cminApproxPreFitTolerance 100 --algo fixed --fixedPointPOIs r=1 -n .compatiblityWithSM `
+The quantileExpected branch in the output file this produces contains the p-value
+
+To evaluate the compatibility of the mu values per channel with the overall one:
+`combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/ws_chan.root --there --cminDefaultMinimizerStrategy 0 --cminApproxPreFitTolerance 100 --algo fixed --fixedPointPOIs r_zerolep=X,r_onelep=X,r_twolep=X -n .compatibilityWithBestFit` 
+Where X is the best-fit value of the overall mu.
+
 ### Channel compatibility (pre fit with CRs unblind)
 Make a regular workspace with channel masks if it does not already exist:
 
@@ -301,36 +309,34 @@ Now make the plot:
 
 
 ### S-over-B ordered plot
-**Note: at the moment this is set up for HIG-16-044 and 2017 only. Can adapt as needed - to run with re-loaded 2016 the category names in prepareSoverBordered will need to be adapted**
+**Note: at the moment this is set up for 2017 only.**
 
-As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics.  
-For 2016+2017 for now we use the contents of a fresh 2017 cmb directory + HIG16044 (from the shapes directory). Put the results in a combined directory output/cmb-sbordered/
+As inputs we will need the orignal combined datacard, the original combined workspace and the RooFit result obtained when running FitDiagnostics. We will use a fresh 2017 cmb directory.
 
 First make the workspace
 
-`combineTool.py -M T2W -o "ws_masked.root" -i output/cmb-sbordered/ --channel-masks`
+`combineTool.py -M T2W -o "ws.root" -i output/<output_folder>/cmb/ `
 
 And run FitDiagnostics (note: have to check that the covariance matrix is accurate):
 
-`combineTool.py -M FitDiagnostics -m 125 -d output/cmb-for-sbordered/ws_masked.root --there --cminDefaultMinimizerStrategy 0 --setParameters mask_vhbb_Zmm_1_13TeV=1,mask_vhbb_Zmm_1_13TeV2017=1,mask_vhbb_Zmm_2_13TeV=1,mask_vhbb_Zmm_2_13TeV2017=1,mask_vhbb_Zee_1_13TeV=1,mask_vhbb_Zee_1_13TeV2017=1,mask_vhbb_Zee_2_13TeV=1,mask_vhbb_Zee_2_13TeV2017=1,mask_vhbb_Wen_1_13TeV=1,mask_vhbb_Wen_1_13TeV2017=1,mask_vhbb_Wmn_1_13TeV=1,mask_vhbb_Wmn_1_13TeV2017=1,mask_vhbb_Znn_1_13TeV=1,mask_vhbb_Znn_1_13TeV2017=1,r=0 -n .SRMasked --redefineSignalPOIs SF_TT_Wln_2017 --freezeParameters r`
+`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --cminApproxPreFitTolerance 100 --skipBOnlyFit 1 `
 
 Now we need to set up some datacards with the bins re-ordered according to (pre-fit S)/(post-fit B) 
 
-`python ./scripts/prepareSoverBordered.py -w output/cmb-for-sbordered/ws_masked.root -f output/cmb-for-sbordered/fitDiagnostics.SRMasked.root -d output/cmb-for-sbordered/combined.txt.cmb`
+`python ./scripts/prepareSoverBordered.py -w output/<output_folder>/cmb/ws.root -f output/<output_folder>/cmb/fitDiagnostics.Test.root -d output/<output_folder>/cmb/combined.txt.cmb`
 
-This writes out S/B ordered datacards for the SR categories only to output/vhbb_sbordered_12jun/vhbb_20162017.txt
+This writes out S/B ordered datacards for the SR categories only to output/vhbb_sbordered_14jul/vhbb_2017.txt
 
 Make the workspace for these cards:
-`combineTool.py -M T2W -o "ws.root" -i output/vhbb_sbordered_12jun/ `
+`combineTool.py -M T2W -o "ws.root" -i output/vhbb_sbordered_14jul/ `
 
 Now we need to run PostFitShapesFromWorkspace on the new S/B ordered workspace we have just made, using the RooFit result we have been using all along:
 
-`PostFitShapesFromWorkspace -d output/vhbb_sbordered_12jun/vhbb_20162017.txt -w output/vhbb_sbordered_12jun/ws.root -o shapes_sbordered.root --postfit --sampling -f output/cmb-for-sbordered/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
+`PostFitShapesFromWorkspace -d output/vhbb_sbordered_14jul/vhbb_2017.txt -w output/vhbb_sbordered_14jul/ws.root -o shapes_sbordered.root --postfit --sampling --freeze r=1 -f output/<output_folder>/cmb/fitDiagnostics.Test.root:fit_s --total-shapes`
 
 To make the plot:
 `python ./scripts/plotSoverBordered.py -f shapes_sbordered.root --log_y --custom_y_range --ratio`
 
-Note: for now this will NOT plot the data, it is commented in the plotting script.
 
 ### S/(S+B) weighted plot
 a-la-HIG-16-044 we would need multiple steps. First we have to extract S/(S+B) weights from the existing model:
@@ -449,8 +455,8 @@ Because our background predictions rely heavily on the fitted control regions we
 ### AD/KS
 $ALGO = AD,KS:  
 ```
-combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 125 --there -d output/<output_folder>/cmb/ws.root -n ".$ALGO.toys" --fixedSignalStrength=1 -t 500 --toysFrequentist  
-combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 125 --there -d output/<output_folder>/cmb/ws.root -n ".$ALGO" --fixedSignalStrength=1
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 125 --there -d output/<output_folder>/cmb/ws.root -n ".$ALGO.toys" --expectSignal 1 -t 500 --toysFrequentist  
+combineTool.py -M GoodnessOfFit --algorithm $ALGO -m 125 --there -d output/<output_folder>/cmb/ws.root -n ".$ALGO" 
 ```
 
 these jobs can be submitted to a batch system/condor as specified above. In that case we probably want to split the N toys into fewer toys per job, for example for 5 toys/job we could replace `-t 500` by `-t 5 -s 0:99:1` (which sets the seed of each job to 0,1...99).
@@ -468,8 +474,8 @@ And to make plots for all regions:
 
 Now run everything separately for each region/combination of regions you want to look at:
 ```
-combineTool.py -M GoodnessOfFit --algorithm saturated -m 125 --there -d output/<output_folder>/Zee/ws.root -n ".saturated.toys" --fixedSignalStrength=1 -t 500 --toysFrequentist  
-combineTool.py -M GoodnessOfFit --algorithm saturated -m 125 --there -d output/<output_folder>/Zee/ws.root -n ".saturated" --fixedSignalStrength=1
+combineTool.py -M GoodnessOfFit --algorithm saturated -m 125 --there -d output/<output_folder>/Zee/ws.root -n ".saturated.toys" --expectSignal 1 -t 500 --toysFrequentist  
+combineTool.py -M GoodnessOfFit --algorithm saturated -m 125 --there -d output/<output_folder>/Zee/ws.root -n ".saturated" 
 
 combineTool.py -M CollectGoodnessOfFit --input output/<output_folder>/Zee/higgsCombine.saturated.GoodnessOfFit.mH125.root output/<output_folder>/Zee/higgsCombine.saturated.toys.GoodnessOfFit.mH125.*.root -o Zee_saturated.json
 

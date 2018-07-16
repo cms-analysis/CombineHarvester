@@ -25,7 +25,7 @@ pads[0].SetTicks(1,-1)
 pads[0].SetLeftMargin(0.22)
 pads[0].SetTicky(0)
 
-axis = ROOT.TH2F('axis', '',1,-1,3,7,0,7)
+axis = ROOT.TH2F('axis', '',1,-2,2,7,0,7)
 plot.Set(axis.GetYaxis(), LabelSize=0)
 plot.Set(axis.GetXaxis(), Title = 'Best fit #mu')
 axis.Draw()
@@ -44,7 +44,7 @@ gr = ROOT.TGraphAsymmErrors(5)
 plot.Set(gr, LineWidth=2, LineColor=ROOT.kRed)
 
 y_pos = 4.5
-x_text = -2.0
+x_text = -3.0
 i=0
 latex = ROOT.TLatex()
 plot.Set(latex, TextAlign=12,TextSize=0.035)
@@ -78,8 +78,8 @@ latex.SetTextFont(42)
 latex.SetTextSize(0.03)
 #latex.DrawLatex(-0.82,6.1,"pp#rightarrow VH; H#rightarrow b#bar{b}")
 #latex.DrawLatex(-0.82,5.7,"Combined #mu=%.1f#pm%.1f"%(js['r']['val'],js['r']['ErrHi']))
-latex.DrawLatex(-0.82,5.6,"pp#rightarrow VH; H#rightarrow b#bar{b}")
-latex.DrawLatex(-0.82,5.2,"Combined #mu=%.1f#pm%.1f"%(js['r']['val'],js['r']['ErrHi']))
+latex.DrawLatex(-1.82,5.6,"pp#rightarrow VH; H#rightarrow b#bar{b}")
+latex.DrawLatex(-1.82,5.2,"Combined #mu=%.1f#pm%.1f"%(js['r']['val'],js['r']['ErrHi']))
 
 canv.Print('.png')
 canv.Print('.pdf')
