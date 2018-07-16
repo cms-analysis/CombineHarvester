@@ -64,6 +64,8 @@ parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
 parser.add_argument(
  '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
+parser.add_argument(
+ '--doVV', default=False, help="""if True assume we are running the VZ(bb) analysis""")
 
 
 
@@ -126,29 +128,55 @@ input_folders = {
   'Znn' : folder_map[input_fwks['Znn']] 
 }
 
-bkg_procs = {
-  'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-  'Zmm' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
-  'Zee' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
-  'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
-}
+if not args.doVV:
+  bkg_procs = {
+    'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
+    'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
+    'Zmm' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
+    'Zee' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
+    'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
+  }
+else:
+  bkg_procs = {
+    'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','WH_hbb','ZH_hbb'],
+    'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','WH_hbb','ZH_hbb'],
+    'Zmm' : ['s_Top','TT','VVLF','Zj0b','Zj1b','Zj2b','ZH_hbb','ggZH_hbb'],
+    'Zee' : ['s_Top','TT','VVLF','Zj0b','Zj1b','Zj2b','ZH_hbb','ggZH_hbb'],
+    'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','QCD','WH_hbb','ZH_hbb','ggZH_hbb']
+  }
 
-sig_procs = {
-  'Wen' : ['WH_hbb','ZH_hbb'],
-  'Wmn' : ['WH_hbb','ZH_hbb'],
-  'Zmm' : ['ZH_hbb','ggZH_hbb'],
-  'Zee' : ['ZH_hbb','ggZH_hbb'],
-  'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
-}
+if not args.doVV:
+  sig_procs = {
+    'Wen' : ['WH_hbb','ZH_hbb'],
+    'Wmn' : ['WH_hbb','ZH_hbb'],
+    'Zmm' : ['ZH_hbb','ggZH_hbb'],
+    'Zee' : ['ZH_hbb','ggZH_hbb'],
+    'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
+  }
 
-sig_procs_ren = {
-  'Wen' : ['WH_lep','ZH_hbb'],
-  'Wmn' : ['WH_lep','ZH_hbb'],
-  'Zmm' : ['ZH_hbb','ggZH_hbb'],
-  'Zee' : ['ZH_hbb','ggZH_hbb'],
-  'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
-}
+  sig_procs_ren = {
+    'Wen' : ['WH_lep','ZH_hbb'],
+    'Wmn' : ['WH_lep','ZH_hbb'],
+    'Zmm' : ['ZH_hbb','ggZH_hbb'],
+    'Zee' : ['ZH_hbb','ggZH_hbb'],
+    'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
+  }
+else:
+  sig_procs = {
+    'Wen' : ['VVHF'],
+    'Wmn' : ['VVHF'],
+    'Zmm' : ['VVHF'],
+    'Zee' : ['VVHF'],
+    'Znn' : ['VVHF']
+  }
+
+  #sig_procs_ren = {
+  #  'Wen' : ['WH_lep','ZH_hbb'],
+  #  'Wmn' : ['WH_lep','ZH_hbb'],
+  #  'Zmm' : ['ZH_hbb','ggZH_hbb'],
+  #  'Zee' : ['ZH_hbb','ggZH_hbb'],
+  #  'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
+ # }
 
 cats = {
   'Zee' : [
