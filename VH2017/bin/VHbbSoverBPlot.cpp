@@ -236,20 +236,20 @@ int main(int argc, char* argv[]) {
   RooFitResult *res = (RooFitResult*)fitres.Get("fit_s");
 
   double xbins[11]={-4,-3,-2.25,-1.75,-1.5,-1.25,-1.0,-0.75,-0.5,0};
-  TH1F h_bkg("h_bkg", "h_bkg", 11,xbins);
-  TH1F h_bkg_err("h_bkg_err", "h_bkg_err", 11,xbins);
-  TH1F h_sig("h_sig", "h_sig", 11, xbins);
-  TH1F h_sig_mu1("h_sig_mu1", "h_sig_mu1", 11,xbins);
-  TH1F h_dat("h_dat", "h_dat", 11,xbins);
+  TH1F h_bkg("h_bkg", "h_bkg", 10,xbins);
+  TH1F h_bkg_err("h_bkg_err", "h_bkg_err", 10,xbins);
+  TH1F h_sig("h_sig", "h_sig", 10, xbins);
+  TH1F h_sig_mu1("h_sig_mu1", "h_sig_mu1", 10,xbins);
+  TH1F h_dat("h_dat", "h_dat", 10,xbins);
 
-  auto chn_info = BuildChannelInfo(cb, std::vector<std::string>{".*H_h.*"});
+  auto chn_info = BuildChannelInfo(cb, std::vector<std::string>{".*H_h.*",".*H_lep_h.*"});
 
   double bf = 1.0;
 
   if (!prefit_assignment) {
     cb.UpdateParameters(res);
-    bf = cb.GetParameter("mu_BR_hbb")->val();
-    cb.GetParameter("mu_BR_hbb")->set_val(1.0);
+    bf = cb.GetParameter("mu_BR_bb")->val();
+    cb.GetParameter("mu_BR_bb")->set_val(1.0);
   }
 
 
@@ -310,15 +310,15 @@ int main(int argc, char* argv[]) {
 
 
   // Get the distributions with mu fixed to 1.0
-  bf = cb.GetParameter("mu_BR_hbb")->val();
-  cb.GetParameter("mu_BR_hbb")->set_val(1.0);
+  bf = cb.GetParameter("mu_BR_bb")->val();
+  cb.GetParameter("mu_BR_bb")->set_val(1.0);
   // Get the distributions
   auto post_mu1_sb = FillSB(chn_info, &h_bkg, true);
   AppendToHists(initial_sb, post_mu1_sb, nullptr, &h_sig_mu1, nullptr);
 
 
 
-  cb.GetParameter("mu_BR_hbb")->set_val(bf);
+  cb.GetParameter("mu_BR_bb")->set_val(bf);
 
 
 
