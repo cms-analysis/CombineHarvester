@@ -72,7 +72,9 @@ cb.ParseDatacard(args.datacard,"vhbb","13TeV","")
 cb.bin(['vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
 #cb.bin(['vhbb_Wen_1_13TeV','vhbb_Wmn_1_13TeV','vhbb_Zee_1_13TeV','vhbb_Zee_2_13TeV','vhbb_Zmm_1_13TeV','vhbb_Zmm_2_13TeV','vhbb_Znn_1_13TeV','vhbb_Wen_1_13TeV2017','vhbb_Wmn_1_13TeV2017','vhbb_Zee_1_13TeV2017','vhbb_Zee_2_13TeV2017','vhbb_Zmm_1_13TeV2017','vhbb_Zmm_2_13TeV2017','vhbb_Znn_1_13TeV2017']) #Only keep the SR bins
 
-xbins = [-4,-2.25,-1.75,-1.5,-1.25,-1.0,-0.75,-0.5,0]
+#xbins = [-4,-2.25,-1.75,-1.5,-1.25,-1.0,-0.75,-0.5,0]
+#xbins = [-4,-3.25,-2.75,-2.25,-1.75,-1.5,-1.25,-1.0,-0.75,-0.5,0]
+xbins = [-3,-2.5,-2.,-1.5,-1.25,-1,-0.75,-0.5,0]
 reorder_hist = ROOT.TH1F('reorder_hist','reorder_hist',8,array('d',xbins))
 bin_dict={}
 bkg_hist =  ROOT.TH1F()
