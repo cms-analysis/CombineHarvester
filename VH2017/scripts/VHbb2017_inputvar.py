@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import CombineHarvester.CombineTools.ch as ch
-import CombineHarvester.VH2017.systematics as systs
+import CombineHarvester.VH2017.systematics_inputVars as systs
 import ROOT as R
 import glob
 import numpy as np
@@ -60,15 +60,6 @@ def symmetrise_syst(chob,proc,sys_name):
   nom_hist = proc.ShapeAsTH1F()
   nom_hist.Scale(proc.rate())
   chob.ForEachSyst(lambda s: symm(s,nom_hist) if (s.name()==sys_name and matching_proc(proc,s)) else None)
-
-def increase_bin_errors(proc):
-  print 'increasing bin errors!'
-  new_hist = proc.ShapeAsTH1F();
-  new_hist.Scale(proc.rate())
-  for i in range(1,new_hist.GetNbinsX()+1):
-    new_hist.SetBinError(i,np.sqrt(2)*new_hist.GetBinError(i))
-  proc.set_shape(new_hist,False)
-
   
 
 parser = argparse.ArgumentParser()
@@ -97,13 +88,9 @@ parser.add_argument(
 parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
 parser.add_argument(
- '--rebinning_scheme', default='v2-whznnh-hf-dnn', help="""Rebinning scheme for CR and SR distributions""")
-parser.add_argument(
- '--doVV', default=False, help="""if True assume we are running the VZ(bb) analysis""")
-parser.add_argument(
- '--mjj',  default=False, help="""if True assume we are running the mjj analysis""")
-parser.add_argument(
- '--inc_Wj0b_errs', action='store_true', help="""Increase Wj0b errors by sqrt(2)?""")
+ '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
+
+
 
 
 args = parser.parse_args()
@@ -127,9 +114,9 @@ if 'Zll' in args.channel or 'Zmm' in args.channel:
   chns.append('Zmm')
 if 'Zll' in args.channel  or 'Zee' in args.channel:
   chns.append('Zee')
-if 'Wln' in args.channel or 'Wmn' in args.channel or 'Znn' in args.channel:
+if 'Wln' in args.channel or 'Wmn' in args.channel:# or 'Znn' in args.channel:
   chns.append('Wmn')
-if 'Wln' in args.channel or 'Wen' in args.channel or 'Znn' in args.channel:
+if 'Wln' in args.channel or 'Wen' in args.channel:# or 'Znn' in args.channel:
   chns.append('Wen')
 if 'Znn' in args.channel:
   chns.append('Znn')
@@ -165,109 +152,83 @@ input_folders = {
   'Znn' : folder_map[input_fwks['Znn']] 
 }
 
-if not args.doVV:
-  bkg_procs = {
-    'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-    'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
-    'Zmm' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
-    'Zee' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
-    'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
-  }
-else:
-  bkg_procs = {
-    'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','WH_hbb','ZH_hbb'],
-    'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','WH_hbb','ZH_hbb'],
-    'Zmm' : ['s_Top','TT','VVLF','Zj0b','Zj1b','Zj2b','ZH_hbb','ggZH_hbb'],
-    'Zee' : ['s_Top','TT','VVLF','Zj0b','Zj1b','Zj2b','ZH_hbb','ggZH_hbb'],
-    'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVLF','Zj0b','Zj1b','Zj2b','QCD','WH_hbb','ZH_hbb','ggZH_hbb']
-  }
+bkg_procs = {
+  'Wen' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
+  'Wmn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b'],
+  'Zmm' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
+  'Zee' : ['s_Top','TT','VVLF','VVHF','Zj0b','Zj1b','Zj2b'],
+  'Znn' : ['s_Top','TT','Wj0b','Wj1b','Wj2b','VVHF','VVLF','Zj0b','Zj1b','Zj2b','QCD']
+}
 
-if not args.doVV:
-  sig_procs = {
-    'Wen' : ['WH_hbb','ZH_hbb'],
-    'Wmn' : ['WH_hbb','ZH_hbb'],
-    'Zmm' : ['ZH_hbb','ggZH_hbb'],
-    'Zee' : ['ZH_hbb','ggZH_hbb'],
-    'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
-  }
+sig_procs = {
+  'Wen' : ['WH_hbb','ZH_hbb'],
+  'Wmn' : ['WH_hbb','ZH_hbb'],
+  'Zmm' : ['ZH_hbb','ggZH_hbb'],
+  'Zee' : ['ZH_hbb','ggZH_hbb'],
+  'Znn' : ['ZH_hbb','ggZH_hbb','WH_hbb']
+}
 
-  sig_procs_ren = {
-    'Wen' : ['WH_lep','ZH_hbb'],
-    'Wmn' : ['WH_lep','ZH_hbb'],
-    'Zmm' : ['ZH_hbb','ggZH_hbb'],
-    'Zee' : ['ZH_hbb','ggZH_hbb'],
-    'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
-  }
-else:
-  sig_procs = {
-    'Wen' : ['VVHF'],
-    'Wmn' : ['VVHF'],
-    'Zmm' : ['VVHF'],
-    'Zee' : ['VVHF'],
-    'Znn' : ['VVHF']
-  }
+sig_procs_ren = {
+  'Wen' : ['WH_lep','ZH_hbb'],
+  'Wmn' : ['WH_lep','ZH_hbb'],
+  'Zmm' : ['ZH_hbb','ggZH_hbb'],
+  'Zee' : ['ZH_hbb','ggZH_hbb'],
+  'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
+}
 
-  #sig_procs_ren = {
-  #  'Wen' : ['WH_lep','ZH_hbb'],
-  #  'Wmn' : ['WH_lep','ZH_hbb'],
-  #  'Zmm' : ['ZH_hbb','ggZH_hbb'],
-  #  'Zee' : ['ZH_hbb','ggZH_hbb'],
-  #  'Znn' : ['ZH_hbb','ggZH_hbb','WH_lep']
- # }
+cats = {
+  'Zee' : [
+    (1, 'SR_high_Zee'), (2, 'SR_low_Zee'), (3, 'Zlf_high_Zee'), (4,'Zlf_low_Zee'),
+    (5, 'Zhf_high_Zee'), (6, 'Zhf_low_Zee'), (7,'ttbar_high_Zee'), (8,'ttbar_low_Zee')
+  ],
+  'Zmm' : [
+    (1, 'SR_high_Zuu'), (2, 'SR_low_Zuu'), (3, 'Zlf_high_Zuu'), (4,'Zlf_low_Zuu'),
+    (5, 'Zhf_high_Zuu'), (6, 'Zhf_low_Zuu'), (7,'ttbar_high_Zuu'), (8,'ttbar_low_Zuu')
+  ],
+  'Znn' : [
+    (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
+  ],
+ 'Wen' : [
+    (1, 'WenHighPt'), (3,'wlfWen'), (5,'whfWenHigh'), (6,'whfWenLow'), (7,'ttWen')
+  ],
+ 'Wmn' : [
+    (1, 'WmnHighPt'), (3,'wlfWmn'), (5,'whfWmnHigh'), (6,'whfWmnLow'), (7,'ttWmn')
+  ]
 
-if not args.mjj:
-    cats = {
-      'Zee' : [
-        (1, 'SR_high_Zee'), (2, 'SR_low_Zee'), (3, 'Zlf_high_Zee'), (4,'Zlf_low_Zee'),
-        (5, 'Zhf_high_Zee'), (6, 'Zhf_low_Zee'), (7,'ttbar_high_Zee'), (8,'ttbar_low_Zee')
-      ],
-      'Zmm' : [
-        (1, 'SR_high_Zuu'), (2, 'SR_low_Zuu'), (3, 'Zlf_high_Zuu'), (4,'Zlf_low_Zuu'),
-        (5, 'Zhf_high_Zuu'), (6, 'Zhf_low_Zuu'), (7,'ttbar_high_Zuu'), (8,'ttbar_low_Zuu')
-      ],
-      'Znn' : [
-        (1, 'Znn_13TeV_Signal'), (3, 'Znn_13TeV_Zlight'), (5, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
-      ],
-     'Wen' : [
-        (1, 'WenHighPt'), (3,'wlfWen'), (5,'whfWenHigh'), (6,'whfWenLow'), (7,'ttWen')
-      ],
-     'Wmn' : [
-        (1, 'WmnHighPt'), (3,'wlfWmn'), (5,'whfWmnHigh'), (6,'whfWmnLow'), (7,'ttWmn')
-      ]
-    
-    }
-    
-    if args.rebinning_scheme == 'v2-wh-hf-dnn' or args.rebinning_scheme == 'v2-whznnh-hf-dnn':
-        cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
-        cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
-else:
-    cats = {
-      'Zee' : [
-        (1, 'SRHIZee_mjj0'), (2, 'SRLOZee_mjj0'), (3, 'SRHIZee_mjj1'), (4, 'SRLOZee_mjj1'), 
-        (5, 'SRHIZee_mjj2'), (6, 'SRLOZee_mjj2'), (7, 'SRHIZee_mjj3'), (8, 'SRLOZee_mjj3'), 
-        (9, 'Zlf_high_Zee'), (10,'Zlf_low_Zee'), (11,'ttbar_high_Zee'),(12,'ttbar_low_Zee')
-        (13, 'Zhf_high_Zee'), (14, 'Zhf_low_Zee') 
-      ],
-      'Zmm' : [
-        (1, 'SRHIZmm_mjj0'), (2, 'SRLOZmm_mjj0'), (3, 'SRHIZmm_mjj1'), (4, 'SRLOZmm_mjj1'), 
-        (5, 'SRHIZmm_mjj2'), (6, 'SRLOZmm_mjj2'), (7, 'SRHIZmm_mjj3'), (8, 'SRLOZmm_mjj3'), 
-        (9, 'Zlf_high_Zuu'), (10,'Zlf_low_Zuu'), (11,'ttbar_high_Zuu'),(12,'ttbar_low_Zuu')
-        (13, 'Zhf_high_Zuu'), (14, 'Zhf_low_Zuu') 
-      ],
-      'Znn' : [
-        (1, 'Znn_13TeV_Signal_mjj0'), (2, 'Znn_13TeV_Signal_mjj1'), 
-        (3, 'Znn_13TeV_Signal_mjj0'), (4, 'Znn_13TeV_Signal_mjj1'), 
-        (5, 'Znn_13TeV_Zlight'), (6, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
-      ],
-     'Wen' : [
-        (1, 'WenHighPt_mjj0'), (2, 'WenHighPt_mjj1'), (3, 'WenHighPt_mjj2'),(4, 'WenHighPt_mjj3'),  
-        (5,'wlfWen'), (6,'whfWenLow'), (7,'ttWen')
-      ],
-     'Wmn' : [
-        (1, 'WmnHighPt_mjj0'), (2, 'WmnHighPt_mjj1'), (3, 'WmnHighPt_mjj2'),(4, 'WmnHighPt_mjj3'),  
-        (5,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn')
-      ]
-    }
+}
+
+
+
+cats = {
+  'Znn' : [
+    #(1, 'Znn_mjj_Signal'),(2, 'Znn_btag1_Signal'),(3, 'Znn_btag2_Signal')
+    (1, 'Znn_mjj_Signal'),(2, 'Znn_btag1_Signal'),(3, 'Znn_btag2_Signal'),(4, 'Znn_VPT_Signal'),#(5, 'Znn_DNN_Signal'),
+    (6,'ZnnTTBtag2'), (7,'ZnnZbbBtag2'), (8,'ZnnZLFBtag2'), (9,'ZnnTTBtag1'), (10,'ZnnZbbBtag1'), (11,'ZnnZLFBtag1')
+  ],
+  'Zee' : [
+    #(1,'SRHIZeeMjj'),(2,'SRLOZeeMjj'),(3,'SRHIZeeBtag1'),(4,'SRLOZeeBtag1'),
+    #(4,'SRLOZeeBtag1'),
+    (5,'SRHIZeeBtag2')#,(7,'SRHIZeeVPT'),(8,'SRLOZeeVPT'),(9,'SRHIZeeDNN'),(10,'SRLOZeeDNN') 
+  ],
+  'Zmm' : [
+    #(1,'SRHIZmmMjj'),(2,'SRLOZmmMjj'),(3,'SRHIZmmBtag1'),(4,'SRLOZmmBtag1'),(5,'SRHIZmmBtag2'),
+    #(6,'SRLOZmmBtag2'),(7,'SRHIZmmVPT'),(8,'SRLOZmmVPT'),(9,'SRHIZmmDNN'),(10,'SRLOZmmDNN') 
+    (5,'SRHIZmmBtag2')#,(6,'SRLOZmmBtag2'),(7,'SRHIZmmVPT'),(8,'SRLOZmmVPT'),(9,'SRHIZmmDNN')
+  ],
+ 'Wen' : [
+    #(1,'WenHighPtMjj'),(2,'WenHighPtBtag1'),(3,'WenHighPtBtag2'),(4,'WenHighPtVPT'),(5,'WenHighPtDNN')
+    (1,'WenHighPtMjj'),(2,'WenHighPtBtag1'),(3,'WenHighPtBtag2'),(10,'ttWenBtag1'),(11,'whfWenLowBtag1'),(12,'whfWenHighBtag1'),(13,'wlfWenBtag1'),(14,'ttWenBtag2'),(15,'whfWenLowBtag2'),(16,'whfWenHighBtag2'),(17,'wlfWenBtag2'),(18,'ttWenMjj'),(19,'whfWenLowMjj'),(20,'whfWenHighMjj'),(21,'wlfWenMjj'),(22,'ttWenVPT'),(23,'whfWenLowVPT'),(24,'whfWenHighVPT'),(25,'wlfWenVPT')#,(5,'WenHighPtDNN')
+  ],
+ 'Wmn' : [
+    #(1,'WmnHighPtMjj'),(2,'WmnHighPtBtag1'),(3,'WmnHighPtBtag2'),(4,'WmnHighPtVPT'),(5,'WmnHighPtDNN')
+    (1,'WmnHighPtMjj'),(2,'WmnHighPtBtag1'),(3,'WmnHighPtBtag2'),(10,'ttWmnBtag1'),(11,'whfWmnLowBtag1'),(12,'whfWmnHighBtag1'),(13,'wlfWmnBtag1'),(14,'ttWmnBtag2'),(15,'whfWmnLowBtag2'),(16,'whfWmnHighBtag2'),(17,'wlfWmnBtag2'),(18,'ttWmnMjj'),(19,'whfWmnLowMjj'),(20,'whfWmnHighMjj'),(21,'wlfWmnMjj'),(22,'ttWmnVPT'),(23,'whfWmnLowVPT'),(24,'whfWmnHighVPT'),(25,'wlfWmnVPT')#,(5,'WmnHighPtDNN')
+  ]
+}
+
+
+if args.rebinning_scheme == 'v2-wh-hf-dnn' or args.rebinning_scheme == 'v2-whznnh-hf-dnn':
+    cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
+    cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
 
 for chn in chns:
   cb.AddObservations( ['*'], ['vhbb'], ['13TeV'], [chn], cats[chn])
@@ -370,18 +331,10 @@ cb.FilterProcs(lambda x: drop_znnqcd(cb,x))
 
 if year=='2016':
     cb.cp().syst_name(["CMS_res_j_13TeV_2016"]).ForEachProc(lambda x:symmetrise_syst(cb,x,'CMS_res_j_13TeV_2016'))
-if year=='2017':
-    cb.cp().syst_name(["CMS_res_j_13TeV"]).ForEachProc(lambda x:symmetrise_syst(cb,x,'CMS_res_j_13TeV'))
+
 
 if year=='2017':
     cb.cp().ForEachSyst(lambda x: remove_norm_effect(x) if x.name()=='CMS_vhbb_puWeight' else None)
-
-if args.doVV:
-    cb.FilterSysts(lambda x: x.name() in "CMS_vhbb_VV")
-
-if args.inc_Wj0b_errs:
-    cb.cp().process(['Wj0b']).ForEachProc(lambda x: increase_bin_errors(x))
-    cb.cp().channel(['Wen','Wmn']).process(['VVHF','VVLF']).ForEachProc(lambda x: increase_bin_errors(x))
 
 cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
 cb.SetGroup('bkg_theory',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST','.*LHE_weights.*TT.*','.*LHE_weights.*VV.*','.*LHE_weights.*Zj0b.*','LHE_weights.*Zj1b.*','LHE_weights.*Zj2b.*','LHE_weights.*Wj0b.*','LHE_weights.*Wj1b.*','LHE_weights.*Wj2b.*','LHE_weights.*s_Top.*','LHE_weights.*QCD.*'])
