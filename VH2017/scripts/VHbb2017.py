@@ -60,6 +60,15 @@ def symmetrise_syst(chob,proc,sys_name):
   nom_hist = proc.ShapeAsTH1F()
   nom_hist.Scale(proc.rate())
   chob.ForEachSyst(lambda s: symm(s,nom_hist) if (s.name()==sys_name and matching_proc(proc,s)) else None)
+
+def increase_bin_errors(proc):
+  print 'increasing bin errors!'
+  new_hist = proc.ShapeAsTH1F();
+  new_hist.Scale(proc.rate())
+  for i in range(1,new_hist.GetNbinsX()+1):
+    new_hist.SetBinError(i,np.sqrt(2)*new_hist.GetBinError(i))
+  proc.set_shape(new_hist,False)
+
   
 
 parser = argparse.ArgumentParser()
@@ -88,9 +97,12 @@ parser.add_argument(
 parser.add_argument(
  '--extra_folder', default='', help="""Additional folder where cards are""")
 parser.add_argument(
- '--rebinning_scheme', default='', help="""Rebinning scheme for CR and SR distributions""")
+ '--rebinning_scheme', default='v2-whznnh-hf-dnn', help="""Rebinning scheme for CR and SR distributions""")
 parser.add_argument(
  '--doVV', default=False, help="""if True assume we are running the VZ(bb) analysis""")
+parser.add_argument(
+ '--inc_Wj0b_errs', action='store_true', help="""Increase Wj0b errors by sqrt(2)?""")
+
 
 
 
@@ -337,6 +349,10 @@ if year=='2017':
 
 if args.doVV:
     cb.FilterSysts(lambda x: x.name() in "CMS_vhbb_VV")
+
+if args.inc_Wj0b_errs:
+    cb.cp().process(['Wj0b']).ForEachProc(lambda x: increase_bin_errors(x))
+    cb.cp().channel(['Wen','Wmn']).process(['VVHF','VVLF']).ForEachProc(lambda x: increase_bin_errors(x))
 
 cb.SetGroup('signal_theory',['pdf_Higgs.*','BR_hbb','QCDscale_ggZH','QCDscale_VH','CMS_vhbb_boost.*','.*LHE_weights.*ZH.*','.*LHE_weights.*WH.*','.*LHE_weights.*ggZH.*'])
 cb.SetGroup('bkg_theory',['pdf_qqbar','pdf_gg','CMS_vhbb_VV','CMS_vhbb_ST','.*LHE_weights.*TT.*','.*LHE_weights.*VV.*','.*LHE_weights.*Zj0b.*','LHE_weights.*Zj1b.*','LHE_weights.*Zj2b.*','LHE_weights.*Wj0b.*','LHE_weights.*Wj1b.*','LHE_weights.*Wj2b.*','LHE_weights.*s_Top.*','LHE_weights.*QCD.*'])
