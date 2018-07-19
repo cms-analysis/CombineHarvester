@@ -206,8 +206,14 @@ int main(int argc, char **argv) {
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGFiducialAndSTXS
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWG2
   else if(stxs_signals == 1) sig_procs = {
-      "ggH_0J", "ggH_1J", "ggH_GE2J", "ggH_VBFTOPO",
-      "qqH_VBFTOPO_JET3", "qqH_VBFTOPO_JET3VETO", "qqH_REST", "qqH_PTJET1_GT200"};
+      // ggH
+      "ggH_0J", "ggH_1J_PTH_0_60", "ggH_1J_PTH_60_120", "ggH_1J_PTH_120_200",
+      "ggH_1J_PTH_GT200", "ggH_GE2J_PTH_0_60", "ggH_GE2J_PTH_60_120",
+      "ggH_GE2J_PTH_120_200", "ggH_GE2J_PTH_GT200", "ggH_VBFTOPO_JET3VETO",
+      "ggH_VBFTOPO_JET3",
+      // VBF
+      "qqH_VBFTOPO_JET3VETO", "qqH_VBFTOPO_JET3", "qqH_REST",
+      "qqH_PTJET1_GT200", "qqH_VH2JET"};
   else throw std::runtime_error("Given STXS signals are not known.");
   vector<string> masses = {"125"};
 
