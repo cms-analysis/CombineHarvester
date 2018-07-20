@@ -62,7 +62,7 @@ def symmetrise_syst(chob,proc,sys_name):
   chob.ForEachSyst(lambda s: symm(s,nom_hist) if (s.name()==sys_name and matching_proc(proc,s)) else None)
 
 def increase_bin_errors(proc):
-  print 'increasing bin errors!'
+  print 'increasing bin errors for process ', proc.process(), ' in region ', proc.bin()
   new_hist = proc.ShapeAsTH1F();
   new_hist.Scale(proc.rate())
   for i in range(1,new_hist.GetNbinsX()+1):
@@ -102,9 +102,6 @@ parser.add_argument(
  '--doVV', default=False, help="""if True assume we are running the VZ(bb) analysis""")
 parser.add_argument(
  '--mjj',  default=False, help="""if True assume we are running the mjj analysis""")
-parser.add_argument(
- '--inc_Wj0b_errs', action='store_true', help="""Increase Wj0b errors by sqrt(2)?""")
-
 
 args = parser.parse_args()
 
@@ -379,7 +376,7 @@ if year=='2017':
 if args.doVV:
     cb.FilterSysts(lambda x: x.name() in "CMS_vhbb_VV")
 
-if args.inc_Wj0b_errs:
+if year=='2017':
     cb.cp().process(['Wj0b']).ForEachProc(lambda x: increase_bin_errors(x))
     cb.cp().channel(['Wen','Wmn']).process(['VVHF','VVLF']).ForEachProc(lambda x: increase_bin_errors(x))
 
