@@ -84,10 +84,10 @@ def AddCommonSystematics(cb):
                                                                         (['Zee','Zmm','Znn'],1.03)
                                                                         (['Wen','Wmn'],1.02)) 
   
-  cb.cp().process(['VVHF']).AddSyst(cb,
+  cb.cp().channel(['Wen','Wmn','Zmm','Zee']).process(['VVHF']).AddSyst(cb,
       'CMS_LHE_weights_scale_muR_VVHF','shape',ch.SystMap()(1.0))
 
-  cb.cp().process(['VVHF']).AddSyst(cb,
+  cb.cp().channel(['Wen','Wmn','Zmm','Zee']).process(['VVHF']).AddSyst(cb,
       'CMS_LHE_weights_scale_muF_VVHF','shape',ch.SystMap()(1.0))
 
   # cb.cp().process(['VVLF']).AddSyst(cb,
