@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   using ch::syst::bin_id;
+  using ch::JoinStr;
 
   // Define program options
   string output_folder = "sm_run2";
@@ -103,17 +104,31 @@ int main(int argc, char **argv) {
 
   // Define background processes
   map<string, VString> bkg_procs;
-  if (jetfakes) {
-    bkg_procs["et"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-    bkg_procs["mt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-    bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-    bkg_procs["em"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-  } else {
-    bkg_procs["et"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
-    bkg_procs["mt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
-    bkg_procs["tt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
-    bkg_procs["em"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+  VString bkgs;
+  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+  if(embedding){
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
+      bkgs = JoinStr({bkgs,{"EMB","TTL"}});
   }
+  if(jetfakes){
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "QCD"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "W"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "VVJ"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTJ"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
+      bkgs = JoinStr({bkgs,{"jetFakes"}});
+  }
+  
+  std::cout << "[INFO] Considerung the following processes:\n";
+  for (unsigned int i=0; i < bkgs.size(); i++) {
+  std::cout << bkgs[i] << " ";
+  }
+  std::cout << std::endl;
+  bkg_procs["et"] = bkgs;
+  bkg_procs["mt"] = bkgs;
+  bkg_procs["tt"] = bkgs;
+  bkg_procs["em"] = bkgs;
 
   // Define categories
   map<string, Categories> cats;

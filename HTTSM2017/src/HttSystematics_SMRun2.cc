@@ -19,9 +19,6 @@ using ch::syst::bin;
 using ch::JoinStr;
 
 void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
-  // Error-handling
-  if (embedding)
-    throw std::runtime_error("Embedding is not yet implemented.");
 
   // ##########################################################################
   // Define groups of processes
@@ -51,7 +48,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   /* // Not used in the function, keep it for documentation purposes.
   std::vector<std::string> backgrounds = {"ZTT",  "W",   "ZL",      "ZJ",
                                           "TTT",  "TTJ", "VVT",     "VVJ",
-                                          "EWKZ", "QCD", "jetFakes"};
+                                          "EWKZ", "QCD", "jetFakes", "EMB", "TTL"};
   */
 
   // All processes being taken from simulation
@@ -59,9 +56,8 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   std::vector<std::string> mc_processes =
       JoinStr({
               signals,
-              {"ZTT", "TTT", "VVT", "EWKZ", "W", "ZJ", "ZL", "TTJ", "VVJ"}
+              {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "W", "ZJ", "ZL", "TTJ", "VVJ"}
               });
-
   // ##########################################################################
   // Uncertainty: Lumi
   // References:
@@ -85,22 +81,22 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
 
   cb.cp()
       .channel({"et"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_trigger_et_$ERA", "lnN", SystMap<>::init(1.02));
 
   cb.cp()
       .channel({"mt"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_trigger_mt_$ERA", "lnN", SystMap<>::init(1.02));
 
   cb.cp()
       .channel({"tt"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_trigger_tt_$ERA", "lnN", SystMap<>::init(1.02));
 
   cb.cp()
       .channel({"em"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_trigger_em_$ERA", "lnN", SystMap<>::init(1.02));
 
   // ##########################################################################
@@ -115,35 +111,35 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // Electron ID
   cb.cp()
       .channel({"et", "em"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_e_$ERA", "lnN", SystMap<>::init(1.02));
 
   // Muon ID
   cb.cp()
       .channel({"mt", "em"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_m_$ERA", "lnN", SystMap<>::init(1.02));
 
   // Tau ID: et and mt with 1 real tau
   cb.cp()
       .channel({"et", "mt"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.045));
 
   cb.cp()
       .channel({"et", "mt"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
 
   // Tau ID: tt with 2 real taus
   cb.cp()
       .channel({"tt"})
-      .process({"ZTT", "TTT", "VVT", "EWKZ"})
+      .process({"ZTT", "TTT", "VVT", "EWKZ", "EMB"})
       .AddSyst(cb, "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.09));
 
   cb.cp()
       .channel({"tt"})
-      .process({"ZTT", "TTT", "VVT", "EWKZ"})
+      .process({"ZTT", "TTT", "VVT", "EWKZ", "EMB"})
       .AddSyst(cb, "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
 
   // Tau ID: tt with 1 real taus and 1 jet fake
@@ -183,7 +179,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
 
   cb.cp()
       .channel({"em"})
-      .process(mc_processes)
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
@@ -196,18 +192,18 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process(JoinStr({signals, {"ZTT", "TTT", "VVT", "EWKZ"}}))
+      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "EMB"}}))
       .AddSyst(cb, "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process(JoinStr({signals, {"ZTT", "TTT", "VVT", "EWKZ"}}))
+      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "EMB"}}))
       .AddSyst(cb, "CMS_scale_t_1prong1pizero_$ERA", "shape",
                SystMap<>::init(1.00));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process(JoinStr({signals, {"ZTT", "TTT", "VVT", "EWKZ"}}))
+      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "EMB"}}))
       .AddSyst(cb, "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
@@ -257,7 +253,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // TT
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"TTT", "TTJ"})
+      .process({"TTT", "TTL", "TTJ"})
       .AddSyst(cb, "CMS_htt_tjXsec_$ERA", "lnN", SystMap<>::init(1.06));
 
   // W
@@ -307,7 +303,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
 
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"TTT", "TTJ"})
+      .process({"TTT", "TTL", "TTJ"})
       .AddSyst(cb, "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
@@ -421,6 +417,41 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .channel({"et", "mt", "tt", "em"})
       .process({"ZH_htt"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
+
+  // ##########################################################################
+  // Uncertainty: Embedded events
+  // References:
+  // - https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauTauEmbeddingSamples2016
+  // Notes:
+  // ##########################################################################
+
+  // Embedded Normalization: No Lumi, Zjxsec information used, instead derived from data using dimuon selection efficiency
+  cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_htt_doublemutrg_$ERA", "lnN", SystMap<>::init(1.04));
+
+  cb.cp()
+      .channel({"tt"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_htt_doubletautrg_$ERA", "lnN", SystMap<>::init(1.04));
+      
+  // TTbar contamination in embedded events: 10% shape uncertainty of assumed ttbar->tautau event shape
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process({"EMB"})
+    .AddSyst(cb, "CMS_htt_emb_ttbar_$ERA", "shape", SystMap<>::init(1.00));
+
+  // Uncertainty of hadronic tau track efficiency correction
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process({"EMB"})
+    .AddSyst(cb, "CMS_3ProngEff_$ERA", "shape", SystMap<>::init(1.00));
+
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process({"EMB"})
+    .AddSyst(cb, "CMS_1ProngPi0Eff_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
   // Uncertainty: Jet fakes
