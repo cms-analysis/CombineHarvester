@@ -197,6 +197,10 @@ else:
     'Znn' : ['VVHF']
   }
 
+if args.mjj:
+    # don't fit QCD anywhere for Mjj!
+    bkg_procs['Znn'].remove('QCD')
+
   #sig_procs_ren = {
   #  'Wen' : ['WH_lep','ZH_hbb'],
   #  'Wmn' : ['WH_lep','ZH_hbb'],
@@ -246,7 +250,7 @@ else:
       ],
       'Znn' : [
         (1, 'Znn_13TeV_Signal_mjj0'), (2, 'Znn_13TeV_Signal_mjj1'), 
-        (3, 'Znn_13TeV_Signal_mjj0'), (4, 'Znn_13TeV_Signal_mjj1'), 
+        (3, 'Znn_13TeV_Signal_mjj2'), (4, 'Znn_13TeV_Signal_mjj3'), 
         (5, 'Znn_13TeV_Zlight'), (6, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
       ],
      'Wen' : [
@@ -359,6 +363,21 @@ elif args.rebinning_scheme == 'v2-whznnh-hf-dnn-massAnalysis': # all channels: 1
     cb.cp().channel(['Wen','Wmn']).bin_id([5,7]).VariableRebin(binning)
     cb.cp().channel(['Znn']).bin_id([5,7]).VariableRebin(binning)
     binning=np.linspace(0.0,1.0,num=3)
+    print 'binning in CR for HF fitting variable:',binning,'for all Zll and Znn channels'
+    cb.cp().channel(['Zee','Zmm']).bin_id([13,14]).VariableRebin(binning)
+    binning=np.linspace(0.0,5.0,num=6)
+    print 'binning in CR for HF fitting variable:',binning,'for all the channels'
+    cb.cp().channel(['Wen','Wmn']).bin_id([6]).VariableRebin(binning)
+    cb.cp().channel(['Znn']).bin_id([6]).VariableRebin(binning)
+    #binning=np.linspace(60.,160.,num=12)
+    #cb.cp().channel(['Wen','Wmn']).bin_id([1,2,3,4]).VariableRebin(binning)
+elif args.rebinning_scheme == 'v2-whznnh-hf-dnn-massAnalysis-2016': # all channels: 1bin in TT/LF, 2bins in HF
+    binning=np.linspace(-1.0,1.0,num=2)
+    print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
+    cb.cp().channel(['Zee','Zmm']).bin_id([9,10,11,12]).VariableRebin(binning)
+    cb.cp().channel(['Wen','Wmn']).bin_id([5,7]).VariableRebin(binning)
+    cb.cp().channel(['Znn']).bin_id([5,7]).VariableRebin(binning)
+    binning=np.linspace(-1.0,1.0,num=3)
     print 'binning in CR for HF fitting variable:',binning,'for all Zll and Znn channels'
     cb.cp().channel(['Zee','Zmm']).bin_id([13,14]).VariableRebin(binning)
     binning=np.linspace(0.0,5.0,num=6)
