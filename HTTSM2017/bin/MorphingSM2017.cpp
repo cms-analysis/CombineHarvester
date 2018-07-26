@@ -107,24 +107,21 @@ int main(int argc, char **argv) {
   VString bkgs;
   bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
   if(embedding){
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
-      bkgs = JoinStr({bkgs,{"EMB","TTL"}});
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
+    bkgs = JoinStr({bkgs,{"EMB","TTL"}});
   }
   if(jetfakes){
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "QCD"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "W"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "VVJ"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTJ"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
-      bkgs = JoinStr({bkgs,{"jetFakes"}});
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "QCD"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "W"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "VVJ"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTJ"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
+    bkgs = JoinStr({bkgs,{"jetFakes"}});
   }
-  
+
   std::cout << "[INFO] Considerung the following processes:\n";
-  for (unsigned int i=0; i < bkgs.size(); i++) {
-  std::cout << bkgs[i] << " ";
-  }
-  std::cout << std::endl;
+  for (unsigned int i=0; i < bkgs.size(); i++) std::cout << bkgs[i] << std::endl;
   bkg_procs["et"] = bkgs;
   bkg_procs["mt"] = bkgs;
   bkg_procs["tt"] = bkgs;

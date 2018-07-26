@@ -364,10 +364,9 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // ##########################################################################
   // Uncertainty: Theory uncertainties
   // References:
-  // - STXS migration uncertainties:
-  //   https://indico.cern.ch/event/682466/contributions/2818245/attachments/1573067/2482834/2017-12-11_STXS.pdf
+  // - Gluon-fusion WG1 uncertainty scheme:
+  //   https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/SignalModelingTools
   // Notes:
-  // - FIXME: Add STXS migration uncertainties
   // - FIXME: Add TopMassTreatment from HIG-16043 uncertainty model
   // - FIXME: Compare to HIG-16043 uncertainty model:
   //           - PDF uncertainties splitted by category?
@@ -391,10 +390,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .AddSyst(cb, "BR_htt_PU_alphas", "lnN", SystMap<>::init(1.0062));
 
   // QCD scale
+  /* Replaced by gluon-fusion WG1 uncertainty scheme
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(signals_ggH)
       .AddSyst(cb, "QCDScale_ggH", "lnN", SystMap<>::init(1.039));
+  */
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(signals_qqH)
@@ -418,6 +419,44 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .process({"ZH_htt"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
 
+  // Gluon-fusion WG1 uncertainty scheme
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_Mig01_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_Mig12_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_Mu_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_PT120_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_PT60_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_Res_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_VBF2j_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_VBF3j_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+    .channel({"et", "mt", "tt", "em"})
+    .process(signals_ggH)
+    .AddSyst(cb, "THU_ggH_qmtop_$ERA", "shape", SystMap<>::init(1.00));
+
   // ##########################################################################
   // Uncertainty: Embedded events
   // References:
@@ -435,7 +474,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .channel({"tt"})
       .process({"EMB"})
       .AddSyst(cb, "CMS_htt_doubletautrg_$ERA", "lnN", SystMap<>::init(1.04));
-      
+
   // TTbar contamination in embedded events: 10% shape uncertainty of assumed ttbar->tautau event shape
   cb.cp()
     .channel({"et", "mt", "tt", "em"})
