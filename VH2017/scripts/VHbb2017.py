@@ -234,31 +234,56 @@ if not args.mjj:
     if args.rebinning_scheme == 'v2-wh-hf-dnn' or args.rebinning_scheme == 'v2-whznnh-hf-dnn':
         cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
         cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
+#else:
+#    cats = {
+#      'Zee' : [
+#        (1, 'SRHIZee_mjj0'), (2, 'SRLOZee_mjj0'), (3, 'SRHIZee_mjj1'), (4, 'SRLOZee_mjj1'), 
+#        (5, 'SRHIZee_mjj2'), (6, 'SRLOZee_mjj2'), (7, 'SRHIZee_mjj3'), (8, 'SRLOZee_mjj3'), 
+#        (9, 'Zlf_high_Zee'), (10,'Zlf_low_Zee'), (11,'ttbar_high_Zee'),(12,'ttbar_low_Zee'),
+#        (13, 'Zhf_high_Zee'), (14, 'Zhf_low_Zee') 
+#      ],
+#      'Zmm' : [
+#        (1, 'SRHIZmm_mjj0'), (2, 'SRLOZmm_mjj0'), (3, 'SRHIZmm_mjj1'), (4, 'SRLOZmm_mjj1'), 
+#        (5, 'SRHIZmm_mjj2'), (6, 'SRLOZmm_mjj2'), (7, 'SRHIZmm_mjj3'), (8, 'SRLOZmm_mjj3'), 
+#        (9, 'Zlf_high_Zuu'), (10,'Zlf_low_Zuu'), (11,'ttbar_high_Zuu'),(12,'ttbar_low_Zuu'),
+#        (13, 'Zhf_high_Zuu'), (14, 'Zhf_low_Zuu') 
+#      ],
+#      'Znn' : [
+#        (1, 'Znn_13TeV_Signal_mjj0'), (2, 'Znn_13TeV_Signal_mjj1'), 
+#        (3, 'Znn_13TeV_Signal_mjj2'), (4, 'Znn_13TeV_Signal_mjj3'), 
+#        (5, 'Znn_13TeV_Zlight'), (6, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
+#      ],
+#     'Wen' : [
+#        (1, 'WenHighPt_mjj0'), (2, 'WenHighPt_mjj1'), (3, 'WenHighPt_mjj2'),(4, 'WenHighPt_mjj3'),  
+#        (5,'wlfWen'), (6,'whfWenLow'), (7,'ttWen')
+#      ],
+#     'Wmn' : [
+#        (1, 'WmnHighPt_mjj0'), (2, 'WmnHighPt_mjj1'), (3, 'WmnHighPt_mjj2'),(4, 'WmnHighPt_mjj3'),  
+#        (5,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn')
+#      ]
+#    }
 else:
     cats = {
       'Zee' : [
-        (1, 'SRHIZee_mjj0'), (2, 'SRLOZee_mjj0'), (3, 'SRHIZee_mjj1'), (4, 'SRLOZee_mjj1'), 
-        (5, 'SRHIZee_mjj2'), (6, 'SRLOZee_mjj2'), (7, 'SRHIZee_mjj3'), (8, 'SRLOZee_mjj3'), 
+        (1, 'SRHIZee_mjj0'), (2, 'SRLOZee_mjj0'), (3, 'SRHIZee_mjj1'), (4, 'SRLOZee_mjj1'),  
         (9, 'Zlf_high_Zee'), (10,'Zlf_low_Zee'), (11,'ttbar_high_Zee'),(12,'ttbar_low_Zee'),
         (13, 'Zhf_high_Zee'), (14, 'Zhf_low_Zee') 
       ],
       'Zmm' : [
-        (1, 'SRHIZmm_mjj0'), (2, 'SRLOZmm_mjj0'), (3, 'SRHIZmm_mjj1'), (4, 'SRLOZmm_mjj1'), 
-        (5, 'SRHIZmm_mjj2'), (6, 'SRLOZmm_mjj2'), (7, 'SRHIZmm_mjj3'), (8, 'SRLOZmm_mjj3'), 
+        (1, 'SRHIZmm_mjj0'), (2, 'SRLOZmm_mjj0'), (3, 'SRHIZmm_mjj1'), (4, 'SRLOZmm_mjj1'),  
         (9, 'Zlf_high_Zuu'), (10,'Zlf_low_Zuu'), (11,'ttbar_high_Zuu'),(12,'ttbar_low_Zuu'),
         (13, 'Zhf_high_Zuu'), (14, 'Zhf_low_Zuu') 
       ],
       'Znn' : [
         (1, 'Znn_13TeV_Signal_mjj0'), (2, 'Znn_13TeV_Signal_mjj1'), 
-        (3, 'Znn_13TeV_Signal_mjj2'), (4, 'Znn_13TeV_Signal_mjj3'), 
         (5, 'Znn_13TeV_Zlight'), (6, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
       ],
      'Wen' : [
-        (1, 'WenHighPt_mjj0'), (2, 'WenHighPt_mjj1'), (3, 'WenHighPt_mjj2'),(4, 'WenHighPt_mjj3'),  
+        (1, 'WenHighPt_mjj0'), (2, 'WenHighPt_mjj1'),  
         (5,'wlfWen'), (6,'whfWenLow'), (7,'ttWen')
       ],
      'Wmn' : [
-        (1, 'WmnHighPt_mjj0'), (2, 'WmnHighPt_mjj1'), (3, 'WmnHighPt_mjj2'),(4, 'WmnHighPt_mjj3'),  
+        (1, 'WmnHighPt_mjj0'), (2, 'WmnHighPt_mjj1'),  
         (5,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn')
       ]
     }
@@ -357,34 +382,41 @@ elif args.rebinning_scheme == 'sr_mva_cut_2bins': # HIG-16-044 style
     cb.cp().bin_id([1,2]).VariableRebin(binning)
 
 elif args.rebinning_scheme == 'v2-whznnh-hf-dnn-massAnalysis': # all channels: 1bin in TT/LF, 2bins in HF
-    binning=np.linspace(0.0,1.0,num=2)
+    binning=np.linspace(0.,1.0,num=2)
     print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
     cb.cp().channel(['Zee','Zmm']).bin_id([9,10,11,12]).VariableRebin(binning)
     cb.cp().channel(['Wen','Wmn']).bin_id([5,7]).VariableRebin(binning)
     cb.cp().channel(['Znn']).bin_id([5,7]).VariableRebin(binning)
-    binning=np.linspace(0.0,1.0,num=3)
+    binning=np.linspace(0.,1.0,num=3)
     print 'binning in CR for HF fitting variable:',binning,'for all Zll and Znn channels'
     cb.cp().channel(['Zee','Zmm']).bin_id([13,14]).VariableRebin(binning)
     binning=np.linspace(0.0,5.0,num=6)
     print 'binning in CR for HF fitting variable:',binning,'for all the channels'
     cb.cp().channel(['Wen','Wmn']).bin_id([6]).VariableRebin(binning)
     cb.cp().channel(['Znn']).bin_id([6]).VariableRebin(binning)
-    #binning=np.linspace(60.,160.,num=12)
-    #cb.cp().channel(['Wen','Wmn']).bin_id([1,2,3,4]).VariableRebin(binning)
+    print 'binning in SR for all channels'
+    binning=np.linspace(60,150,num=5)
+    binning=np.append(binning,[160.])
+    cb.cp().channel(['Zee','Zmm']).bin_id([1,2,3,4,5,6,7,8]).VariableRebin(binning)
+    cb.cp().channel(['Wen','Wmn','Znn']).bin_id([1,2,3,4]).VariableRebin(binning)
 elif args.rebinning_scheme == 'v2-whznnh-hf-dnn-massAnalysis-2016': # all channels: 1bin in TT/LF, 2bins in HF
     binning=np.linspace(-1.0,1.0,num=2)
     print 'binning in CR for LF,TT fitting variable:',binning,'for all the channels'
     cb.cp().channel(['Zee','Zmm']).bin_id([9,10,11,12]).VariableRebin(binning)
     cb.cp().channel(['Wen','Wmn']).bin_id([5,7]).VariableRebin(binning)
     cb.cp().channel(['Znn']).bin_id([5,7]).VariableRebin(binning)
-    binning=np.linspace(-1.0,1.0,num=3)
+    binning=np.linspace(0.,1.0,num=3)
     print 'binning in CR for HF fitting variable:',binning,'for all Zll and Znn channels'
     cb.cp().channel(['Zee','Zmm']).bin_id([13,14]).VariableRebin(binning)
     binning=np.linspace(0.0,5.0,num=6)
     print 'binning in CR for HF fitting variable:',binning,'for all the channels'
     cb.cp().channel(['Wen','Wmn']).bin_id([6]).VariableRebin(binning)
     cb.cp().channel(['Znn']).bin_id([6]).VariableRebin(binning)
-
+    print 'binning in SR for all channels'
+    binning=np.linspace(60,150,num=5)
+    binning=np.append(binning,[160.])
+    cb.cp().channel(['Zee','Zmm']).bin_id([1,2,3,4,5,6,7,8]).VariableRebin(binning)
+    cb.cp().channel(['Wen','Wmn','Znn']).bin_id([1,2,3,4]).VariableRebin(binning)
 
 cb.FilterProcs(lambda x: drop_zero_procs(cb,x))
 cb.FilterSysts(lambda x: drop_zero_systs(x))
