@@ -234,56 +234,31 @@ if not args.mjj:
     if args.rebinning_scheme == 'v2-wh-hf-dnn' or args.rebinning_scheme == 'v2-whznnh-hf-dnn':
         cats['Wen'] = [ (1, 'WenHighPt'), (3,'wlfWen'), (6,'whfWenLow'), (7,'ttWen') ]
         cats['Wmn'] = [ (1, 'WmnHighPt'), (3,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn') ]
-#else:
-#    cats = {
-#      'Zee' : [
-#        (1, 'SRHIZee_mjj0'), (2, 'SRLOZee_mjj0'), (3, 'SRHIZee_mjj1'), (4, 'SRLOZee_mjj1'), 
-#        (5, 'SRHIZee_mjj2'), (6, 'SRLOZee_mjj2'), (7, 'SRHIZee_mjj3'), (8, 'SRLOZee_mjj3'), 
-#        (9, 'Zlf_high_Zee'), (10,'Zlf_low_Zee'), (11,'ttbar_high_Zee'),(12,'ttbar_low_Zee'),
-#        (13, 'Zhf_high_Zee'), (14, 'Zhf_low_Zee') 
-#      ],
-#      'Zmm' : [
-#        (1, 'SRHIZmm_mjj0'), (2, 'SRLOZmm_mjj0'), (3, 'SRHIZmm_mjj1'), (4, 'SRLOZmm_mjj1'), 
-#        (5, 'SRHIZmm_mjj2'), (6, 'SRLOZmm_mjj2'), (7, 'SRHIZmm_mjj3'), (8, 'SRLOZmm_mjj3'), 
-#        (9, 'Zlf_high_Zuu'), (10,'Zlf_low_Zuu'), (11,'ttbar_high_Zuu'),(12,'ttbar_low_Zuu'),
-#        (13, 'Zhf_high_Zuu'), (14, 'Zhf_low_Zuu') 
-#      ],
-#      'Znn' : [
-#        (1, 'Znn_13TeV_Signal_mjj0'), (2, 'Znn_13TeV_Signal_mjj1'), 
-#        (3, 'Znn_13TeV_Signal_mjj2'), (4, 'Znn_13TeV_Signal_mjj3'), 
-#        (5, 'Znn_13TeV_Zlight'), (6, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
-#      ],
-#     'Wen' : [
-#        (1, 'WenHighPt_mjj0'), (2, 'WenHighPt_mjj1'), (3, 'WenHighPt_mjj2'),(4, 'WenHighPt_mjj3'),  
-#        (5,'wlfWen'), (6,'whfWenLow'), (7,'ttWen')
-#      ],
-#     'Wmn' : [
-#        (1, 'WmnHighPt_mjj0'), (2, 'WmnHighPt_mjj1'), (3, 'WmnHighPt_mjj2'),(4, 'WmnHighPt_mjj3'),  
-#        (5,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn')
-#      ]
-#    }
 else:
     cats = {
       'Zee' : [
-        (1, 'SRHIZee_mjj0'), (2, 'SRLOZee_mjj0'), (3, 'SRHIZee_mjj1'), (4, 'SRLOZee_mjj1'),  
+        (1, 'SRHIZee_mjj0'), (2, 'SRLOZee_mjj0'), (3, 'SRHIZee_mjj1'), (4, 'SRLOZee_mjj1'), 
+        (5, 'SRHIZee_mjj2'), (6, 'SRLOZee_mjj2'), (7, 'SRHIZee_mjj3'), (8, 'SRLOZee_mjj3'), 
         (9, 'Zlf_high_Zee'), (10,'Zlf_low_Zee'), (11,'ttbar_high_Zee'),(12,'ttbar_low_Zee'),
         (13, 'Zhf_high_Zee'), (14, 'Zhf_low_Zee') 
       ],
       'Zmm' : [
-        (1, 'SRHIZmm_mjj0'), (2, 'SRLOZmm_mjj0'), (3, 'SRHIZmm_mjj1'), (4, 'SRLOZmm_mjj1'),  
+        (1, 'SRHIZmm_mjj0'), (2, 'SRLOZmm_mjj0'), (3, 'SRHIZmm_mjj1'), (4, 'SRLOZmm_mjj1'), 
+        (5, 'SRHIZmm_mjj2'), (6, 'SRLOZmm_mjj2'), (7, 'SRHIZmm_mjj3'), (8, 'SRLOZmm_mjj3'), 
         (9, 'Zlf_high_Zuu'), (10,'Zlf_low_Zuu'), (11,'ttbar_high_Zuu'),(12,'ttbar_low_Zuu'),
         (13, 'Zhf_high_Zuu'), (14, 'Zhf_low_Zuu') 
       ],
       'Znn' : [
         (1, 'Znn_13TeV_Signal_mjj0'), (2, 'Znn_13TeV_Signal_mjj1'), 
+        (3, 'Znn_13TeV_Signal_mjj2'), (4, 'Znn_13TeV_Signal_mjj3'), 
         (5, 'Znn_13TeV_Zlight'), (6, 'Znn_13TeV_Zbb'), (7,'Znn_13TeV_TT')
       ],
      'Wen' : [
-        (1, 'WenHighPt_mjj0'), (2, 'WenHighPt_mjj1'),  
+        (1, 'WenHighPt_mjj0'), (2, 'WenHighPt_mjj1'), (3, 'WenHighPt_mjj2'),(4, 'WenHighPt_mjj3'),  
         (5,'wlfWen'), (6,'whfWenLow'), (7,'ttWen')
       ],
      'Wmn' : [
-        (1, 'WmnHighPt_mjj0'), (2, 'WmnHighPt_mjj1'),  
+        (1, 'WmnHighPt_mjj0'), (2, 'WmnHighPt_mjj1'), (3, 'WmnHighPt_mjj2'),(4, 'WmnHighPt_mjj3'),  
         (5,'wlfWmn'), (6,'whfWmnLow'), (7,'ttWmn')
       ]
     }
