@@ -412,6 +412,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("set_shapes", Overload_Syst_set_shapes)
       .def("ShapeUAsTH1F", &Systematic::ShapeUAsTH1F)
       .def("ShapeDAsTH1F", &Systematic::ShapeDAsTH1F)
+      .def("SwapUpAndDown", &Systematic::SwapUpAndDown)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
