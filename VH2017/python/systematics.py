@@ -470,7 +470,8 @@ def AddSystematics2017(cb):
   cb.FilterSysts(lambda x: 
                         x.channel() in ['Wen','Wmn'] and 
                         x.process() in ['s_Top','TT','Wj0b','Wj1b','Wj2b','Zj0b','Zj1b','Zj2b','VVHF','VVLF','WH_hbb','ZH_hbb'] and 
-                        x.bin_id() in [1,3,5,6,7] and 
+                        #x.bin_id() in [1,3,5,6,7] and 
+                        x.bin_id() in [1,2,3,4,5,6,7] and 
                         x.name() in 'CMS_scale_j_PileUpPtBB_13TeV'
                         )
   #cb.FilterSysts(lambda x: 
@@ -554,78 +555,78 @@ def AddSystematics2016(cb):
   # TT Zll
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
      'SF_TT_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7,9,11,13],1.0))
 
   cb.cp().channel(['Zee','Zmm']).process(['TT']).AddSyst(cb,
      'SF_TT_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8,10,12,14],1.0))
 
   # Zj0b Zll
   cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
      'SF_Zj0b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7,9,11,13],1.0))
 
   cb.cp().channel(['Zee','Zmm']).process(['Zj0b']).AddSyst(cb,
      'SF_Zj0b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8,10,12,14],1.0))
 
   # Zj1b Zll
   cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
      'SF_Zj1b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7,9,11,13],1.0))
 
   cb.cp().channel(['Zee','Zmm']).process(['Zj1b']).AddSyst(cb,
      'SF_Zj1b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8,10,12,14],1.0))
 
   # Zj2b Zll
   cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
      'SF_Zj2b_high_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     ([1,3,5,7,9,11,13],1.0))
 
   cb.cp().channel(['Zee','Zmm']).process(['Zj2b']).AddSyst(cb,
      'SF_Zj2b_low_Zll_2016', 'rateParam', ch.SystMap('bin_id')
-     ([2,4,6,8],1.0))
+     ([2,4,6,8,10,12,14],1.0))
 
   # TT Znn
   cb.cp().channel(['Znn']).process(['TT']).AddSyst(cb,
      'SF_TT_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     (range(1,8),1.0))
 
   # Zj0b Znn
   cb.cp().channel(['Znn']).process(['Zj0b']).AddSyst(cb,
      'SF_Zj0b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     (range(1,8),1.0))
 
   # Zj1b Znn
   cb.cp().channel(['Znn']).process(['Zj1b']).AddSyst(cb,
      'SF_Zj1b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     (range(1,8),1.0))
 
   # Zj2b Znn
   cb.cp().channel(['Znn']).process(['Zj2b']).AddSyst(cb,
      'SF_Zj2b_Znn_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,7],1.0))
+     (range(1,8),1.0))
 
   # TT Wln
   cb.cp().channel(['Wen','Wmn']).process(['TT']).AddSyst(cb,
      'SF_TT_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     (range(1,8),1.0))
 
   # Wj0b Wln
   cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj0b']).AddSyst(cb,
      'SF_Wj0b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     (range(1,8),1.0))
 
   # Wj1b Wln
   cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj1b']).AddSyst(cb,
      'SF_Wj1b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     (range(1,8),1.0))
 
   # Wj2b Wln
   cb.cp().channel(['Wen','Wmn','Znn']).process(['Wj2b']).AddSyst(cb,
      'SF_Wj2b_Wln_2016', 'rateParam', ch.SystMap('bin_id')
-     ([1,3,5,6,7],1.0))
+     (range(1,8),1.0))
 
 
   #Set a sensible range for the rate params
