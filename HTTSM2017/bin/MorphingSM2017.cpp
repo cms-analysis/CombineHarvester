@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
   typedef vector<string> VString;
   typedef vector<pair<int, string>> Categories;
   using ch::syst::bin_id;
+  using ch::JoinStr;
 
   // Define program options
   string output_folder = "sm_run2";
@@ -103,17 +104,31 @@ int main(int argc, char **argv) {
 
   // Define background processes
   map<string, VString> bkg_procs;
-  if (jetfakes) {
-    bkg_procs["et"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-    bkg_procs["mt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-    bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-    bkg_procs["em"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
-  } else {
-    bkg_procs["et"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
-    bkg_procs["mt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
-    bkg_procs["tt"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
-    bkg_procs["em"] = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+  VString bkgs;
+  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+  if(embedding){
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
+      bkgs = JoinStr({bkgs,{"EMB","TTL"}});
   }
+  if(jetfakes){
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "QCD"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "W"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "VVJ"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTJ"), bkgs.end());
+      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
+      bkgs = JoinStr({bkgs,{"jetFakes"}});
+  }
+  
+  std::cout << "[INFO] Considerung the following processes:\n";
+  for (unsigned int i=0; i < bkgs.size(); i++) {
+  std::cout << bkgs[i] << " ";
+  }
+  std::cout << std::endl;
+  bkg_procs["et"] = bkgs;
+  bkg_procs["mt"] = bkgs;
+  bkg_procs["tt"] = bkgs;
+  bkg_procs["em"] = bkgs;
 
   // Define categories
   map<string, Categories> cats;
@@ -153,12 +168,8 @@ int main(int argc, char **argv) {
   // STXS stage 1 categories (optimized on STXS stage 1 splits of ggH and VBF)
   else if(stxs_categories == 1){
     cats["et"] = {
-        { 3, "et_ggh_0jet"},
-        { 4, "et_ggh_1jet"},
-        { 5, "et_ggh_ge2jets"},
-        { 6, "et_qqh_l2jets"},
-        { 7, "et_qqh_2jets"},
-        { 8, "et_qqh_g2jets"},
+        { 1, "et_ggh_unrolled"},
+        { 2, "et_qqh_unrolled"},
         {11, "et_w"},
         {12, "et_ztt"},
         {13, "et_tt"},
@@ -167,12 +178,8 @@ int main(int argc, char **argv) {
         {16, "et_misc"},
     };
      cats["mt"] = {
-        { 3, "mt_ggh_0jet"},
-        { 4, "mt_ggh_1jet"},
-        { 5, "mt_ggh_ge2jets"},
-        { 6, "mt_qqh_l2jets"},
-        { 7, "mt_qqh_2jets"},
-        { 8, "mt_qqh_g2jets"},
+        { 1, "mt_ggh_unrolled"},
+        { 2, "mt_qqh_unrolled"},
         {11, "mt_w"},
         {12, "mt_ztt"},
         {13, "mt_tt"},
@@ -181,12 +188,8 @@ int main(int argc, char **argv) {
         {16, "mt_misc"},
     };
      cats["tt"] = {
-        { 3, "tt_ggh_0jet"},
-        { 4, "tt_ggh_1jet"},
-        { 5, "tt_ggh_ge2jets"},
-        { 6, "tt_qqh_l2jets"},
-        { 7, "tt_qqh_2jets"},
-        { 8, "tt_qqh_g2jets"},
+        { 1, "tt_ggh_unrolled"},
+        { 2, "tt_qqh_unrolled"},
         {12, "tt_ztt"},
         {16, "tt_misc"},
         {17, "tt_noniso"},
