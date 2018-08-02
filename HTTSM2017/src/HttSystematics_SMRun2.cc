@@ -209,15 +209,46 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
   // ##########################################################################
   // Uncertainty: Jet energy scale
   // References:
+  // - Talk in CMS Htt meeting by Daniel Winterbottom about regional JES splits:
+  //   https://indico.cern.ch/event/740094/contributions/3055870/
   // Notes:
-  // - Current JES is inclusive. Splitted JES is to be implemented.
-  // - FIXME: References?
   // ##########################################################################
 
+  // Inclusive JES
+  /* Replaced by regional JES splitting
   cb.cp()
       .channel({"et", "mt", "tt"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+  */
+
+  // Regional JES
+  cb.cp()
+      .channel({"et", "mt", "tt"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
+
+  cb.cp()
+      .channel({"et", "mt", "tt"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
+
+  cb.cp()
+      .channel({"et", "mt", "tt"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00));
+
+  cb.cp()
+      .channel({"et", "mt", "tt"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+
+  /* Only needed for 2017 data
+  cb.cp()
+      .channel({"et", "mt", "tt"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
+  */
 
   // ##########################################################################
   // Uncertainty: MET energy scale
