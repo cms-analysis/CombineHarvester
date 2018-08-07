@@ -13,6 +13,7 @@ ROOT.gStyle.SetTickLength(0., "Y")
 parser = argparse.ArgumentParser()
 parser.add_argument('--input','-i',help = 'input json file')
 parser.add_argument('--output','-o', help = 'Output filename')
+parser.add_argument('--extralabel', default='',help = 'Additional CMS label')
 
 args = parser.parse_args()
 
@@ -76,7 +77,7 @@ pads[0].cd()
 pads[0].GetFrame().Draw()
 pads[0].RedrawAxis()
 
-plot.DrawCMSLogo(pads[0],'CMS','Supplementary',11,0.045,0.03,1.0,'',1.0)
+plot.DrawCMSLogo(pads[0],'CMS','%s'%args.extralabel,11,0.045,0.03,1.0,'',1.0)
 plot.DrawTitle(pads[0],'41.3 fb^{-1} (13 TeV)',3)
 
 latex.SetTextFont(42)
