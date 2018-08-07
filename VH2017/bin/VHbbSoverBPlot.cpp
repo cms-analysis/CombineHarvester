@@ -199,6 +199,7 @@ std::map<std::string, SBValues> FillSB(std::map<std::string, ChannelInfo> &infom
         double sb = std::log10(binres.sig[i]/binres.bkg[i]);
         final_bin = proto->GetXaxis()->FindFixBin(sb);
       }
+      if (final_bin == 0) final_bin=1;
       binres.ibin[i] = final_bin;
     }
   }
@@ -228,19 +229,25 @@ int main(int argc, char* argv[]) {
 
   ch::CombineHarvester cb;
   cb.SetFlag("workspaces-use-clone", true);
-  TFile fin("comb_2017_Hbb_mu_vhonly_plus_run1.root");
+  TFile fin("HbbComb/HbbComb_PostApprovalFix/comb_Hbb_vhonly_plus_run1_A1_forSBOrdered.root");
   RooWorkspace *w = (RooWorkspace*)fin.Get("w");
   ch::ParseCombineWorkspace(cb, *w, "ModelConfig", "data_obs", true);
+  
+  std::cout << "bins before:\n";
+  for (auto const& str : cb.bin_set()) std::cout << str << "\n";
+  cb.bin({"vhbb_Wen_3_13TeV2017","vhbb_Wen_6_13TeV2017","vhbb_Wen_7_13TeV2017","vhbb_Wmn_3_13TeV2017","vhbb_Wmn_6_13TeV2017","vhbb_Wmn_7_13TeV2017","vhbb_Zee_3_13TeV2017","vhbb_Zee_4_13TeV2017","vhbb_Zee_5_13TeV2017","vhbb_Zee_6_13TeV2017","vhbb_Zee_7_13TeV2017","vhbb_Zee_8_13TeV2017","vhbb_Zmm_3_13TeV2017","vhbb_Zmm_4_13TeV2017","vhbb_Zmm_5_13TeV2017","vhbb_Zmm_6_13TeV2017","vhbb_Zmm_7_13TeV2017","vhbb_Zmm_8_13TeV2017","vhbb_Znn_3_13TeV2017","vhbb_Znn_5_13TeV2017","vhbb_Znn_7_13TeV2017","ZnnHbb_ZnnHbb_Zbb","ZnnHbb_ZnnHbb_Zlight","ZnnHbb_ZnnHbb_TT","ZllHbb_ch1_Zmm_TT_low","ZllHbb_ch1_Zmm_Zhf_low","ZllHbb_ch1_Zmm_Zlf_low","ZllHbb_ch2_Zee_TT_low","ZllHbb_ch2_Zee_Zhf_low","ZllHbb_ch2_Zee_Zlf_low","ZllHbb_ch3_Zmm_TT_high","ZllHbb_ch3_Zmm_Zhf_high","ZllHbb_ch3_Zmm_Zlf_high","ZllHbb_ch4_Zee_TT_high","ZllHbb_ch4_Zee_Zhf_high","ZllHbb_ch4_Zee_Zlf_high","WlnHbb_Wen_TTCR","WlnHbb_Wmn_TTCR","WlnHbb_Wen_WHFCRlow","WlnHbb_Wen_WHFCRhigh","WlnHbb_Wmn_WHFCRlow","WlnHbb_Wmn_WHFCRhigh","WlnHbb_Wen_WLFCR","WlnHbb_Wmn_WLFCR"},false);
+  std::cout << "bins after:\n";
+  for (auto const& str : cb.bin_set()) std::cout << str << "\n";
 
-  TFile fitres("fitDiagnosticsA1_VHbb_ForSBordered_RH.root");
-  RooFitResult *res = (RooFitResult*)fitres.Get("fit_s");
+  TFile fitres("HbbComb/HbbComb_PostApprovalFix/multidimfit_approxFit_impacts_robusthesse_Hbb_vhonly_plus_run1_observed.root");
+  RooFitResult *res = (RooFitResult*)fitres.Get("fit_mdf");
 
-  double xbins[11]={-4,-3,-2.25,-1.75,-1.5,-1.25,-1.0,-0.75,-0.5,0};
-  TH1F h_bkg("h_bkg", "h_bkg", 10,xbins);
-  TH1F h_bkg_err("h_bkg_err", "h_bkg_err", 10,xbins);
-  TH1F h_sig("h_sig", "h_sig", 10, xbins);
-  TH1F h_sig_mu1("h_sig_mu1", "h_sig_mu1", 10,xbins);
-  TH1F h_dat("h_dat", "h_dat", 10,xbins);
+  double xbins[9]={-3,-2.5,-2.,-1.5,-1.25,-1.0,-0.75,-0.5,0};
+  TH1F h_bkg("h_bkg", "h_bkg", 8,xbins);
+  TH1F h_bkg_err("h_bkg_err", "h_bkg_err", 8,xbins);
+  TH1F h_sig("h_sig", "h_sig", 8, xbins);
+  TH1F h_sig_mu1("h_sig_mu1", "h_sig_mu1",8 ,xbins);
+  TH1F h_dat("h_dat", "h_dat", 8,xbins);
 
   auto chn_info = BuildChannelInfo(cb, std::vector<std::string>{".*H_h.*",".*H_lep_h.*"});
 

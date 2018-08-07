@@ -77,10 +77,11 @@ parser.add_argument('--log_y', action='store_true',help='Use log for y axis')
 parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='sbordered',help='Output plot name')
+parser.add_argument('--extralabel',default='',help='Extra CMS label')
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.4,1.6")
 parser.add_argument('--x_title', default='log_{10}(S/B)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
-parser.add_argument('--lumi', default='41.3 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--lumi', default='4.9 fb^{-1} (7 TeV) + 19.8 fb^{-1} (8 TeV) + 77.2 fb^{-1} (13 TeV)',help='Lumi label')
 
 
 args = parser.parse_args()
@@ -133,7 +134,7 @@ if args.ratio:
   axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
   axish[1].GetXaxis().SetTitle(args.x_title)
   axish[1].GetYaxis().SetNdivisions(4)
-  axish[1].GetYaxis().SetTitle("Obs/Exp")
+  axish[1].GetYaxis().SetTitle("Obs/Bkg")
   #axish[1].GetYaxis().SetTitleSize(0.04)
   #axish[1].GetYaxis().SetLabelSize(0.04)
   #axish[1].GetYaxis().SetTitleOffset(1.3)
@@ -182,7 +183,7 @@ plot.Set(legend, NColumns=2)
 legend.SetTextFont(42)
 legend.SetTextSize(0.025)
 legend.SetFillColor(0)
-#legend.AddEntry(total_datahist,"Observation","PE")
+legend.AddEntry(total_datahist,"Data","PE")
 legend.AddEntry(bkghist, "Background", "f")
 legend.AddEntry(sighist, "VH(b#bar{b})","f")
 legend.AddEntry(splusbhist, "Background uncertainty","f")
@@ -192,7 +193,8 @@ legend.Draw("same")
 
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
-plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
+#plot.DrawCMSLogo(pads[0], 'CMS', '', 11, 0.045, 0.05, 1.0, '', 1.0)
+plot.DrawCMSLogo(pads[0], 'CMS', '%s'%args.extralabel, 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], args.lumi, 3)
 
 
@@ -228,7 +230,8 @@ pads[0].RedrawAxis()
 
 
 
-c2.SaveAs("sbordered_fromcpp.png")
-c2.SaveAs("sbordered_fromcpp.pdf")
+c2.SaveAs("%s.png"%args.outname)
+c2.SaveAs("%s.pdf"%args.outname)
+
 
 
