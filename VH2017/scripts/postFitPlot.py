@@ -13,36 +13,51 @@ from array import array
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 ROOT.TH1.AddDirectory(False)
 
-def getHistogram(fname, histname, dirname='', postfitmode='prefit', allowEmpty=False, logx=False):
+def getHistogram(fname, histname, dirnames='', postfitmode='prefit', allowEmpty=False, logx=False):
   outname = fname.GetName()
+  return_hist = ""
   for key in fname.GetListOfKeys():
     histo = fname.Get(key.GetName())
     dircheck = False
-    if dirname == '' : dircheck=True
-    elif dirname in key.GetName(): dircheck=True
-    if isinstance(histo,ROOT.TH1F) and key.GetName()==histname:
-      if logx:
-        bin_width = histo.GetBinWidth(1)
-        xbins = []
-        xbins.append(bin_width - 1)
-        axis = histo.GetXaxis()
-        for i in range(1,histo.GetNbinsX()+1):
-         xbins.append(axis.GetBinUpEdge(i))
-        rethist = ROOT.TH1F(histname,histname,histo.GetNbinsX(),array('d',xbins))
-        rethist.SetBinContent(1,histo.GetBinContent(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
-        rethist.SetBinError(1,histo.GetBinError(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
-        for i in range(2,histo.GetNbinsX()+1):
-          rethist.SetBinContent(i,histo.GetBinContent(i))
-          rethist.SetBinError(i,histo.GetBinError(i))
-        histo = rethist
-      return [histo,outname]
-    elif isinstance(histo,ROOT.TDirectory) and postfitmode in key.GetName() and dircheck:
-      return getHistogram(histo,histname, allowEmpty=allowEmpty, logx=logx)
-  print 'Failed to find %(postfitmode)s histogram with name %(histname)s in file %(fname)s '%vars()
-  if allowEmpty:
-    return [ROOT.TH1F('empty', '', 1, 0, 1), outname]
-  else:
-    return None
+    for dirname in dirnames.split(','): 
+        if dirname == '' : dircheck=True
+        elif dirname in key.GetName(): dircheck=True
+        if isinstance(histo,ROOT.TH1F) and key.GetName()==histname:
+          if logx:
+            bin_width = histo.GetBinWidth(1)
+            xbins = []
+            xbins.append(bin_width - 1)
+            axis = histo.GetXaxis()
+            for i in range(1,histo.GetNbinsX()+1):
+             xbins.append(axis.GetBinUpEdge(i))
+            rethist = ROOT.TH1F(histname,histname,histo.GetNbinsX(),array('d',xbins))
+            rethist.SetBinContent(1,histo.GetBinContent(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
+            rethist.SetBinError(1,histo.GetBinError(1)*(histo.GetBinWidth(1)-(bin_width - 1))/(histo.GetBinWidth(1)))
+            for i in range(2,histo.GetNbinsX()+1):
+              rethist.SetBinContent(i,histo.GetBinContent(i))
+              rethist.SetBinError(i,histo.GetBinError(i))
+            histo = rethist
+          #return [histo,outname]
+          if not isinstance(return_hist,ROOT.TH1F):
+            return_hist = histo
+          else: 
+            return_hist.Add(histo)
+        elif isinstance(histo,ROOT.TDirectory) and postfitmode in key.GetName() and dircheck:
+            #return getHistogram(histo,histname, allowEmpty=allowEmpty, logx=logx)
+            hist_tmp = getHistogram(histo,histname, allowEmpty=allowEmpty, logx=logx)
+            if hist_tmp is not None:
+              if not isinstance(return_hist,ROOT.TH1F):
+                return_hist = getHistogram(histo,histname, allowEmpty=allowEmpty, logx=logx)[0]
+              else:
+                return_hist.Add(getHistogram(histo,histname, allowEmpty=allowEmpty, logx=logx)[0])
+  
+  if not isinstance(return_hist,ROOT.TH1F):
+    print 'Failed to find %(postfitmode)s histogram with name %(histname)s in file %(fname)s '%vars()
+    if allowEmpty:
+      return [ROOT.TH1F('empty', '', 1, 0, 1), outname]
+    else:
+      return None
+  return [return_hist,outname]
 
 def signalComp(leg,plots,colour,stacked):
   return dict([('leg_text',leg),('plot_list',plots),('colour',colour),('in_stack',stacked)])
@@ -78,6 +93,7 @@ parser.add_argument('--empty_bin_error',action='store_true',default=False, help=
 #General plotting options
 parser.add_argument('--channel_label',default='0-lepton',help='Channel label')
 parser.add_argument('--ratio', default=False,action='store_true',help='Draw ratio plot')
+parser.add_argument('--ratio_justb', default=False,action='store_true',help='Draw ratio plot with respect to B-only')
 parser.add_argument('--custom_x_range', help='Fix x axis range', action='store_true', default=False)
 parser.add_argument('--x_axis_min',  help='Fix x axis minimum', default=0.0)
 parser.add_argument('--x_axis_max',  help='Fix x axis maximum', default=1000.0)
@@ -124,7 +140,7 @@ if not args.file:
   print 'Provide a filename'
   sys.exit(1)
 
-print "Using shape file ", args.file, ", with specified subdir name: ", file_dir
+print "Using shape file ", args.file, ", with specified subdir name(s): ", file_dir
 shape_file=args.file
 shape_file_name=args.file
 
@@ -135,11 +151,11 @@ background_schemes = {'Wen':[backgroundComp("Single top",["s_Top"],862),backgrou
 'Wmn':[backgroundComp("Single top",["s_Top"],862),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("WHb#bar{b}",["WH_hbb"],634)],
 'Zee':[backgroundComp("Single top",["s_Top"],862),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625)],
 'Zmm':[backgroundComp("Single top",["s_Top"],862),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625)],
-'Znn':[backgroundComp("Single top",["s_Top"],862),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625),backgroundComp("WHb#bar{b}",["WH_hbb"],634)]}
+'Znn':[backgroundComp("Single top",["s_Top"],862),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("WHb#bar{b}",["WH_hbb"],634)]}
+#'Znn':[backgroundComp("Single top",["s_Top"],862),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625),backgroundComp("WHb#bar{b}",["WH_hbb"],634)]}
 
 if args.cr:
   background_schemes['Znn']=[backgroundComp("Single top",["s_Top"],862),backgroundComp("VV+LF",["VVLF"], 13),backgroundComp("VV+HF",["VVHF"],17),backgroundComp("t#bar{t}",["TT"],4),backgroundComp("Z+udscg",["Zj0b"],402),backgroundComp("Z+b",["Zj1b"],397),backgroundComp("Z+b#bar{b}",["Zj2b"],5),backgroundComp("W+udscg",["Wj0b"],814),backgroundComp("W+b",["Wj1b"],815),backgroundComp("W+b#bar{b}",["Wj2b"],81),backgroundComp("QCD",["QCD"],613),backgroundComp("ZHb#bar{b}",["ZH_hbb"],2),backgroundComp("ggZHb#bar{b}",["ggZH_hbb"],625),backgroundComp("WHb#bar{b}",["WH_hbb"],634)]
-
 #To be filled later depending on which histograms actually exist
 plot_background_schemes = {'Wen':[],'Wmn':[],'Zee':[],'Zmm':[],'Znn':[]}
 
@@ -303,18 +319,29 @@ latex2.DrawLatex(0.145,0.955,channel_label)
 
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
-plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
+plot.DrawCMSLogo(pads[0], 'CMS', 'Supplementary', 11, 0.045, 0.05, 1.0, '', 1.0)
+####plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], args.lumi, 3)
 
 #Add ratio plot if required
 if args.ratio:
-  ratio_bkghist = plot.MakeRatioHist(splusbhist,splusbhist,True,False)
-  blind_datahist = plot.MakeRatioHist(blind_datahist,splusbhist,True,False)
+  if args.ratio_justb:
+       # it's a bit silly to call getHistogram again but otherwise we pick up the style modifications to bkghist
+      ratio_soverbhist = plot.MakeRatioHist(splusbhist,bkghist,False,False)
+      ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
+      blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
+  else:
+      ratio_bkghist = plot.MakeRatioHist(splusbhist,splusbhist,True,False)
+      blind_datahist = plot.MakeRatioHist(blind_datahist,splusbhist,True,False)
   pads[1].cd()
   pads[1].SetGrid(0,1)
   axish[1].Draw("axis")
   axish[1].SetMinimum(float(args.ratio_range.split(',')[0]))
   axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
+  if args.ratio_justb:
+      ratio_soverbhist.SetLineColor(ROOT.kRed)
+      ratio_soverbhist.SetFillColor(0)
+      ratio_soverbhist.Draw("hist same")
   ratio_bkghist.SetMarkerSize(0)
   ratio_bkghist.Draw("e2same")
   blind_datahist.DrawCopy("e0same")
@@ -334,6 +361,8 @@ if(log_y): outname+="_logy"
 if(log_x): outname+="_logx"
 c2.SaveAs("%(outname)s.png"%vars())
 c2.SaveAs("%(outname)s.pdf"%vars())
+c2.SaveAs("%(outname)s.C"%vars())
+c2.SaveAs("%(outname)s.root"%vars())
 
 
 
