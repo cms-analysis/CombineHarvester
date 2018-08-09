@@ -1527,7 +1527,7 @@ def DrawVerticalBand(pad, box, x1, x2):
     ymax = axis.GetYaxis().GetXmax()
     box.DrawBox(x1, ymin, x2, ymax)
 
-def DrawTitle(pad, text, align, textOffset=0.2):
+def DrawTitle(pad, text, align, textOffset=0.2,textSize=0.6):
     pad_backup = R.gPad
     pad.cd()
     t = pad.GetTopMargin()
@@ -1538,8 +1538,6 @@ def DrawTitle(pad, text, align, textOffset=0.2):
         (float(pad.GetWw()) * pad.GetAbsWNDC())
     if pad_ratio < 1.:
         pad_ratio = 1.
-
-    textSize = 0.6
 
     latex = R.TLatex()
     latex.SetNDC()

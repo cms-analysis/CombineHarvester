@@ -84,11 +84,11 @@ def AddCommonSystematics(cb):
                                                                         (['Zee','Zmm','Znn'],1.03)
                                                                         (['Wen','Wmn'],1.02)) 
   
-  # cb.cp().process(['VVHF']).AddSyst(cb,
-     # 'CMS_LHE_weights_scale_muR_VVHF','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen','Wmn','Zmm','Zee']).process(['VVHF']).AddSyst(cb,
+      'CMS_LHE_weights_scale_muR_VVHF','shape',ch.SystMap()(1.0))
 
-  # cb.cp().process(['VVHF']).AddSyst(cb,
-     # 'CMS_LHE_weights_scale_muF_VVHF','shape',ch.SystMap()(1.0))
+  cb.cp().channel(['Wen','Wmn','Zmm','Zee']).process(['VVHF']).AddSyst(cb,
+      'CMS_LHE_weights_scale_muF_VVHF','shape',ch.SystMap()(1.0))
 
   # cb.cp().process(['VVLF']).AddSyst(cb,
      # 'CMS_LHE_weights_scale_muR_VVLF','shape',ch.SystMap()(1.0))
@@ -274,7 +274,7 @@ def AddSystematics2017(cb):
   cb.cp().channel(['Wen','Wmn']).process(['Wj0b']).AddSyst(cb,
       'CMS_vhbb_ptwweights_wlf_13TeV','shape',ch.SystMap()(1.0))
 
-  cb.cp().channel(['Wen','Wmn']).process(['Wj1b' 'Wj2b' 's_Top']).AddSyst(cb,
+  cb.cp().channel(['Wen','Wmn']).process(['Wj1b','Wj2b','s_Top']).AddSyst(cb,
       'CMS_vhbb_ptwweights_whf_13TeV','shape',ch.SystMap()(1.0))
 
   # cb.cp().AddSyst(cb,
