@@ -324,4 +324,4 @@ for page in xrange(n):
         extra = '('
     if page == n - 1:
         extra = ')'
-    canv.Print('.pdf%s' % extra)
+    canv.Print(args.output+'.pdf%s' % extra)
