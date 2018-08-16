@@ -202,11 +202,11 @@ plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 els
 plot.DrawCMSLogo(pads[0], 'CMS', '%s'%args.extralabel, 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], args.lumi, 3)
 
-#x_pos = -2.85
-#latex = ROOT.TLatex()
-#plot.Set(latex, TextAlign=12,TextSize=0.035)
-#latex.SetTextFont(42)
-#latex.DrawLatex(x_pos,args.VH_label_ypos,"VH, H#rightarrowb#bar{b}")
+x_pos = -2.85
+latex = ROOT.TLatex()
+plot.Set(latex, TextAlign=12,TextSize=0.035)
+latex.SetTextFont(42)
+latex.DrawLatex(x_pos,args.VH_label_ypos,"VH, H#rightarrowb#bar{b}")
 
 
 if args.ratio:
