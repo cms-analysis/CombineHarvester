@@ -23,7 +23,7 @@ for MODE in ['postfit']:
               XLABEL = CHN_DICT_SR[CHN][i][4]
               os.system(('./scripts/postFitPlot.py' \
                   ' --file=%(FILENAME)s --ratio --extra_pad=0.53 --file_dir=%(OUTNAME)s --no_signal '\
-                  ' --ratio_range 0.92,1.08 --empty_bin_error --channel=%(CHN)s --cr  --extralabel="Supplemental" '\
+                  ' --ratio_range 0.92,1.08 --empty_bin_error --channel=%(CHN)s --cr  --extralabel="Supplementary" '\
                   ' --outname %(OUTNAME)s --mode %(MODE)s  --x_title=%(XLABEL)s  --y_title="Entries" '\
                   ' --x_axis_min %(XLOW)f --x_axis_max %(XHIGH)f --custom_x_range  --lumi="41.3 fb^{-1} (13 TeV)" '\
                   ' --channel_label "%(LABEL)s"' % vars()))

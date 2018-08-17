@@ -28,13 +28,13 @@ for MODE in ['postfit']:
               MAXRATIO = "%s" % CHN_MAX_RATIO[CHN][i]
               if (XAXIS.find("DNN")!=-1):
                   os.system(('./scripts/postFitPlot.py' \
-                      ' --file=%(FILENAME)s --ratio --ratio_justb --extra_pad=0.53 --file_dir=%(OUTNAME)s --extralabel="Supplemental" ' \
+                      ' --file=%(FILENAME)s --ratio --ratio_justb --extra_pad=0.53 --file_dir=%(OUTNAME)s --extralabel="Supplementary" ' \
                       ' --ratio_range 0.4,%(MAXRATIO)s --empty_bin_error --channel=%(CHN)s  --y_title="Entries" --lumi="41.3 fb^{-1} (13 TeV)" ' \
                       ' --outname %(OUTNAME)s --mode %(MODE)s --log_y --custom_y_range --y_axis_min "1E-2" '\
                       ' --channel_label "%(LABEL)s" --x_title "%(XAXIS)s" --x_blind_min 0.5 ' % vars()))
               else:
                   os.system(('./scripts/postFitPlot.py' \
-                      ' --file=%(FILENAME)s --ratio --ratio_justb --extra_pad=0.53 --file_dir=%(OUTNAME)s  --extralabel="Supplemental" ' \
+                      ' --file=%(FILENAME)s --ratio --ratio_justb --extra_pad=0.53 --file_dir=%(OUTNAME)s  --extralabel="Supplementary" ' \
                       ' --ratio_range 0.4,2.0 --empty_bin_error --channel=%(CHN)s  --y_title="Entries" --lumi="41.3 fb^{-1} (13 TeV)" ' \
                       ' --outname %(OUTNAME)s --mode %(MODE)s --log_y --custom_y_range --y_axis_min "1E-2" '\
                       ' --channel_label "%(LABEL)s" --x_title "%(XAXIS)s" ' % vars()))
