@@ -177,8 +177,8 @@ namespace ch {
         //  Electron, muon and tau energy Scale
         //##############################################################################
         
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
-        //                                     "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, {"QCD"}})).channel({"em"}).AddSyst(cb,
+                                             "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process(embed).channel({"em","et"}).AddSyst(cb,
                                              "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
         
@@ -368,8 +368,8 @@ namespace ch {
                                              "CMS_em_QCD_0JetShape_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,3,4,41,42,43,44,45,47}).AddSyst(cb,
                                              "CMS_em_QCD_1JetShape_$ERA", "shape", SystMap<>::init(1.00));
-        //cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
-        //                                     "CMS_em_QCD_IsoExtrap_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
+                                             "CMS_em_QCD_IsoExtrap_$ERA", "shape", SystMap<>::init(1.00));
         if(ttbar_fit) {
           cb.cp().process({"QCD"}).channel({"ttbar"}).bin_id({2,3,4}).AddSyst(cb,
                                                "CMS_em_QCD_1JetRate_$ERA", "shape", SystMap<>::init(1.00));
