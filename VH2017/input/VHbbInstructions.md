@@ -319,7 +319,7 @@ First make the workspace
 
 And run FitDiagnostics (note: have to check that the covariance matrix is accurate):
 
-`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --cminApproxPreFitTolerance 100 --skipBOnlyFit 1 `
+`combineTool.py -M FitDiagnostics -m 125 -d output/<output_folder>/cmb/ws.root --there --cminDefaultMinimizerStrategy 0 --cminApproxPreFitTolerance 100 --skipBOnlyFit `
 
 Now we need to set up some datacards with the bins re-ordered according to (pre-fit S)/(post-fit B) 
 
