@@ -27,12 +27,13 @@ class CPMixture(PhysicsModel):
                   self.modelBuilder.doVar('muF[1,0,4]')
                   poiNames.append('muF')
                 else:
+                  print 'Use kappa parameterisation'
                   self.modelBuilder.doVar('kappaA[0,0,2]')
                   self.modelBuilder.doVar('kappaH[1,0,2]')
                   poiNames.append('kappaA')
                   poiNames.append('kappaH') 
                   self.modelBuilder.factory_('expr::alpha("3/2*@0/@1", kappaA, kappaH)')
-                  self.modelBuilder.factory_('expr::muF("cos(@0)*cos(@0)*@2*@2 + 9/4**sin(@0)*sin(@0)*@1*@1", alpha, kappaA, kappaH)')
+                  self.modelBuilder.factory_('expr::muF("@1*@1 + 9/4*@0*@0", kappaA, kappaH)')
 
 		self.modelBuilder.doVar('muV[1,0,4]')
                 self.modelBuilder.doVar('f[0,-1,1]')

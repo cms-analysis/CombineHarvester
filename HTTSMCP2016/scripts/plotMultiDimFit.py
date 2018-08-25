@@ -29,6 +29,7 @@ parser.add_argument(
 parser.add_argument(
     '--debug-output', '-d', help="""If specified, write the contour TH2s and
     TGraphs into this output ROOT file""")
+parser.add_argument('--kappa', action='store_true', help='Produce 2D plot for kappa parameterisation')
 args = parser.parse_args()
 
 #Create canvas and TH2D for each component
@@ -44,10 +45,18 @@ else:
     debug = None
 
 limit = plot.MakeTChain(args.files, 'limit')
-graph = plot.TGraph2DFromTree(
-    limit, "alpha", "muF", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
-best = plot.TGraphFromTree(
-    limit, "alpha", "muF", 'deltaNLL == 0')
+if args.kappa:
+  args.x_title = '#kappa_{ggH}'
+  args.y_title = '#kappa_{ggA}'
+  graph = plot.TGraph2DFromTree(
+      limit, "kappaH", "kappaA", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
+  best = plot.TGraphFromTree(
+      limit, "kappaH", "kappaA", 'deltaNLL == 0')
+else:
+  graph = plot.TGraph2DFromTree(
+      limit, "alpha", "muF", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
+  best = plot.TGraphFromTree(
+      limit, "alpha", "muF", 'deltaNLL == 0')
 plot.RemoveGraphXDuplicates(best)
 hists = plot.TH2FromTGraph2D(graph, method='BinCenterAligned')
 plot.fastFillTH2(hists, graph,interpolateMissing=True)
@@ -121,16 +130,17 @@ for i, p in enumerate(cont_1sigma):
     p.Draw("L SAME")
     legend.AddEntry(cont_2sigma[0], "95% CL", "F")
 
-func = ROOT.TF1 ("func","cos(pi/2*x)*cos(pi/2*x) +sin(pi/2*x)*sin(pi/2*x)*2.25",0,1)
-func.SetLineWidth(3)
-func.SetLineStyle(2)
-func.Draw("same")
+if not args.kappa:
+  func = ROOT.TF1 ("func","cos(pi/2*x)*cos(pi/2*x) +sin(pi/2*x)*sin(pi/2*x)*2.25",0,1)
+  func.SetLineWidth(3)
+  func.SetLineStyle(2)
+  func.Draw("same")
 
 best.SetMarkerStyle(34)
 best.SetMarkerSize(3)
 best.Draw("P SAME")
 legend.AddEntry(best, "Best fit", "P")
-legend.AddEntry(func, "Exp with XS constraint", "L")
+if not args.kappa: legend.AddEntry(func, "Exp with XS constraint", "L")
 
 if args.sm_exp:
     best_sm.SetMarkerStyle(33)

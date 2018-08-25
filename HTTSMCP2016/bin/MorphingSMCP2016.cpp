@@ -72,10 +72,11 @@ int main(int argc, char** argv) {
     bool ttbar_fit = false;
     bool real_data = true;
     bool no_shape_systs = false;
-    bool do_embedding = false;
+    bool do_embedding = true;
     bool auto_rebin = false;
     bool no_jec_split = false;    
-    bool do_jetfakes = false;
+    bool do_jetfakes = true;
+    bool use_jhu = false;
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
@@ -92,10 +93,11 @@ int main(int argc, char** argv) {
     ("output_folder", po::value<string>(&output_folder)->default_value("sm_run2"))
     ("control_region", po::value<int>(&control_region)->default_value(1))
     ("no_shape_systs", po::value<bool>(&no_shape_systs)->default_value(no_shape_systs))
-    ("do_embedding", po::value<bool>(&do_embedding)->default_value(false))
-    ("do_jetfakes", po::value<bool>(&do_jetfakes)->default_value(false))
+    ("do_embedding", po::value<bool>(&do_embedding)->default_value(true))
+    ("do_jetfakes", po::value<bool>(&do_jetfakes)->default_value(true))
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(true))
     ("no_jec_split", po::value<bool>(&no_jec_split)->default_value(true))    
+    ("use_jhu", po::value<bool>(&use_jhu)->default_value(false))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true));
 
     po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
@@ -236,10 +238,12 @@ int main(int argc, char** argv) {
 
     
     map<string, VString> sig_procs;
-    sig_procs["ggH"] = {"ggH_htt"};
+    sig_procs["ggH"] = {"ggH_ph_htt"};
     sig_procs["qqH"] = {"qqHsm_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
     sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt"};
-    sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
+    if (use_jhu) sig_procs["ggHCP"] = {"ggHsm_jhu_htt", "ggHps_jhu_htt", "ggHmm_jhu_htt"};
+    else sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt","ggH2jsm_htt", "ggH2jps_htt", "ggH2jmm_htt"};
+    
     vector<string> masses = {"125"};    
 
     map<const std::string, float> sig_xsec_aachen;
@@ -276,7 +280,8 @@ int main(int argc, char** argv) {
           cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats[chn], true); // Non-SM VBF/VH are added as signal
           cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats_cp[chn], true);
            
-          cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
+          if(use_jhu) cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
+          else cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats[chn], true);
           cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats_cp[chn], true);
         }
     }
@@ -442,7 +447,16 @@ int main(int argc, char** argv) {
          //s->shape_d()->Print("range");
       }
   });
-      
+
+  cb.ForEachSyst([](ch::Systematic *s) {
+      if (s->type().find("shape") == std::string::npos) return;
+      if(!(s->value_d()<0.001 || s->value_u()<0.001)) return;
+      std::cout << "[Negative yield] Fixing negative yield for syst" << s->bin()
+               << "," << s->process() << "," << s->name() << "\n";
+      if(s->value_u()<0.001) s->set_value_u(0.001);
+      if(s->value_d()<0.001) s->set_value_d(0.001);
+  });
+
     
     ////! [part8]
     auto bbb = ch::BinByBinFactory()
@@ -455,12 +469,12 @@ int main(int argc, char** argv) {
     // To be on the safe side we don't want to merge any bin uncertainties for Higgs events
     bbb.MergeBinErrors(cb.cp().process({"qqH_htt","qqHsm_htt","qqHmm_htt","qqHps_htt","WH_htt","WHsm_htt","WHps_htt","WHmm_htt","ZH_htt","ZHsm_htt","ZHmm_htt","ZHps_htt","qqH_htt125","qqHsm_htt125","qqHmm_htt125","qqHps_htt125","WH_htt125","WHsm_htt125","WHps_htt125","WHmm_htt125","ZH_htt125","ZHsm_htt125","ZHmm_htt125","ZHps_htt125"}, false).FilterProcs(BinIsNotControlRegion));
 
-    auto bbb_sig = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
-    .SetAddThreshold(0.05)
-    .SetMergeThreshold(0.0)
-    .SetFixNorm(false);
-    bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
+    //auto bbb_sig = ch::BinByBinFactory()
+    //.SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+    //.SetAddThreshold(0.05)
+    //.SetMergeThreshold(0.0)
+    //.SetFixNorm(false);
+    //bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
     
     // And now do bbb for the control region with a slightly different config:
     auto bbb_ctl = ch::BinByBinFactory()
