@@ -77,10 +77,12 @@ parser.add_argument('--log_y', action='store_true',help='Use log for y axis')
 parser.add_argument('--log_x', action='store_true',help='Use log for x axis')
 parser.add_argument('--extra_pad', help='Fraction of extra whitespace at top of plot',default=0.0)
 parser.add_argument('--outname',default='sbordered',help='Output plot name')
+parser.add_argument('--extralabel',default='',help='Extra CMS label')
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.4,1.6")
 parser.add_argument('--x_title', default='log_{10}(S/B)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
 parser.add_argument('--lumi', default='41.3 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--VH_label_ypos', default=1000000.0,type=float)
 
 
 args = parser.parse_args()
@@ -103,6 +105,7 @@ total_datahist = getHistogram(histo_file,"data_obs",'','postfit', logx=log_x)[0]
 sighist = getHistogram(histo_file,'TotalSig', '', 'postfit',logx=log_x)[0]
 sighist_forratio = sighist.Clone()
 sighist_forratio.SetName("sighist_forratio")
+sighist_forratio.SetLineColor(ROOT.kRed)
 
 bkghist.SetFillColor(ROOT.kGray+1)
 bkghist.SetLineColor(ROOT.kBlack)
@@ -133,7 +136,9 @@ if args.ratio:
   axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
   axish[1].GetXaxis().SetTitle(args.x_title)
   axish[1].GetYaxis().SetNdivisions(4)
-  axish[1].GetYaxis().SetTitle("Obs/Exp")
+  axish[1].GetYaxis().SetTitle("Data / Bkg  ")
+  axish[1].GetYaxis().SetTitleSize(0.029)
+  axish[1].GetYaxis().SetTitleOffset(2)
   #axish[1].GetYaxis().SetTitleSize(0.04)
   #axish[1].GetYaxis().SetLabelSize(0.04)
   #axish[1].GetYaxis().SetTitleOffset(1.3)
@@ -167,7 +172,7 @@ axish[0].Draw()
 #Draw uncertainty band
 
 stack.Draw("histsame")
-#splusbhist.SetFillColor(plot.CreateTransparentColor(12,0.4))
+splusbhist.SetFillColor(plot.CreateTransparentColor(12,0.4))
 splusbhist.SetFillColor(ROOT.kGray)
 splusbhist.SetLineColor(0)
 splusbhist.SetMarkerSize(0)
@@ -177,33 +182,39 @@ total_datahist.SetMarkerStyle(20)
 total_datahist.Draw("PSAME")
 
 #Setup legend
-legend = plot.PositionedLegend(0.48,0.10,3,0.03)
-plot.Set(legend, NColumns=2)
+legend = plot.PositionedLegend(0.38,0.20,3,0.03)
+plot.Set(legend, NColumns=1)
 legend.SetTextFont(42)
-legend.SetTextSize(0.025)
+legend.SetTextSize(0.032)
 legend.SetFillColor(0)
-#legend.AddEntry(total_datahist,"Observation","PE")
+legend.AddEntry(total_datahist,"Data","PE")
 legend.AddEntry(bkghist, "Background", "f")
-legend.AddEntry(sighist, "VH(b#bar{b})","f")
-legend.AddEntry(splusbhist, "S+B uncertainty","f")
+legend.AddEntry(sighist, "VZ,Z#rightarrowb#bar{b}","f")
+legend.AddEntry(splusbhist, "Background uncertainty","f")
+legend.AddEntry(sighist_forratio, "Signal + Background","L")
 
 legend.Draw("same")
 
 
 #CMS and lumi labels
 plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
-plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
+plot.DrawCMSLogo(pads[0], 'CMS', '%s'%args.extralabel, 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], args.lumi, 3)
 
+x_pos = -2.85
+latex = ROOT.TLatex()
+plot.Set(latex, TextAlign=12,TextSize=0.035)
+latex.SetTextFont(42)
+latex.DrawLatex(x_pos,args.VH_label_ypos,"VZ, Z#rightarrowb#bar{b}")
 
 
 if args.ratio:
   ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
   ratio_bkghist.SetFillColor(ROOT.kGray)
   ratio_bkghist.SetFillStyle(3944)
-  ratio_splusbhist = plot.MakeRatioHist(splusbhist,splusbhist,True,False)
-  ratio_splusbhist.SetFillColor(ROOT.kGray)
-  ratio_splusbhist.SetFillStyle(3944)
+  #ratio_splusbhist = plot.MakeRatioHist(splusbhist,splusbhist,True,False)
+  #ratio_splusbhist.SetFillColor(ROOT.kGray)
+  #ratio_splusbhist.SetFillStyle(3944)
   ratio_datahist = plot.MakeRatioHist(total_datahist,bkghist,True,False)
   ratio_sighist = plot.MakeRatioHist(sighist_forratio,bkghist,True,False)
   ratio_sighist.SetLineColor(ROOT.kRed)
@@ -228,7 +239,7 @@ pads[0].RedrawAxis()
 
 
 
-c2.SaveAs("sbordered.png")
-c2.SaveAs("sbordered.pdf")
+c2.SaveAs("%s.png"%args.outname)
+c2.SaveAs("%s.pdf"%args.outname)
 
 

@@ -2,6 +2,8 @@
 #python ../scripts/makePostFitPlots2017.py       AnalysisOutputs/vhbb2017_shapes.root
 #
 ##***S/B ordered plot:***
+python ../scripts/plotSoverBordered.py -f AnalysisOutputs/sb_weighted_post_assignment_vzbb_2017.root        --log_y --ratio --custom_y_range --outname sbordered_vzbb2017_Supplementary      --lumi "41.3 fb^{-1} (13 TeV)"                                              --extralabel 'Supplementary'  --VH_label_ypos 1.3e5 
+#
 #python ../scripts/plotSoverBorderedFromcpp.py -f AnalysisOutputs/sb_weighted_post_assignment_vhbb_2017.root        --log_y --ratio --custom_y_range --outname sbordered_vhbb2017_Supplementary      --lumi "41.3 fb^{-1} (13 TeV)"                                              --extralabel 'Supplementary'
 #
 #python ../scripts/plotSoverBorderedFromcpp.py -f AnalysisOutputs/sb_weighted_post_assignment_vhonly.root           --log_y --ratio --custom_y_range --outname sbordered_vhonly_Supplementary        --lumi "77.2 fb^{-1} (13 TeV)"                                              --extralabel 'Supplementary'
@@ -35,7 +37,7 @@ export DIRS2017=vhbb_Wen_1_13TeV2017,vhbb_Wen_2_13TeV2017,vhbb_Wen_3_13TeV2017,v
 
 
 
-python ../scripts/postFitPlot.py --file AnalysisOutputs/qshapes4cats5.root  --mode postfit --file_dir $DIRS     --channel Znn --weights $WEIGHTS                                                  --ratio --ratio_range 0.95,1.05  --extralabel "Supplementary" --custom_y_range --y_axis_min 0.001 --y_axis_max 20000 
+#python ../scripts/postFitPlot.py --file AnalysisOutputs/qshapes4cats5.root  --mode postfit --file_dir $DIRS     --channel Znn --weights $WEIGHTS                                                  --ratio --ratio_range 0.95,1.05  --extralabel "Supplementary" --custom_y_range --y_axis_min 0.001 --y_axis_max 20000 
 #python ../scripts/postFitPlot.py --file AnalysisOutputs/qshapes4cats5.root  --mode postfit --file_dir $DIRS     --channel Znn --weights $WEIGHTS      --subbkg 1  --custom_y_range --y_axis_min=-200. --outname 2016and2017 --lumi '77.2 fb^{-1} (13 TeV)'                --extralabel "Supplementary" 
-#python ../scripts/postFitPlot.py --file AnalysisOutputs/qshapes4cats5.root  --mode postfit --file_dir $DIRS2017 --channel Znn --weights $WEIGHTS2017  --subbkg 1  --custom_y_range --y_axis_min=-200. --outname only2017    --lumi '41.3 fb^{-1} (13 TeV)' --extralabel "Supplementary" --channel_label "2017 only"
-#python ../scripts/postFitPlot.py --file AnalysisOutputs/qshapes4cats5.root  --mode postfit --file_dir $DIRS2016 --channel Znn --weights $WEIGHTS2016  --subbkg 1  --custom_y_range --y_axis_min=-200. --outname only2016    --lumi '35.9 fb^{-1} (13 TeV)' --extralabel "Supplementary" --channel_label "2016 only"
+#python ../scripts/postFitPlot.py --file AnalysisOutputs/qshapes4cats5.root  --mode postfit --file_dir $DIRS2017 --channel Znn --weights $WEIGHTS2017  --subbkg 1  --custom_y_range --y_axis_min=-200. --outname only2017    --lumi '41.3 fb^{-1} (13 TeV)' --extralabel "Supplementary" --channel_label "2017"
+#python ../scripts/postFitPlot.py --file AnalysisOutputs/qshapes4cats5.root  --mode postfit --file_dir $DIRS2016 --channel Znn --weights $WEIGHTS2016  --subbkg 1  --custom_y_range --y_axis_min=-200. --outname only2016    --lumi '35.9 fb^{-1} (13 TeV)' --extralabel "Supplementary" --channel_label "2016"
