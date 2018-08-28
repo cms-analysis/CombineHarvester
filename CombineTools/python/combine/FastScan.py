@@ -3,6 +3,7 @@
 import sys
 import json
 import ROOT
+import re
 import CombineHarvester.CombineTools.combine.utils as utils
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
@@ -23,6 +24,9 @@ class FastScan(CombineToolBase):
         CombineToolBase.attach_args(self, group)
         group.add_argument('-w', '--workspace', required=True)
         group.add_argument('-d', '--data')
+        group.add_argument('-f', '--fitres')
+        group.add_argument('--match')
+        group.add_argument('--no-match')
         group.add_argument('-o', '--output', default='nll')
         group.add_argument('-p', '--points', default=200, type=int)
 
@@ -52,14 +56,16 @@ class FastScan(CombineToolBase):
             else:
                 data = f_d.Get(ws_d[1]).data(ws_d[2])
         ll = ROOT.RooLinkedList()
-        wsp.var('r').setVal(1)
         nll = pdf.createNLL(data, ll)
         pars = pdf.getParameters(data)
         pars.Print()
         snap = pars.snapshot()
         # nll.setZeroPoint()
         nll.Print()
-        # wsp.var('r').setVal(2)
+        if self.args.fitres is not None:
+            fitfile = ROOT.TFile(self.args.fitres.split(':')[0])
+            rfr = fitfile.Get(self.args.fitres.split(':')[1])
+            snap = rfr.floatParsFinal()
         pars.assignValueOnly(snap)
 
         page = 0
@@ -68,13 +74,20 @@ class FastScan(CombineToolBase):
         for par in self.RooColIter(pars):
             if par.isConstant():
                 continue
+            if self.args.match is not None:
+                if not re.match(self.args.match, par.GetName()):
+                    continue
+            if self.args.no_match is not None:
+                if re.match(self.args.no_match, par.GetName()):
+                    continue
             par.Print()
             if not (par.hasMax() and par.hasMin()):
                 print 'Parameter does not have an associated range, skipping'
                 continue
             doPars.append(par)
         plot.ModTDRStyle(width=700, height=1000)
-        for par in doPars:
+        for idx, par in enumerate(doPars):
+            print '%s : (%i/%i)' % (par.GetName(), idx+1, len(doPars))
             nlld1 = nll.derivative(par, 1)
             nlld2 = nll.derivative(par, 2)
             xmin = par.getMin()
@@ -93,6 +106,8 @@ class FastScan(CombineToolBase):
                 grd1.SetPoint(i, x, nlld1.getVal())
                 grd2.SetPoint(i, x, nlld2.getVal())
             plot.ReZeroTGraph(gr, True)
+            # plot.RemoveGraphYAbove(gr, 2.)
+            # gr.Print()
             outfile.cd()
             gr.Write()
             grd1.Write()
@@ -129,5 +144,4 @@ class FastScan(CombineToolBase):
             page += 1
 
         outfile.Write()
-
 
