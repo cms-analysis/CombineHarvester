@@ -111,11 +111,9 @@ class CombineHarvester {
       std::string const& era,
       std::string const& channel,
       int bin_id,
-      std::string const& mass,
-      bool loadShapes = true);
+      std::string const& mass);
   int ParseDatacard(std::string const& filename,
-      std::string parse_rule = "",
-      bool loadShapes = true);
+      std::string parse_rule = "");
 
   void WriteDatacard(std::string const& name, std::string const& root_file);
   void WriteDatacard(std::string const& name, TFile & root_file);
@@ -147,6 +145,7 @@ class CombineHarvester {
   CombineHarvester& era(std::vector<std::string> const& vec, bool cond = true);
   CombineHarvester& channel(std::vector<std::string> const& vec, bool cond = true);
   CombineHarvester& mass(std::vector<std::string> const& vec, bool cond = true);
+  CombineHarvester& attr(std::vector<std::string> const& vec,std::string attr_label, bool cond = true);
   CombineHarvester& syst_name(std::vector<std::string> const& vec, bool cond = true);
   CombineHarvester& syst_type(std::vector<std::string> const& vec, bool cond = true);
 
@@ -307,6 +306,18 @@ class CombineHarvester {
    * @param newname The new name
    */
   void RenameGroup(std::string const& oldname, std::string const& newname);
+
+  /**
+   * Add a line of text at the end of all datacards
+   *
+   * @param line Line of text to add
+   */
+  void AddDatacardLineAtEnd(std::string const& line);
+
+  /**
+   * Clear all added datacard lines
+   */
+  void ClearDatacardLinesAtEnd();
   /**@}*/
 
   /**
@@ -410,6 +421,14 @@ class CombineHarvester {
   void InsertObservation(ch::Observation const& obs);
   void InsertProcess(ch::Process const& proc);
   void InsertSystematic(ch::Systematic const& sys);
+
+  /**
+   * Rename a systematic from 'old_name' to 'new_name' and add a parameter
+   * 'new_name' to CH instance 'target' if that parameter doesn't exist yet. 
+   * Usage similar to AddSyst()
+   */
+  void RenameSystematic(CombineHarvester& target, std::string const& old_name, std::string const& new_name);
+
   void CreateParameterIfEmpty(std::string const& name);
 
   /**
@@ -439,6 +458,9 @@ class CombineHarvester {
   void MergeBinErrors(double bbb_threshold, double merge_threshold);
   /**@}*/
 
+  void SetAutoMCStats(CombineHarvester &target, double thresh, bool sig=false, int mode=1);
+  void RenameAutoMCStatsBin(std::string const& oldname, std::string const& newname);
+  std::set<std::string> GetAutoMCStatsBins() const;
  private:
   friend void swap(CombineHarvester& first, CombineHarvester& second);
 
@@ -452,6 +474,23 @@ class CombineHarvester {
   std::map<std::string, std::shared_ptr<RooWorkspace>> wspaces_;
 
   std::unordered_map<std::string, bool> flags_;
+
+  struct AutoMCStatsSettings {
+    double event_threshold;
+    bool include_signal;
+    int hist_mode;
+
+    AutoMCStatsSettings(double thresh, bool sig=false, int mode=1) {
+      event_threshold = thresh;
+      include_signal = sig;
+      hist_mode = mode;
+    }
+
+    AutoMCStatsSettings() : AutoMCStatsSettings(0.) {}
+  };
+
+  std::map<std::string, AutoMCStatsSettings> auto_stats_settings_;
+  std::vector<std::string> post_lines_;
 
   // ---------------------------------------------------------------
   // typedefs
@@ -493,10 +532,10 @@ class CombineHarvester {
 
   RooAbsData const* FindMatchingData(Process const* proc);
 
-  ch::Parameter * SetupRateParamVar(std::string const& name, double val);
+  ch::Parameter * SetupRateParamVar(std::string const& name, double val, bool is_ext_arg = false);
   void SetupRateParamFunc(std::string const& name, std::string const& formula,
                           std::string const& pars);
-
+  void SetupRateParamWspObj(std::string const& name, std::string const& obj, bool is_ext_arg = false);
   // ---------------------------------------------------------------
   // Private methods for the shape writing routines
   // ---------------------------------------------------------------
@@ -640,7 +679,7 @@ void CombineHarvester::AddSyst(CombineHarvester& target,
   // Systematic.
   auto tuples = valmap.GetTupleSet();
   if (verbosity_ >= 1) {
-    LOGLINE(log(), name + ":" + type);
+    log() << (name + ":" + type) << "\n";
   }
   for (unsigned i = 0; i < procs_.size(); ++i) {
     if (!valmap.Contains(procs_[i].get())) {

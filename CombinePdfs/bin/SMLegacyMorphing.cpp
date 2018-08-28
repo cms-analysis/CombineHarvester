@@ -241,7 +241,6 @@ int main() {
   // TFile demo("htt_sm_morphing_debug.root", "RECREATE");
   //! [part1]
   bool do_morphing = true;
-  bool ptr(nullptr /*&demo*/);
   if (do_morphing) {
     // RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
     for (auto chn : chns) {
@@ -249,7 +248,7 @@ int main() {
       for (auto bin : bins) {
         for (auto p : sig_procs) {
           ch::BuildRooMorphing(ws, cb, bin, p, mh, "norm",
-                               can_morph[chn], true, ptr);
+                               can_morph[chn], true, false, nullptr /*&demo*/);
         }
       }
     }

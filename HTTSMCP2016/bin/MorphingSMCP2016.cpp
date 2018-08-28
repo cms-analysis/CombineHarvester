@@ -132,12 +132,12 @@ int main(int argc, char** argv) {
     bkg_procs["ttbar"] = {"ZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     
     if(do_embedding){
-      bkg_procs["et"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "W"};
-      bkg_procs["mt"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT", "VVJ", "W"};
-      bkg_procs["tt"] = {"EmbedZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ"};
+      bkg_procs["et"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "W", "EWKZ"};
+      bkg_procs["mt"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT", "VVJ", "W", "EWKZ"};
+      bkg_procs["tt"] = {"EmbedZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
       // Not use embedding for em channel currently
-      //bkg_procs["em"] = {"EmbedZTT","W", "QCD", "ZLL", "TT", "VV", "ggH_hww125", "qqH_hww125"};
-      //bkg_procs["ttbar"] = {"EmbedZTT", "W", "QCD", "ZLL", "TT", "VV"};
+      bkg_procs["em"] = {"EmbedZTT","W", "QCD", "ZLL", "TT", "VV", "ggH_hww125", "qqH_hww125","EWKZ"};
+      bkg_procs["ttbar"] = {"EmbedZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     }
 
     if(do_jetfakes){
@@ -146,9 +146,9 @@ int main(int argc, char** argv) {
       bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
 
       if(do_embedding){
-        bkg_procs["et"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
-        bkg_procs["mt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
-        bkg_procs["tt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes"};
+        bkg_procs["et"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
+        bkg_procs["mt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
+        bkg_procs["tt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
       }
 
     }
@@ -327,7 +327,7 @@ int main(int argc, char** argv) {
     sig_procs["qqH"] = {"qqHsm_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
     sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt"};
     if (use_jhu) sig_procs["ggHCP"] = {"ggHsm_jhu_htt", "ggHps_jhu_htt", "ggHmm_jhu_htt"};
-    else sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt","ggH2jsm_htt", "ggH2jps_htt", "ggH2jmm_htt"};
+    else sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     
     vector<string> masses = {"125"};    
 
@@ -538,8 +538,14 @@ int main(int argc, char** argv) {
       if(!(s->value_d()<0.001 || s->value_u()<0.001)) return;
       std::cout << "[Negative yield] Fixing negative yield for syst" << s->bin()
                << "," << s->process() << "," << s->name() << "\n";
-      if(s->value_u()<0.001) s->set_value_u(0.001);
-      if(s->value_d()<0.001) s->set_value_d(0.001);
+      if(s->value_u()<0.001){
+         s->set_value_u(0.001);
+         s->set_type("lnN");
+      }
+      if(s->value_d()<0.001){
+         s->set_value_d(0.001);
+         s->set_type("lnN");
+      }
   });
 
     
@@ -572,8 +578,13 @@ int main(int argc, char** argv) {
     bbb_ctl.MergeBinErrors(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion));
     bbb_ctl.AddBinByBin(cb.cp().process({"QCD", "W"}, false).FilterProcs(BinIsNotControlRegion), cb);
     
-    
-    
+    // rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
+    cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_e_13TeV","CMS_scale_embedded_e_13TeV"); 
+    cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong_13TeV","CMS_scale_embedded_t_1prong_13TeV");
+    cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong1pizero_13TeV","CMS_scale_embedded_t_1prong1pizero_13TeV");
+    cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_3prong_13TeV","CMS_scale_embedded_t_3prong_13TeV");
+   
+ 
     // This function modifies every entry to have a standardised bin name of
     // the form: {analysis}_{channel}_{bin_id}_{era}
     // which is commonly used in the htt analyses

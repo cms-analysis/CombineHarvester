@@ -12,6 +12,8 @@
 <use name="boost_python"/>
 <use name="boost_regex"/>
 <use name="rootpy"/>
+<use name="HiggsAnalysis/CombinedLimit"/>
+<flags CXXFLAGS="-fno-guess-branch-probability -fno-devirtualize -fno-tree-forwprop"/>
 <export>
   <lib name="1"/>
 </export>
