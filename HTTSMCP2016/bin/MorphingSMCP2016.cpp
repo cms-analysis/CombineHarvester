@@ -81,10 +81,10 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_280818"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_280818"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_280818"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_280818"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"em","mt","et","tt"};
+    VString chns = {"tt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -191,10 +191,10 @@ int main(int argc, char** argv) {
           {36, "et_tt_lowMjj"},
           {37, "et_misc_lowMjj"},
 
-          {43, "et_ztt_highMjj"},
+          {43, "et_zttEmbed_highMjj"},
           {44, "et_tt_highMjj"},
           {45, "et_misc_highMjj"},
-          {46, "et_fake_highMjj"}
+          {46, "et_jetFakes_highMjj"}
       };
       
       cats["mt"] = {
@@ -206,10 +206,10 @@ int main(int argc, char** argv) {
           {36, "mt_tt_lowMjj"},
           {37, "mt_misc_lowMjj"},
 
-          {43, "mt_ztt_highMjj"},
+          {43, "mt_zttEmbed_highMjj"},
           {44, "mt_tt_highMjj"},
           {45, "mt_misc_highMjj"},
-          {46, "mt_fake_highMjj"},
+          {46, "mt_jetFakes_highMjj"},
       }; 
       cats["em"] = {
           {31, "em_ggh_lowMjj"},
@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
           {35, "em_tt_lowMjj"},
           {36, "em_misc_lowMjj"},
 
-          {43, "em_ztt_highMjj"},
+          {43, "em_zttEmbed_highMjj"},
           {44, "em_qcd_highMjj"},
           {45, "em_tt_highMjj"},
           {46, "em_misc_highMjj"}
@@ -232,8 +232,8 @@ int main(int argc, char** argv) {
           {34, "tt_qcd_lowMjj"},
           {35, "tt_misc_lowMjj"},
 
-          {43, "tt_ztt_highMjj"},
-          {44, "tt_qcd_highMjj"},
+          {43, "tt_zttEmbed_highMjj"},
+          {44, "tt_jetFakes_highMjj"},
           {45, "tt_misc_highMjj"}
       };
     }
