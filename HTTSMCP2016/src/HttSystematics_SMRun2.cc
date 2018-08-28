@@ -28,8 +28,8 @@ namespace ch {
         //
         
         
-        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","ggH2jsm_htt", "ggH2jps_htt", "ggH2jmm_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt","qqH_htt125","qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125","WH_htt125","ZH_htt125","ggH_ph_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"};
-        std::vector<std::string> ggH_sig_procs = {"ggH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","ggH2jsm_htt", "ggH2jps_htt", "ggH2jmm_htt","ggH_ph_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"};
+        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt","qqH_htt125","qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125","WH_htt125","ZH_htt125","ggH_ph_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"};
+        std::vector<std::string> ggH_sig_procs = {"ggH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","ggH_ph_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"};
         std::vector<std::string> qqH_sig_procs = {"qqH_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt", "qqH_htt125","qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125","WH_htt125","ZH_htt125"};
         
         // N.B. when adding this list of backgrounds to a nuisance, only
@@ -58,6 +58,9 @@ namespace ch {
         
 
         cb.cp().process(JoinStr({sig_procs, {"ZTT","ZJ","ZL","ZLL","EWKZ","VV","VVT","VVJ","ggH_hww125","qqH_hww125"}})).AddSyst(cb,
+                                            "lumi_13TeV", "lnN", SystMap<>::init(1.025));
+        // add lumi uncertainty to em embedded samples since these are scaled to MC
+        cb.cp().process(embed).channel({"em"}).AddSyst(cb,
                                             "lumi_13TeV", "lnN", SystMap<>::init(1.025));
         
         //Add luminosity uncertainty for W in em, tt, ttbar and the mm region as norm is from MC
@@ -112,8 +115,9 @@ namespace ch {
                         ({"mt"}, embed,  1.02)
                         ({"em","ttbar"}, embed,  1.02));
         
+        // embedded selection efficiency is not added for em channel as the yield is scaled to the MC estimate
         cb.cp().AddSyst(cb, "CMS_eff_m_embedsel", "lnN", SystMap<channel, process>::init
-                        ({"et","tt","em","mt"}, embed,  1.04)); 
+                        ({"et","tt","mt"}, embed,  1.04)); 
         
         cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
                         ({"et"}, JoinStr({sig_procs, all_mc_bkgs_no_W}),  1.02)
@@ -198,7 +202,7 @@ namespace ch {
                                                 "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
         
         //##############################################################################
-        //  Embedded uncertainty on ttbar contamination
+        //  Embedded uncertainty on ttbar contamination (and VV contamination)
         //##############################################################################        
         cb.cp().process({"EmbedZTT"}).AddSyst(cb,"CMS_ttbar_embeded_$ERA", "shape", SystMap<>::init(1.00));
  
@@ -233,6 +237,9 @@ namespace ch {
 
         cb.cp().process({"ZTT","ZJ","ZL","ZLL"}).AddSyst(cb,
                                         "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));        
+        // add xs uncertainty to em embedded samples since these are scaled to MC
+        cb.cp().process(embed).channel({"em"}).AddSyst(cb,
+                                        "CMS_htt_zjXsec_13TeV", "lnN", SystMap<>::init(1.04));
  
         cb.cp().process({"EWKZ"}).AddSyst(cb,
                                         "CMS_htt_ewkzXsec_13TeV", "lnN", SystMap<>::init(1.04));

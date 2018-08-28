@@ -241,7 +241,6 @@ int main() {
   // TFile demo("htt_sm_morphing_debug.root", "RECREATE");
   //! [part1]
   bool do_morphing = true;
-  bool ptr(nullptr /*&demo*/);
   if (do_morphing) {
     // RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
     for (auto chn : chns) {

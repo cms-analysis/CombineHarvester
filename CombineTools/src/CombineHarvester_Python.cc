@@ -117,10 +117,10 @@ void CloneProcsAndSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
 int (CombineHarvester::*Overload1_ParseDatacard)(
     std::string const&, std::string const&, std::string const&,
     std::string const&, int,
-    std::string const&, bool) = &CombineHarvester::ParseDatacard;
+    std::string const&) = &CombineHarvester::ParseDatacard;
 
 int (CombineHarvester::*Overload2_ParseDatacard)(
-    std::string const&, std::string, bool) = &CombineHarvester::ParseDatacard;
+    std::string const&, std::string) = &CombineHarvester::ParseDatacard;
 
 void (CombineHarvester::*Overload1_WriteDatacard)(
     std::string const&, std::string const&) = &CombineHarvester::WriteDatacard;

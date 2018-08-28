@@ -14,13 +14,18 @@ class CPMixture(PhysicsModel):
                     self.constrain_ggHYield = True
                   if po.startswith("kappa"):
                     self.kappa = True
+                  if po.startswith("lumi_scale"):
+                    self.lumi_scale = True
+
 
 	def doParametersOfInterest(self):
 		"""Create POI and other parameters, and define the POI set."""
 		# --- POI and other parameters ----
 	        
                 poiNames = []
-                
+
+                if self.lumi_scale: self.modelBuilder.doVar('L[1,0,10]')                
+ 
                 if not self.kappa:
                   self.modelBuilder.doVar('alpha[0,0,1]') 
                   poiNames.append('alpha')
@@ -72,9 +77,13 @@ class CPMixture(PhysicsModel):
                 self.modelBuilder.factory_('expr::vbf_sm_scaling("@0*@0 -@0*@1*{a1_qqh_mm}/{a3_qqh_mm}", a1_qqh, a3_qqh)'.format(**params))
                 self.modelBuilder.factory_('expr::vbf_ps_scaling("@1*@1-@0*@1*{a3_qqh_mm}/{a1_qqh_mm}", a1_qqh, a3_qqh)'.format(**params))
                 self.modelBuilder.factory_('expr::vbf_mm_scaling("@0*@1/({a1_qqh_mm}*{a3_qqh_mm})", a1_qqh, a3_qqh)'.format(**params))                
+                if self.lumi_scale:
+                  for i in ['sm_scaling','mm_scaling','ps_scaling','muF','muV','vbf_sm_scaling','vbf_mm_scaling','vbf_ps_scaling']:
+                   self.modelBuilder.factory_('expr::L_%s("@0*@1", L, %s)' % (i,i)) 
 
 	def getYieldScale(self, bin, process):
-		scalings = []	
+		scalings = []
+                if self.lumi_scale: scalings.append('L')	
 		if 'ggH' in process and 'hww' not in process: 
                   if self.constrain_ggHYield:
                     scalings.append('xs_sf')
