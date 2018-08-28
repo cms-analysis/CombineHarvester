@@ -111,11 +111,9 @@ class CombineHarvester {
       std::string const& era,
       std::string const& channel,
       int bin_id,
-      std::string const& mass,
-      bool loadShapes = true);
+      std::string const& mass);
   int ParseDatacard(std::string const& filename,
-      std::string parse_rule = "",
-      bool loadShapes = true);
+      std::string parse_rule = "");
 
   void WriteDatacard(std::string const& name, std::string const& root_file);
   void WriteDatacard(std::string const& name, TFile & root_file);
@@ -147,6 +145,7 @@ class CombineHarvester {
   CombineHarvester& era(std::vector<std::string> const& vec, bool cond = true);
   CombineHarvester& channel(std::vector<std::string> const& vec, bool cond = true);
   CombineHarvester& mass(std::vector<std::string> const& vec, bool cond = true);
+  CombineHarvester& attr(std::vector<std::string> const& vec,std::string attr_label, bool cond = true);
   CombineHarvester& syst_name(std::vector<std::string> const& vec, bool cond = true);
   CombineHarvester& syst_type(std::vector<std::string> const& vec, bool cond = true);
 
@@ -410,6 +409,14 @@ class CombineHarvester {
   void InsertObservation(ch::Observation const& obs);
   void InsertProcess(ch::Process const& proc);
   void InsertSystematic(ch::Systematic const& sys);
+
+  /**
+   * Rename a systematic from 'old_name' to 'new_name' and add a parameter
+   * 'new_name' to CH instance 'target' if that parameter doesn't exist yet. 
+   * Usage similar to AddSyst()
+   */
+  void RenameSystematic(CombineHarvester& target, std::string const& old_name, std::string const& new_name);
+
   void CreateParameterIfEmpty(std::string const& name);
 
   /**
