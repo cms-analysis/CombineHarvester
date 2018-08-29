@@ -501,11 +501,6 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .process({"EMB"})
       .AddSyst(cb, "CMS_htt_doublemutrg_$ERA", "lnN", SystMap<>::init(1.04));
 
-  cb.cp()
-      .channel({"tt"})
-      .process({"EMB"})
-      .AddSyst(cb, "CMS_htt_doubletautrg_$ERA", "lnN", SystMap<>::init(1.04));
-
   // TTbar contamination in embedded events: 10% shape uncertainty of assumed ttbar->tautau event shape
   cb.cp()
     .channel({"et", "mt", "tt", "em"})
