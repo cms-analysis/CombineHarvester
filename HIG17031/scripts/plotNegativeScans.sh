@@ -92,6 +92,14 @@ INPUT="Comb_May3/results"; OUTPUT="Comb_May3/plots/kappas_neg_no_Wt"; for M in K
 \"${INPUT}/scan.${M}_N1.${W}.fr.all.${P}.root:#kappa_{W}\>0, \#kappa_{Z}\>0:4\"  \
 -m ${INPUT}/scan.neg.${M}_N1.${W}.nominal.${P}.root --remove-near-min 0.8 --y-max 20 ${EXTRA} --envelope --chop 25  --no-input-label --translate pois.json --json ${OUTPUT}/neg_${W}.json --hide-envelope  --breakdown "Syst,Stat" --meta "Types:${W},POIs:${P}" --outdir ${OUTPUT}/${M}; done; done; done
 
+INPUT="Comb_May3/results-new-hinv"; OUTPUT="Comb_May3/plots-new-hinv/kappas_neg"; for M in K2Undet K2UndetWidth; do mkdir -p ${OUTPUT}/${M}; for W in observed postfit_asimov; do COL=1; case ${W} in prefit_asimov) COL=4; EXTRA='--main-label "SM Expected" --main-color 4';; postfit_asimov) COL=2; EXTRA='--main-label "SM Expected" --main-color 2';; *) EXTRA="";; esac; for P in $(./getPOIs_hmm.py ${M} -P); do eval python scripts/plot1DScan.py -o scan_neg_${W}_${M}_${P} --POI ${P} --model ${M} --others \
+\"${INPUT}/scan.neg.${M}_N1.${W}.nominal.${P}.root:#kappa_{W}\>0, \#kappa_{Z}\>0:4\"  \
+\"${INPUT}/scan.neg.${M}_N4.${W}.nominal.${P}.root:#kappa_{W}\<0, \#kappa_{Z}\<0:40\" \
+\"${INPUT}/scan.${M}_N1.${W}.fr.all.${P}.root:#kappa_{W}\>0, \#kappa_{Z}\>0:4\"  \
+\"${INPUT}/scan.${M}_N4.${W}.fr.all.${P}.root:#kappa_{W}\<0, \#kappa_{Z}\<0:40\" \
+-m ${INPUT}/scan.neg.${M}_N1.${W}.nominal.${P}.root --remove-near-min 0.8 --y-max 20 ${EXTRA} --envelope --chop 25  --no-input-label --translate pois.json --json ${OUTPUT}/neg_${W}.json --hide-envelope  --breakdown "Syst,Stat" --meta "Types:${W},POIs:${P}" --outdir ${OUTPUT}/${M}; done; done; done
+
+
 #######################################
 # Plotting envelope for L2_ldu
 INPUT="Comb_May3/results"; OUTPUT="Comb_May3/plots/kappas_neg"; for M in L2_ldu; do mkdir -p ${OUTPUT}/${M}; for W in observed postfit_asimov; do COL=1; case ${W} in prefit_asimov) COL=4; EXTRA='--main-label "SM Expected" --main-color 4';; postfit_asimov) COL=2; EXTRA='--main-label "SM Expected" --main-color 2';; *) EXTRA="";; esac; for P in $(./getPOIs_hmm.py ${M} -P); do eval python scripts/plot1DScan.py -o scan_neg_${W}_${M}_${P} --POI ${P} --model ${M} --others \

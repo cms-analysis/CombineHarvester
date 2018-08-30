@@ -1,5 +1,12 @@
 {
   "all": [".*"],
+  "sigInc": [
+    "^THU_ggH_(Mu|Res)$",
+    "^QCDscale_(ggH|qqH|VH|ttH|ggZH|ggVH|tHW|tHq)$",
+    "^pdf_Higgs_(gg|qq|qqbar|ttH|tHq|tHW|qg)$",
+    "^param_(alphaS|mB|mC|mt)$",
+    "^HiggsDecayWidthTHU_.*"
+  ],
   "sigTheory": [
     "^THU_ggH_.*$",
     "^QCDscale_(ggH|qqH|VH|ttH|ggZH|ggVH|tHW|tHq)$",
@@ -143,13 +150,6 @@
     "CMS_vhbb_VV",
     "CMS_PU",
     "CMS_ttHbb_PU"
-  ],
-  "sigInc": [
-    "^THU_ggH_(Mu|Res)$",
-    "^QCDscale_(ggH|qqH|VH|ttH|ggZH|ggVH|tHW|tHq)$",
-    "^pdf_Higgs_(gg|qq|qqbar|ttH|tHq|tHW|)$",
-    "^param_(alphaS|mB|mC|mt)$",
-    "^HiggsDecayWidthTHU_.*"
   ],
   "mcStats": [
     "^prop_.*",
@@ -418,5 +418,21 @@
   ],
   "pLumi": [
     "lumi_13TeV_2016"
+  ],
+  "pLepFakes": [
+    "CMS_ttHl16_Clos_e_bl_shape1",
+    "CMS_ttHl16_Clos_e_bt_norm",
+    "CMS_ttHl16_Clos_e_bt_shape1",
+    "CMS_ttHl16_Clos_e_norm",
+    "CMS_ttHl16_Clos_m_bl_shape1",
+    "CMS_ttHl16_Clos_m_bt_norm",
+    "CMS_ttHl16_Clos_m_bt_shape1",
+    "CMS_ttHl16_Clos_m_norm",
+    "CMS_ttHl16_FRe_be",
+    "CMS_ttHl16_FRe_norm",
+    "CMS_ttHl16_FRe_pt",
+    "CMS_ttHl16_FRm_be",
+    "CMS_ttHl16_FRm_norm",
+    "CMS_ttHl16_FRm_pt"
   ]
 }

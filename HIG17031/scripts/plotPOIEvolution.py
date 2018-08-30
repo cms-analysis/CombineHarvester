@@ -25,6 +25,10 @@ parser.add_argument(
 parser.add_argument(
     '--scenario', default='S1', help='scenario identifier')
 parser.add_argument(
+    '--subline', default='Projection', help='text to add next to cms logo')
+parser.add_argument(
+    '--postfix', default='', help='output postfix')
+parser.add_argument(
     '--y-max', default=0.3, type=float, help='Attempt to use this max for all plots')
 parser.add_argument('--translate', default='texName.json', help='json file with POI name translation')
 
@@ -88,7 +92,7 @@ for POI in POIs:
 
     gr.Print()
 
-    canv = ROOT.TCanvas('%s_%s_%s_evolution' % (args.scenario, args.model, POI), '')
+    canv = ROOT.TCanvas('%s_%s_%s_evolution%s' % (args.scenario, args.model, POI, args.postfix), '')
     pads = plot.OnePad()
     pads[0].SetLogx(True)
     pads[0].SetGrid(3, 1)
@@ -123,7 +127,7 @@ for POI in POIs:
     box.AddText('Parameter: %s' % texname)
     box.Draw()
 
-    plot.DrawCMSLogo(pads[0], 'CMS', 'Projection', 0, 0.14, 0.035, 1.2)
+    plot.DrawCMSLogo(pads[0], 'CMS', args.subline, 0, 0.14, 0.035, 1.2)
     canv.Print('.pdf')
     canv.Print('.png')
     # plot.DrawTitle(pads[0], 'Toy data: %s' % toy, 3)
