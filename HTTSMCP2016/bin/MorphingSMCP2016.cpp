@@ -81,10 +81,10 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_280818"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_280818"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_280818"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_280818"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_300818_2_mjj350"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_300818_2_mjj350"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_300818_2_mjj350"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_300818_2_mjj350"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"tt"};
+    VString chns = {"em","et","mt","tt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -219,6 +219,7 @@ int main(int argc, char** argv) {
           {35, "em_tt_lowMjj"},
           {36, "em_misc_lowMjj"},
 
+          {42, "em_qqh_highMjj"},
           {43, "em_zttEmbed_highMjj"},
           {44, "em_qcd_highMjj"},
           {45, "em_tt_highMjj"},
@@ -234,7 +235,7 @@ int main(int argc, char** argv) {
 
           {43, "tt_zttEmbed_highMjj"},
           {44, "tt_jetFakes_highMjj"},
-          {45, "tt_misc_highMjj"}
+          /* {45, "tt_misc_highMjj"} */
       };
     }
     
@@ -264,7 +265,6 @@ int main(int argc, char** argv) {
     else {
       cats_cp["em"] = {
           {41, "em_ggh_highMjj"},
-          {42, "em_qqh_highMjj"}
       };
       
       cats_cp["et"] = {
