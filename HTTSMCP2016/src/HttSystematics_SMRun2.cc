@@ -266,11 +266,11 @@ namespace ch {
 
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({1,31,32,33,34,35,36,37}).AddSyst(cb,
                                              "CMS_em_QCD_0JetRate_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,3,4,31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
                                              "CMS_em_QCD_1JetRate_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({1,31,32,33,34,35,36,37}).AddSyst(cb,
                                              "CMS_em_QCD_0JetShape_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,3,4,31,32,33,34,35,36,37,41,42,43,44,45,47}).AddSyst(cb,
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,47}).AddSyst(cb,
                                              "CMS_em_QCD_1JetShape_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
                                              "CMS_em_QCD_IsoExtrap_$ERA", "shape", SystMap<>::init(1.00));
@@ -278,9 +278,9 @@ namespace ch {
         // need to add QCD "BTag" uncertainty also for MVA approach since no veto is applied on b-jets
     
         if(ttbar_fit) {
-          cb.cp().process({"QCD"}).channel({"ttbar"}).bin_id({2,3,4}).AddSyst(cb,
+          cb.cp().process({"QCD"}).channel({"ttbar"}).bin_id({2,3,4,5,6}).AddSyst(cb,
                                                "CMS_em_QCD_1JetRate_$ERA", "shape", SystMap<>::init(1.00));
-          cb.cp().process({"QCD"}).channel({"ttbar"}).bin_id({2,3,4}).AddSyst(cb,
+          cb.cp().process({"QCD"}).channel({"ttbar"}).bin_id({2,3,4,5,6}).AddSyst(cb,
                                                "CMS_em_QCD_1JetShape_$ERA", "shape", SystMap<>::init(1.00));
           cb.cp().process({"QCD"}).channel({"ttbar"}).AddSyst(cb,
                                                "CMS_em_QCD_IsoExtrap_$ERA", "shape", SystMap<>::init(1.00));
@@ -378,9 +378,11 @@ namespace ch {
 
         cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({1}).AddSyst(cb, "ff_sub_syst_$CHANNEL_0jet", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({2}).AddSyst(cb, "ff_sub_syst_$CHANNEL_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({3}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({4}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_boosted", "shape", SystMap<>::init(1.00));
-       
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({3}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_loosemjj_lowboost", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({4}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_loosemjj_boosted", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({5}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_tightmjj_lowboost", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({6}).AddSyst(cb, "ff_sub_syst_$CHANNEL_dijet_tightmjj_boosted", "shape", SystMap<>::init(1.00));
+ 
         // add these also for MVA categories (use same naming convention)
  
         //##############################################################################
@@ -468,10 +470,10 @@ namespace ch {
                         ({"mt"},{2},ggH_sig_procs, 0.945)
                         ({"tt"},{2},ggH_sig_procs, 0.945)
                         
-                        ({"em"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
-                        ({"et"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
-                        ({"mt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
-                        ({"tt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
+                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
+                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
+                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
+                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
                         );
        
         // Need to think how to apply these properly for the MVA appraoch 
@@ -510,10 +512,10 @@ namespace ch {
                         ({"mt"},{2},ggH_sig_procs, 1.079)
                         ({"tt"},{2},ggH_sig_procs, 1.079)
                         
-                        ({"em"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
-                        ({"et"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
-                        ({"mt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
-                        ({"tt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
+                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
+                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
+                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
+                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
                         );
         
         
@@ -528,10 +530,10 @@ namespace ch {
                         ({"mt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.932)
                         ({"tt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.932)
                         
-                        ({"em"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
-                        ({"et"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
-                        ({"mt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
-                        ({"tt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
+                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
+                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
+                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
+                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
                         );
         
         cb.cp().AddSyst(cb, "CMS_ggH_STXSVBF2j", "lnN", SystMap<channel, bin_id, process>::init
@@ -545,10 +547,10 @@ namespace ch {
                         ({"mt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 1.000)
                         ({"tt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 1.000)
                         
-                        ({"em"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
-                        ({"et"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
-                        ({"mt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
-                        ({"tt"},{3,4,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
+                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
+                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
+                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
+                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
                         );
         // We will think how to apply these properly for the mva approach (or if not to apply them at all)
 
