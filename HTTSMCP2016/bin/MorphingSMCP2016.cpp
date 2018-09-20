@@ -135,7 +135,6 @@ int main(int argc, char** argv) {
       bkg_procs["et"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ", "VVT", "VVJ", "W", "EWKZ"};
       bkg_procs["mt"] = {"EmbedZTT", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT", "VVJ", "W", "EWKZ"};
       bkg_procs["tt"] = {"EmbedZTT", "W", "QCD", "ZL", "ZJ","TTT","TTJ",  "VVT","VVJ", "EWKZ"};
-      // Not use embedding for em channel currently
       bkg_procs["em"] = {"EmbedZTT","W", "QCD", "ZLL", "TT", "VV", "ggH_hww125", "qqH_hww125","EWKZ"};
       bkg_procs["ttbar"] = {"EmbedZTT", "W", "QCD", "ZLL", "TT", "VV", "EWKZ"};
     }
@@ -245,23 +244,33 @@ int main(int argc, char** argv) {
     
     if (!do_mva) {
       cats_cp["em"] = {
-          {3, "em_dijet_lowboost"},
-          {4, "em_dijet_boosted"} 
+          {3, "em_dijet_loosemjj_lowboost"},
+          {4, "em_dijet_loosemjj_boosted"},
+          {5, "em_dijet_tightmjj_lowboost"},
+          {6, "em_dijet_tightmjj_boosted"}
+
       };
       
       cats_cp["et"] = {
-          {3, "et_dijet_lowboost"},
-          {4, "et_dijet_boosted"}       
+          {3, "et_dijet_loosemjj_lowboost"},
+          {4, "et_dijet_loosemjj_boosted"},       
+          {5, "et_dijet_tightmjj_lowboost"},
+          {6, "et_dijet_tightmjj_boosted"}
+
       };
       
       cats_cp["mt"] = {
-          {3, "mt_dijet_lowboost"},
-          {4, "mt_dijet_boosted"}
+          {3, "mt_dijet_loosemjj_lowboost"},
+          {4, "mt_dijet_loosemjj_boosted"},
+          {5, "mt_dijet_tightmjj_lowboost"},
+          {6, "mt_dijet_tightmjj_boosted"}
       };    
       
       cats_cp["tt"] = {
-          {3, "tt_dijet_lowboost"},
-          {4, "tt_dijet_boosted"}
+          {3, "tt_dijet_loosemjj_lowboost"},
+          {4, "tt_dijet_loosemjj_boosted"},
+          {5, "tt_dijet_tightmjj_lowboost"},
+          {6, "tt_dijet_tightmjj_boosted"} 
       };    
     }
     else {
@@ -335,8 +344,8 @@ int main(int argc, char** argv) {
     
     map<string, VString> sig_procs;
     sig_procs["ggH"] = {"ggH_ph_htt"};
-    sig_procs["qqH"] = {"qqHsm_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
-    sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt"};
+    sig_procs["qqH"] = {"qqH_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
+    //sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt"};
     if (use_jhu) sig_procs["ggHCP"] = {"ggHsm_jhu_htt", "ggHps_jhu_htt", "ggHmm_jhu_htt"};
     else sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     
@@ -373,8 +382,8 @@ int main(int argc, char** argv) {
           cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats[chn], false); // SM VBF/VH are added as backgrounds
           cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH"], cats_cp[chn], false);
           
-          cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats[chn], true); // Non-SM VBF/VH are added as signal
-          cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats_cp[chn], true);
+          //cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats[chn], true); // Non-SM VBF/VH are added as signal
+          //cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["qqH_BSM"], cats_cp[chn], true);
            
           if(use_jhu) cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggH"], cats[chn], true);
           else cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn}, sig_procs["ggHCP"], cats[chn], true);
@@ -420,10 +429,10 @@ int main(int argc, char** argv) {
                                                            "$BIN/$PROCESS",
                                                            "$BIN/$PROCESS_$SYSTEMATIC");
         if(chn == "em" || chn == "et" || chn == "mt" || chn == "tt"){
-          cb.cp().channel({chn}).process(sig_procs["qqH_BSM"]).ExtractShapes(
-                                                                  input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-                                                                  "$BIN/$PROCESS$MASS",
-                                                                  "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+          //cb.cp().channel({chn}).process(sig_procs["qqH_BSM"]).ExtractShapes(
+          //                                                        input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+          //                                                        "$BIN/$PROCESS$MASS",
+          //                                                        "$BIN/$PROCESS$MASS_$SYSTEMATIC");
           cb.cp().channel({chn}).process(sig_procs["ggH"]).ExtractShapes(
                                                                   input_dir[chn] + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                                   "$BIN/$PROCESS$MASS",
@@ -571,12 +580,12 @@ int main(int argc, char** argv) {
     bbb.AddBinByBin(cb.cp().backgrounds().FilterProcs(BinIsControlRegion), cb);
 
     // add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
-    auto bbb_sig = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
-    .SetAddThreshold(0.05)
-    .SetMergeThreshold(0.0)
-    .SetFixNorm(false);
-    bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,31,32,41,42}),cb); 
+   // auto bbb_sig = ch::BinByBinFactory()
+   // .SetPattern("CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#")
+   // .SetAddThreshold(0.05)
+   // .SetMergeThreshold(0.0)
+   // .SetFixNorm(false);
+   // bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
 
     // And now do bbb for the control region with a slightly different config:
     auto bbb_ctl = ch::BinByBinFactory()
@@ -618,6 +627,8 @@ int main(int argc, char** argv) {
     
     
     writer.WriteCards("cmb", cb);
+    //Add all di-jet categories combined
+    writer.WriteCards("htt_dijet", cb.cp().bin_id({3,4,5,6}));
     for (auto chn : cb.channel_set()) {
 
         // per-channel

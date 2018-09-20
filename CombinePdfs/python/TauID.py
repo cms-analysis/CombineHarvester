@@ -31,7 +31,7 @@ class TauID(PhysicsModel):
                     if 'ZTT' in process or 'TTT' in process or 'VVT' in process:
                       scalings.append('SF')
                   else:
-                    if 'ZTTpass' in process: 
+                    if 'ZTT_pass' in process: 
                       scalings.append('SF')
                     if self.useMC and ('VVTpass' in process or 'TTTpass' in process):
                       scalings.append('SF')
@@ -41,7 +41,7 @@ class TauID(PhysicsModel):
                     if 'ZTT' in process or 'TTT' in process or 'VVT' in process:
                       scalings.append('SF_fail')
                   else:
-                    if 'ZTTpass' in process:
+                    if 'ZTT_pass' in process:
                       scalings.append('SF_fail')
                     if self.useMC and ('VVTpass' in process or 'TTTpass' in process):
                       scalings.append('SF_fail') 

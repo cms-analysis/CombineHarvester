@@ -66,9 +66,9 @@ bool BinIsNotControlRegion(ch::Object const* obj)
 int main(int argc, char** argv) {
 
     string output_folder = "sm_run2";
-    string input_folder_mt="Imperial/TauID/";
+    string input_folder_mt="Imperial/TauID2017/";
     string input_folder_et="Imperial/TauID/";
-    string postfix="";
+    string postfix="-2D";
     bool useMC = false;
     bool fitEff = false;
     bool ff_fracs = false;
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/TauID"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/TauID2017"))
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/TauID"))
     ("postfix", po::value<string>(&postfix)->default_value(postfix))
     ("mode", po::value<int>(&mode)->default_value(mode))
@@ -121,9 +121,9 @@ int main(int argc, char** argv) {
       bkg_procs["mt"] = {"QCD","W","ZL","ZJ","TTJ","VVJ"};
       bkg_procs["et"] = {"QCD","W","ZL","ZJ","TTJ","VVJ"};
     }
-    if(!(useMC || fitEff) && !ff_fracs) sig_procs = {"EmbedZTTpass","EmbedZTTfail"};
+    if(!(useMC || fitEff) && !ff_fracs) sig_procs = {"EmbedZTT_pass","EmbedZTT_fail"};
     if(useMC && !ff_fracs)sig_procs = {"ZTTpass","ZTTfail","TTTpass","TTTfail","VVTpass","VVTfail"};    
-    if(fitEff && !useMC && !ff_fracs) sig_procs = {"EmbedZTTpass","EmbedZTTfail","TTTpass","TTTfail","VVTpass","VVTfail"};
+    if(fitEff && !useMC && !ff_fracs) sig_procs = {"EmbedZTT_pass","EmbedZTT_fail","TTTpass","TTTfail","VVTpass","VVTfail"};
 
     ch::CombineHarvester cb;
     
@@ -218,10 +218,10 @@ int main(int argc, char** argv) {
                                         "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
 
     // btag efficiencies
-    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).channel({"et","mt"}).AddSyst(cb,
-                                               "CMS_fake_b_$ERA", "shape", SystMap<>::init(1.00));
-    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).channel({"et","mt"}).AddSyst(cb,
-                                               "CMS_eff_b_$ERA", "shape", SystMap<>::init(1.00));
+    //cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).channel({"et","mt"}).AddSyst(cb,
+    //                                           "CMS_fake_b_$ERA", "shape", SystMap<>::init(1.00));
+    //cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).channel({"et","mt"}).AddSyst(cb,
+    //                                           "CMS_eff_b_$ERA", "shape", SystMap<>::init(1.00));
     
     if(mode==0 && !ff_fracs){
         // id uncertainties for j->tau and l->tau will be added in physics model
@@ -274,20 +274,20 @@ int main(int argc, char** argv) {
     cb.cp().process(JoinStr({real_tau,embed,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
                                             "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
     
-    cb.cp().process(embed).channel({"mt"}).AddSyst(cb,
-                                                 "CMS_scale_m_$ERA", "shape", SystMap<>::init(1.00));
-    
-    cb.cp().process(embed).channel({"et"}).AddSyst(cb,
-                                                 "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
+    //cb.cp().process(embed).channel({"mt"}).AddSyst(cb,
+    //                                             "CMS_scale_m_$ERA", "shape", SystMap<>::init(1.00));
+    //
+    //cb.cp().process(embed).channel({"et"}).AddSyst(cb,
+    //                                             "CMS_scale_e_$ERA", "shape", SystMap<>::init(1.00));
     
 
-    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
-                                                  "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
+    //cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
+    //                                              "CMS_scale_met_unclustered_$ERA", "shape", SystMap<>::init(1.00));
     
-    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
-    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
-    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
-    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+    //cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
+    //cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00)); 
+    //cb.cp().process(JoinStr({real_tau,jetfake,zl,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
 
     cb.cp().process(zl).channel({"et","mt"}).AddSyst(cb,
                                                          "CMS_ZLShape_$CHANNEL_1prong_$ERA", "shape", SystMap<>::init(1.00));

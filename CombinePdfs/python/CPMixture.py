@@ -41,7 +41,7 @@ class CPMixture(PhysicsModel):
                   self.modelBuilder.factory_('expr::muF("@1*@1 + 9/4*@0*@0", kappaA, kappaH)')
 
 		self.modelBuilder.doVar('muV[1,0,4]')
-                self.modelBuilder.doVar('f[0,-1,1]')
+                #self.modelBuilder.doVar('f[0,-1,1]')
 
                 self.modelBuilder.doSet('POI', ','.join(poiNames))
 
@@ -67,18 +67,18 @@ class CPMixture(PhysicsModel):
                   for cp in cps:
                     self.modelBuilder.factory_('expr::xs_sf_{cp}("@0*@1", xs_sf, {cp})'.format(cp=cp))
                 
-                # define scaling for VBF templates as a function of muV/f 
-                self.modelBuilder.factory_('expr::signf("@0/abs(@0)", f)')
-
-                # VBF definition of a1 and a3
-                self.modelBuilder.factory_('expr::a1_qqh("sqrt( (1-abs(@0))*@1 )", f, muV)')
-                self.modelBuilder.factory_('expr::a3_qqh("@0*sqrt( abs(@1)*@2*{qqh_sigma1}/{qqh_sigma3} )", signf, f, muV)'.format(**params))
-
-                self.modelBuilder.factory_('expr::vbf_sm_scaling("@0*@0 -@0*@1*{a1_qqh_mm}/{a3_qqh_mm}", a1_qqh, a3_qqh)'.format(**params))
-                self.modelBuilder.factory_('expr::vbf_ps_scaling("@1*@1-@0*@1*{a3_qqh_mm}/{a1_qqh_mm}", a1_qqh, a3_qqh)'.format(**params))
-                self.modelBuilder.factory_('expr::vbf_mm_scaling("@0*@1/({a1_qqh_mm}*{a3_qqh_mm})", a1_qqh, a3_qqh)'.format(**params))                
+                ## define scaling for VBF templates as a function of muV/f 
+                #self.modelBuilder.factory_('expr::signf("@0/abs(@0)", f)')
+                #
+                ## VBF definition of a1 and a3
+                #self.modelBuilder.factory_('expr::a1_qqh("sqrt( (1-abs(@0))*@1 )", f, muV)')
+                #self.modelBuilder.factory_('expr::a3_qqh("@0*sqrt( abs(@1)*@2*{qqh_sigma1}/{qqh_sigma3} )", signf, f, muV)'.format(**params))
+                #  
+                #self.modelBuilder.factory_('expr::vbf_sm_scaling("@0*@0 -@0*@1*{a1_qqh_mm}/{a3_qqh_mm}", a1_qqh, a3_qqh)'.format(**params))
+                #self.modelBuilder.factory_('expr::vbf_ps_scaling("@1*@1-@0*@1*{a3_qqh_mm}/{a1_qqh_mm}", a1_qqh, a3_qqh)'.format(**params))
+                #self.modelBuilder.factory_('expr::vbf_mm_scaling("@0*@1/({a1_qqh_mm}*{a3_qqh_mm})", a1_qqh, a3_qqh)'.format(**params))                
                 if self.lumi_scale:
-                  for i in ['sm_scaling','mm_scaling','ps_scaling','muF','muV','vbf_sm_scaling','vbf_mm_scaling','vbf_ps_scaling']:
+                  for i in ['sm_scaling','mm_scaling','ps_scaling','muF','muV']:
                    self.modelBuilder.factory_('expr::L_%s("@0*@1", L, %s)' % (i,i)) 
 
 	def getYieldScale(self, bin, process):
@@ -97,14 +97,14 @@ class CPMixture(PhysicsModel):
                     scalings.append('muF')  
                    
 
-                if any(x in process for x in ['WH','ZH']) and not 'hww' in process:
+                if any(x in process for x in ['qqH','WH','ZH']) and not 'hww' in process:
                     scalings.append('muV')
-                if "qqHsm" in process:
-                  scalings.append('vbf_sm_scaling')
-                elif "qqHps" in process:
-                  scalings.append('vbf_ps_scaling')
-                elif "qqHmm" in process:
-                  scalings.append('vbf_mm_scaling')
+                #if "qqHsm" in process:
+                #  scalings.append('vbf_sm_scaling')
+                #elif "qqHps" in process:
+                #  scalings.append('vbf_ps_scaling')
+                #elif "qqHmm" in process:
+                #  scalings.append('vbf_mm_scaling')
 
                 if scalings:
                   scaling = '_'.join(scalings)
