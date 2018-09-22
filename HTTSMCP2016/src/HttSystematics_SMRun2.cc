@@ -168,15 +168,52 @@ namespace ch {
         //  b tag and mistag rate  efficiencies (update me)
         //##############################################################################
  
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em","et","mt"}).AddSyst(cb,
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em","et","mt"}).AddSyst(cb,
+       //                                      "CMS_fake_b_$ERA", "shape", SystMap<>::init(1.00)); // neglecting fake_b uncertainties as these are <0.1%
+       //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
+        //                                     "CMS_fake_b_$ERA", "shape", SystMap<>::init(1.00));
+       
+      
+        // real uncerts for TT and VV only (others are small) 
+        cb.cp().AddSyst(cb,
+          "CMS_eff_b_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"et"}, {1}, {"TTT"}, 1.020,0.969)
+          ({"et"}, {2}, {"TTT"}, 1.034,0.968)
+          ({"et"}, {3}, {"TTT"}, 1.025,0.932)
+          ({"et"}, {4}, {"TTT"}, 1.008,0.969)
+          ({"et"}, {5}, {"TTT"}, 1.032,0.963)
+          ({"et"}, {6}, {"TTT"}, 1.015,0.942)
+          ({"et"}, {2}, {"VVT"}, 1.010,0.989)
+          ({"et"}, {3}, {"VVT"}, 1.024,0.987)
+          ({"et"}, {4}, {"VVT"}, 1.000,0.983)
+          ({"mt"}, {1}, {"TTT"}, 1.024,0.975)
+          ({"mt"}, {2}, {"TTT"}, 1.030,0.967)
+          ({"mt"}, {3}, {"TTT"}, 1.069,0.967)
+          ({"mt"}, {4}, {"TTT"}, 1.040,0.964)
+          ({"mt"}, {5}, {"TTT"}, 1.028,0.968)
+          ({"mt"}, {6}, {"TTT"}, 1.060,0.952)
+          ({"mt"}, {2}, {"VVT"}, 1.010,0.994)
+          ({"mt"}, {3}, {"VVT"}, 1.015,1.000)
+          ({"mt"}, {4}, {"VVT"}, 1.014,0.987)
+          ({"mt"}, {5}, {"VVT"}, 1.005,1.000)
+          ({"mt"}, {6}, {"VVT"}, 1.024,0.986)
+          ({"em"}, {1}, {"TT"}, 1.016,0.982)
+          ({"em"}, {2}, {"TT"}, 1.030,0.968)
+          ({"em"}, {3}, {"TT"}, 1.033,0.968)
+          ({"em"}, {4}, {"TT"}, 1.032,0.957)
+          ({"em"}, {5}, {"TT"}, 1.032,0.975)
+          ({"em"}, {6}, {"TT"}, 1.032,0.969)
+          ({"em"}, {2}, {"VV"}, 1.008,0.992)
+          ({"em"}, {3}, {"VV"}, 1.013,0.986)
+          ({"em"}, {4}, {"VV"}, 1.008,0.988)
+          ({"em"}, {5}, {"VV"}, 1.010,0.992)
+          ({"em"}, {6}, {"VV"}, 1.011,0.988)
+        );
+
+        cb.cp().process({"TTT","TT","VVT","VV"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
                                              "CMS_eff_b_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em","et","mt"}).AddSyst(cb,
-                                             "CMS_fake_b_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
-                                             "CMS_eff_b_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"tt"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
-                                             "CMS_fake_b_$ERA", "shape", SystMap<>::init(1.00));
-        
+
+ 
         //##############################################################################
         //  Electron, muon and tau energy Scale
         //##############################################################################
@@ -262,29 +299,56 @@ namespace ch {
                                                        "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));    
         }
         
-        // QCD uncerts for em 
-
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({1,31,32,33,34,35,36,37}).AddSyst(cb,
+        // QCD uncerts for em
+        
+        cb.cp().AddSyst(cb,
+                  "CMS_em_QCD_0JetRate_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"em"}, {1}, {"QCD"}, 1.096,0.904)
+        ); 
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({31,32,33,34,35,36,37}).AddSyst(cb,
                                              "CMS_em_QCD_0JetRate_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
+     
+        cb.cp().AddSyst(cb,
+          "CMS_em_QCD_1JetRate_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          //({"em"}, {2}, {"QCD"}, 0.995,1.005)
+          //({"em"}, {3}, {"QCD"}, 0.995,1.005)
+          //({"em"}, {4}, {"QCD"}, 0.996,1.004)
+          //({"em"}, {5}, {"QCD"}, 0.995,1.005)
+          ({"em"}, {6}, {"QCD"}, 0.987,1.013)
+          //({"ttbar"}, {1}, {"QCD"}, 0.996,1.004)
+        ); // neglect small uncertainties
+
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,
                                              "CMS_em_QCD_1JetRate_$ERA", "shape", SystMap<>::init(1.00));
         cb.cp().process({"QCD"}).channel({"em"}).bin_id({1,31,32,33,34,35,36,37}).AddSyst(cb,
                                              "CMS_em_QCD_0JetShape_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,47}).AddSyst(cb,
+
+        cb.cp().AddSyst(cb,
+          "CMS_em_QCD_1JetShape_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"em"}, {3}, {"QCD"}, 0.964,1.036)
+          ({"em"}, {4}, {"QCD"}, 0.975,1.025)
+          ({"em"}, {5}, {"QCD"}, 0.951,1.049)
+          ({"em"}, {6}, {"QCD"}, 0.631,1.369)
+          ({"ttbar"}, {1}, {"QCD"}, 0.961,1.039)
+        );
+
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({2,31,32,33,34,35,36,37,41,42,43,44,45,47}).AddSyst(cb,
                                              "CMS_em_QCD_1JetShape_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"QCD"}).channel({"em"}).AddSyst(cb,
+
+        cb.cp().AddSyst(cb,
+          "CMS_em_QCD_IsoExtrap_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"em"}, {1}, {"QCD"}, 1.048,0.952)
+          ({"em"}, {2}, {"QCD"}, 1.046,0.954)
+          ({"em"}, {3}, {"QCD"}, 1.041,0.959)
+          ({"em"}, {4}, {"QCD"}, 1.029,0.971)
+          ({"em"}, {5}, {"QCD"}, 0.960,1.040)
+          ({"em"}, {6}, {"QCD"}, 0.960,1.040)
+          ({"ttbar"}, {1}, {"QCD"}, 1.040,0.960)
+        );
+
+        cb.cp().process({"QCD"}).channel({"em"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,47}).AddSyst(cb,
                                              "CMS_em_QCD_IsoExtrap_$ERA", "shape", SystMap<>::init(1.00));
 
-        // need to add QCD "BTag" uncertainty also for MVA approach since no veto is applied on b-jets
-    
-        if(ttbar_fit) {
-          cb.cp().process({"QCD"}).channel({"ttbar"}).bin_id({2,3,4,5,6}).AddSyst(cb,
-                                               "CMS_em_QCD_1JetRate_$ERA", "shape", SystMap<>::init(1.00));
-          cb.cp().process({"QCD"}).channel({"ttbar"}).bin_id({2,3,4,5,6}).AddSyst(cb,
-                                               "CMS_em_QCD_1JetShape_$ERA", "shape", SystMap<>::init(1.00));
-          cb.cp().process({"QCD"}).channel({"ttbar"}).AddSyst(cb,
-                                               "CMS_em_QCD_IsoExtrap_$ERA", "shape", SystMap<>::init(1.00));
-        }
         
         // QCD norm, just for tt 
         cb.cp().process({"QCD"}).channel({"tt"}).bin_id({1,31,32,33,34,35,36,37}).AddSyst(cb,
