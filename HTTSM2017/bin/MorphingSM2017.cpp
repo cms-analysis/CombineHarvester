@@ -49,8 +49,9 @@ int main(int argc, char **argv) {
   bool jetfakes = true;
   bool embedding = false;
   bool verbose = false;
-  int stxs_signals = 0;
-  int stxs_categories = 0;
+  int stxs_signals = 0; // 0 or 1
+  int stxs_categories = 0; // 0 or 1
+  int era = 2016; // 2016 or 2017
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
@@ -68,7 +69,8 @@ int main(int argc, char **argv) {
       ("stxs_signals", po::value<int>(&stxs_signals)->default_value(stxs_signals))
       ("stxs_categories", po::value<int>(&stxs_categories)->default_value(stxs_categories))
       ("jetfakes", po::value<bool>(&jetfakes)->default_value(jetfakes))
-      ("embedding", po::value<bool>(&embedding)->default_value(embedding));
+      ("embedding", po::value<bool>(&embedding)->default_value(embedding))
+      ("era", po::value<int>(&era)->default_value(era));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
@@ -230,7 +232,7 @@ int main(int argc, char **argv) {
   }
 
   // Add systematics
-  ch::AddSMRun2Systematics(cb, jetfakes, embedding);
+  ch::AddSMRun2Systematics(cb, jetfakes, embedding, era);
 
   // Extract shapes from input ROOT files
   for (string chn : chns) {

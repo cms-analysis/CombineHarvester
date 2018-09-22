@@ -5,7 +5,7 @@
 namespace ch {
 // Run2 SM analysis systematics
 // Implemented in src/HttSystematics_SMRun2.cc
-void AddSMRun2Systematics(CombineHarvester& cb, bool jetfakes, bool embedding);
+void AddSMRun2Systematics(CombineHarvester& cb, bool jetfakes, bool embedding, int era);
 }
 
 #endif

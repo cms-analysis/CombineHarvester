@@ -18,7 +18,7 @@ using ch::syst::process;
 using ch::syst::bin;
 using ch::JoinStr;
 
-void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
+void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, int era) {
 
   // ##########################################################################
   // Define groups of processes
@@ -243,12 +243,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding) {
       .process(mc_processes)
       .AddSyst(cb, "CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
 
-  /* Only needed for 2017 data
-  cb.cp()
-      .channel({"et", "mt", "tt"})
-      .process(mc_processes)
-      .AddSyst(cb, "CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
-  */
+  if (era == 2017) {
+    cb.cp()
+        .channel({"et", "mt", "tt"})
+        .process(mc_processes)
+        .AddSyst(cb, "CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
+  }
 
   // ##########################################################################
   // Uncertainty: MET energy scale
