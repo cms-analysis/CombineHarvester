@@ -266,10 +266,11 @@ namespace ch {
                                                   "CMS_htt_boson_reso_met_$ERA", "shape", SystMap<>::init(1.00)); 
         cb.cp().process(JoinStr({sig_procs, {"ZTT","ZLL","ZL","ZJ","EWKZ","W"}})).AddSyst(cb,
                                                   "CMS_htt_boson_scale_met_$ERA", "shape", SystMap<>::init(1.00));
-        
+       
+ 
         // uncomment for regional JES uncertainties
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47}).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"ttbar"}).AddSyst(cb,"CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"ttbar"}).AddSyst(cb,"CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
 
         cb.cp().AddSyst(cb,
           "CMS_scale_j_eta0to5_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
@@ -751,32 +752,187 @@ namespace ch {
         // Update parton-shower (PS) uncertainty for MG5 ggH
         
         //scale_gg on signal
-        cb.cp().process(ggH_sig_procs).channel({"et","mt","tt","em"}).AddSyst(cb,
+        cb.cp().process(ggH_sig_procs).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47}).channel({"et","mt","tt","em"}).AddSyst(cb,
                                              "CMS_scale_gg_$ERA", "shape", SystMap<>::init(1.00));
-        
        
-        cb.cp().process(ggH_sig_procs).channel({"et","mt","tt","em"}).AddSyst(cb,
-                                             "CMS_FiniteQuarkMass_$ERA", "shape", SystMap<>::init(1.00));
- 
-        
-        cb.cp().AddSyst(cb, "CMS_ggH_UEPS", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"},{1,31,32,33,34,35,36,37},ggH_sig_procs, 1.015)
-                        ({"et"},{1,31,32,33,34,35,36,37},ggH_sig_procs, 1.015)
-                        ({"mt"},{1,31,32,33,34,35,36,37},ggH_sig_procs, 1.015)
-                        ({"tt"},{1,31,32,33,34,35,36,37},ggH_sig_procs, 1.015)
-                        
-                        ({"em"},{2},ggH_sig_procs, 0.945)
-                        ({"et"},{2},ggH_sig_procs, 0.945)
-                        ({"mt"},{2},ggH_sig_procs, 0.945)
-                        ({"tt"},{2},ggH_sig_procs, 0.945)
-                        
-                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
-                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
-                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
-                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.03)
-                        );
+        cb.cp().AddSyst(cb,
+          "CMS_scale_gg_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"tt"}, {1}, {"ggHps_htt125"}, 0.937, 1.063)
+          ({"tt"}, {1}, {"ggHsm_htt125"}, 0.928, 1.069)
+          ({"tt"}, {1}, {"ggHmm_htt125"}, 0.942, 1.059)
+          ({"mt"}, {1}, {"ggHps_htt125"}, 0.948, 1.054)
+          ({"mt"}, {1}, {"ggHsm_htt125"}, 0.939, 1.061)
+          ({"mt"}, {1}, {"ggHmm_htt125"}, 0.946, 1.056)
+          ({"et"}, {1}, {"ggHps_htt125"}, 0.946, 1.056)
+          ({"et"}, {1}, {"ggHsm_htt125"}, 0.966, 1.042)
+          ({"et"}, {1}, {"ggHmm_htt125"}, 0.929, 1.069)
+          ({"em"}, {1}, {"ggHps_htt125"}, 0.947, 1.056)
+          ({"em"}, {1}, {"ggHsm_htt125"}, 0.942, 1.058)
+          ({"em"}, {1}, {"ggHmm_htt125"}, 0.950, 1.053)
+        ); 
        
-        // Need to think how to apply these properly for the MVA appraoch 
+        //cb.cp().process(ggH_sig_procs).channel({"et","mt","tt","em"}).AddSyst(cb,
+        //                                     "CMS_FiniteQuarkMass_$ERA", "shape", SystMap<>::init(1.00)); // quark-mass uncertainties are small so are neglected (largest uncertainty is ~0.5%)
+
+        // PS uncertainty affects njets and pT distribution so is included as a shape uncertainty for the boosted category where pT is fitted
+        cb.cp().process(ggH_sig_procs).bin_id({2,31,32,33,34,35,36,37,41,42,43,44,45,46,47}).channel({"et","mt","tt","em"}).AddSyst(cb,
+                                             "CMS_PS_ggH_$ERA", "shape", SystMap<>::init(1.00));
+
+        cb.cp().AddSyst(cb,
+          "CMS_PS_ggH_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"tt"}, {1}, {"ggHps_htt125"}, 0.981, 1.016)
+          ({"tt"}, {1}, {"ggHsm_htt125"}, 0.984, 1.012)
+          ({"tt"}, {1}, {"ggHmm_htt125"}, 0.977, 1.019)
+          //({"tt"}, {2}, {"ggHps_htt125"}, 0.984, 1.016)
+          //({"tt"}, {2}, {"ggHsm_htt125"}, 0.982, 1.016)
+          //({"tt"}, {2}, {"ggHmm_htt125"}, 0.983, 1.016)
+          ({"tt"}, {3}, {"ggHps_htt125"}, 1.002, 1.003)
+          ({"tt"}, {3}, {"ggHsm_htt125"}, 0.993, 1.010)
+          ({"tt"}, {3}, {"ggHmm_htt125"}, 0.997, 1.007)
+          ({"tt"}, {4}, {"ggHps_htt125"}, 1.018, 0.991)
+          ({"tt"}, {4}, {"ggHsm_htt125"}, 1.016, 0.992)
+          ({"tt"}, {4}, {"ggHmm_htt125"}, 1.017, 0.992)
+          ({"tt"}, {5}, {"ggHps_htt125"}, 0.993, 1.010)
+          ({"tt"}, {5}, {"ggHsm_htt125"}, 0.999, 1.004)
+          ({"tt"}, {5}, {"ggHmm_htt125"}, 0.997, 1.006)
+          ({"tt"}, {6}, {"ggHps_htt125"}, 1.018, 0.991)
+          ({"tt"}, {6}, {"ggHsm_htt125"}, 1.020, 0.990)
+          ({"tt"}, {6}, {"ggHmm_htt125"}, 1.019, 0.991)
+          ({"mt"}, {1}, {"ggHps_htt125"}, 0.990, 1.007)
+          ({"mt"}, {1}, {"ggHsm_htt125"}, 0.993, 1.005)
+          ({"mt"}, {1}, {"ggHmm_htt125"}, 0.989, 1.008)
+          //({"mt"}, {2}, {"ggHps_htt125"}, 0.986, 1.014)
+          //({"mt"}, {2}, {"ggHsm_htt125"}, 0.988, 1.012)
+          //({"mt"}, {2}, {"ggHmm_htt125"}, 0.987, 1.013)
+          ({"mt"}, {3}, {"ggHps_htt125"}, 0.986, 1.014)
+          ({"mt"}, {3}, {"ggHsm_htt125"}, 0.983, 1.017)
+          ({"mt"}, {3}, {"ggHmm_htt125"}, 0.983, 1.017)
+          ({"mt"}, {4}, {"ggHps_htt125"}, 1.011, 0.996)
+          ({"mt"}, {4}, {"ggHsm_htt125"}, 1.012, 0.995)
+          ({"mt"}, {4}, {"ggHmm_htt125"}, 1.012, 0.995)
+          ({"mt"}, {5}, {"ggHps_htt125"}, 0.984, 1.017)
+          ({"mt"}, {5}, {"ggHsm_htt125"}, 0.988, 1.012)
+          ({"mt"}, {5}, {"ggHmm_htt125"}, 0.980, 1.020)
+          ({"mt"}, {6}, {"ggHps_htt125"}, 1.013, 0.994)
+          ({"mt"}, {6}, {"ggHsm_htt125"}, 1.011, 0.996)
+          ({"mt"}, {6}, {"ggHmm_htt125"}, 1.011, 0.996)
+          ({"et"}, {1}, {"ggHps_htt125"}, 0.985, 1.012)
+          ({"et"}, {1}, {"ggHsm_htt125"}, 0.985, 1.012)
+          ({"et"}, {1}, {"ggHmm_htt125"}, 0.984, 1.013)
+          //({"et"}, {2}, {"ggHps_htt125"}, 0.983, 1.016)
+          //({"et"}, {2}, {"ggHsm_htt125"}, 0.982, 1.017)
+          //({"et"}, {2}, {"ggHmm_htt125"}, 0.980, 1.018)
+          ({"et"}, {3}, {"ggHps_htt125"}, 0.989, 1.011)
+          ({"et"}, {3}, {"ggHsm_htt125"}, 0.993, 1.009)
+          ({"et"}, {3}, {"ggHmm_htt125"}, 0.990, 1.011)
+          ({"et"}, {4}, {"ggHps_htt125"}, 1.016, 0.993)
+          ({"et"}, {4}, {"ggHsm_htt125"}, 1.015, 0.993)
+          ({"et"}, {4}, {"ggHmm_htt125"}, 1.010, 0.996)
+          ({"et"}, {5}, {"ggHps_htt125"}, 0.986, 1.014)
+          ({"et"}, {5}, {"ggHsm_htt125"}, 0.984, 1.015)
+          ({"et"}, {5}, {"ggHmm_htt125"}, 0.984, 1.018)
+          ({"et"}, {6}, {"ggHps_htt125"}, 1.016, 0.993)
+          ({"et"}, {6}, {"ggHsm_htt125"}, 1.012, 0.995)
+          ({"et"}, {6}, {"ggHmm_htt125"}, 1.015, 0.993)
+          ({"em"}, {1}, {"ggHps_htt125"}, 1.006, 0.993)
+          ({"em"}, {1}, {"ggHsm_htt125"}, 1.005, 0.993)
+          ({"em"}, {1}, {"ggHmm_htt125"}, 1.003, 0.996)
+          //({"em"}, {2}, {"ggHps_htt125"}, 0.995, 1.007)
+          //({"em"}, {2}, {"ggHsm_htt125"}, 1.000, 1.003)
+          //({"em"}, {2}, {"ggHmm_htt125"}, 0.996, 1.006)
+          ({"em"}, {3}, {"ggHps_htt125"}, 0.984, 1.015)
+          ({"em"}, {3}, {"ggHsm_htt125"}, 0.982, 1.017)
+          ({"em"}, {3}, {"ggHmm_htt125"}, 0.984, 1.015)
+          ({"em"}, {4}, {"ggHps_htt125"}, 1.004, 1.001)
+          ({"em"}, {4}, {"ggHsm_htt125"}, 1.008, 0.999)
+          ({"em"}, {4}, {"ggHmm_htt125"}, 1.006, 1.000)
+          ({"em"}, {5}, {"ggHps_htt125"}, 0.992, 1.009)
+          ({"em"}, {5}, {"ggHsm_htt125"}, 0.995, 1.012)
+          ({"em"}, {5}, {"ggHmm_htt125"}, 0.985, 1.015)
+          ({"em"}, {6}, {"ggHps_htt125"}, 1.008, 0.998)
+          ({"em"}, {6}, {"ggHsm_htt125"}, 1.008, 0.998)
+          ({"em"}, {6}, {"ggHmm_htt125"}, 1.007, 0.999)
+        );
+
+        cb.cp().process(ggH_sig_procs).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47}).channel({"et","mt","tt","em"}).AddSyst(cb,
+                                             "CMS_UE_ggH_$ERA", "shape", SystMap<>::init(1.00));
+
+        // UE uncertainty affects njets distributions so included as lnN for cut based approach.
+        cb.cp().AddSyst(cb,
+          "CMS_UE_ggH_$ERA", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"tt"}, {1}, {"ggHps_htt125"}, 0.997, 1.009)
+          ({"tt"}, {1}, {"ggHsm_htt125"}, 0.997, 1.010)
+          ({"tt"}, {1}, {"ggHmm_htt125"}, 0.997, 1.010)
+          ({"tt"}, {2}, {"ggHps_htt125"}, 0.993, 1.026)
+          ({"tt"}, {2}, {"ggHsm_htt125"}, 0.993, 1.025)
+          ({"tt"}, {2}, {"ggHmm_htt125"}, 0.993, 1.025)
+          ({"tt"}, {3}, {"ggHps_htt125"}, 0.992, 1.036)
+          ({"tt"}, {3}, {"ggHsm_htt125"}, 0.992, 1.033)
+          ({"tt"}, {3}, {"ggHmm_htt125"}, 0.992, 1.034)
+          ({"tt"}, {4}, {"ggHps_htt125"}, 0.990, 1.037)
+          ({"tt"}, {4}, {"ggHsm_htt125"}, 0.990, 1.037)
+          ({"tt"}, {4}, {"ggHmm_htt125"}, 0.990, 1.037)
+          ({"tt"}, {5}, {"ggHps_htt125"}, 0.992, 1.034)
+          ({"tt"}, {5}, {"ggHsm_htt125"}, 0.992, 1.032)
+          ({"tt"}, {5}, {"ggHmm_htt125"}, 0.991, 1.034)
+          ({"tt"}, {6}, {"ggHps_htt125"}, 0.989, 1.037)
+          ({"tt"}, {6}, {"ggHsm_htt125"}, 0.989, 1.038)
+          ({"tt"}, {6}, {"ggHmm_htt125"}, 0.989, 1.037)
+          ({"mt"}, {1}, {"ggHps_htt125"}, 1.000, 0.999)
+          ({"mt"}, {1}, {"ggHsm_htt125"}, 1.000, 0.998)
+          ({"mt"}, {1}, {"ggHmm_htt125"}, 1.000, 0.998)
+          ({"mt"}, {2}, {"ggHps_htt125"}, 0.995, 1.017)
+          ({"mt"}, {2}, {"ggHsm_htt125"}, 0.995, 1.017)
+          ({"mt"}, {2}, {"ggHmm_htt125"}, 0.995, 1.017)
+          ({"mt"}, {3}, {"ggHps_htt125"}, 0.993, 1.028)
+          ({"mt"}, {3}, {"ggHsm_htt125"}, 0.993, 1.027)
+          ({"mt"}, {3}, {"ggHmm_htt125"}, 0.993, 1.028)
+          ({"mt"}, {4}, {"ggHps_htt125"}, 0.990, 1.035)
+          ({"mt"}, {4}, {"ggHsm_htt125"}, 0.990, 1.036)
+          ({"mt"}, {4}, {"ggHmm_htt125"}, 0.991, 1.036)
+          ({"mt"}, {5}, {"ggHps_htt125"}, 0.994, 1.026)
+          ({"mt"}, {5}, {"ggHsm_htt125"}, 0.993, 1.024)
+          ({"mt"}, {5}, {"ggHmm_htt125"}, 0.993, 1.026)
+          ({"mt"}, {6}, {"ggHps_htt125"}, 0.990, 1.036)
+          ({"mt"}, {6}, {"ggHsm_htt125"}, 0.990, 1.035)
+          ({"mt"}, {6}, {"ggHmm_htt125"}, 0.990, 1.035)
+          ({"et"}, {1}, {"ggHps_htt125"}, 0.998, 1.005)
+          ({"et"}, {1}, {"ggHsm_htt125"}, 0.998, 1.006)
+          ({"et"}, {1}, {"ggHmm_htt125"}, 0.998, 1.005)
+          ({"et"}, {2}, {"ggHps_htt125"}, 0.994, 1.020)
+          ({"et"}, {2}, {"ggHsm_htt125"}, 0.994, 1.020)
+          ({"et"}, {2}, {"ggHmm_htt125"}, 0.994, 1.021)
+          ({"et"}, {3}, {"ggHps_htt125"}, 0.993, 1.030)
+          ({"et"}, {3}, {"ggHsm_htt125"}, 0.992, 1.032)
+          ({"et"}, {3}, {"ggHmm_htt125"}, 0.993, 1.030)
+          ({"et"}, {4}, {"ggHps_htt125"}, 0.990, 1.037)
+          ({"et"}, {4}, {"ggHsm_htt125"}, 0.990, 1.036)
+          ({"et"}, {4}, {"ggHmm_htt125"}, 0.990, 1.035)
+          ({"et"}, {5}, {"ggHps_htt125"}, 0.993, 1.029)
+          ({"et"}, {5}, {"ggHsm_htt125"}, 0.992, 1.032)
+          ({"et"}, {5}, {"ggHmm_htt125"}, 0.992, 1.029)
+          ({"et"}, {6}, {"ggHps_htt125"}, 0.990, 1.036)
+          ({"et"}, {6}, {"ggHsm_htt125"}, 0.990, 1.036)
+          ({"et"}, {6}, {"ggHmm_htt125"}, 0.990, 1.036)
+          ({"em"}, {1}, {"ggHps_htt125"}, 1.003, 0.989)
+          ({"em"}, {1}, {"ggHsm_htt125"}, 1.003, 0.989)
+          ({"em"}, {1}, {"ggHmm_htt125"}, 1.003, 0.989)
+          ({"em"}, {2}, {"ggHps_htt125"}, 0.996, 1.013)
+          ({"em"}, {2}, {"ggHsm_htt125"}, 0.996, 1.012)
+          ({"em"}, {2}, {"ggHmm_htt125"}, 0.996, 1.013)
+          ({"em"}, {3}, {"ggHps_htt125"}, 0.994, 1.025)
+          ({"em"}, {3}, {"ggHsm_htt125"}, 0.994, 1.024)
+          ({"em"}, {3}, {"ggHmm_htt125"}, 0.993, 1.024)
+          ({"em"}, {4}, {"ggHps_htt125"}, 0.991, 1.032)
+          ({"em"}, {4}, {"ggHsm_htt125"}, 0.991, 1.033)
+          ({"em"}, {4}, {"ggHmm_htt125"}, 0.991, 1.033)
+          ({"em"}, {5}, {"ggHps_htt125"}, 0.993, 1.025)
+          ({"em"}, {5}, {"ggHsm_htt125"}, 0.993, 1.025)
+          ({"em"}, {5}, {"ggHmm_htt125"}, 0.994, 1.022)
+          ({"em"}, {6}, {"ggHps_htt125"}, 0.991, 1.033)
+          ({"em"}, {6}, {"ggHsm_htt125"}, 0.991, 1.034)
+          ({"em"}, {6}, {"ggHmm_htt125"}, 0.991, 1.033)
+        );
         
         //    Uncertainty on BR for HTT @ 125 GeV
         cb.cp().process(sig_procs).AddSyst(cb,"BR_htt_THU", "lnN", SystMap<>::init(1.017));
