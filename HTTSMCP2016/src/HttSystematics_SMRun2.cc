@@ -955,9 +955,11 @@ namespace ch {
         cb.cp().process({"WH_htt"}).AddSyst(cb,"pdf_Higgs_VH", "lnN", SystMap<>::init(1.019));
         cb.cp().process({"ZH_htt"}).AddSyst(cb,"pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
         
+        // jet bin migration uncertainties from: https://arxiv.org/pdf/1610.07922.pdf#subsection.1.4.2.5 (Table 20)
+        // For boosted category this is not exclusivly 1 jet events since events with > 1 jets and mjj<300 enter also. So take weighted average of Njets=1 and Njets>=1 uncertainties i.e sigma(boosted) = sigma(njets=1)*(# Njets=1 && boosted)/(# boosted) + sigma(njets>=1)*(#Njets>1 && boosted)/(# boosted)
+        // These need to be set properly for MVA approach (placeholders for now)
         
-        
-        cb.cp().AddSyst(cb, "CMS_ggH_STXSmig01", "lnN", SystMap<channel, bin_id, process>::init
+        cb.cp().AddSyst(cb, "CMS_ggH_mig01", "lnN", SystMap<channel, bin_id, process>::init
                         ({"em"},{1,31,32,33,34,35,36,37},ggH_sig_procs, 0.959)
                         ({"et"},{1,31,32,33,34,35,36,37},ggH_sig_procs, 0.959)
                         ({"mt"},{1,31,32,33,34,35,36,37},ggH_sig_procs, 0.959)
@@ -966,49 +968,27 @@ namespace ch {
                         ({"em"},{2},ggH_sig_procs, 1.079)
                         ({"et"},{2},ggH_sig_procs, 1.079)
                         ({"mt"},{2},ggH_sig_procs, 1.079)
-                        ({"tt"},{2},ggH_sig_procs, 1.079)
+                        ({"tt"},{2},ggH_sig_procs, 1.078)
                         
-                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
-                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
-                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
-                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.039)
+                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.036)
+                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.036)
+                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.036)
+                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.036)
                         );
         
         
-        cb.cp().AddSyst(cb, "CMS_ggH_STXSmig12", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"},{1},ggH_sig_procs, 1.000)
-                        ({"et"},{1},ggH_sig_procs, 1.000)
-                        ({"mt"},{1},ggH_sig_procs, 1.000)
-                        ({"tt"},{1},ggH_sig_procs, 1.000)
+        cb.cp().AddSyst(cb, "CMS_ggH_mig12", "lnN", SystMap<channel, bin_id, process>::init 
+                        ({"em"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.950)
+                        ({"et"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.952)
+                        ({"mt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.950)
+                        ({"tt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.957)
                         
-                        ({"em"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.932)
-                        ({"et"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.932)
-                        ({"mt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.932)
-                        ({"tt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 0.932)
-                        
-                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
-                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
-                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
-                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.161)
+                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.145)
+                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.145)
+                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.145)
+                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.145)
                         );
         
-        cb.cp().AddSyst(cb, "CMS_ggH_STXSVBF2j", "lnN", SystMap<channel, bin_id, process>::init
-                        ({"em"},{1},ggH_sig_procs, 1.000)
-                        ({"et"},{1},ggH_sig_procs, 1.000)
-                        ({"mt"},{1},ggH_sig_procs, 1.000)
-                        ({"tt"},{1},ggH_sig_procs, 1.000)
-                        
-                        ({"em"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 1.000)
-                        ({"et"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 1.000)
-                        ({"mt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 1.000)
-                        ({"tt"},{2,31,32,33,34,35,36,37},ggH_sig_procs, 1.000)
-                        
-                        ({"em"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
-                        ({"et"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
-                        ({"mt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
-                        ({"tt"},{3,4,5,6,41,42,43,44,45,46,47},ggH_sig_procs, 1.200)
-                        );
-        // We will think how to apply these properly for the mva approach (or if not to apply them at all)
 
         if (control_region > 0) {
             // Create rateParams for control regions:
