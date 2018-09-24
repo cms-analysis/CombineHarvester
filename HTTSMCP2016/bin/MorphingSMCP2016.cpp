@@ -490,6 +490,13 @@ int main(int argc, char** argv) {
         if(sys->value_d() <0.001) {sys->set_value_d(0.001);};
         if(sys->value_u() <0.001) {sys->set_value_u(0.001);};
     });
+
+    cb.cp().channel({"ttbar"}).syst_type({"shape"}).ForEachSyst([](ch::Systematic *sys) {
+        sys->set_type("lnN");
+        if(sys->value_d() <0.001) {sys->set_value_d(0.001);};
+        if(sys->value_u() <0.001) {sys->set_value_u(0.001);};
+    });
+
     
     std::vector<std::string> all_prefit_bkgs = {
         "QCD","ZL","ZJ","ZTT","TTJ","TTT","TT",
