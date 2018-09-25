@@ -1,0 +1,36 @@
+{
+  "r": {
+    "SystHi": 0.23,
+    "SystLo": 0.23,
+    "StatHi": 0.26,
+    "StatLo": 0.26,
+    "ErrHi": 0.34,
+    "ErrLo": 0.34,
+    "val": 1.08
+  },
+  "r_WH": {
+    "ErrHi": 0.57,
+    "ErrLo": 0.57,
+    "val": 1.36
+  },
+  "r_ZH": {
+    "ErrHi": 0.54,
+    "ErrLo": 0.54,
+    "val": 0.84
+  },
+  "r_twolep": {
+    "ErrHi": 0.598,
+    "ErrLo": 0.571,
+    "val": 1.04
+  },
+  "r_onelep": {
+    "ErrHi": 0.564,
+    "ErrLo": 0.529,
+    "val": 1.31
+  },
+  "r_zerolep": {
+    "ErrHi": 0.729,
+    "ErrLo": 0.570,
+    "val": 0.72
+  }
+}

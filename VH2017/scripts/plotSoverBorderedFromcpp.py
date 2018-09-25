@@ -81,7 +81,8 @@ parser.add_argument('--extralabel',default='',help='Extra CMS label')
 parser.add_argument('--ratio_range',  help='y-axis range for ratio plot in format MIN,MAX', default="0.4,1.6")
 parser.add_argument('--x_title', default='log_{10}(S/B)',help='Title for the x-axis')
 parser.add_argument('--y_title', default='Entries',help='Title for the y-axis')
-parser.add_argument('--lumi', default='4.9 fb^{-1} (7 TeV) + 19.8 fb^{-1} (8 TeV) + 77.2 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--lumi', default='5.1 fb^{-1} (7 TeV) + 18.9 fb^{-1} (8 TeV) + 77.2 fb^{-1} (13 TeV)',help='Lumi label')
+parser.add_argument('--VH_label_ypos', default=1000000.0,type=float)
 
 
 args = parser.parse_args()
@@ -104,6 +105,7 @@ total_datahist = histo_file.Get("h_dat")
 sighist=histo_file.Get("h_sig_mu1")
 sighist_forratio = sighist.Clone()
 sighist_forratio.SetName("sighist_forratio")
+sighist_forratio.SetLineColor(ROOT.kRed)
 
 bkghist.SetFillColor(ROOT.kGray+1)
 bkghist.SetLineColor(ROOT.kBlack)
@@ -134,7 +136,7 @@ if args.ratio:
   axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
   axish[1].GetXaxis().SetTitle(args.x_title)
   axish[1].GetYaxis().SetNdivisions(4)
-  axish[1].GetYaxis().SetTitle("Data/Pred. (B)")
+  axish[1].GetYaxis().SetTitle("Data / Bkg  ")
   axish[1].GetYaxis().SetTitleSize(0.029)
   axish[1].GetYaxis().SetTitleOffset(2)
   #axish[1].GetYaxis().SetTitleSize(0.04)
@@ -180,15 +182,16 @@ total_datahist.SetMarkerStyle(20)
 total_datahist.Draw("PSAME")
 
 #Setup legend
-legend = plot.PositionedLegend(0.48,0.10,3,0.03)
-plot.Set(legend, NColumns=2)
+legend = plot.PositionedLegend(0.38,0.20,3,0.03)
+plot.Set(legend, NColumns=1)
 legend.SetTextFont(42)
-legend.SetTextSize(0.025)
+legend.SetTextSize(0.032)
 legend.SetFillColor(0)
 legend.AddEntry(total_datahist,"Data","PE")
 legend.AddEntry(bkghist, "Background", "f")
-legend.AddEntry(sighist, "VH(b#bar{b})","f")
+legend.AddEntry(sighist, "VH,H#rightarrowb#bar{b}","f")
 legend.AddEntry(splusbhist, "Background uncertainty","f")
+legend.AddEntry(sighist_forratio, "Signal + Background","L")
 
 legend.Draw("same")
 
@@ -199,6 +202,11 @@ plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 els
 plot.DrawCMSLogo(pads[0], 'CMS', '%s'%args.extralabel, 11, 0.045, 0.05, 1.0, '', 1.0)
 plot.DrawTitle(pads[0], args.lumi, 3)
 
+#x_pos = -2.85
+#latex = ROOT.TLatex()
+#plot.Set(latex, TextAlign=12,TextSize=0.035)
+#latex.SetTextFont(42)
+#latex.DrawLatex(x_pos,args.VH_label_ypos,"VH, H#rightarrowb#bar{b}")
 
 
 if args.ratio:

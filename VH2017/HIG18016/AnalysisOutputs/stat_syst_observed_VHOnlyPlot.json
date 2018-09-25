@@ -1,0 +1,162 @@
+{
+    "VHrun2": {
+        "mu_BR_bb": {
+            "2sig_ErrorHi": 0.5347288032689552,
+            "2sig_ErrorLo": -0.49687773833376647,
+            "2sig_OtherLimitHi": 0.0,
+            "2sig_OtherLimitLo": 0.0,
+            "2sig_ValidErrorHi": true,
+            "2sig_ValidErrorLo": true,
+            "2sig_ValidOtherLimitHi": false,
+            "2sig_ValidOtherLimitLo": false,
+            "ErrorHi": 0.2621096548028834,
+            "ErrorLo": -0.25243788336506334,
+            "OtherLimitHi": 0.0,
+            "OtherLimitLo": 0.0,
+            "StatHi": 0.1987176809367346,
+            "StatLo": -0.1955891245505822,
+            "SystHi": 0.1709173906424178,
+            "SystLo": -0.1595925415405437,
+            "Val": 1.0572160482406616,
+            "ValidErrorHi": true,
+            "ValidErrorLo": true,
+            "ValidOtherLimitHi": false,
+            "ValidOtherLimitLo": false
+        }
+    },
+   "VHRun1Run2": {
+        "mu_BR_bb": {
+            "2sig_ErrorHi": 0.458891476511027,
+            "2sig_ErrorLo": -0.4322115191714264,
+            "2sig_OtherLimitHi": 0.0,
+            "2sig_OtherLimitLo": 0.0,
+            "2sig_ValidErrorHi": true,
+            "2sig_ValidErrorLo": true,
+            "2sig_ValidOtherLimitHi": false,
+            "2sig_ValidOtherLimitLo": false,
+            "ErrorHi": 0.22678068805158103,
+            "ErrorLo": -0.21896361080358362,
+            "OtherLimitHi": 0.0,
+            "OtherLimitLo": 0.0,
+            "StatHi": 0.175764479873475,
+            "StatLo": -0.17321019460443776,
+            "SystHi": 0.14330501766496284,
+            "SystLo": -0.13395257123786777,
+            "Val": 1.0129128694534302,
+            "ValidErrorHi": true,
+            "ValidErrorLo": true,
+            "ValidOtherLimitHi": false,
+            "ValidOtherLimitLo": false
+        }
+    },
+    "VH_2017": {
+        "mu_BR_bb": {
+            "2sig_ErrorHi": 0.7139412036414794,
+            "2sig_ErrorLo": -0.6554578945625265,
+            "2sig_OtherLimitHi": 0.0,
+            "2sig_OtherLimitLo": 0.0,
+            "2sig_ValidErrorHi": true,
+            "2sig_ValidErrorLo": true,
+            "2sig_ValidOtherLimitHi": false,
+            "2sig_ValidOtherLimitLo": false,
+            "ErrorHi": 0.3488252593716239,
+            "ErrorLo": -0.33366511264757936,
+            "OtherLimitHi": 0.0,
+            "OtherLimitLo": 0.0,
+            "StatHi": 0.26397877464666974,
+            "StatLo": -0.25877201414031736,
+            "SystHi": 0.22802251667702347,
+            "SystLo": -0.21064057561610774,
+            "Val": 1.0794732570648193,
+            "ValidErrorHi": true,
+            "ValidErrorLo": true,
+            "ValidOtherLimitHi": false,
+            "ValidOtherLimitLo": false
+        }
+    },
+    "WH_2017": {
+        "mu_BR_bb": {
+            "ErrHi": 0.5730530023574829,
+            "ErrLo": 0.5440892577171326,
+            "val": 1.362596035003662
+        }
+    },
+    "ZH_2017": {
+        "mu_BR_bb": {
+            "ErrorHi": 0.5436249375343323,
+            "ErrorLo": 0.43351227045059204,
+            "Val": 0.8413811326026917
+        }
+    },
+    "zerolep_2017": {
+        "mu_BR_bb": {
+            "Val": 0.539108,
+            "ErrorLo": 0.539108,
+            "ErrorHi": 0.591555 
+        }
+    },
+    "onelep_2017": {
+        "mu_BR_bb": {
+            "Val": 0.957736,
+            "ErrorLo": 0.535977,
+            "ErrorHi": 0.578288
+        }
+    },
+    "twolep_2017": {
+        "mu_BR_bb": {
+            "Val": 1.00806,
+            "ErrorLo":0.574854,
+            "ErrorHi":0.611222 
+        }
+    },
+    "VH_2016": {
+        "mu_BR_bb": {
+            "2sig_ErrorHi": 0.7139412036414794,
+            "2sig_ErrorLo": -0.6554578945625265,
+            "2sig_OtherLimitHi": 0.0,
+            "2sig_OtherLimitLo": 0.0,
+            "2sig_ValidErrorHi": true,
+            "2sig_ValidErrorLo": true,
+            "2sig_ValidOtherLimitHi": false,
+            "2sig_ValidOtherLimitLo": false,
+            "ErrorHi": 0.40,
+            "ErrorLo": -0.38,
+            "OtherLimitHi": 0.0,
+            "OtherLimitLo": 0.0,
+            "StatHi": 0.21,
+            "StatLo": -0.20,
+            "SystHi": 0.34,
+            "SystLo": -0.32,
+            "Val": 1.19,
+            "ValidErrorHi": true,
+            "ValidErrorLo": true,
+            "ValidOtherLimitHi": false,
+            "ValidOtherLimitLo": false
+        }
+    },
+    "VH_run1": {
+        "mu_BR_bb": {
+            "2sig_ErrorHi": 0.7139412036414794,
+            "2sig_ErrorLo": -0.6554578945625265,
+            "2sig_OtherLimitHi": 0.0,
+            "2sig_OtherLimitLo": 0.0,
+            "2sig_ValidErrorHi": true,
+            "2sig_ValidErrorLo": true,
+            "2sig_ValidOtherLimitHi": false,
+            "2sig_ValidOtherLimitLo": false,
+            "ErrorHi": 0.44,
+            "ErrorLo": -0.42,
+            "OtherLimitHi": 0.0,
+            "OtherLimitLo": 0.0,
+            "StatHi": 0.38,
+            "StatLo": -0.38,
+            "SystHi": 0.24,
+            "SystLo": -0.24,
+            "Val": 0.89,
+            "ValidErrorHi": true,
+            "ValidErrorLo": true,
+            "ValidOtherLimitHi": false,
+            "ValidOtherLimitLo": false
+        }
+    }
+}
