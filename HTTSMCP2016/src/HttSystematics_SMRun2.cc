@@ -703,13 +703,10 @@ namespace ch {
         /* cb.cp().process({"jetFakes"}).channel({"mt","et"}).bin_id({45}).AddSyst(cb, "ff_sub_syst_$CHANNEL_misc_highMjj", "shape", SystMap<>::init(1.00)); */
         /* cb.cp().process({"jetFakes"}).channel({"tt"}).bin_id({45}).AddSyst(cb, "ff_sub_syst_$CHANNEL_misc_highMjj", "shape", SystMap<>::init(1.00)); */
         cb.cp().process({"jetFakes"}).channel({"mt","et"}).bin_id({45}).AddSyst(cb, "ff_sub_syst_$CHANNEL_jetFakes_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt"}).bin_id({45}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt"}).bin_id({46}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_loose_boost_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt"}).bin_id({47}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_boost_highMjj", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).bin_id({46}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).bin_id({47}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_loose_boost_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","et"}).bin_id({48}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_boost_highMjj", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({46}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_highMjj", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({47}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_loose_boost_highMjj", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({48}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_boost_highMjj", "shape", SystMap<>::init(1.00));
  
         //##############################################################################
         //  DY LO->NLO reweighting, Between no and twice the correction.

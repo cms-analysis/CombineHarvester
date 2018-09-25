@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_200918_6_split2"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_210918_1"))
     ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_210918_1"))
     ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_210918_1"))
     ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_210918_1"))
@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"mt"};
+    VString chns = {"em","et","tt","mt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -305,9 +305,9 @@ int main(int argc, char** argv) {
       
       cats_cp["tt"] = {
           {41, "tt_ggh_loose_highMjj"},
-          {45, "tt_ggh_tight_highMjj"},
-          {46, "tt_ggh_loose_boost_highMjj"},
-          {47, "tt_ggh_tight_boost_highMjj"},
+          {46, "tt_ggh_tight_highMjj"},
+          {47, "tt_ggh_loose_boost_highMjj"},
+          {48, "tt_ggh_tight_boost_highMjj"},
           /* {42, "tt_qqh_highMjj"}, */
           /* {43, "tt_zttEmbed_highMjj"}, */
           /* {44, "tt_jetFakes_highMjj"}, */
@@ -734,7 +734,7 @@ int main(int argc, char** argv) {
         }
     }
     
-    writer.WriteCards("htt_cmb_bkgs_13TeV", cb.cp().bin_id({33,34,35,36,37,38,39,43,44,45,46,47}));
+    writer.WriteCards("htt_cmb_bkgs_13TeV", cb.cp().bin_id({33,34,35,36,37,38,39,43,44,45}));
     writer.WriteCards("htt_cmb_highMjj_13TeV", cb.cp().bin_id({41,42,43,44,45,46,47}));
     
     cb.PrintAll();
