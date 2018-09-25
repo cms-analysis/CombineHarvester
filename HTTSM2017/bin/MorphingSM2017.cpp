@@ -43,6 +43,8 @@ int main(int argc, char **argv) {
   string input_folder_tt = "Vienna/";
   string chan = "all";
   string postfix = "-ML";
+  bool regional_jec = true;
+  bool ggh_wg1 = true;
   bool auto_rebin = false;
   bool manual_rebin = false;
   bool real_data = false;
@@ -63,6 +65,8 @@ int main(int argc, char **argv) {
       ("postfix", po::value<string>(&postfix)->default_value(postfix))
       ("channel", po::value<string>(&chan)->default_value(chan))
       ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(auto_rebin))
+      ("regional_jec", po::value<bool>(&regional_jec)->default_value(regional_jec))
+      ("ggh_wg1", po::value<bool>(&ggh_wg1)->default_value(ggh_wg1))
       ("real_data", po::value<bool>(&real_data)->default_value(real_data))
       ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
       ("verbose", po::value<bool>(&verbose)->default_value(verbose))
@@ -248,7 +252,7 @@ int main(int argc, char **argv) {
   }
 
   // Add systematics
-  ch::AddSMRun2Systematics(cb, jetfakes, embedding, era);
+  ch::AddSMRun2Systematics(cb, jetfakes, embedding, regional_jec, ggh_wg1, era);
 
   // Extract shapes from input ROOT files
   for (string chn : chns) {

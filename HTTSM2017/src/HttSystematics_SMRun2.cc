@@ -18,7 +18,7 @@ using ch::syst::process;
 using ch::syst::bin;
 using ch::JoinStr;
 
-void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, int era) {
+void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, bool regional_jec, bool ggh_wg1, int era) {
 
   // ##########################################################################
   // Define groups of processes
@@ -214,40 +214,41 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, i
   // Notes:
   // ##########################################################################
 
-  // Inclusive JES
-  /* Replaced by regional JES splitting
+  if (!regional_jec) {
   cb.cp()
       .channel({"et", "mt", "tt"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
-  */
+  }
 
   // Regional JES
-  cb.cp()
-      .channel({"et", "mt", "tt"})
-      .process(mc_processes)
-      .AddSyst(cb, "CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
-
-  cb.cp()
-      .channel({"et", "mt", "tt"})
-      .process(mc_processes)
-      .AddSyst(cb, "CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
-
-  cb.cp()
-      .channel({"et", "mt", "tt"})
-      .process(mc_processes)
-      .AddSyst(cb, "CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00));
-
-  cb.cp()
-      .channel({"et", "mt", "tt"})
-      .process(mc_processes)
-      .AddSyst(cb, "CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
-
-  if (era == 2017) {
+  else {
     cb.cp()
         .channel({"et", "mt", "tt"})
         .process(mc_processes)
-        .AddSyst(cb, "CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
+        .AddSyst(cb, "CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
+
+    cb.cp()
+        .channel({"et", "mt", "tt"})
+        .process(mc_processes)
+        .AddSyst(cb, "CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
+
+    cb.cp()
+        .channel({"et", "mt", "tt"})
+        .process(mc_processes)
+        .AddSyst(cb, "CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00));
+
+    cb.cp()
+        .channel({"et", "mt", "tt"})
+        .process(mc_processes)
+        .AddSyst(cb, "CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+
+    if (era == 2017) {
+      cb.cp()
+          .channel({"et", "mt", "tt"})
+          .process(mc_processes)
+          .AddSyst(cb, "CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
+    }
   }
 
   // ##########################################################################
@@ -421,12 +422,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, i
       .AddSyst(cb, "BR_htt_PU_alphas", "lnN", SystMap<>::init(1.0062));
 
   // QCD scale
-  /* Replaced by gluon-fusion WG1 uncertainty scheme
+  if (!ggh_wg1) {
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(signals_ggH)
       .AddSyst(cb, "QCDScale_ggH", "lnN", SystMap<>::init(1.039));
-  */
+  }
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(signals_qqH)
@@ -451,42 +452,44 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, i
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
 
   // Gluon-fusion WG1 uncertainty scheme
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_Mig01_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_Mig12_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_Mu_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_PT120_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_PT60_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_Res_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_VBF2j_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_VBF3j_$ERA", "shape", SystMap<>::init(1.00));
-  cb.cp()
-    .channel({"et", "mt", "tt", "em"})
-    .process(signals_ggH)
-    .AddSyst(cb, "THU_ggH_qmtop_$ERA", "shape", SystMap<>::init(1.00));
+  if (ggh_wg1) {
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_Mig01_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_Mig12_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_Mu_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_PT120_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_PT60_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_Res_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_VBF2j_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_VBF3j_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process(signals_ggH)
+      .AddSyst(cb, "THU_ggH_qmtop_$ERA", "shape", SystMap<>::init(1.00));
+  }
 
   // ##########################################################################
   // Uncertainty: Embedded events
