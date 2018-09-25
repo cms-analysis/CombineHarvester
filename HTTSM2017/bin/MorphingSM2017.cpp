@@ -37,6 +37,7 @@ int main(int argc, char **argv) {
 
   // Define program options
   string output_folder = "sm_run2";
+  string base_path = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2017/shapes";
   string input_folder_em = "Vienna/";
   string input_folder_et = "Vienna/";
   string input_folder_mt = "Vienna/";
@@ -58,6 +59,7 @@ int main(int argc, char **argv) {
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
+      ("base_path", po::value<string>(&base_path)->default_value(base_path))
       ("input_folder_em", po::value<string>(&input_folder_em)->default_value(input_folder_em))
       ("input_folder_et", po::value<string>(&input_folder_et)->default_value(input_folder_et))
       ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value(input_folder_mt))
@@ -83,18 +85,10 @@ int main(int argc, char **argv) {
   // Define the location of the "auxiliaries" directory where we can
   // source the input files containing the datacard shapes
   std::map<string, string> input_dir;
-  input_dir["mt"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_mt + "/";
-  input_dir["et"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_et + "/";
-  input_dir["tt"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_tt + "/";
-  input_dir["em"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_em + "/";
+  input_dir["mt"] = base_path + "/" + input_folder_mt + "/";
+  input_dir["et"] = base_path + "/" + input_folder_et + "/";
+  input_dir["tt"] = base_path + "/" + input_folder_tt + "/";
+  input_dir["em"] = base_path + "/" + input_folder_em + "/";
 
   // Define channels
   VString chns;
