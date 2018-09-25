@@ -49,8 +49,9 @@ int main(int argc, char **argv) {
   bool jetfakes = true;
   bool embedding = false;
   bool verbose = false;
-  int stxs_signals = 0; // 0 or 1
-  int stxs_categories = 0; // 0 or 1
+  string stxs_signals = "stxs_stage0"; // "stxs_stage0" or "stxs_stage1"
+  string categories = "stxs_stage0"; // "stxs_stage0", "stxs_stage1" or "gof"
+  string gof_category_name = "gof";
   int era = 2016; // 2016 or 2017
   po::variables_map vm;
   po::options_description config("configuration");
@@ -66,8 +67,9 @@ int main(int argc, char **argv) {
       ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
       ("verbose", po::value<bool>(&verbose)->default_value(verbose))
       ("output_folder", po::value<string>(&output_folder)->default_value(output_folder))
-      ("stxs_signals", po::value<int>(&stxs_signals)->default_value(stxs_signals))
-      ("stxs_categories", po::value<int>(&stxs_categories)->default_value(stxs_categories))
+      ("stxs_signals", po::value<string>(&stxs_signals)->default_value(stxs_signals))
+      ("categories", po::value<string>(&categories)->default_value(categories))
+      ("gof_category_name", po::value<string>(&gof_category_name)->default_value(gof_category_name))
       ("jetfakes", po::value<bool>(&jetfakes)->default_value(jetfakes))
       ("embedding", po::value<bool>(&embedding)->default_value(embedding))
       ("era", po::value<int>(&era)->default_value(era));
@@ -132,7 +134,7 @@ int main(int argc, char **argv) {
   // Define categories
   map<string, Categories> cats;
   // STXS stage 0 categories (optimized on ggH and VBF)
-  if(stxs_categories == 0){
+  if(categories == "stxs_stage0"){
     cats["et"] = {
         { 1, "et_ggh"},
         { 2, "et_qqh"},
@@ -165,7 +167,7 @@ int main(int argc, char **argv) {
     };
   }
   // STXS stage 1 categories (optimized on STXS stage 1 splits of ggH and VBF)
-  else if(stxs_categories == 1){
+  else if(categories == "stxs_stage1"){
     cats["et"] = {
         { 1, "et_ggh_unrolled"},
         { 2, "et_qqh_unrolled"},
@@ -197,17 +199,31 @@ int main(int argc, char **argv) {
         // TODO
     };
   }
-  else throw std::runtime_error("Given STXS categories are not known.");
+  else if(categories == "gof"){
+    cats["et"] = {
+        { 100, gof_category_name.c_str() },
+    };
+    cats["mt"] = {
+        { 100, gof_category_name.c_str() },
+    };
+    cats["tt"] = {
+        { 100, gof_category_name.c_str() },
+    };
+    cats["et"] = {
+        // TODO
+    };
+  }
+  else throw std::runtime_error("Given categorization is not known.");
 
   // Specify signal processes and masses
   vector<string> sig_procs;
   // STXS stage 0: ggH and VBF processes
-  if(stxs_signals == 0) sig_procs = {"ggH", "qqH"};
+  if(stxs_signals == "stxs_stage0") sig_procs = {"ggH", "qqH"};
   // STXS stage 1: Splits of ggH and VBF processes
   // References:
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGFiducialAndSTXS
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWG2
-  else if(stxs_signals == 1) sig_procs = {
+  else if(stxs_signals == "stxs_stage1") sig_procs = {
       // ggH
       "ggH_0J", "ggH_1J_PTH_0_60", "ggH_1J_PTH_60_120", "ggH_1J_PTH_120_200",
       "ggH_1J_PTH_GT200", "ggH_GE2J_PTH_0_60", "ggH_GE2J_PTH_60_120",
