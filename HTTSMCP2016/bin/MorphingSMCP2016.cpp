@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"em","mt","et","tt"};
+    VString chns = {"em","et","tt","mt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -190,10 +190,9 @@ int main(int argc, char** argv) {
           {36, "et_tt_lowMjj"},
           {37, "et_misc_lowMjj"},
 
-          {43, "et_ztt_highMjj"},
+          {43, "et_zttEmbed_highMjj"},
           {44, "et_tt_highMjj"},
-          {45, "et_misc_highMjj"},
-          {46, "et_fake_highMjj"}
+          {45, "et_jetFakes_highMjj"}
       };
       
       cats["mt"] = {
@@ -205,10 +204,9 @@ int main(int argc, char** argv) {
           {36, "mt_tt_lowMjj"},
           {37, "mt_misc_lowMjj"},
 
-          {43, "mt_ztt_highMjj"},
+          {43, "mt_zttEmbed_highMjj"},
           {44, "mt_tt_highMjj"},
-          {45, "mt_misc_highMjj"},
-          {46, "mt_fake_highMjj"},
+          {45, "mt_jetFakes_highMjj"}
       }; 
       cats["em"] = {
           {31, "em_ggh_lowMjj"},
@@ -218,22 +216,19 @@ int main(int argc, char** argv) {
           {35, "em_tt_lowMjj"},
           {36, "em_misc_lowMjj"},
 
-          {43, "em_ztt_highMjj"},
-          {44, "em_qcd_highMjj"},
+          {43, "em_zttEmbed_highMjj"},
           {45, "em_tt_highMjj"},
-          {46, "em_misc_highMjj"}
       };
       
       cats["tt"] = {
           {31, "tt_ggh_lowMjj"},
           {32, "tt_qqh_lowMjj"},
-          {33, "tt_ztt_lowMjj"},
-          {34, "tt_qcd_lowMjj"},
+          {33, "tt_zttEmbed_lowMjj"},
+          {34, "tt_jetFakes_lowMjj"},
           {35, "tt_misc_lowMjj"},
 
-          {43, "tt_ztt_highMjj"},
-          {44, "tt_qcd_highMjj"},
-          {45, "tt_misc_highMjj"}
+          {43, "tt_zttEmbed_highMjj"},
+          {44, "tt_jetFakes_highMjj"},
       };
     }
     
@@ -272,23 +267,32 @@ int main(int argc, char** argv) {
     }
     else {
       cats_cp["em"] = {
-          {41, "em_ggh_highMjj"},
-          {42, "em_qqh_highMjj"}
+          {41, "em_ggh_loose_highMjj"},
+          {46, "em_ggh_tight_highMjj"},
+          {47, "em_ggh_loose_boost_highMjj"},
+          {48, "em_ggh_tight_boost_highMjj"},
       };
       
       cats_cp["et"] = {
-          {41, "et_ggh_highMjj"},
-          {42, "et_qqh_highMjj"}
+          {41, "et_ggh_loose_highMjj"},
+          {46, "et_ggh_tight_highMjj"},
+          {47, "et_ggh_loose_boost_highMjj"},
+          {48, "et_ggh_tight_boost_highMjj"},
+
       };
       
       cats_cp["mt"] = {
-          {41, "mt_ggh_highMjj"},
-          {42, "mt_qqh_highMjj"}
+          {41, "mt_ggh_loose_highMjj"},
+          {46, "mt_ggh_tight_highMjj"},
+          {47, "mt_ggh_loose_boost_highMjj"},
+          {48, "mt_ggh_tight_boost_highMjj"},
       };    
       
       cats_cp["tt"] = {
-          {41, "tt_ggh_highMjj"},
-          {42, "tt_qqh_highMjj"}
+          {41, "tt_ggh_loose_highMjj"},
+          {46, "tt_ggh_tight_highMjj"},
+          {47, "tt_ggh_loose_boost_highMjj"},
+          {48, "tt_ggh_tight_boost_highMjj"},
       };
     }
 
@@ -653,6 +657,10 @@ int main(int argc, char** argv) {
           writer.WriteCards("htt_"+chn+"_45_13TeV", cb.cp().channel({chn}).bin_id({45}));
           writer.WriteCards("htt_"+chn+"_46_13TeV", cb.cp().channel({chn}).bin_id({46}));
           writer.WriteCards("htt_"+chn+"_47_13TeV", cb.cp().channel({chn}).bin_id({47}));
+          writer.WriteCards("htt_"+chn+"_48_13TeV", cb.cp().channel({chn}).bin_id({48}));
+          writer.WriteCards("htt_"+chn+"_49_13TeV", cb.cp().channel({chn}).bin_id({49}));
+          writer.WriteCards("htt_"+chn+"_lowMjj_13TeV", cb.cp().channel({chn}).bin_id({31,32,33,34,35,36,37,38,39}));
+          writer.WriteCards("htt_"+chn+"_highMjj_13TeV", cb.cp().channel({chn}).bin_id({41,42,43,44,45,46,47,48,49}));
         }
         
         
@@ -705,6 +713,8 @@ int main(int argc, char** argv) {
         }
     }
     
+    writer.WriteCards("htt_cmb_bkgs_13TeV", cb.cp().bin_id({33,34,35,36,37,38,39,43,44,45}));
+    writer.WriteCards("htt_cmb_highMjj_13TeV", cb.cp().bin_id({41,42,43,44,45,46,47}));
     
     cb.PrintAll();
     cout << " done\n";
