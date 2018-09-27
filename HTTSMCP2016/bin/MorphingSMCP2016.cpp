@@ -81,10 +81,10 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_210918_1"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_210918_1"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_210918_1"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_210918_1"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/cp_250918"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/cp_250918"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/cp_250918"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/cp_250918"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("input_folder_ttbar", po::value<string>(&input_folder_ttbar)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
