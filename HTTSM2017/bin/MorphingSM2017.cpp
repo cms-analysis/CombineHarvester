@@ -37,23 +37,29 @@ int main(int argc, char **argv) {
 
   // Define program options
   string output_folder = "sm_run2";
+  string base_path = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSM2017/shapes";
   string input_folder_em = "Vienna/";
   string input_folder_et = "Vienna/";
   string input_folder_mt = "Vienna/";
   string input_folder_tt = "Vienna/";
   string chan = "all";
   string postfix = "-ML";
+  bool regional_jec = true;
+  bool ggh_wg1 = true;
   bool auto_rebin = false;
   bool manual_rebin = false;
   bool real_data = false;
   bool jetfakes = true;
   bool embedding = false;
   bool verbose = false;
-  int stxs_signals = 0;
-  int stxs_categories = 0;
+  string stxs_signals = "stxs_stage0"; // "stxs_stage0" or "stxs_stage1"
+  string categories = "stxs_stage0"; // "stxs_stage0", "stxs_stage1" or "gof"
+  string gof_category_name = "gof";
+  int era = 2016; // 2016 or 2017
   po::variables_map vm;
   po::options_description config("configuration");
   config.add_options()
+      ("base_path", po::value<string>(&base_path)->default_value(base_path))
       ("input_folder_em", po::value<string>(&input_folder_em)->default_value(input_folder_em))
       ("input_folder_et", po::value<string>(&input_folder_et)->default_value(input_folder_et))
       ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value(input_folder_mt))
@@ -61,32 +67,28 @@ int main(int argc, char **argv) {
       ("postfix", po::value<string>(&postfix)->default_value(postfix))
       ("channel", po::value<string>(&chan)->default_value(chan))
       ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(auto_rebin))
+      ("regional_jec", po::value<bool>(&regional_jec)->default_value(regional_jec))
+      ("ggh_wg1", po::value<bool>(&ggh_wg1)->default_value(ggh_wg1))
       ("real_data", po::value<bool>(&real_data)->default_value(real_data))
       ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
       ("verbose", po::value<bool>(&verbose)->default_value(verbose))
       ("output_folder", po::value<string>(&output_folder)->default_value(output_folder))
-      ("stxs_signals", po::value<int>(&stxs_signals)->default_value(stxs_signals))
-      ("stxs_categories", po::value<int>(&stxs_categories)->default_value(stxs_categories))
+      ("stxs_signals", po::value<string>(&stxs_signals)->default_value(stxs_signals))
+      ("categories", po::value<string>(&categories)->default_value(categories))
+      ("gof_category_name", po::value<string>(&gof_category_name)->default_value(gof_category_name))
       ("jetfakes", po::value<bool>(&jetfakes)->default_value(jetfakes))
-      ("embedding", po::value<bool>(&embedding)->default_value(embedding));
+      ("embedding", po::value<bool>(&embedding)->default_value(embedding))
+      ("era", po::value<int>(&era)->default_value(era));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
 
   // Define the location of the "auxiliaries" directory where we can
   // source the input files containing the datacard shapes
   std::map<string, string> input_dir;
-  input_dir["mt"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_mt + "/";
-  input_dir["et"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_et + "/";
-  input_dir["tt"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_tt + "/";
-  input_dir["em"] = string(getenv("CMSSW_BASE")) +
-                    "/src/CombineHarvester/HTTSM2017/shapes/" +
-                    input_folder_em + "/";
+  input_dir["mt"] = base_path + "/" + input_folder_mt + "/";
+  input_dir["et"] = base_path + "/" + input_folder_et + "/";
+  input_dir["tt"] = base_path + "/" + input_folder_tt + "/";
+  input_dir["em"] = base_path + "/" + input_folder_em + "/";
 
   // Define channels
   VString chns;
@@ -107,24 +109,21 @@ int main(int argc, char **argv) {
   VString bkgs;
   bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
   if(embedding){
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
-      bkgs = JoinStr({bkgs,{"EMB","TTL"}});
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
+    bkgs = JoinStr({bkgs,{"EMB","TTL"}});
   }
   if(jetfakes){
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "QCD"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "W"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "VVJ"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTJ"), bkgs.end());
-      bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
-      bkgs = JoinStr({bkgs,{"jetFakes"}});
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "QCD"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "W"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "VVJ"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTJ"), bkgs.end());
+    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
+    bkgs = JoinStr({bkgs,{"jetFakes"}});
   }
-  
+
   std::cout << "[INFO] Considerung the following processes:\n";
-  for (unsigned int i=0; i < bkgs.size(); i++) {
-  std::cout << bkgs[i] << " ";
-  }
-  std::cout << std::endl;
+  for (unsigned int i=0; i < bkgs.size(); i++) std::cout << bkgs[i] << std::endl;
   bkg_procs["et"] = bkgs;
   bkg_procs["mt"] = bkgs;
   bkg_procs["tt"] = bkgs;
@@ -133,7 +132,7 @@ int main(int argc, char **argv) {
   // Define categories
   map<string, Categories> cats;
   // STXS stage 0 categories (optimized on ggH and VBF)
-  if(stxs_categories == 0){
+  if(categories == "stxs_stage0"){
     cats["et"] = {
         { 1, "et_ggh"},
         { 2, "et_qqh"},
@@ -166,7 +165,7 @@ int main(int argc, char **argv) {
     };
   }
   // STXS stage 1 categories (optimized on STXS stage 1 splits of ggH and VBF)
-  else if(stxs_categories == 1){
+  else if(categories == "stxs_stage1"){
     cats["et"] = {
         { 1, "et_ggh_unrolled"},
         { 2, "et_qqh_unrolled"},
@@ -198,17 +197,31 @@ int main(int argc, char **argv) {
         // TODO
     };
   }
-  else throw std::runtime_error("Given STXS categories are not known.");
+  else if(categories == "gof"){
+    cats["et"] = {
+        { 100, gof_category_name.c_str() },
+    };
+    cats["mt"] = {
+        { 100, gof_category_name.c_str() },
+    };
+    cats["tt"] = {
+        { 100, gof_category_name.c_str() },
+    };
+    cats["et"] = {
+        // TODO
+    };
+  }
+  else throw std::runtime_error("Given categorization is not known.");
 
   // Specify signal processes and masses
   vector<string> sig_procs;
   // STXS stage 0: ggH and VBF processes
-  if(stxs_signals == 0) sig_procs = {"ggH", "qqH"};
+  if(stxs_signals == "stxs_stage0") sig_procs = {"ggH", "qqH"};
   // STXS stage 1: Splits of ggH and VBF processes
   // References:
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGFiducialAndSTXS
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWG2
-  else if(stxs_signals == 1) sig_procs = {
+  else if(stxs_signals == "stxs_stage1") sig_procs = {
       // ggH
       "ggH_0J", "ggH_1J_PTH_0_60", "ggH_1J_PTH_60_120", "ggH_1J_PTH_120_200",
       "ggH_1J_PTH_GT200", "ggH_GE2J_PTH_0_60", "ggH_GE2J_PTH_60_120",
@@ -233,7 +246,7 @@ int main(int argc, char **argv) {
   }
 
   // Add systematics
-  ch::AddSMRun2Systematics(cb, jetfakes, embedding);
+  ch::AddSMRun2Systematics(cb, jetfakes, embedding, regional_jec, ggh_wg1, era);
 
   // Extract shapes from input ROOT files
   for (string chn : chns) {
