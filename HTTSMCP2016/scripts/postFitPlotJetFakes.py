@@ -266,13 +266,13 @@ def main(args):
         args.x_title = "Bin number"
         Nxbins = 12 #always use 12 sjdphi bins
     elif bin_number in ["2"]:
-        args.x_title = re.split(",|\[|\]", bin_labels[0])[1]
+        args.x_title = "Bin number"
         x_bins = re.split("\[|\]",bin_labels[0])[3].split(",")
-        Nxbins = len(x_bins)
+        Nxbins = len(x_bins) - 1
     elif bin_number in ["1"]:
         args.x_title = re.split(",|\[|\]", bin_labels[0])[1]
         x_bins = re.split("\[|\]",bin_labels[0])[1].split(",")
-        Nxbins = len(x_bins)
+        Nxbins = len(x_bins) - 1
 
 
     if int(bin_number) > 1:
@@ -597,6 +597,8 @@ def main(args):
             #axish[1].GetYaxis().SetTitleSize(0.04)
             axish[1].GetYaxis().SetLabelSize(0.033)
             axish[1].GetXaxis().SetLabelSize(0.033)
+            print bkghist.GetNbinsX()
+            print bkghist.GetNbinsX()/Nxbins
             axish[1].GetXaxis().SetNdivisions(bkghist.GetNbinsX()/Nxbins,Nxbins,0,False)
             # axish[1].GetYaxis().SetTitleOffset(1.3)
             axish[0].GetYaxis().SetTitleSize(0.048)
@@ -828,7 +830,7 @@ def main(args):
     line.SetLineStyle(2)
     line.SetLineColor(ROOT.kBlack)
     x = bkghist.GetNbinsX()/Nxbins
-    if int(bin_number) > 2:
+    if int(bin_number) > 1:
         for l in range(1,x):
             pads[0].cd()
             ymax = axish[0].GetMaximum()
@@ -842,22 +844,6 @@ def main(args):
     
     ## Add bin labels between lines
     pads[0].cd()
-    # bin_labels = {}
-    # with open("scripts/bin_labels.yaml", "r") as f:
-    #     try:
-    #         full_bin_labels = yaml.load(f)
-    #         for key, values in full_bin_labels.iteritems():
-    #             if key == channel:
-    #                 bin_labels = values[int(bin_number)]
-    #     except yaml.YAMLError as exc:
-    #         print exc
-
-    # if int(bin_number) > 1:
-    #     y_bin_var = re.split(",|\[|\]", bin_labels[0])[0]
-    #     y_bin_labels = re.split("\[|\]",bin_labels[0])[1].split(",")
-    #     print y_bin_var
-    #     print y_bin_labels
-
     latex_bin = ROOT.TLatex()
     latex_bin.SetNDC()
     latex_bin.SetTextAngle(0)
