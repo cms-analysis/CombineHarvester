@@ -25,6 +25,6 @@ var _utilities_8h =
     [ "ValsFromRange", "_utilities_8h.html#aafb5cab1f237067be3553e893ca0a7b9", null ],
     [ "HasNegativeBins", "_utilities_8h.html#a7825c01633c16c8c5d7c46f78acf6d4c", null ],
     [ "ZeroNegativeBins", "_utilities_8h.html#ad95e5447b9cb0676428f86b1fd018a97", null ],
-    [ "Tuple2String", "_utilities_8h.html#a8240c3e729fa2ebaaaf1082ce6a15dd5", null ],
+    [ "Tuple2String", "_utilities_8h.html#ae779412e6479bbc7bdc933fcb00f0fe2", null ],
     [ "make_relative", "_utilities_8h.html#a2f4db67e7b9039935a58ea60b650041a", null ]
 ];

@@ -1,5 +1,5 @@
 var namespaces =
 [
     [ "ch", "namespacech.html", "namespacech" ],
-    [ "plotting", "namespaceplotting.html", null ]
+    [ "python", "namespacepython.html", "namespacepython" ]
 ];

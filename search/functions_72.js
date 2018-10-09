@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['range_5fd',['range_d',['../classch_1_1_parameter.html#a84965c0df39666449279066216b3f184',1,'ch::Parameter']]],
+  ['range_5fu',['range_u',['../classch_1_1_parameter.html#ad0958b8f9f2bbe6671bedce5005058f4',1,'ch::Parameter']]],
+  ['rate',['rate',['../classch_1_1_observation.html#a74f4222e7dd540dc028563ba4923d3e8',1,'ch::Observation::rate()'],['../classch_1_1_process.html#a6dabe794611839385254eba00f46de2d',1,'ch::Process::rate()']]],
+  ['rebin',['Rebin',['../classch_1_1_auto_rebin.html#af9525ed197d8b5742695c729645ea4a2',1,'ch::AutoRebin::Rebin()'],['../namespacepython_1_1plotting.html#a35935df7ba5b86c3421abc788856b094',1,'python.plotting.rebin()']]],
+  ['rebinhist',['RebinHist',['../namespacech.html#a2cbcfd049543bfe9f63958bc671deeae',1,'ch']]],
+  ['removegraphxduplicates',['RemoveGraphXDuplicates',['../namespacepython_1_1plotting.html#a606772cf2d58f978fe83b59bc9936fb3',1,'python::plotting']]],
+  ['removegraphyabove',['RemoveGraphYAbove',['../namespacepython_1_1plotting.html#a8548671bc7b5f613c7b0a29799b0320f',1,'python::plotting']]],
+  ['removegraphyall',['RemoveGraphYAll',['../namespacepython_1_1plotting.html#a3060b0164d2d21b15f4df56a2965bd3c',1,'python::plotting']]],
+  ['removegroup',['RemoveGroup',['../classch_1_1_combine_harvester.html#ac3e906d415a6d68713f08a0c3f885810',1,'ch::CombineHarvester']]],
+  ['removeinxrange',['RemoveInXRange',['../namespacepython_1_1plotting.html#a99eca18c7b9d4a470b8489825fa4c0d1',1,'python::plotting']]],
+  ['removenearmin',['RemoveNearMin',['../namespacepython_1_1plotting.html#a3182b95052671b5945a8a1a845596ef4',1,'python::plotting']]],
+  ['removesmalldelta',['RemoveSmallDelta',['../namespacepython_1_1plotting.html#ad3bc7bf30f798056d752e2f61939d9cb',1,'python::plotting']]],
+  ['renameautomcstatsbin',['RenameAutoMCStatsBin',['../classch_1_1_combine_harvester.html#a44d791bc4812feb68729e7660fd3e5b3',1,'ch::CombineHarvester']]],
+  ['renamegroup',['RenameGroup',['../classch_1_1_combine_harvester.html#a750a78b28b4ae6ca2d27a34b4ac32cc9',1,'ch::CombineHarvester']]],
+  ['renameparameter',['RenameParameter',['../classch_1_1_combine_harvester.html#a2825b9eeec47f7b23f93520bf615b581',1,'ch::CombineHarvester']]],
+  ['renamesystematic',['RenameSystematic',['../classch_1_1_combine_harvester.html#afb997f5e694eaec9b99aeabe474185d9',1,'ch::CombineHarvester']]],
+  ['restorebinning',['RestoreBinning',['../namespacech.html#a23cd9444931a49de080638458f722501',1,'ch']]],
+  ['rezerotgraph',['ReZeroTGraph',['../_plotting_8h.html#af2524f9f02ac66a16164c87bfc149628',1,'ReZeroTGraph():&#160;Plotting.h'],['../namespacepython_1_1plotting.html#a47a4603761bbcfa76f7e2933a003b062',1,'python.plotting.ReZeroTGraph()']]],
+  ['roccurvefrom1dhists',['RocCurveFrom1DHists',['../namespacepython_1_1plotting.html#a8527ffe5f2d4a72d69b105db3baf571b',1,'python::plotting']]],
+  ['run',['Run',['../classch_1_1_c_m_s_hist_func_factory.html#a76a006851773756a05ca67e577b32c60',1,'ch::CMSHistFuncFactory']]]
+];
