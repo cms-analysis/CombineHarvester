@@ -36,6 +36,7 @@ var NAVTREE =
       [ "Class: CardWriter ", "python-interface.html#py-card-writer", null ],
       [ "Class: BinByBinFactory ", "python-interface.html#py-bbbfactory", null ]
     ] ],
+    [ "Post-fit Distributions", "post-fit-shapes-ws.html", null ],
     [ "Limits", "limits.html", [
       [ "Limits in models with one POI", "limits.html#limits-one-POI", [
         [ "Creating the datacards", "limits.html#limits-creating-the-datacards", null ],
@@ -119,8 +120,8 @@ var NAVTREEINDEX =
 [
 "_a_zh_systematics_8cc.html",
 "_plotting_8h.html#a94fa210a8324e72a82327860972746eb",
-"classch_1_1_combine_harvester.html#ad4bd2bb5458d8435efd8fff49624b7b0",
-"intro2.html#ex2-p1"
+"classch_1_1_combine_harvester.html#acd2aec5d4b862d3edc79399ae0801f4c",
+"intro1.html#ex1-p3"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

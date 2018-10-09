@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['main',['main',['../_s_m_legacy_example_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;SMLegacyExample.cpp'],['../_m_s_s_m_yield_table_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;MSSMYieldTable.cpp']]],
+  ['main',['main',['../_s_m_legacy_example_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;SMLegacyExample.cpp'],['../_m_s_s_m_yield_table_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;MSSMYieldTable.cpp'],['../_post_fit_shapes_from_workspace_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;PostFitShapesFromWorkspace.cpp']]],
   ['make_5frelative',['make_relative',['../namespacech.html#a2f4db67e7b9039935a58ea60b650041a',1,'ch']]],
   ['make_5funique',['make_unique',['../namespacech.html#a34936b9e16919f93ca72d0f164d83347',1,'ch']]],
   ['makeerrorband',['MakeErrorBand',['../namespaceplotting.html#ac9523d7013393a5c2af56b1592f6ccd7',1,'plotting']]],
