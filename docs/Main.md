@@ -55,7 +55,7 @@ git clone https://github.com/roger-wolf/HiggsAnalysis-HiggsToTauTau-auxiliaries.
 The input root files will be sourced from here.
 
 More realistic, though less well documented, examples can be found in the following files:
-  * `CombineTools/bin/PostFitShapes.cpp` ([source code](\ref CombineTools/bin/PostFitShapes.cpp)) - see separate page [here](\ref post-fit-shapes)
+  * `CombineTools/bin/PostFitShapesFromWorkspace.cpp` ([source code](\ref CombineTools/bin/PostFitShapesFromWorkspace.cpp)) - see separate page [here](\ref post-fit-shapes-ws)
   * `CombineTools/bin/SMLegacyExample.cpp` ([source code](\ref CombineTools/bin/SMLegacyExample.cpp)) - produces a complete set of htt datacards for the legacy Run I SM analysis (HIG-13-004). The same workflow is also possible in python, see `CombineTools/scripts/SMLegacyExample.py`
   * `CombineTools/bin/MSSMYieldTable.cpp` ([source code](\ref CombineTools/bin/MSSMYieldTable.cpp)) - produces the latex yield tables for the MSSM htt analysis (HIG-13-021). Run via the script `CombineTools/scripts/yield_tables_mssm_example.sh`. You will first need to copy the input datacards: `cd CombineTools; cp -r /afs/cern.ch/work/a/agilbert/public/CombineTools/data/mssm-paper-cmb ./input/`
 
