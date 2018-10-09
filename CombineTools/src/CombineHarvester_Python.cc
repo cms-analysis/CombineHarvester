@@ -7,6 +7,7 @@
 #include "CombineHarvester/CombineTools/interface/AutoRebin.h"
 #include "CombineHarvester/CombineTools/interface/CopyTools.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/ValidationTools.h"
 #include "CombineHarvester/CombineTools/interface/ParseCombineWorkspace.h"
 #include "boost/python.hpp"
 #include "TFile.h"
@@ -468,4 +469,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
     py::def("ValsFromRange", ch::ValsFromRange, defaults_ValsFromRange());
     py::def("SetStandardBinNames", ch::SetStandardBinNames, defaults_SetStandardBinNames());
     py::def("ParseCombineWorkspace", ch::ParseCombineWorkspacePy);
+    py::def("PrintSystematic", ch::PrintSystematic);
+    py::def("ValidateShapeUncertaintyDirection", ch::ValidateShapeUncertaintyDirection);
+    py::def("CheckEmptyShapes", ch::CheckEmptyShapes);
 }
