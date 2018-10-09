@@ -1,7 +1,7 @@
 var searchData=
 [
   ['ma_2dtanb_2dlimits_2emd',['mA-tanb-Limits.md',['../m_a-tanb-_limits_8md.html',1,'']]],
-  ['main',['main',['../_s_m_legacy_example_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;SMLegacyExample.cpp'],['../_m_s_s_m_yield_table_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;MSSMYieldTable.cpp'],['../_post_fit_shapes_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;PostFitShapes.cpp']]],
+  ['main',['main',['../_s_m_legacy_example_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;SMLegacyExample.cpp'],['../_m_s_s_m_yield_table_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;MSSMYieldTable.cpp']]],
   ['main_2emd',['Main.md',['../_main_8md.html',1,'']]],
   ['make_5frelative',['make_relative',['../namespacech.html#a2f4db67e7b9039935a58ea60b650041a',1,'ch']]],
   ['make_5funique',['make_unique',['../namespacech.html#a34936b9e16919f93ca72d0f164d83347',1,'ch']]],
