@@ -772,13 +772,13 @@ INPUT  = CombineTools/interface \
          CombineTools/python/plotting.py \
          CombineTools/bin/SMLegacyExample.cpp \
          CombineTools/bin/MSSMYieldTable.cpp \
-         CombineTools/bin/PostFitShapes.cpp \
+         CombineTools/bin/PostFitShapesFromWorkspace.cpp \
          docs/Main.md \
          docs/Example1.md \
          docs/Example2.md \
          docs/Example3.md \
          docs/PythonInterface.md \
-         docs/PostFitShapes.md \
+         docs/PostFitShapesFromWorkspace.md \
          docs/Limits.md \
          docs/RooMorphingPdf.md \
          docs/ReproduceRun1HTTDatacards.md \
