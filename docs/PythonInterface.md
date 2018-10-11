@@ -249,6 +249,19 @@ Python:
         (['et'], ['8TeV'],          [1, 2],               1.010)
         (['et'], ['8TeV'],          [3, 5, 6, 7],         1.040))
 
+Note that asymmetric uncertainties are created in a different way in Python or C++:
+
+C++:
+
+    cb.cp().process({"WH", "ZH"}).AddSyst(
+      cb, "QCDscale_VH", "lnN", SystMapAsymm<channel, era, bin_id>::init
+        ({"mt"}, {"7TeV", "8TeV"}, {1, 2}, 0.91, 1.05));
+
+Python:
+
+    cb.cp().process(['WH', 'ZH']).AddSyst(
+      cb, "QCDscale_VH", "lnN", ch.SystMap('channel', 'era', 'bin_id')
+        (['mt'], ['7TeV', '8TeV'], [1, 2], (0.91, 1.05)))
 
 The ExtractPdfs, ExtractData and AddWorkspace methods are not currently supported.
 
