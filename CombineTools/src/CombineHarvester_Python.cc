@@ -159,6 +159,18 @@ void (Process::*Overload_Proc_set_shape)(
 void (Systematic::*Overload_Syst_set_shapes)(
     TH1 const&, TH1 const&, TH1 const&) = &Systematic::set_shapes;
 
+void (*Overload1_ValidateShapeUncertaintyDirection)(
+    CombineHarvester&, nlohmann::json &) = ch::ValidateShapeUncertaintyDirection;
+
+void (*Overload2_ValidateShapeUncertaintyDirection)(
+    CombineHarvester&) = ch::ValidateShapeUncertaintyDirection;
+
+void (*Overload1_CheckEmptyShapes)(
+    CombineHarvester&, nlohmann::json &) = ch::CheckEmptyShapes;
+
+void (*Overload2_CheckEmptyShapes)(
+    CombineHarvester&) = ch::CheckEmptyShapes;
+
 // Use some macros for methods with default values
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin, bin, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin_id, bin_id, 1, 2)
@@ -470,6 +482,10 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
     py::def("SetStandardBinNames", ch::SetStandardBinNames, defaults_SetStandardBinNames());
     py::def("ParseCombineWorkspace", ch::ParseCombineWorkspacePy);
     py::def("PrintSystematic", ch::PrintSystematic);
-    py::def("ValidateShapeUncertaintyDirection", ch::ValidateShapeUncertaintyDirection);
-    py::def("CheckEmptyShapes", ch::CheckEmptyShapes);
+    py::def("ValidateShapeUncertaintyDirection", Overload1_ValidateShapeUncertaintyDirection);
+    py::def("ValidateShapeUncertaintyDirection", Overload2_ValidateShapeUncertaintyDirection);
+    py::def("CheckEmptyShapes", Overload1_CheckEmptyShapes);
+    py::def("CheckEmptyShapes", Overload2_CheckEmptyShapes);
+    py::def("ValidateCards", ch::ValidateCards);
+
 }
