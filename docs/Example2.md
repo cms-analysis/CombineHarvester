@@ -55,6 +55,8 @@ So in this example we will expect names like "lumi_8TeV". This substitution prov
 
 \snippet CombineTools/bin/Example2.cpp part6
 
+Creation of asymmetric "lnN" uncertainties is supported through the [SystMapAsymm](\ref ch::syst::SystMapAsymm) class, whose interface is very similar to [SystMap](\ref ch::syst::SystMap). Instead of a single uncertainty value, simply provide the "down" and "up" relative uncertainties as two separate arguments.
+
 Extracting shape inputs {#ex2-p3}
 =================================
 Next we populate these Observation, Process and Systematic entries with the actual histograms (and also yields). The last two arguments are the patterns which will be used to determine the paths of the nominal and systematic shape templates in the given file. Here we must do this separately for signal and background shapes which use a different naming convention. NOTE: In this method only the following substitutions are supported:
