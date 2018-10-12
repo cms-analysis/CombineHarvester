@@ -56,7 +56,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   std::vector<std::string> mc_processes =
       JoinStr({
               signals,
-              {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "W", "ZJ", "ZL", "TTJ", "VVJ"}
+              {"ZTT", "TTT", "TTL", "VVT", "EWKL", "EWKT", "EWKJ", "W", "ZJ", "ZL", "TTJ", "VVJ"}
               });
   // ##########################################################################
   // Uncertainty: Lumi
@@ -155,12 +155,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   // Tau ID: tt with 2 real taus
   cb.cp()
       .channel({"tt"})
-      .process({"ZTT", "TTT", "VVT", "EWKZ", "EMB"})
+      .process({"ZTT", "TTT", "VVT", "EWKT", "EMB"})
       .AddSyst(cb, "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.09));
 
   cb.cp()
       .channel({"tt"})
-      .process({"ZTT", "TTT", "VVT", "EWKZ", "EMB"})
+      .process({"ZTT", "TTT", "VVT", "EWKT", "EMB"})
       .AddSyst(cb, "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.04));
 
   // Tau ID: tt with 1 real taus and 1 jet fake
@@ -213,18 +213,18 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "EMB"}}))
+      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKT", "EMB"}}))
       .AddSyst(cb, "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "EMB"}}))
+      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKT", "EMB"}}))
       .AddSyst(cb, "CMS_scale_t_1prong1pizero_$ERA", "shape",
                SystMap<>::init(1.00));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "EMB"}}))
+      .process(JoinStr({signals, {"ZTT", "TTT", "TTL", "VVT", "EWKT", "EMB"}}))
       .AddSyst(cb, "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
