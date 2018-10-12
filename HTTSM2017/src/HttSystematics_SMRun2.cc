@@ -81,23 +81,44 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   cb.cp()
       .channel({"et"})
-      .process(JoinStr({mc_processes, {"EMB"}}))
+      .process(mc_processes)
       .AddSyst(cb, "CMS_eff_trigger_et_$ERA", "lnN", SystMap<>::init(1.02));
 
   cb.cp()
       .channel({"mt"})
-      .process(JoinStr({mc_processes, {"EMB"}}))
+      .process(mc_processes)
       .AddSyst(cb, "CMS_eff_trigger_mt_$ERA", "lnN", SystMap<>::init(1.02));
 
   cb.cp()
       .channel({"tt"})
-      .process(JoinStr({mc_processes, {"EMB"}}))
+      .process(mc_processes)
       .AddSyst(cb, "CMS_eff_trigger_tt_$ERA", "lnN", SystMap<>::init(1.02));
 
   cb.cp()
       .channel({"em"})
-      .process(JoinStr({mc_processes, {"EMB"}}))
+      .process(mc_processes)
       .AddSyst(cb, "CMS_eff_trigger_em_$ERA", "lnN", SystMap<>::init(1.02));
+
+  // should be de-correlated for embedded
+  cb.cp()
+      .channel({"et"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_eff_trigger_emb_et_$ERA", "lnN", SystMap<>::init(1.02));
+
+  cb.cp()
+      .channel({"mt"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_eff_trigger_emb_mt_$ERA", "lnN", SystMap<>::init(1.02));
+
+  cb.cp()
+      .channel({"tt"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_eff_trigger_emb_tt_$ERA", "lnN", SystMap<>::init(1.02));
+
+  cb.cp()
+      .channel({"em"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_eff_trigger_emb_em_$ERA", "lnN", SystMap<>::init(1.02));
 
   // ##########################################################################
   // Uncertainty: Electron, muon and tau ID efficiency
@@ -503,6 +524,11 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .channel({"et", "mt", "tt", "em"})
       .process({"EMB"})
       .AddSyst(cb, "CMS_htt_doublemutrg_$ERA", "lnN", SystMap<>::init(1.04));
+
+  cb.cp()
+      .channel({"tt"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_htt_doubletautrg_$ERA", "lnN", SystMap<>::init(1.04));
 
   // TTbar contamination in embedded events: 10% shape uncertainty of assumed ttbar->tautau event shape
   cb.cp()
