@@ -51,8 +51,6 @@ Run 2D liklihood scan of muF vs alpha using:
 1D scans can be plotted using scripts/plot1DScan.py script.
 To plot alpha:
     `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=alpha --output=alpha --no-numbers --no-box --x_title="#alpha (#frac{#pi}{2})" --y-max=2.2`
-To plot muF:
-    `python scripts/plot1DScan.py --main=higgsCombine.Test.MultiDimFit.mH125.root --POI=muF --output=muF --no-numbers --no-box --x_title="#mu_{F}"`
 
 2D scans can be plotted using scripts/plotMultiDimFit.py script:
 
