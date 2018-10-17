@@ -149,13 +149,60 @@
     "CMS_vhbb_ST",
     "CMS_vhbb_VV",
     "CMS_PU",
-    "CMS_ttHbb_PU"
+    "CMS_ttHbb_PU",
+    "CMS_pu2016",
+    "CMS_zllhinv_ZZWZ_EWKCorr",
+    "CMS_zllhinv_ggZZCorr",
+    "GJets_Norm13TeV",
+    "Gamma_MJ_nnlomiss",
+    "Gamma_MJ_sudakov",
+    "QCDscale_VVV",
+    "QCDscale_VV_ACCEPT",
+    "QCDscale_W",
+    "QCDscale_WZ",
+    "QCDscale_W_ACCEPT",
+    "QCDscale_Z",
+    "QCDscale_ZZ",
+    "QCDscale_Z_ACCEPT",
+    "QCDscale_Zg",
+    "QCDscale_ggH_ACCEPT",
+    "QCDscale_ggVH_ACCEPT",
+    "QCDscale_tt_ACCEPT",
+    "QCDscale_ttbar_ACCEPT",
+    "Top_Reweight13TeV",
+    "VGamma_GJ_Norm13TeV",
+    "WJetsWln_MJ_pdf",
+    "WJets_GJ_Norm13TeV",
+    "WJets_MJ_nnlomiss",
+    "WJets_MJ_sudakov",
+    "ZnunuGamma_MJ_QCDprocess",
+    "ZnunuGamma_MJ_QCDscale",
+    "ZnunuGamma_MJ_QCDshape",
+    "ZnunuGamma_MJ_nnloewk",
+    "ZnunuGamma_MJ_pdf",
+    "ZnunuGamma_MJ_qcdewkmix",
+    "ZnunuWJets_EWK_facscale_vbf",
+    "ZnunuWJets_EWK_pdf_vbf",
+    "ZnunuWJets_EWK_renscale_vbf",
+    "ZnunuWJets_MJ_QCDprocess",
+    "ZnunuWJets_MJ_QCDscale",
+    "ZnunuWJets_MJ_QCDshape",
+    "ZnunuWJets_MJ_nnloewk",
+    "ZnunuWJets_MJ_pdf",
+    "ZnunuWJets_MJ_qcdewkmix",
+    "ZnunuWJets_QCD_facscale_vbf",
+    "ZnunuWJets_QCD_pdf_vbf",
+    "ZnunuWJets_QCD_renscale_vbf",
+    "Znunu_MJ_nnlomiss",
+    "Znunu_MJ_sudakov",
+    "pdf_qqbar_ACCEPT"
   ],
   "mcStats": [
     "^prop_.*",
     ".*_bin_[0-9]*",
-    ".*_[Bb]in[0-9]*.*",
-    ".*mcstat$"
+    ".*_[Bb]in[0-9]+.*",
+    ".*mcstat$",
+    "qcdStatBin.*"
   ],
   "pBTagStat": [
     "CMS_btag_CSV_HF_stats1",
@@ -308,7 +355,8 @@
     "CMS_vhbb_bTagWeightcErr2_pt4_eta1",
     "CMS_vhbb_bTagWeightcErr2_pt4_eta2",
     "CMS_vhbb_bTagWeightcErr2_pt4_eta3",
-    "cms_fake_b"
+    "cms_fake_b",
+    "CMS_eff2016_b"
   ],
   "pEleID": [
     "CMS_hgg_eff_e",
@@ -320,7 +368,9 @@
     "CMS_tth_hbb_leptonic_eff_e",
     "CMS_vhbb_eff_e_MVAID_Zll_13TeV",
     "CMS_vhbb_eff_e_Wln_13TeV",
-    "CMS_vhbb_eff_e_tracker_Zll_13TeV"
+    "CMS_vhbb_eff_e_tracker_Zll_13TeV",
+    "CMS_eff2016_e",
+    "CMS_reco2016_e"
   ],
   "pMuonID": [
     "CMS_eff_m_MiniIso",
@@ -338,12 +388,15 @@
     "cms_eff_m_id",
     "cms_eff_m_iso",
     "muid",
-    "muiso"
+    "muiso",
+    "CMS_eff2016_m",
+    "CMS_reco2016_m"
   ],
   "pPhotonID": [
     "CMS_hgg_LooseMvaSF",
     "CMS_hgg_PreselSF",
-    "CMS_hgg_phoIdMva"
+    "CMS_hgg_phoIdMva",
+    "CMS_eff2016_g"
   ],
   "pTauID": [
     "CMS_eff_t",
@@ -361,7 +414,9 @@
     "CMS_hgg_JEC_migration0",
     "CMS_hgg_JEC_migration1",
     "CMS_hgg_JEC_migration2",
-    "CMS_scale_j"
+    "CMS_scale_j",
+    "CMS_scale2016_j",
+    "CMS_scale2016_j_vbf"
   ],
   "pScaleJAbs": [
     "CMS_scale_j_AbsoluteStat_13TeV",
@@ -414,7 +469,9 @@
     "CMS_hgg_MET_JEC",
     "CMS_hgg_MET_JER",
     "CMS_hgg_MET_PhotonScale",
-    "CMS_hgg_MET_Unclustered"
+    "CMS_hgg_MET_Unclustered",
+    "CMS_BDT_scale_MET",
+    "CMS_scale2016_met"
   ],
   "pLumi": [
     "lumi_13TeV_2016"

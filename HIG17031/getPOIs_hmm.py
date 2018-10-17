@@ -560,7 +560,8 @@ getPOIs = {
             },
         "POIsFix":{},
         "UseWsp": "K2Inv",
-        "SMVals": { "BRinv": 0.0 }
+        "SMVals": { "BRinv": 0.0 },
+        "ScanPOIs": ["BRinv"]
     },
     "K2Inv_N1": {
         "POIs": {

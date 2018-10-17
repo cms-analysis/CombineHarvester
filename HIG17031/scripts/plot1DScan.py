@@ -611,7 +611,7 @@ val_2sig = main_scan['val_2sig']
 textfit = '%s = %.3f{}^{#plus %.3f}_{#minus %.3f}' % (
     fixed_name, val_nom[0], val_nom[1], abs(val_nom[2]))
 if args.upper_cl:
-    textfit = '%s < %.2f (%i%% CL)' % (
+    textfit = '%s < %.3f (%i%% CL)' % (
         fixed_name, val_nom[0] + val_nom[1], int(args.upper_cl * 100))
 
 pt = ROOT.TPaveText(0.59, 0.82 - len(other_scans) * 0.08, 0.95, 0.91, 'NDCNB')
