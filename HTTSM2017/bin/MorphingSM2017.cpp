@@ -107,11 +107,10 @@ int main(int argc, char **argv) {
   // Define background processes
   map<string, VString> bkg_procs;
   VString bkgs;
-  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKL", "EWKJ", "EWKT"};
+  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT"};
   if(embedding){
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
-    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "EWKT"), bkgs.end());
     bkgs = JoinStr({bkgs,{"EMB","TTL"}});
   }
   if(jetfakes){
@@ -120,7 +119,6 @@ int main(int argc, char **argv) {
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "VVJ"), bkgs.end());
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTJ"), bkgs.end());
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
-    bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "EWKJ"), bkgs.end());
     bkgs = JoinStr({bkgs,{"jetFakes"}});
   }
 
