@@ -380,26 +380,40 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
                SystMap<>::init(1.00));
 
   // Electron fakes
-  cb.cp()
-      .channel({"et"})
-      .process({"ZL"})
-      .AddSyst(cb, "CMS_eFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
+  if (era == 2016) {
+      cb.cp()
+          .channel({"et"})
+          .process({"ZL"})
+          .AddSyst(cb, "CMS_eFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
 
-  cb.cp()
-      .channel({"et"})
-      .process({"ZL"})
-      .AddSyst(cb, "CMS_eFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+      cb.cp()
+          .channel({"et"})
+          .process({"ZL"})
+          .AddSyst(cb, "CMS_eFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+  }else if (era == 2017) {
+      cb.cp()
+          .channel({"et"})
+          .process({"ZL"})
+          .AddSyst(cb, "CMS_eFakeTau_$ERA", "lnN", SystMap<>::init(1.16));
+  }
 
   // Muon fakes
-  cb.cp()
-      .channel({"mt"})
-      .process({"ZL"})
-      .AddSyst(cb, "CMS_mFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
+  if (era == 2016) {
+      cb.cp()
+          .channel({"mt"})
+          .process({"ZL"})
+          .AddSyst(cb, "CMS_mFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
 
-  cb.cp()
-      .channel({"mt"})
-      .process({"ZL"})
-      .AddSyst(cb, "CMS_mFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+      cb.cp()
+          .channel({"mt"})
+          .process({"ZL"})
+          .AddSyst(cb, "CMS_mFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+  }else if (era == 2017) {
+      cb.cp()
+          .channel({"mt"})
+          .process({"ZL"})
+          .AddSyst(cb, "CMS_mFakeTau_$ERA", "lnN", SystMap<>::init(1.26));
+  }
 
   // ##########################################################################
   // Uncertainty: Jet to tau fakes
