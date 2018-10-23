@@ -56,7 +56,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   std::vector<std::string> mc_processes =
       JoinStr({
               signals,
-              {"ZTT", "TTT", "TTL", "VVT", "W", "ZJ", "ZL", "TTJ", "VVJ"}
+              {"ZTT", "TTT", "TTL", "VVT", "W", "ZJ", "ZL", "TTJ", "VVL", "VVJ"}
               });
   // ##########################################################################
   // Uncertainty: Lumi
