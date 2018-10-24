@@ -164,9 +164,9 @@ def parse_arguments():
                     default=False,help='Only print blinding recommendation but still blind data using manual blinding')
     parser.add_argument('--soverb_plot', action='store_true',
                     default=False,help='Make plot with s/root b instead of ratio plot to test what it would blind')
-    parser.add_argument('--x_blind_min',default=10000,
+    parser.add_argument('--x_blind_min',default=100,
                     help='Minimum x for manual blinding')
-    parser.add_argument('--x_blind_max',default=4000,
+    parser.add_argument('--x_blind_max',default=150,
                     help='Maximum x for manual blinding')
     parser.add_argument('--empty_bin_error',action='store_true',
                     default=False, help='Draw error bars for empty bins')
@@ -215,7 +215,7 @@ def parse_arguments():
                     help='Title for the y-axis')
     parser.add_argument('--lumi', default='35.9 fb^{-1} (13 TeV)',
                     help='Lumi label')
-    parser.add_argument('--use_asimov', default=True, 
+    parser.add_argument('--use_asimov', default=False, 
                     action='store_true', help='')
 
     return parser.parse_args()
@@ -226,10 +226,13 @@ def main(args):
     ROOT.TGaxis.SetExponentOffset(-0.06, 0.01, "y")
     # Channel & Category label
     bin_number = args.file_dir.split("_")[2]
+    args.ratio_range = "0,2"
     if bin_number == "1":
         bin_label = "0-jet"
-        plot.ModTDRStyle(r=0.04, l=0.14)
+        plot.ModTDRStyle(r=0.04, l=0.18)
+        args.ratio_range = "0.7,1.3"
     if bin_number == "2":
+        args.ratio_range = "0.4,1.6"
         bin_label = "boosted"
     if bin_number == "3":
         bin_label = "dijet loose-m_{jj}"
@@ -247,9 +250,9 @@ def main(args):
     if args.channel == "mt":
         channel_label = "#mu_{}#tau_{h}"
     if args.channel == "et":
-        channel_label = "#e_{}#tau_{h}"
+        channel_label = "e_{}#tau_{h}"
     if args.channel == "em":
-        channel_label = "#e_{}#mu_{}"
+        channel_label = "e_{}#mu_{}"
         
     ## Add bin labels
     bin_labels = {}
@@ -270,10 +273,10 @@ def main(args):
         x_bins = re.split("\[|\]",bin_labels[0])[3].split(",")
         Nxbins = len(x_bins) - 1
     elif bin_number in ["1"]:
-        args.x_title = re.split(",|\[|\]", bin_labels[0])[1]
+        # args.x_title = re.split(",|\[|\]", bin_labels[0])[0]
+        args.x_title = "m_{#tau#tau} (GeV)" # use m_tautau for all channels now
         x_bins = re.split("\[|\]",bin_labels[0])[1].split(",")
         Nxbins = len(x_bins) - 1
-
 
     if int(bin_number) > 1:
         # print bin_labels
@@ -319,7 +322,7 @@ def main(args):
     sb_vs_b_ratio = args.sb_vs_b_ratio
     uniform=args.uniform_binning
     #If plotting bkg fractions don't want to use log scale on y axis
-    if fractions:
+    if int(bin_number) == 1:
         log_y = False
     if uniform:
         log_y = False
@@ -344,7 +347,8 @@ def main(args):
     if manual_blind and auto_blind :
         print 'Pick only one option for blinding strategy out of --manual_blind and --auto_blind'
     #For now, force that one type of blinding is always included! When unblinding the below line will need to be removed
-    if not manual_blind and not auto_blind: manual_blind=True    
+    if not manual_blind and not auto_blind: 
+        manual_blind=True    
     
     if (args.auto_blind or args.auto_blind_check_only) and args.model_dep:
         print 'Automated blinding only supported for model independent plots, please use manual blinding'
@@ -402,53 +406,51 @@ def main(args):
     #Store plotting information for different backgrounds 
     background_schemes = {
         'mt':[
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
                 backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),
                 backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),
                 backgroundComp("Z#rightarrow#mu#mu",["ZL","EWKZ"],ROOT.TColor.GetColor(100,192,232)),
                 backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
-                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,255)),
                 ],
         'et':[
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
                 backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),
                 backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),
                 backgroundComp("Z#rightarrowee",["ZL","EWKZ"],ROOT.TColor.GetColor(100,192,232)),
                 backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
-                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,255)),
                 ],
         'tt':[
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
                 backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),
                 backgroundComp("Electroweak",["VVT","ZL","EWKZ"],ROOT.TColor.GetColor(222,90,106)),
                 backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
-                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,255)),
                 ],
         'em':[
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
                 backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),
                 backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),
                 backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),
                 backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
-                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,255)),
                 ]
         }
     
     #Extract relevent histograms from shape file
     [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
-    sighist_ggH = getHistogram(histo_file,'ggHsm_htt',file_dir, mode, args.no_signal, log_x)[0]
     sbhist = getHistogram(histo_file,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
     # bkg_sb_vs_b_ratio_hist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
     for i in range(0,sighist.GetNbinsX()):
-        if sighist.GetBinContent(i) < y_axis_min: sighist.SetBinContent(i,y_axis_min)
+        if sighist.GetBinContent(i) < y_axis_min: 
+            sighist.SetBinContent(i,y_axis_min)
     bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
     
     if not args.use_asimov:
         total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode, logx=log_x)[0]
     else:
-        total_datahist = getHistogram(histo_file,"TotalBkg",file_dir, mode, logx=log_x)[0].Clone()
-        total_sighist = getHistogram(histo_file,"TotalSig",file_dir, mode, logx=log_x)[0].Clone()
-        total_datahist.Add(total_sighist)
+        total_datahist = getHistogram(histo_file,"TotalProcs",file_dir, mode, logx=log_x)[0].Clone()
         for bin_ in range(1,total_datahist.GetNbinsX()+1):
             content = total_datahist.GetBinContent(bin_)
             total_datahist.SetBinError(bin_, np.sqrt(content))
@@ -460,14 +462,41 @@ def main(args):
     blind_datahist.SetMarkerStyle(20)
     blind_datahist.SetLineColor(1)
     
-    #Blinding by hand using requested range, set to 200-4000 by default
-    if manual_blind or auto_blind_check_only:
-        for i in range(0,total_datahist.GetNbinsX()):
-            low_edge = total_datahist.GetBinLowEdge(i+1)
-            high_edge = low_edge+total_datahist.GetBinWidth(i+1)
-            if ((low_edge > float(x_blind_min) and low_edge < float(x_blind_max)) or (high_edge > float(x_blind_min) and high_edge<float(x_blind_max))):
-                blind_datahist.SetBinContent(i+1,-0.1)
-                blind_datahist.SetBinError(i+1,0)
+    ##Blinding by hand using requested range, set to 100-150 by default
+    ## for 0jet category
+    #if int(bin_number) == 1 and manual_blind or auto_blind_check_only:
+    #    for i in range(0,total_datahist.GetNbinsX()):
+    #        low_edge = total_datahist.GetBinLowEdge(i+1)
+    #        high_edge = low_edge+total_datahist.GetBinWidth(i+1)
+    #        if ((low_edge > float(x_blind_min) and low_edge < float(x_blind_max)) 
+    #                or (high_edge > float(x_blind_min) and high_edge<float(x_blind_max))):
+    #            blind_datahist.SetBinContent(i+1,-0.1)
+    #            blind_datahist.SetBinError(i+1,0)
+    ## for boosted category:
+    #if int(bin_number) == 2 and manual_blind or auto_blind_check_only:
+    #    x_blind_ind = [ind for ind, x in enumerate(x_bins) if 145 >= int(x) >= 100]
+    #    x_blind_ind1 = []
+    #    dummy_list = [int(x) for x in np.linspace(10,100,10)]
+    #    print dummy_list
+    #    for i in range(0,total_datahist.GetNbinsX()):
+    #        if i in dummy_list:
+    #            x_blind_ind1 = [x+i for x in x_blind_ind]
+    #            print x_blind_ind1
+    #        if i in x_blind_ind or i in x_blind_ind1:
+    #            print i
+    #            blind_datahist.SetBinContent(i+1,-0.1)
+    #            blind_datahist.SetBinError(i+1,0)
+    ## for dijet categories:
+    #if int(bin_number) > 2 and manual_blind or auto_blind_check_only:
+    #    for i in range(0,total_datahist.GetNbinsX()):
+    #        y_blind_ind = [ind for ind, x in enumerate(y_bin_labels) if 145 > int(x) >= 100]
+    #        # always using 12 bins for sjdphi so blind 12 bins when i (x bin) is y_blind_ind times 12 
+    #        x_blind_ind = [int(x) for x in np.arange(12*y_blind_ind[0],12*y_blind_ind[-1]+12,1)]
+    #        if i in x_blind_ind:
+    #            blind_datahist.SetBinContent(i+1,-0.1)
+    #            blind_datahist.SetBinError(i+1,0)
+
+
     
     #Set bin errors for empty bins if required:
     if empty_bin_error:
@@ -495,7 +524,11 @@ def main(args):
     blind_datahist.Scale(1.0,"width")
     total_datahist.Scale(1.0,"width")
     sighist.Scale(1.0,"width")
-    
+    if int(bin_number) == 1:
+        sighist.Scale(100.)
+        sbhist.Scale(1.0,"width")
+        bkghist.Scale(1.0,"width")
+
     channel = args.channel
     if channel == '':  channel=binname[4:6]
     
@@ -599,14 +632,16 @@ def main(args):
             axish[1].GetXaxis().SetLabelSize(0.033)
             print bkghist.GetNbinsX()
             print bkghist.GetNbinsX()/Nxbins
-            axish[1].GetXaxis().SetNdivisions(bkghist.GetNbinsX()/Nxbins,Nxbins,0,False)
+            if int(bin_number) > 1:
+                axish[1].GetXaxis().SetNdivisions(bkghist.GetNbinsX()/Nxbins,Nxbins,0,False)
             # axish[1].GetYaxis().SetTitleOffset(1.3)
             axish[0].GetYaxis().SetTitleSize(0.048)
             axish[0].GetYaxis().SetLabelSize(0.033)
             axish[0].GetYaxis().SetTitleOffset(0.6)
             axish[0].GetXaxis().SetTitleSize(0)
             axish[0].GetXaxis().SetLabelSize(0)
-            axish[0].GetXaxis().SetNdivisions(bkghist.GetNbinsX()/Nxbins,Nxbins,0,False)
+            if int(bin_number) > 1:
+                axish[0].GetXaxis().SetNdivisions(bkghist.GetNbinsX()/Nxbins,Nxbins,0,False)
             axish[0].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
             axish[1].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
             axish[0].GetXaxis().SetMoreLogLabels()
@@ -672,15 +707,20 @@ def main(args):
             axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
         elif fractions: axish[0].GetYaxis().SetRangeUser(0,1)
     axish[0].GetYaxis().SetTitle("Events/bin")
-    # elif soverb_plot: 
-    #     axish[0].GetYaxis().SetTitle("Events")
-    # elif fractions: 
-    #     axish[0].GetYaxis().SetTitle("Fraction of total bkg")
+    if int(bin_number) == 1:
+        axish[0].GetYaxis().SetTitle("dN/dm_{#tau#tau} (1/GeV)")
+        axish[0].GetYaxis().SetTitleOffset(1.5)
+
     axish[0].GetXaxis().SetTitle(args.x_title)
+        
     if not custom_y_range: axish[0].SetMaximum(extra_pad*bkghist.GetMaximum())
     if not custom_y_range: 
-        if(log_y): axish[0].SetMinimum(0.0009)
-        else: axish[0].SetMinimum(0)
+        if(log_y): 
+            axish[0].SetMinimum(0.1)
+            if int(bin_number) > 1:
+                axish[0].SetMinimum(0.01)
+        else: 
+            axish[0].SetMinimum(0)
     
     hist_indices = [0,2] if split_y_scale else [0]
     for i in hist_indices:
@@ -689,7 +729,8 @@ def main(args):
     
         #Draw uncertainty band
         bkghist.SetFillColor(plot.CreateTransparentColor(12,0.4))
-        bkghist.SetLineColor(0)
+        bkghist.SetLineColor(plot.CreateTransparentColor(12,0.4))
+        bkghist.SetMarkerColor(plot.CreateTransparentColor(12,0.4))
         bkghist.SetMarkerSize(0)
     
         stack.Draw("histsame")
@@ -700,6 +741,8 @@ def main(args):
             if not args.no_signal and ((split_y_scale and i == 2) or (not split_y_scale)):
                 sighist.SetLineColor(ROOT.kRed)
                 sighist.SetLineWidth(2)
+                if int(bin_number) == 1:
+                    sighist.SetLineWidth(3)
                 # A trick to remove vertical lines for the signal histogram at the borders while preventing the lines to end in the middle of the plot.
                 for j in range(1,sighist.GetNbinsX()+1):
                     entry = sighist.GetBinContent(j)
@@ -716,8 +759,8 @@ def main(args):
     pads[0].cd()
     pads[0].SetTicks(1)
     #Setup legend
-    if file_dir.split("_")[2] == "1":
-        legend = plot.PositionedLegend(0.30,0.30,3,0.03)
+    if int(bin_number) == 1:
+        legend = plot.PositionedLegend(0.35,0.30,3,0.03)
     else:
         legend = PositionedLegendUnrolled(0.13,0.45,7,0.02)
     legend.SetTextFont(42)
@@ -731,7 +774,10 @@ def main(args):
     for legi,hists in enumerate(bkg_histos):
         legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
     legend.AddEntry(bkghist,"Background uncertainty","f")
-    legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha=0, #mu_{ggH}^{#tau#tau}=1)"%vars(),"l")
+    if int(bin_number) > 1:
+        legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha_{hgg}=0)"%vars(),"l")
+    else:
+        legend.AddEntry(sighist,"100#times ggH#rightarrow#tau#tau (#alpha_{hgg}=0)"%vars(),"l")
     legend.Draw("same")
 
     latex2 = ROOT.TLatex()
@@ -739,9 +785,9 @@ def main(args):
     latex2.SetTextAngle(0)
     latex2.SetTextColor(ROOT.kBlack)
     latex2.SetTextFont(42)
-    if bin_number == "1":
+    if int(bin_number) == 1:
         latex2.SetTextSize(0.04)
-        latex2.DrawLatex(0.145,0.955,"{} {}".format(channel_label, bin_label))
+        latex2.DrawLatex(0.19,0.955,"{} {}".format(channel_label, bin_label))
     else:
         latex2.SetTextAlign(23)
         latex2.SetTextSize(0.033)
@@ -750,10 +796,10 @@ def main(args):
     #CMS and lumi labels
     plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
     if bin_number == "1":
-        plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
+        plot.DrawCMSLogo(pads[0], 'CMS', '', 11, 0.045, 0.05, 1.0, '', 1.0)
         plot.DrawTitle(pads[0], args.lumi, 3)
     else:
-        plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 0, 0.07, -0.1, 2.0, '', 0.4)
+        plot.DrawCMSLogo(pads[0], 'CMS', '', 0, 0.07, -0.1, 2.0, '', 0.4)
         DrawTitleUnrolled(pads[0], args.lumi, 3, scale=0.5)
     
     #Add ratio plot if required
@@ -761,10 +807,10 @@ def main(args):
         ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
         sbhist.SetLineColor(ROOT.kRed)
         sbhist.SetLineWidth(2)
+        if int(bin_number) == 1:
+            sbhist.SetLineWidth(3)
         ratio_sighist = plot.MakeRatioHist(sbhist,bkghist,True,False)
         blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
-        # if sb_vs_b_ratio:
-        #     ratio_sbhist = plot.MakeRatioHist(sbhist,bkg_sb_vs_b_ratio_hist,True,False)
         pads[1].cd()
         pads[1].SetGrid(0,1)
         axish[1].Draw("axis")
@@ -773,58 +819,74 @@ def main(args):
         ratio_bkghist.SetMarkerSize(0)
         ratio_bkghist.Draw("e2same")
         ratio_sighist.Draw("histsame")
-        # if sb_vs_b_ratio:
-        #     ratio_sbhist.SetMarkerSize(0)
-        #     ratio_sbhist.SetLineColor(ROOT.kGreen+3)
-        #     ratio_sbhist.SetLineWidth(3)
-        #     ratio_sbhist.Draw("histsame][")
         blind_datahist.DrawCopy("e0x0same")
         pads[1].RedrawAxis("G")
         # if split_y_scale or sb_vs_b_ratio:
             # Add a ratio legend for y-splitted plots or plots with sb vs b ratios
-        rlegend = ROOT.TLegend(0.85, 0.27, 0.98, 0.16, '', 'NBNDC')
-        rlegend.SetTextFont(42)
-        rlegend.SetTextSize(0.025)
-        rlegend.SetFillStyle(0)
-        rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
-        rlegend.AddEntry(ratio_sighist,"(Sig+Bkg)/Bkg","L")
-        # if sb_vs_b_ratio:
-        #     rlegend.AddEntry(ratio_sbhist,"(Sig+Bkg)/Bkg","L")
+        if int(bin_number) > 1:
+            rlegend = ROOT.TLegend(0.85, 0.27, 0.98, 0.16, '', 'NBNDC')
+            rlegend.SetTextFont(42)
+            rlegend.SetTextSize(0.025)
+            rlegend.SetFillStyle(0)
+            rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
+            rlegend.AddEntry(ratio_sighist,"(Sig+Bkg)/Bkg","L")
+        else:
+            rlegend = ROOT.TLegend(0.02, 0.25, 0.1, 0.15, '', 'NBNDC')
+            rlegend.SetTextFont(42)
+            rlegend.SetTextSize(0.025)
+            rlegend.SetFillStyle(0)
+            rlegend.AddEntry(blind_datahist," #frac{Obs}{Bkg}","PE")
+            rlegend.AddEntry(""," ","")
+            rlegend.AddEntry(ratio_sighist," #frac{Sig+Bkg}{Bkg}","L")
         rlegend.Draw("same")
         # Draw extra axis for explanation (use "N" for no optimisation)
         if int(bin_number) > 2:
-            extra_axis = ROOT.TGaxis(0,-0.8,Nxbins,-0.8,-3.2,3.2,304,"NS");
+            extra_axis = ROOT.TGaxis(0,-0.8,Nxbins,-0.8,-3.2,3.2,304,"NS")
             extra_axis.SetLabelSize(0.025)
             extra_axis.SetLabelFont(42)
             extra_axis.SetMaxDigits(2)
             extra_axis.SetTitle("#Delta#phi_{jj}")
+            extra_axis.SetTitleFont(42)
             extra_axis.SetTitleSize(0.033)
             extra_axis.SetTitleOffset(1.1)
             extra_axis.SetTickSize(0.08)
             extra_axis.Draw()
-        
-    # if soverb_plot:
-    #     pads[1].cd()
-    #     pads[1].SetGrid(0,1)
-    #     axish[1].Draw("axis")
-    #     axish[1].SetMinimum(0)
-    #     axish[1].SetMaximum(10)
-    #     if model_dep:
-    #         sighist_forratio.SetLineColor(2)
-    #         sighist_forratio.Draw("same")
-    #     else:
-    #         sighist_ggH_forratio.SetLineColor(ROOT.kBlue)
-    #         sighist_ggH_forratio.Draw("same")
-    #         sighist_bbH_forratio.SetLineColor(ROOT.kBlue+3)
-    #         sighist_bbH_forratio.Draw("same")
-    
+        elif int(bin_number) == 2: # for boosted create list of axes 
+            extra_axes = []
+            for i,bin_ in enumerate(x_bins):
+                print i,bin_
+                if i < Nxbins:
+                    extra_axis = ROOT.TGaxis(i,-0.1,i+1,-0.1,float(x_bins[i]),float(x_bins[i+1]),1,"NS")
+                    extra_axes.append(extra_axis)
+            for axis in extra_axes:
+                axis.SetLabelSize(0.015)
+                axis.SetLabelFont(42)
+                axis.SetTitleSize(0.033)
+                axis.SetTitleOffset(1.1)
+                axis.SetTickSize(0.7)
+                axis.Draw()
+            # Draw an axis from 0 to maximum m_sv to make fonts look the same 
+            # since the middle tick labels are being drawn twice and look bolder 
+            # without this fix
+            # Also useful to add label to the full axis
+            extra_axis = ROOT.TGaxis(0,-0.1,Nxbins,-0.1,float(x_bins[0]),float(x_bins[-1]),1,"NS")
+            # extra_axis.SetTitle("{}".format(re.split(",|\[|\]", bin_labels[0])[1]))
+            extra_axis.SetTitle("m_{#tau#tau} (GeV)") # use same svfit mass label for each channel now
+            extra_axis.SetTickSize(0.08)
+            extra_axis.SetLabelSize(0.015)
+            extra_axis.SetLabelFont(42)
+            extra_axis.SetTitleSize(0.033)
+            extra_axis.SetTitleFont(42)
+            extra_axis.SetTitleOffset(1.1)
+            extra_axis.Draw()
+
     pads[0].cd()
     pads[0].GetFrame().Draw()
     if not split_y_scale:
             pads[0].RedrawAxis()
 
-    # Add lines after every 12 bins for dijet bins
-    # Need a fix for boosted category!
+    # Add lines after every Nxbins 
+    # 12 for dijet
     line = ROOT.TLine()
     line.SetLineWidth(2)
     line.SetLineStyle(2)
@@ -868,9 +930,8 @@ def main(args):
     shape_file_name = shape_file_name.replace(".root","_%(mode)s"%vars())
     shape_file_name = shape_file_name.replace("_shapes","")
     outname += shape_file_name+"_"+file_dir.strip("htt").strip("_")
-    if soverb_plot : outname+="_soverb"
-    if(log_y): outname+="_logy"
-    if(log_x): outname+="_logx"
+    if(log_x): 
+        outname+="_logx"
     c2.SaveAs("%(outname)s.png"%vars())
     c2.SaveAs("%(outname)s.pdf"%vars())
 
