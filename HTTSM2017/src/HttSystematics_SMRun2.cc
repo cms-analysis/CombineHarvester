@@ -384,12 +384,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       cb.cp()
           .channel({"et"})
           .process({"ZL"})
-          .AddSyst(cb, "CMS_eFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
-
-      cb.cp()
-          .channel({"et"})
-          .process({"ZL"})
-          .AddSyst(cb, "CMS_eFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+          .AddSyst(cb, "CMS_eFakeTau_$ERA", "lnN", SystMap<>::init(1.155));
   }else if (era == 2017) {
       cb.cp()
           .channel({"et"})
@@ -402,12 +397,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       cb.cp()
           .channel({"mt"})
           .process({"ZL"})
-          .AddSyst(cb, "CMS_mFakeTau_1prong_$ERA", "shape", SystMap<>::init(1.00));
-
-      cb.cp()
-          .channel({"mt"})
-          .process({"ZL"})
-          .AddSyst(cb, "CMS_mFakeTau_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+          .AddSyst(cb, "CMS_mFakeTau_$ERA", "lnN", SystMap<>::init(1.272));
   }else if (era == 2017) {
       cb.cp()
           .channel({"mt"})
