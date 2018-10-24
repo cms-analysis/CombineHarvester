@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
     cats["tt"] = {
         { 100, gof_category_name.c_str() },
     };
-    cats["et"] = {
+    cats["em"] = {
         // TODO
     };
   }
