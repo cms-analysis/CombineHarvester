@@ -62,9 +62,11 @@ parser.add_argument('--lumis', default='300,3000')
 parser.add_argument('--y-label-size', default=0.08, type=float)
 parser.add_argument('--translate-root')
 parser.add_argument('--sync-stat', action='store_true')
+parser.add_argument('--sync-bkgth', action='store_true')
 parser.add_argument('--extra-label', default='')
 parser.add_argument('--handle-zero-in-breakdown', action='store_true')
 parser.add_argument('--convert-to-abs', default=None)
+parser.add_argument('--dump-json', default=None)
 
 POIs = []
 args = parser.parse_args()
@@ -122,6 +124,23 @@ if args.sync_stat and 'Stat' in breakdown:
                 new_val = X[l][ref_s][P]['StatSym']
                 print '>> Updating %s, %s, %s, Stat from %.4f to %.4f' % (l, s, P, curr_val, new_val)
                 X[l][s][P]['StatSym'] = new_val
+
+if args.sync_bkgth and 'BkgTh' in breakdown:
+    for l in lumis:
+        ref_s = scenarios[0]
+        for s in scenarios[1:]:
+            for P in POIs:
+                curr_val = X[l][s][P]['BkgThSym']
+                ref_val = X[l][ref_s][P]['BkgThSym']
+                if curr_val > ref_val:
+                    print '>> Updating %s, %s, %s, BkgTh from %.4f to %.4f' % (l, s, P, curr_val, ref_val)
+                    X[l][s][P]['BkgThSym'] = ref_val
+
+
+if args.dump_json is not None:
+    with open(args.dump_json, 'w') as outjson:
+        json.dump(
+            X, outjson, sort_keys=True, indent=4, separators=(',', ': '))
 
 nsubrows = len(scenarios)
 nsubcols = len(breakdown) + 1
@@ -317,16 +336,18 @@ for l in lumis:
     title_box.Draw()
 
     if args.extra_label != '':
-        plot.Set(textline_box, TextFont=42, TextAlign=12, TextSize=0.04)
-        textline_box.DrawLatexNDC(0.5, 0.85, args.extra_label)
+        plot.Set(textline_box, TextFont=42, TextAlign=12, TextSize=0.035)
+        textline_box.DrawLatexNDC(0.2, 0.78, args.extra_label)
     # frame_h = 1. - pads[0].GetBottomMargin() - pads[0].GetTopMargin()
     # frame_frac = pads[0].GetBottomMargin() + (frame_h * ((float(N)+0.2)/float(N+1)))
-    legend = ROOT.TLegend(0.70, 0.75, 0.95, 0.92, '', 'NBNDC')
+    legend = ROOT.TLegend(0.47, 0.79, 0.95, 0.92, '', 'NBNDC')
     for i, s in enumerate(scenarios):
         if s == 'Stat':
-            s = 'Stat Only'
-        if s in ['S1', 'S2']:
-            s = 'YR2018 ' + s
+            s = 'w/ Stat. uncert. only'
+        if s in ['S1']:
+            s = 'w/ Run 2 syst. uncert. (S1)'
+        if s in ['S2']:
+            s = 'w/ YR18 syst. uncert. (S2)'
         legend.AddEntry(graphs[i], s, 'L')
     # legend.SetNColumns(2)
     legend.Draw()

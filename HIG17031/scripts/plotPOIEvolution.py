@@ -204,9 +204,12 @@ for POI in POIs:
     # plot.Set(latex, TextFont=42, TextAlign=12, TextSize=0.05)
     # latex.DrawLatexNDC(0.50, 0.87, 'Parameter: #bf{%s}' % texname)
 
-    box = ROOT.TPaveText(0.47, 0.77, 0.72, 0.93, 'NDCNB')
+    box = ROOT.TPaveText(0.37, 0.77, 0.72, 0.93, 'NDCNB')
     plot.Set(box, TextFont=42, TextAlign=11)
-    box.AddText('YR2018 %s' % args.scenario)
+    if args.scenario == 'S1':
+        box.AddText('w/ Run 2 syst. uncert. (S1)')
+    if args.scenario == 'S2':
+        box.AddText('w/ YR18 syst. uncert. (S2)')
     box.AddText('Parameter: %s' % texname)
     box.Draw()
 

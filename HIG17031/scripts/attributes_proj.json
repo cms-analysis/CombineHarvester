@@ -7,6 +7,15 @@
     "^param_(alphaS|mB|mC|mt)$",
     "^HiggsDecayWidthTHU_.*"
   ],
+  "sigProd": [
+    "^THU_ggH_(Mu|Res)$",
+    "^QCDscale_(ggH|qqH|VH|ttH|ggZH|ggVH|tHW|tHq)$",
+    "^pdf_Higgs_(gg|qq|qqbar|ttH|tHq|tHW|qg)$"
+  ],
+  "sigDecay": [
+    "^param_(alphaS|mB|mC|mt)$",
+    "^HiggsDecayWidthTHU_.*"
+  ],
   "sigTheory": [
     "^THU_ggH_.*$",
     "^QCDscale_(ggH|qqH|VH|ttH|ggZH|ggVH|tHW|tHq)$",
@@ -54,6 +63,7 @@
     "cms_pdf",
     "cms_scale",
     "ggH_pT",
+    "hqq125pt",
     "hqq125ptShape",
     "pdf_Higgs_gg_ACCEPT",
     "pdf_Higgs_gg_ACCEPT_hinv",

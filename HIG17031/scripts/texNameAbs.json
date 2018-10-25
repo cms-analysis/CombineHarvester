@@ -44,12 +44,12 @@
 "kappa_VV":"\\kappa_{VV}",
 "lambda_FV":"\\lambda_{FV}",
 
-"mu_BR_WW":"\\mathcal{B}^{\\mathrm{WW}}",
-"mu_BR_ZZ":"\\mathcal{B}^{\\mathrm{ZZ}}",
-"mu_BR_bb":"\\mathcal{B}^{\\mathrm{bb}}",
-"mu_BR_gamgam":"\\mathcal{B}^{\\gamma \\gamma }",
-"mu_BR_tautau":"\\mathcal{B}^{\\tau \\tau }",
-"mu_BR_mumu":"\\mathcal{B}^{\\mu\\mu}",
+"mu_BR_WW":"\\mathrm{B}^{\\mathrm{WW}}",
+"mu_BR_ZZ":"\\mathrm{B}^{\\mathrm{ZZ}}",
+"mu_BR_bb":"\\mathrm{B}^{\\mathrm{bb}}",
+"mu_BR_gamgam":"\\mathrm{B}^{\\gamma \\gamma }",
+"mu_BR_tautau":"\\mathrm{B}^{\\tau \\tau }",
+"mu_BR_mumu":"\\mathrm{B}^{\\mu\\mu}",
 
 "mu_XS_ggFbbH":"\\sigma_{\\mathrm{ggH}}",
 "mu_XS_VBF":"\\sigma_{\\mathrm{VBF}}",
