@@ -183,7 +183,7 @@ namespace ch {
         
         // 2017 tau efficiency uncertainties
 
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et_2017","mt_2017"}).AddSyst(cb,i
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et_2017","mt_2017"}).AddSyst(cb,
                                              "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.027));
 
         cb.cp().process(embed).channel({"et_2017","mt_2017"}).AddSyst(cb,
@@ -384,7 +384,7 @@ namespace ch {
         );
 
         // need to conver the 0jet uncertaintied to lnN for 2017
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_eta0to5_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_eta0to5_13TeV", "shape", SystMap<>::init(1.00));
 
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47,100,101,102,103,104,105,106,107}).AddSyst(cb,"CMS_scale_j_eta0to3_13TeV", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"ttbar","ttbar_2016","ttbar_2017"}).AddSyst(cb,"CMS_scale_j_eta0to3_13TeV", "shape", SystMap<>::init(1.00));
@@ -445,7 +445,7 @@ namespace ch {
         );
 
         // need to convert 0jet uncertainties to for 2017 lnN 
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_eta0to3_13TeV", "shape", SystMap<>::init(1.00));  
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_eta0to3_13TeV", "shape", SystMap<>::init(1.00));  
 
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47,100,101,102,103,104,105,106,107}).AddSyst(cb,"CMS_scale_j_eta3to5_13TeV", "shape", SystMap<>::init(1.00)); 
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"ttbar","ttbar_2016","ttbar_2017"}).AddSyst(cb,"CMS_scale_j_eta3to5_13TeV", "shape", SystMap<>::init(1.00));
@@ -505,7 +505,7 @@ namespace ch {
         );
 
         // need to convert 0jet uncertainties to for 2017 lnN 
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_eta3to5_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_eta3to5_13TeV", "shape", SystMap<>::init(1.00));
 
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47,100,101,102,103,104,105,106,107}).AddSyst(cb,"CMS_scale_j_RelativeBal_13TeV", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"ttbar","ttbar_2016","ttbar_2017"}).AddSyst(cb,"CMS_scale_j_RelativeBal_13TeV", "shape", SystMap<>::init(1.00));
@@ -567,7 +567,7 @@ namespace ch {
         );
  
         // need to convert 0jet uncertainties to for 2017 lnN 
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
 
         // need to convert 0jet uncertainties to lnN 
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00)); 
@@ -763,6 +763,7 @@ namespace ch {
 
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017","et","et_2016","et_2017"}).AddSyst(cb, "ff_w_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017","et","et_2016","et_2017"}).AddSyst(cb, "ff_tt_syst", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017","et","et_2016"}).AddSyst(cb, "ff_tt_syst", "shape", SystMap<>::init(1.00)); // add back for et 2017
 
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_w_tt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_tt_tt_syst", "shape", SystMap<>::init(1.00));
@@ -771,38 +772,22 @@ namespace ch {
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_qcd_mt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_qcd_tt_syst", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_dy_frac_tt_syst", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016"}).AddSyst(cb,"ff_dy_frac_tt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_w_frac_tt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_tt_frac_tt_syst", "shape", SystMap<>::init(1.00));
 
         // et subtraction uncertainties
 
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({1}).AddSyst(cb, "ff_sub_syst_et_0jet", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({2}).AddSyst(cb, "ff_sub_syst_et_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({3}).AddSyst(cb, "ff_sub_syst_et_dijet_loosemjj_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({4}).AddSyst(cb, "ff_sub_syst_et_dijet_loosemjj_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({5}).AddSyst(cb, "ff_sub_syst_et_dijet_tightmjj_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({6}).AddSyst(cb, "ff_sub_syst_et_dijet_tightmjj_boosted", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_sub_syst_et", "shape", SystMap<>::init(1.00));
 
         // mt subtraction uncertainties
 
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({1}).AddSyst(cb, "ff_sub_syst_mt_0jet", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({2}).AddSyst(cb, "ff_sub_syst_mt_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({3}).AddSyst(cb, "ff_sub_syst_mt_dijet_loosemjj_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({4}).AddSyst(cb, "ff_sub_syst_mt_dijet_loosemjj_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({5}).AddSyst(cb, "ff_sub_syst_mt_dijet_tightmjj_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({6}).AddSyst(cb, "ff_sub_syst_mt_dijet_tightmjj_boosted", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_sub_syst_mt", "shape", SystMap<>::init(1.00));
 
         // tt subtraction uncertainties
 
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).bin_id({1}).AddSyst(cb, "ff_sub_syst_tt_0jet", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).bin_id({2}).AddSyst(cb, "ff_sub_syst_tt_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).bin_id({3}).AddSyst(cb, "ff_sub_syst_tt_dijet_loosemjj_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).bin_id({4}).AddSyst(cb, "ff_sub_syst_tt_dijet_loosemjj_boosted", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).bin_id({5}).AddSyst(cb, "ff_sub_syst_tt_dijet_tightmjj_lowboost", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).bin_id({6}).AddSyst(cb, "ff_sub_syst_tt_dijet_tightmjj_boosted", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_sub_syst_tt", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017","et","et_2016","et_2017","tt","tt_2016","tt_2017"}).bin_id({100,101,102,103,104,105,106,107}).AddSyst(cb, "ff_sub_syst_$BIN", "shape", SystMap<>::init(1.00));
  
         // add these also for MVA categories (use same naming convention)
         cb.cp().process({"jetFakes"}).channel({"mt","et","tt"}).bin_id({31}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_lowMjj", "shape", SystMap<>::init(1.00));
@@ -866,13 +851,18 @@ namespace ch {
                                                          "CMS_ZLShape_mt_1prong1pizero_13TeV", "shape", SystMap<>::init(1.00));
        
         // weighted avarages of recommended tau POG uncertainties provided in bins of eta
-        cb.cp().process({"ZL","EWKZ"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb,
+        cb.cp().process({"ZL","EWKZ"}).channel({"mt","mt_2016"}).AddSyst(cb,
                                                         "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.07));
-        cb.cp().process({"ZL","EWKZ"}).channel({"et","et_2016","et_2017"}).AddSyst(cb,
+        cb.cp().process({"ZL","EWKZ"}).channel({"mt_2017"}).AddSyst(cb,
+                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
+        cb.cp().process({"ZL","EWKZ"}).channel({"et","et_2016"}).AddSyst(cb,
                                                         "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.10));
-        cb.cp().process({"ZL","EWKZ"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,
+        cb.cp().process({"ZL","EWKZ"}).channel({"tt","tt_2016"}).AddSyst(cb,
                                                         "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.21));
-
+        cb.cp().process({"ZL","EWKZ"}).channel({"et_2017"}).AddSyst(cb,
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.16));
+        cb.cp().process({"ZL","EWKZ"}).channel({"tt_2017"}).AddSyst(cb,
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.35));
         
         //##############################################################################
         // jet  to tau fake only in tt, mt and et channels
@@ -922,7 +912,7 @@ namespace ch {
         ); 
        
         //cb.cp().process(ggH_sig_procs).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).AddSyst(cb,
-        //                                     "CMS_FiniteQuarkMass_13TeV", "shape", SystMap<>::init(1.00)); // quark-mass uncertainties are small so are neglected (largest uncertainty is ~0.5%)
+        //                                     "CMS_FiniteQuarkMass_13TeV", "shape", SystMap<>::init(1.00)); // this uncertainty takes the difference between the finite top-mass dependence and the EFT
 
         // PS uncertainty affects njets and pT distribution so is included as a shape uncertainty for the boosted category where pT is fitted
         cb.cp().process(ggH_sig_procs).bin_id({2,31,32,33,34,35,36,37,41,42,43,44,45,46,47}).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).AddSyst(cb,
