@@ -21,7 +21,7 @@
 #include "CombineHarvester/CombineTools/interface/CopyTools.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
 #include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2.h"
-#include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2_2017.h"
+/* #include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2_2017.h" */
 #include "CombineHarvester/CombineTools/interface/JsonTools.h"
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
@@ -126,10 +126,10 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_241018"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_241018"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_241018"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_241018"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_251018"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_251018"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_251018"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_251018"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
     ("real_data", po::value<bool>(&real_data)->default_value(real_data))
@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"tt","et","mt","em"};
+    VString chns = {"et","mt","em","tt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -255,7 +255,7 @@ int main(int argc, char** argv) {
       }
     }
     else {
-      cats["et"] = {
+      cats["et_2016"] = {
           {31, "et_ggh_lowMjj"},
           {32, "et_qqh_lowMjj"},
           {33, "et_zttEmbed_lowMjj"},
@@ -269,7 +269,7 @@ int main(int argc, char** argv) {
           {46, "et_zll_highMjj"},
       };
       
-      cats["mt"] = {
+      cats["mt_2016"] = {
           {31, "mt_ggh_lowMjj"},
           {32, "mt_qqh_lowMjj"},
           {33, "mt_zttEmbed_lowMjj"},
@@ -281,7 +281,7 @@ int main(int argc, char** argv) {
           {44, "mt_jetFakes_highMjj"},
           {45, "mt_tt_highMjj"},
       }; 
-      cats["em"] = {
+      cats["em_2016"] = {
           {31, "em_ggh_lowMjj"},
           {32, "em_qqh_lowMjj"},
           {33, "em_zttEmbed_lowMjj"},
@@ -292,7 +292,7 @@ int main(int argc, char** argv) {
           {44, "em_tt_highMjj"},
       };
       
-      cats["tt"] = {
+      cats["tt_2016"] = {
           {31, "tt_ggh_lowMjj"},
           {32, "tt_qqh_lowMjj"},
           {33, "tt_zttEmbed_lowMjj"},
@@ -371,37 +371,49 @@ int main(int argc, char** argv) {
 
     }
     else {
-      cats_cp["em"] = {
+      cats_cp["em_2016"] = {
           /* {41, "em_ggh_loose_highMjj"},
           {42, "em_ggh_tight_highMjj"}, */
           
           {41, "em_ggh_highMjj"},
           {42, "em_qqh_highMjj"},
+
+          {48, "em_ggh_boosted_highMjj"},
+          {49, "em_qqh_boosted_highMjj"},
       };
       
-      cats_cp["et"] = {
+      cats_cp["et_2016"] = {
           /* {41, "et_ggh_loose_highMjj"},
           {42, "et_ggh_tight_highMjj"}, */
 
           {41, "et_ggh_highMjj"},
           {42, "et_qqh_highMjj"},
 
+          {48, "et_ggh_boosted_highMjj"},
+          {49, "et_qqh_boosted_highMjj"},
+
       };
       
-      cats_cp["mt"] = {
+      cats_cp["mt_2016"] = {
           /* {41, "mt_ggh_loose_highMjj"},
           {42, "mt_ggh_tight_highMjj"}, */
 
           {41, "mt_ggh_highMjj"},
           {42, "mt_qqh_highMjj"},
+
+          {48, "mt_ggh_boosted_highMjj"},
+          {49, "mt_qqh_boosted_highMjj"},
       };    
       
-      cats_cp["tt"] = {
+      cats_cp["tt_2016"] = {
           /* {41, "tt_ggh_loose_highMjj"},
           {42, "tt_ggh_tight_highMjj"}, */
 
           {41, "tt_ggh_highMjj"},
           {42, "tt_qqh_highMjj"},
+
+          {48, "tt_ggh_boosted_highMjj"},
+          {49, "tt_qqh_boosted_highMjj"},
       };
     }
 
