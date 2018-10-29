@@ -59,11 +59,11 @@ cd into output directory:
 
 First do initial fit:
 
-  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --doInitialFit --robustFit 1 -t -1 --parallel 8 --setPhysicsModelParameters muF=1,muV=1,f=0,alpha=0 --setPhysicsModelParameterRanges muF=0,4:muV=0,2:alpha=-1,1:f=-1,1`
+  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --doInitialFit --robustFit 1 -t -1 --parallel 8 --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1`
 
 Run the fits for all nuisance parameters:
 
-  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --robustFit 1 -t -1 --minimizerAlgoForMinos Minuit2,Migrad --doFits --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP  --setPhysicsModelParameters muF=1,muV=1,f=0,alpha=0 --setPhysicsModelParameterRanges muF=0,4:muV=0,2:alpha=-1,1:f=-1,1`
+  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --robustFit 1 -t -1 --minimizerAlgoForMinos Minuit2,Migrad --doFits --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP  --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1`
 
 Run on lx batch system using `--job-mode lxbatch --sub-opts '-q 1nh' --merge 2`
 Run on ic batch using `--job-mode 'SGE'  --prefix-file ic --sub-opts "-q hep.q -l h_rt=0:180:0" --merge=2`
