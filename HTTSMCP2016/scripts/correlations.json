@@ -76,5 +76,6 @@
   "CMS_ZLShape_mt_1prong_13TeV": 0.0,
   "CMS_ZLShape_mt_1prong1pizero_13TeV": 0.0,
   "CMS_htt_mFakeTau_13TeV": 0.5,
-  "CMS_htt_eFakeTau_13TeV": 0.5
+  "CMS_htt_eFakeTau_13TeV": 0.5,
+  "CMS_UE_ggH_13TeV": 0.0
 }
