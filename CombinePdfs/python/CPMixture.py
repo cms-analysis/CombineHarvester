@@ -49,6 +49,8 @@ class CPMixture(PhysicsModel):
         self.modelBuilder.factory_('expr::ps_scaling("@1*@1 - @0*@1", a1, a3)')
         self.modelBuilder.factory_('expr::mm_scaling("2*@0*@1", a1, a3)')
 
+        self.modelBuilder.factory_('expr::muggH_mutautau("@0*@1", muggH, mutautau)')
+
     def getYieldScale(self, bin_, process):
 
         filter_bins = [
@@ -82,7 +84,7 @@ class CPMixture(PhysicsModel):
             if bin_ in fnmatch.filter(filter_bins,"htt_*_1_13TeV") or \
                     bin_ in fnmatch.filter(filter_bins,"htt_*_2_13TeV"):
                 if "ggHsm" in process:
-                    scaling = "mutautau"
+                    scaling = "muggH_mutautau"
                 elif "ggHmm" in process or "ggHps" in process:
                     scaling = "Zero"
 
