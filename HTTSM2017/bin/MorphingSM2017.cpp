@@ -121,6 +121,9 @@ int main(int argc, char **argv) {
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
     bkgs = JoinStr({bkgs,{"jetFakes"}});
   }
+  if(chan == "em"){
+    bkgs = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST", "EWKZ"};
+  }
 
   std::cout << "[INFO] Considerung the following processes:\n";
   for (unsigned int i=0; i < bkgs.size(); i++) std::cout << bkgs[i] << std::endl;
@@ -207,8 +210,8 @@ int main(int argc, char **argv) {
     cats["tt"] = {
         { 100, gof_category_name.c_str() },
     };
-    cats["et"] = {
-        // TODO
+    cats["em"] = {
+      { 100, gof_category_name.c_str() },
     };
   }
   else throw std::runtime_error("Given categorization is not known.");
