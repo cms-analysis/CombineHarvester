@@ -56,7 +56,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   std::vector<std::string> mc_processes =
       JoinStr({
               signals,
-              {"ZTT", "TTT", "TTL", "VVT", "EWKZ", "W", "ZJ", "ZL", "TTJ", "VVJ"}
+		{"ZTT", "TTT", "TTL", "TT" ,"VVT" , "VV" , "EWKZ", "W", "ZJ", "ZL", "TTJ", "VVJ" , "ST"}
               });
   // ##########################################################################
   // Uncertainty: Lumi
@@ -216,7 +216,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   if (!regional_jec) {
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
   }
@@ -279,13 +279,13 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   // VV
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"VVT", "VVJ"})
+      .process({"VVT", "VVJ", "VV" , "ST"})
       .AddSyst(cb, "CMS_htt_vvXsec_$ERA", "lnN", SystMap<>::init(1.05));
 
   // TT
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"TTT", "TTL", "TTJ"})
+      .process({"TTT", "TTL", "TTJ" , "TT"})
       .AddSyst(cb, "CMS_htt_tjXsec_$ERA", "lnN", SystMap<>::init(1.06));
 
   // W
@@ -313,6 +313,10 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .channel({"tt"})
       .process({"QCD"})
       .AddSyst(cb, "CMS_ExtrapABCD_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.03));
+  cb.cp()
+      .channel({"em"})
+      .process({"QCD"})
+      .AddSyst(cb, "CMS_ExtrapSSOS_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
 
   // ##########################################################################
   // Uncertainty: Drell-Yan LO->NLO reweighting
@@ -335,7 +339,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"TTT", "TTL", "TTJ"})
+      .process({"TTT", "TTL", "TTJ", "TT"})
       .AddSyst(cb, "CMS_htt_ttbarShape_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
