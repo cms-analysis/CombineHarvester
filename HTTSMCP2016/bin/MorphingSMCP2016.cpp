@@ -666,11 +666,6 @@ int main(int argc, char** argv) {
       if (s->type().find("shape") == std::string::npos || s->type().find("CMS_eff_b") == std::string::npos) return;
          s->set_type("lnN");
     });
-    // TEST: setting total JES to lnN separately for signal and bkg
-    /* cb.cp().ForEachSyst([](ch::Systematic *s) { */
-    /*   if (s->type().find("shape") == std::string::npos || s->type().find("CMS_scale_j") == std::string::npos) return; */
-    /*      s->set_type("lnN"); */
-    /* }); */
     
     ////! [part8]
     // add bbb uncertainties for all backgrounds
@@ -708,9 +703,6 @@ int main(int argc, char** argv) {
          "W","VV","VVT","VVJ",
          "ggH_hww125","qqH_hww125","EWKZ"
      };
-    // TEST: rename total JES for bkg and sig
-    /* cb.cp().process({all_sig_procs}).RenameSystematic(cb,"CMS_scale_j_13TeV","CMS_scale_j_sig_13TeV"); */ 
-    /* cb.cp().process({all_mc_bkgs}).RenameSystematic(cb,"CMS_scale_j_13TeV","CMS_scale_j_bkg_13TeV"); */ 
  
     // This function modifies every entry to have a standardised bin name of
     // the form: {analysis}_{channel}_{bin_id}_{era}
