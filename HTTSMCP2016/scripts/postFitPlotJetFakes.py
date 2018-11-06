@@ -128,6 +128,8 @@ def parse_arguments():
     #Ingredients when output of PostFitShapes is already provided
     parser.add_argument('--file', '-f',
                     help='Input file if shape file has already been created')
+    parser.add_argument('--file_alt', '-f_alt',
+                    help='Alternate input file if shape file has already been created')
     parser.add_argument('--mA',default='700',
                     help='Signal m_A to plot for model dep')
     parser.add_argument('--tanb',default='30',
@@ -400,8 +402,11 @@ def main(args):
             print "Providing shape file: ", args.file, ", with specified subdir name: ", file_dir
             shape_file=args.file
             shape_file_name=args.file
+            shape_file_alt=args.file_alt
+            shape_file_alt_name=args.file_alt
     
     histo_file = ROOT.TFile(shape_file)
+    histo_file_alt = ROOT.TFile(shape_file_alt)
     
     #Store plotting information for different backgrounds 
     background_schemes = {
@@ -439,12 +444,17 @@ def main(args):
         }
     
     #Extract relevent histograms from shape file
+    sighists = []
     [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
+    [sighistPS,binnamePS] = getHistogram(histo_file_alt,'TotalSig', file_dir, mode, args.no_signal, log_x)
+    sighists.extend([sighistPS, sighist])
     sbhist = getHistogram(histo_file,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
+    sbhist_PS = getHistogram(histo_file_alt,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
     # bkg_sb_vs_b_ratio_hist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
-    for i in range(0,sighist.GetNbinsX()):
-        if sighist.GetBinContent(i) < y_axis_min: 
-            sighist.SetBinContent(i,y_axis_min)
+    for shist in sighists:
+        for i in range(0,shist.GetNbinsX()):
+            if shist.GetBinContent(i) < y_axis_min: 
+                shist.SetBinContent(i,y_axis_min)
     bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
     
     if not args.use_asimov:
@@ -462,39 +472,39 @@ def main(args):
     blind_datahist.SetMarkerStyle(20)
     blind_datahist.SetLineColor(1)
     
-    ##Blinding by hand using requested range, set to 100-150 by default
-    ## for 0jet category
-    #if int(bin_number) == 1 and manual_blind or auto_blind_check_only:
-    #    for i in range(0,total_datahist.GetNbinsX()):
-    #        low_edge = total_datahist.GetBinLowEdge(i+1)
-    #        high_edge = low_edge+total_datahist.GetBinWidth(i+1)
-    #        if ((low_edge > float(x_blind_min) and low_edge < float(x_blind_max)) 
-    #                or (high_edge > float(x_blind_min) and high_edge<float(x_blind_max))):
-    #            blind_datahist.SetBinContent(i+1,-0.1)
-    #            blind_datahist.SetBinError(i+1,0)
-    ## for boosted category:
-    #if int(bin_number) == 2 and manual_blind or auto_blind_check_only:
-    #    x_blind_ind = [ind for ind, x in enumerate(x_bins) if 145 >= int(x) >= 100]
-    #    x_blind_ind1 = []
-    #    dummy_list = [int(x) for x in np.linspace(10,100,10)]
-    #    print dummy_list
-    #    for i in range(0,total_datahist.GetNbinsX()):
-    #        if i in dummy_list:
-    #            x_blind_ind1 = [x+i for x in x_blind_ind]
-    #            print x_blind_ind1
-    #        if i in x_blind_ind or i in x_blind_ind1:
-    #            print i
-    #            blind_datahist.SetBinContent(i+1,-0.1)
-    #            blind_datahist.SetBinError(i+1,0)
-    ## for dijet categories:
-    #if int(bin_number) > 2 and manual_blind or auto_blind_check_only:
-    #    for i in range(0,total_datahist.GetNbinsX()):
-    #        y_blind_ind = [ind for ind, x in enumerate(y_bin_labels) if 145 > int(x) >= 100]
-    #        # always using 12 bins for sjdphi so blind 12 bins when i (x bin) is y_blind_ind times 12 
-    #        x_blind_ind = [int(x) for x in np.arange(12*y_blind_ind[0],12*y_blind_ind[-1]+12,1)]
-    #        if i in x_blind_ind:
-    #            blind_datahist.SetBinContent(i+1,-0.1)
-    #            blind_datahist.SetBinError(i+1,0)
+    #Blinding by hand using requested range, set to 100-150 by default
+    # for 0jet category
+    if int(bin_number) == 1 and manual_blind or auto_blind_check_only:
+        for i in range(0,total_datahist.GetNbinsX()):
+            low_edge = total_datahist.GetBinLowEdge(i+1)
+            high_edge = low_edge+total_datahist.GetBinWidth(i+1)
+            if ((low_edge > float(x_blind_min) and low_edge < float(x_blind_max)) 
+                    or (high_edge > float(x_blind_min) and high_edge<float(x_blind_max))):
+                blind_datahist.SetBinContent(i+1,-0.1)
+                blind_datahist.SetBinError(i+1,0)
+    # for boosted category:
+    if int(bin_number) == 2 and manual_blind or auto_blind_check_only:
+        x_blind_ind = [ind for ind, x in enumerate(x_bins) if 145 >= int(x) >= 100]
+        x_blind_ind1 = []
+        dummy_list = [int(x) for x in np.linspace(10,100,10)]
+        print dummy_list
+        for i in range(0,total_datahist.GetNbinsX()):
+            if i in dummy_list:
+                x_blind_ind1 = [x+i for x in x_blind_ind]
+                print x_blind_ind1
+            if i in x_blind_ind or i in x_blind_ind1:
+                print i
+                blind_datahist.SetBinContent(i+1,-0.1)
+                blind_datahist.SetBinError(i+1,0)
+    # for dijet categories:
+    if int(bin_number) > 2 and manual_blind or auto_blind_check_only:
+        for i in range(0,total_datahist.GetNbinsX()):
+            y_blind_ind = [ind for ind, x in enumerate(y_bin_labels) if 145 > int(x) >= 100]
+            # always using 12 bins for sjdphi so blind 12 bins when i (x bin) is y_blind_ind times 12 
+            x_blind_ind = [int(x) for x in np.arange(12*y_blind_ind[0],12*y_blind_ind[-1]+12,1)]
+            if i in x_blind_ind:
+                blind_datahist.SetBinContent(i+1,-0.1)
+                blind_datahist.SetBinError(i+1,0)
 
 
     
@@ -523,10 +533,15 @@ def main(args):
     #Normalise by bin width 
     blind_datahist.Scale(1.0,"width")
     total_datahist.Scale(1.0,"width")
-    sighist.Scale(1.0,"width")
+    for shist in sighists:
+        shist.Scale(1.0,"width")
     if int(bin_number) == 1:
-        sighist.Scale(100.)
+        for shist in sighists:
+            print shist
+            shist.Scale(100.)
+            print shist.GetBinContent(5)
         sbhist.Scale(1.0,"width")
+        sbhist_PS.Scale(1.0,"width")
         bkghist.Scale(1.0,"width")
 
     channel = args.channel
@@ -740,19 +755,23 @@ def main(args):
             #Add signal, either model dependent or independent
             if not args.no_signal and ((split_y_scale and i == 2) or (not split_y_scale)):
                 sighist.SetLineColor(ROOT.kRed)
+                sighistPS.SetLineColor(ROOT.kGreen+2)
                 sighist.SetLineWidth(2)
+                sighistPS.SetLineWidth(2)
                 if int(bin_number) == 1:
                     sighist.SetLineWidth(3)
+                    sighistPS.SetLineWidth(3)
                 # A trick to remove vertical lines for the signal histogram at the borders while preventing the lines to end in the middle of the plot.
-                for j in range(1,sighist.GetNbinsX()+1):
-                    entry = sighist.GetBinContent(j)
-                    if split_y_scale:
-                        if entry < axish[2].GetMinimum():
-                            sighist.SetBinContent(j,axish[2].GetMinimum()*1.00001)
-                    else:
-                        if entry < axish[0].GetMinimum():
-                            sighist.SetBinContent(j,axish[0].GetMinimum()*1.00001)
-                sighist.Draw("histsame][") # removing vertical lines at the borders of the pad; possible with the trick above
+                for shist in sighists:
+                    for j in range(1,shist.GetNbinsX()+1):
+                        entry = shist.GetBinContent(j)
+                        if split_y_scale:
+                            if entry < axish[2].GetMinimum():
+                                shist.SetBinContent(j,axish[2].GetMinimum()*1.00001)
+                        else:
+                            if entry < axish[0].GetMinimum():
+                                shist.SetBinContent(j,axish[0].GetMinimum()*1.00001)
+                    shist.Draw("histsame][") # removing vertical lines at the borders of the pad; possible with the trick above
         blind_datahist.DrawCopy("e0x0same")
         axish[i].Draw("axissame")
     
@@ -776,8 +795,10 @@ def main(args):
     legend.AddEntry(bkghist,"Background uncertainty","f")
     if int(bin_number) > 1:
         legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha_{hgg}=0)"%vars(),"l")
+        legend.AddEntry(sighistPS,"ggH#rightarrow#tau#tau (#alpha_{hgg}=1)"%vars(),"l")
     else:
         legend.AddEntry(sighist,"100#times ggH#rightarrow#tau#tau (#alpha_{hgg}=0)"%vars(),"l")
+        legend.AddEntry(sighistPS,"100#times ggH#rightarrow#tau#tau (#alpha_{hgg}=1)"%vars(),"l")
     legend.Draw("same")
 
     latex2 = ROOT.TLatex()
@@ -806,10 +827,14 @@ def main(args):
     if args.ratio and not soverb_plot and not fractions:
         ratio_bkghist = plot.MakeRatioHist(bkghist,bkghist,True,False)
         sbhist.SetLineColor(ROOT.kRed)
+        sbhist_PS.SetLineColor(ROOT.kGreen+2)
         sbhist.SetLineWidth(2)
+        sbhist_PS.SetLineWidth(2)
         if int(bin_number) == 1:
             sbhist.SetLineWidth(3)
+            sbhist_PS.SetLineWidth(3)
         ratio_sighist = plot.MakeRatioHist(sbhist,bkghist,True,False)
+        ratio_sighist_PS = plot.MakeRatioHist(sbhist_PS,bkghist,True,False)
         blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
         pads[1].cd()
         pads[1].SetGrid(0,1)
@@ -818,6 +843,7 @@ def main(args):
         axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
         ratio_bkghist.SetMarkerSize(0)
         ratio_bkghist.Draw("e2same")
+        ratio_sighist_PS.Draw("histsame")
         ratio_sighist.Draw("histsame")
         blind_datahist.DrawCopy("e0x0same")
         pads[1].RedrawAxis("G")
@@ -829,15 +855,20 @@ def main(args):
             rlegend.SetTextSize(0.025)
             rlegend.SetFillStyle(0)
             rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
-            rlegend.AddEntry(ratio_sighist,"(Sig+Bkg)/Bkg","L")
+            rlegend.AddEntry(""," ","")
+            rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=0)+Bkg)/Bkg","L")
+            rlegend.AddEntry(""," ","")
+            rlegend.AddEntry(ratio_sighist_PS,"(Sig(#alpha_{hgg}=1)+Bkg)/Bkg","L")
         else:
             rlegend = ROOT.TLegend(0.02, 0.25, 0.1, 0.15, '', 'NBNDC')
             rlegend.SetTextFont(42)
-            rlegend.SetTextSize(0.025)
+            rlegend.SetTextSize(0.015)
             rlegend.SetFillStyle(0)
             rlegend.AddEntry(blind_datahist," #frac{Obs}{Bkg}","PE")
             rlegend.AddEntry(""," ","")
-            rlegend.AddEntry(ratio_sighist," #frac{Sig+Bkg}{Bkg}","L")
+            rlegend.AddEntry(ratio_sighist," #frac{Sig(#alpha_{hgg}=0)+Bkg}{Bkg}","L")
+            rlegend.AddEntry(""," ","")
+            rlegend.AddEntry(ratio_sighist_PS," #frac{Sig(#alpha_{hgg}=1)+Bkg}{Bkg}","L")
         rlegend.Draw("same")
         # Draw extra axis for explanation (use "N" for no optimisation)
         if int(bin_number) > 2:

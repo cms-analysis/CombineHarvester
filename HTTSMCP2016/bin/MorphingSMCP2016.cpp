@@ -21,7 +21,6 @@
 #include "CombineHarvester/CombineTools/interface/CopyTools.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
 #include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2.h"
-/* #include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2_2017.h" */
 #include "CombineHarvester/CombineTools/interface/JsonTools.h"
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
@@ -126,10 +125,10 @@ int main(int argc, char** argv) {
     po::variables_map vm;
     po::options_description config("configuration");
     config.add_options()
-    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP/mva_251018"))
-    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP/mva_251018"))
-    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP/mva_251018"))
-    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP/mva_251018"))
+    ("input_folder_em", po::value<string>(&input_folder_em)->default_value("Imperial/CP"))
+    ("input_folder_et", po::value<string>(&input_folder_et)->default_value("Imperial/CP"))
+    ("input_folder_mt", po::value<string>(&input_folder_mt)->default_value("Imperial/CP"))
+    ("input_folder_tt", po::value<string>(&input_folder_tt)->default_value("Imperial/CP"))
     ("input_folder_mm", po::value<string>(&input_folder_mm)->default_value("USCMS"))
     ("only_init", po::value<string>(&only_init)->default_value(""))
     ("real_data", po::value<bool>(&real_data)->default_value(real_data))
@@ -169,7 +168,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"et","mt","em","tt"};
+    VString chns = {"em","et","mt","tt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -372,48 +371,31 @@ int main(int argc, char** argv) {
     }
     else {
       cats_cp["em_2016"] = {
-          /* {41, "em_ggh_loose_highMjj"},
-          {42, "em_ggh_tight_highMjj"}, */
           
           {41, "em_ggh_highMjj"},
           {42, "em_qqh_highMjj"},
 
-          {48, "em_ggh_boosted_highMjj"},
-          {49, "em_qqh_boosted_highMjj"},
       };
       
       cats_cp["et_2016"] = {
-          /* {41, "et_ggh_loose_highMjj"},
-          {42, "et_ggh_tight_highMjj"}, */
 
           {41, "et_ggh_highMjj"},
           {42, "et_qqh_highMjj"},
 
-          {48, "et_ggh_boosted_highMjj"},
-          {49, "et_qqh_boosted_highMjj"},
-
       };
       
       cats_cp["mt_2016"] = {
-          /* {41, "mt_ggh_loose_highMjj"},
-          {42, "mt_ggh_tight_highMjj"}, */
 
           {41, "mt_ggh_highMjj"},
           {42, "mt_qqh_highMjj"},
 
-          {48, "mt_ggh_boosted_highMjj"},
-          {49, "mt_qqh_boosted_highMjj"},
       };    
       
       cats_cp["tt_2016"] = {
-          /* {41, "tt_ggh_loose_highMjj"},
-          {42, "tt_ggh_tight_highMjj"}, */
 
           {41, "tt_ggh_highMjj"},
           {42, "tt_qqh_highMjj"},
 
-          {48, "tt_ggh_boosted_highMjj"},
-          {49, "tt_qqh_boosted_highMjj"},
       };
     }
 
@@ -684,6 +666,11 @@ int main(int argc, char** argv) {
       if (s->type().find("shape") == std::string::npos || s->type().find("CMS_eff_b") == std::string::npos) return;
          s->set_type("lnN");
     });
+    // TEST: setting total JES to lnN separately for signal and bkg
+    /* cb.cp().ForEachSyst([](ch::Systematic *s) { */
+    /*   if (s->type().find("shape") == std::string::npos || s->type().find("CMS_scale_j") == std::string::npos) return; */
+    /*      s->set_type("lnN"); */
+    /* }); */
     
     ////! [part8]
     // add bbb uncertainties for all backgrounds
@@ -696,12 +683,12 @@ int main(int argc, char** argv) {
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
     // add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
-   // auto bbb_sig = ch::BinByBinFactory()
-   // .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
-   // .SetAddThreshold(0.05)
-   // .SetMergeThreshold(0.0)
-   // .SetFixNorm(false);
-   // bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
+    // auto bbb_sig = ch::BinByBinFactory()
+    // .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
+    // .SetAddThreshold(0.05)
+    // .SetMergeThreshold(0.0)
+    // .SetFixNorm(false);
+    // bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
 
     
     //// rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
@@ -709,7 +696,21 @@ int main(int argc, char** argv) {
     //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong_13TeV","CMS_scale_embedded_t_1prong_13TeV");
     //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong1pizero_13TeV","CMS_scale_embedded_t_1prong1pizero_13TeV");
     //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_3prong_13TeV","CMS_scale_embedded_t_3prong_13TeV");
-
+    
+     std::vector<std::string> all_sig_procs = {
+         "ggH_htt","qqH_htt","WH_htt","ZH_htt",
+         "ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", 
+         "qqHmm_htt","qqH_htt125","qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125",
+         "WH_htt125","ZH_htt125","ggH_ph_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"
+     };
+     std::vector<std::string> all_mc_bkgs = {
+         "ZL","ZLL","ZJ","ZTT","TTJ","TTT","TT",
+         "W","VV","VVT","VVJ",
+         "ggH_hww125","qqH_hww125","EWKZ"
+     };
+    // TEST: rename total JES for bkg and sig
+    /* cb.cp().process({all_sig_procs}).RenameSystematic(cb,"CMS_scale_j_13TeV","CMS_scale_j_sig_13TeV"); */ 
+    /* cb.cp().process({all_mc_bkgs}).RenameSystematic(cb,"CMS_scale_j_13TeV","CMS_scale_j_bkg_13TeV"); */ 
  
     // This function modifies every entry to have a standardised bin name of
     // the form: {analysis}_{channel}_{bin_id}_{era}

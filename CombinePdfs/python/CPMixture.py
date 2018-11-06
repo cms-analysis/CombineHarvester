@@ -6,12 +6,14 @@ class CPMixture(PhysicsModel):
     def __init__(self):
         PhysicsModel.__init__(self)
         self.fit_2D = False
+        self.sm_fix = False
 
     def setPhysicsOptions(self, physOptions):
         for po in physOptions:
             if po.startswith("fit_2D"):
                 self.fit_2D = True
-
+            if po.startswith("sm_fix"):
+                self.sm_fix = True
 
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
@@ -53,13 +55,6 @@ class CPMixture(PhysicsModel):
 
     def getYieldScale(self, bin_, process):
 
-        filter_bins = [
-                "htt_em_2016_1_13TeV","htt_em_2016_2_13TeV",
-                "htt_mt_2016_1_13TeV","htt_mt_2016_2_13TeV",
-                "htt_et_2016_1_13TeV","htt_et_2016_2_13TeV",
-                "htt_tt_2016_1_13TeV","htt_tt_2016_2_13TeV",
-                ]
-
         scalings = []
         if 'ggH' in process and 'hww' not in process:
             if "ggHsm" in process or "ggH2jsm" in process:
@@ -81,12 +76,12 @@ class CPMixture(PhysicsModel):
         if scalings:
             scaling = '_'.join(scalings)
 
-            if bin_ in fnmatch.filter(filter_bins,"htt_*_1_13TeV") or \
-                    bin_ in fnmatch.filter(filter_bins,"htt_*_2_13TeV"):
-                if "ggHsm" in process:
-                    scaling = "muggH_mutautau"
-                elif "ggHmm" in process or "ggHps" in process:
-                    scaling = "Zero"
+            if self.sm_fix:
+                if "_1_13TeV" in bin_ or "_2_13TeV" in bin_:
+                    if "ggHsm" in process:
+                        scaling = "muggH_mutautau"
+                    elif "ggHmm" in process or "ggHps" in process:
+                        scaling = "Zero"
 
             print 'Scaling %s/%s as %s' % (bin_, process,scaling)
             return scaling

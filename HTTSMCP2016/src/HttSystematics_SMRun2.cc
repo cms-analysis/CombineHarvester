@@ -259,8 +259,8 @@ namespace ch {
           ({"em","em_2016","em_2017"}, {6}, {"VV"}, 1.011,0.988)
         );
 
-        /* cb.cp().process({"TTT","TT","VVT","VV"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47,100,101,102,103,104,105,106,107}).AddSyst(cb, */
-        /*                                      "CMS_eff_b_13TeV", "shape", SystMap<>::init(1.00)); */
+        cb.cp().process({"TTT","TT","VVT","VV"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47,100,101,102,103,104,105,106,107}).AddSyst(cb,
+                                             "CMS_eff_b_13TeV", "shape", SystMap<>::init(1.00));
 
  
         //##############################################################################
@@ -570,7 +570,14 @@ namespace ch {
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).bin_id({1}).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
 
         // need to convert 0jet uncertainties to lnN 
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00)); 
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
+
+        // use total JES
+        // cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em_2016","et_2016","mt_2016","tt_2016","em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_$ERA", "shape", SystMap<>::init(1.00));
+
+        // TEST: have separate JES for sig and bkg to see effects
+        /* cb.cp().process(JoinStr({sig_procs})).channel({"em_2016","et_2016","mt_2016","tt_2016","em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_$ERA", "lnN", SystMap<>::init(1.00)); */
+        /* cb.cp().process(JoinStr({all_mc_bkgs})).channel({"em_2016","et_2016","mt_2016","tt_2016","em_2017","et_2017","mt_2017","tt_2017"}).AddSyst(cb,"CMS_scale_j_$ERA", "lnN", SystMap<>::init(1.00)); */
 
         
         //##############################################################################
@@ -788,30 +795,29 @@ namespace ch {
 
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_sub_syst_tt", "shape", SystMap<>::init(1.00));
 
- 
         // add these also for MVA categories (use same naming convention)
         // lowMjj
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({31}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_lowMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({32}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qqh_lowMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({33}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zttEmbed_lowMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016"}).bin_id({34}).AddSyst(cb, "ff_sub_syst_$CHANNEL_jetFakes_lowMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"em_2016"}).bin_id({34}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qcd_lowMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","em_2016"}).bin_id({35}).AddSyst(cb, "ff_sub_syst_$CHANNEL_tt_lowMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016"}).bin_id({36}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zll_lowMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({31}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_lowMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({32}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qqh_lowMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({33}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zttEmbed_lowMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016"}).bin_id({34}).AddSyst(cb, "ff_sub_syst_$CHANNEL_jetFakes_lowMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"em_2016"}).bin_id({34}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qcd_lowMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","em_2016"}).bin_id({35}).AddSyst(cb, "ff_sub_syst_$CHANNEL_tt_lowMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016"}).bin_id({36}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zll_lowMjj", "shape", SystMap<>::init(1.00));
 
-        // highMjj
-        /* cb.cp().process({"jetFakes"}).channel({"mt","et","tt","em"}).bin_id({41}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_loose_highMjj", "shape", SystMap<>::init(1.00)); */
-        /* cb.cp().process({"jetFakes"}).channel({"mt","et","tt","em"}).bin_id({42}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_highMjj", "shape", SystMap<>::init(1.00)); */
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({41}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({42}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qqh_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({43}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zttEmbed_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016"}).bin_id({44}).AddSyst(cb, "ff_sub_syst_$CHANNEL_jetFakes_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"em_2016"}).bin_id({44}).AddSyst(cb, "ff_sub_syst_$CHANNEL_tt_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016"}).bin_id({45}).AddSyst(cb, "ff_sub_syst_$CHANNEL_tt_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et_2016"}).bin_id({46}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zll_highMjj", "shape", SystMap<>::init(1.00));
+        //// highMjj
+        ///* cb.cp().process({"jetFakes"}).channel({"mt","et","tt","em"}).bin_id({41}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_loose_highMjj", "shape", SystMap<>::init(1.00)); */
+        ///* cb.cp().process({"jetFakes"}).channel({"mt","et","tt","em"}).bin_id({42}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_tight_highMjj", "shape", SystMap<>::init(1.00)); */
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({41}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({42}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qqh_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016","em_2016"}).bin_id({43}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zttEmbed_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016","tt_2016"}).bin_id({44}).AddSyst(cb, "ff_sub_syst_$CHANNEL_jetFakes_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"em_2016"}).bin_id({44}).AddSyst(cb, "ff_sub_syst_$CHANNEL_tt_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt_2016","et_2016"}).bin_id({45}).AddSyst(cb, "ff_sub_syst_$CHANNEL_tt_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"et_2016"}).bin_id({46}).AddSyst(cb, "ff_sub_syst_$CHANNEL_zll_highMjj", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"em_2016","et_2016","mt_2016","tt_2016"}).bin_id({48}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_boosted_highMjj", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"em_2016","et_2016","mt_2016","tt_2016"}).bin_id({49}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qqh_boosted_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"em_2016","et_2016","mt_2016","tt_2016"}).bin_id({48}).AddSyst(cb, "ff_sub_syst_$CHANNEL_ggh_boosted_highMjj", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"em_2016","et_2016","mt_2016","tt_2016"}).bin_id({49}).AddSyst(cb, "ff_sub_syst_$CHANNEL_qqh_boosted_highMjj", "shape", SystMap<>::init(1.00));
  
         //##############################################################################
         //  DY LO->NLO reweighting, Between no and twice the correction.
