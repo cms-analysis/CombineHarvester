@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"em","et","tt","mt"};
+    VString chns = {"em","et","mt","tt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -268,51 +268,48 @@ int main(int argc, char** argv) {
       }
     }
     else {
-      cats["et"] = {
+      cats["et_2016"] = {
           {31, "et_ggh_lowMjj"},
           {32, "et_qqh_lowMjj"},
-          {33, "et_ztt_lowMjj"},
-          {34, "et_zll_lowMjj"},
-          {35, "et_fake_lowMjj"},
-          {36, "et_tt_lowMjj"},
-          {37, "et_misc_lowMjj"},
+          {33, "et_zttEmbed_lowMjj"},
+          {34, "et_jetFakes_lowMjj"},
+          {35, "et_tt_lowMjj"},
+          {36, "et_zll_lowMjj"},
 
           {43, "et_zttEmbed_highMjj"},
-          {44, "et_tt_highMjj"},
-          {45, "et_jetFakes_highMjj"}
+          {44, "et_jetFakes_highMjj"},
+          {45, "et_tt_highMjj"},
+          {46, "et_zll_highMjj"},
       };
       
-      cats["mt"] = {
+      cats["mt_2016"] = {
           {31, "mt_ggh_lowMjj"},
           {32, "mt_qqh_lowMjj"},
-          {33, "mt_ztt_lowMjj"},
-          {34, "mt_zll_lowMjj"},
-          {35, "mt_fake_lowMjj"},
-          {36, "mt_tt_lowMjj"},
-          {37, "mt_misc_lowMjj"},
+          {33, "mt_zttEmbed_lowMjj"},
+          {34, "mt_jetFakes_lowMjj"},
+          {35, "mt_tt_lowMjj"},
+          {36, "mt_zll_lowMjj"},
 
           {43, "mt_zttEmbed_highMjj"},
-          {44, "mt_tt_highMjj"},
-          {45, "mt_jetFakes_highMjj"}
+          {44, "mt_jetFakes_highMjj"},
+          {45, "mt_tt_highMjj"},
       }; 
-      cats["em"] = {
+      cats["em_2016"] = {
           {31, "em_ggh_lowMjj"},
           {32, "em_qqh_lowMjj"},
-          {33, "em_ztt_lowMjj"},
+          {33, "em_zttEmbed_lowMjj"},
           {34, "em_qcd_lowMjj"},
           {35, "em_tt_lowMjj"},
-          {36, "em_misc_lowMjj"},
 
           {43, "em_zttEmbed_highMjj"},
-          {45, "em_tt_highMjj"},
+          {44, "em_tt_highMjj"},
       };
       
-      cats["tt"] = {
+      cats["tt_2016"] = {
           {31, "tt_ggh_lowMjj"},
           {32, "tt_qqh_lowMjj"},
           {33, "tt_zttEmbed_lowMjj"},
           {34, "tt_jetFakes_lowMjj"},
-          {35, "tt_misc_lowMjj"},
 
           {43, "tt_zttEmbed_highMjj"},
           {44, "tt_jetFakes_highMjj"},
@@ -387,33 +384,32 @@ int main(int argc, char** argv) {
 
     }
     else {
-      cats_cp["em"] = {
-          {41, "em_ggh_loose_highMjj"},
-          {46, "em_ggh_tight_highMjj"},
-          {47, "em_ggh_loose_boost_highMjj"},
-          {48, "em_ggh_tight_boost_highMjj"},
-      };
-      
-      cats_cp["et"] = {
-          {41, "et_ggh_loose_highMjj"},
-          {46, "et_ggh_tight_highMjj"},
-          {47, "et_ggh_loose_boost_highMjj"},
-          {48, "et_ggh_tight_boost_highMjj"},
+      cats_cp["em_2016"] = {
+          
+          {41, "em_ggh_highMjj"},
+          {42, "em_qqh_highMjj"},
 
       };
       
-      cats_cp["mt"] = {
-          {41, "mt_ggh_loose_highMjj"},
-          {46, "mt_ggh_tight_highMjj"},
-          {47, "mt_ggh_loose_boost_highMjj"},
-          {48, "mt_ggh_tight_boost_highMjj"},
+      cats_cp["et_2016"] = {
+
+          {41, "et_ggh_highMjj"},
+          {42, "et_qqh_highMjj"},
+
+      };
+      
+      cats_cp["mt_2016"] = {
+
+          {41, "mt_ggh_highMjj"},
+          {42, "mt_qqh_highMjj"},
+
       };    
       
-      cats_cp["tt"] = {
-          {41, "tt_ggh_loose_highMjj"},
-          {46, "tt_ggh_tight_highMjj"},
-          {47, "tt_ggh_loose_boost_highMjj"},
-          {48, "tt_ggh_tight_boost_highMjj"},
+      cats_cp["tt_2016"] = {
+
+          {41, "tt_ggh_highMjj"},
+          {42, "tt_qqh_highMjj"},
+
       };
     }
 
@@ -702,50 +698,51 @@ int main(int argc, char** argv) {
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
     // add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
-    //auto bbb_sig = ch::BinByBinFactory()
-    //.SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
-    //.SetAddThreshold(0.)//0.05
-    //.SetMergeThreshold(0.0)
-    //.SetFixNorm(false);
-	    //bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
+    auto bbb_sig = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetAddThreshold(0.05)
+    .SetMergeThreshold(0.0)
+    .SetFixNorm(false);
+    bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
 
-	    
-	    //// rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
-	    //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_e_13TeV","CMS_scale_embedded_e_13TeV"); 
-	    //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong_13TeV","CMS_scale_embedded_t_1prong_13TeV");
-	    //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong1pizero_13TeV","CMS_scale_embedded_t_1prong1pizero_13TeV");
-	    //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_3prong_13TeV","CMS_scale_embedded_t_3prong_13TeV");
+	
+	//// rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
+	//cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_e_13TeV","CMS_scale_embedded_e_13TeV"); 
+	//cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong_13TeV","CMS_scale_embedded_t_1prong_13TeV");
+	//cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong1pizero_13TeV","CMS_scale_embedded_t_1prong1pizero_13TeV");
+	//cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_3prong_13TeV","CMS_scale_embedded_t_3prong_13TeV");
 
-	 
-	    // This function modifies every entry to have a standardised bin name of
-	    // the form: {analysis}_{channel}_{bin_id}_{era}
-	    // which is commonly used in the htt analyses
-	    ch::SetStandardBinNames(cb);
-	    //! [part8]
-	    
+	
+	// This function modifies every entry to have a standardised bin name of
+	// the form: {analysis}_{channel}_{bin_id}_{era}
+	// which is commonly used in the htt analyses
+	ch::SetStandardBinNames(cb);
+	//! [part8]
+	
 
-	    //! [part9]
-	    // First we generate a set of bin names:
-	    
+	//! [part9]
+	// First we generate a set of bin names:
+	
 
-	    //Write out datacards. Naming convention important for rest of workflow. We
-	    //make one directory per chn-cat, one per chn and cmb. In this code we only
-	    //store the individual datacards for each directory to be combined later, but
-	    //note that it's also possible to write out the full combined card with CH
-	    string output_prefix = "output/";
-	    if(output_folder.compare(0,1,"/") == 0) output_prefix="";
-	    ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$MASS/$BIN.txt",
-			    output_prefix + output_folder + "/$TAG/common/htt_input.root");
-	    
-	    
-	    if(!do_control_plots) writer.WriteCards("cmb", cb);
-	    //Add all di-jet categories combined
-	    writer.WriteCards("htt_0jet", cb.cp().bin_id({1}));
-	    writer.WriteCards("htt_boosted", cb.cp().bin_id({2}));
-	    writer.WriteCards("htt_01jet", cb.cp().bin_id({1,2}));
-	    writer.WriteCards("htt_dijet", cb.cp().bin_id({3,4,5,6}));
-	    for (auto chn : cb.channel_set()) {
+	//Write out datacards. Naming convention important for rest of workflow. We
+	//make one directory per chn-cat, one per chn and cmb. In this code we only
+	//store the individual datacards for each directory to be combined later, but
+	//note that it's also possible to write out the full combined card with CH
+	string output_prefix = "output/";
+	if(output_folder.compare(0,1,"/") == 0) output_prefix="";
+	ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$MASS/$BIN.txt",
+	    	    output_prefix + output_folder + "/$TAG/common/htt_input.root");
+	
+	
+	if(!do_control_plots) writer.WriteCards("cmb", cb);
+	//Add all di-jet categories combined
+	writer.WriteCards("htt_0jet", cb.cp().bin_id({1}));
+	writer.WriteCards("htt_boosted", cb.cp().bin_id({2}));
+	writer.WriteCards("htt_01jet", cb.cp().bin_id({1,2}));
+	writer.WriteCards("htt_dijet", cb.cp().bin_id({3,4,5,6}));
+	for (auto chn : cb.channel_set()) {
 		 writer.WriteCards("htt_"+chn+"_dijet", cb.cp().channel({chn}).bin_id({3,4,5,6}));  
+
         // per-channel
 	    writer.WriteCards(chn, cb.cp().channel({chn}));
         // And per-channel-category

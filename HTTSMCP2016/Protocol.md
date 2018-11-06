@@ -20,6 +20,10 @@ Build the to fit mu vs alpha build workspace using
 
     `combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixture:CPMixture -i output/test/cmb/* -o ws.root --parallel 8 --PO fit_2D`
 
+Build the workspace using SM template only in the 0-jet and boosted categories:
+
+    `combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixture:CPMixture -i output/test/cmb/* -o ws.root --parallel 8 --PO sm_fix`
+
 # Run maximum liklihood scan
 
 Worspaces are created with 4 free parameters kappag, kappaW, kappaZ, mutautau and alpha. The first 4 parameters are used to float the ggH, VBF and VH rates.
