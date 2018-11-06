@@ -1,6 +1,5 @@
 from HiggsAnalysis.CombinedLimit.PhysicsModel import PhysicsModel
 import math
-import fnmatch
 
 class CPMixture(PhysicsModel):
     def __init__(self):
