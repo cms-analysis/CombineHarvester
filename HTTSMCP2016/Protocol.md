@@ -30,7 +30,7 @@ To take the H->tautau BR as SM use:
     `--freezeNuisances mutautau`
 
 To scan alpha:
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1 --points 20 --redefineSignalPOIs alpha  -d output/test/cmb/125/ws.root --algo grid -t -1 --there -n .alpha `
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1 --points 20 --redefineSignalPOIs alpha  -d output/test/cmb/125/ws.root --algo grid -t -1 --there -n .alpha --floatOtherPOIs 1`
 
 To run on IC batch use (1 point per job):
  `--job-mode 'SGE' --prefix-file ic --sub-opts "-q hep.q -l h_rt=0:180:0" --split-points 1`
@@ -46,6 +46,10 @@ Run 2D liklihood scan of mu vs alpha using:
 1D scans can be plotted using scripts/plot1DScan.py script.
 To plot alpha:
     `python scripts/plot1DScan.py --main=output/test/cmb/125/higgsCombine.alpha.MultiDimFit.mH125.root --POI=alpha --output=alpha --no-numbers --no-box --x_title="#alpha_{hgg} (#circ)" --y-max=2.5`
+
+Plot 1D scan of mu:
+
+  python scripts/plot1DScan.py --main=output/test/cmb/125/higgsCombine.mu.MultiDimFit.mH125.root --POI=muggH --output=muggH --no-numbers --no-box --x_title="#mu_{ggH}^{#tau#tau}" --y-max=6
 
 2D scans can be plotted using scripts/plotMultiDimFit.py script:
 
