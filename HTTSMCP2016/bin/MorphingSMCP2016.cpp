@@ -21,7 +21,6 @@
 #include "CombineHarvester/CombineTools/interface/CopyTools.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
 #include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2.h"
-#include "CombineHarvester/HTTSMCP2016/interface/HttSystematics_SMRun2_2017.h"
 #include "CombineHarvester/CombineTools/interface/JsonTools.h"
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
@@ -169,7 +168,7 @@ int main(int argc, char** argv) {
     input_dir["ttbar"]  = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/shapes/"+input_folder_em+"/";    
     
     
-    VString chns = {"em","et","tt","mt"};
+    VString chns = {"em","et","mt","tt"};
     if (ttbar_fit) chns.push_back("ttbar");
     
     map<string, VString> bkg_procs;
@@ -255,51 +254,48 @@ int main(int argc, char** argv) {
       }
     }
     else {
-      cats["et"] = {
+      cats["et_2016"] = {
           {31, "et_ggh_lowMjj"},
           {32, "et_qqh_lowMjj"},
-          {33, "et_ztt_lowMjj"},
-          {34, "et_zll_lowMjj"},
-          {35, "et_fake_lowMjj"},
-          {36, "et_tt_lowMjj"},
-          {37, "et_misc_lowMjj"},
+          {33, "et_zttEmbed_lowMjj"},
+          {34, "et_jetFakes_lowMjj"},
+          {35, "et_tt_lowMjj"},
+          {36, "et_zll_lowMjj"},
 
           {43, "et_zttEmbed_highMjj"},
-          {44, "et_tt_highMjj"},
-          {45, "et_jetFakes_highMjj"}
+          {44, "et_jetFakes_highMjj"},
+          {45, "et_tt_highMjj"},
+          {46, "et_zll_highMjj"},
       };
       
-      cats["mt"] = {
+      cats["mt_2016"] = {
           {31, "mt_ggh_lowMjj"},
           {32, "mt_qqh_lowMjj"},
-          {33, "mt_ztt_lowMjj"},
-          {34, "mt_zll_lowMjj"},
-          {35, "mt_fake_lowMjj"},
-          {36, "mt_tt_lowMjj"},
-          {37, "mt_misc_lowMjj"},
+          {33, "mt_zttEmbed_lowMjj"},
+          {34, "mt_jetFakes_lowMjj"},
+          {35, "mt_tt_lowMjj"},
+          {36, "mt_zll_lowMjj"},
 
           {43, "mt_zttEmbed_highMjj"},
-          {44, "mt_tt_highMjj"},
-          {45, "mt_jetFakes_highMjj"}
+          {44, "mt_jetFakes_highMjj"},
+          {45, "mt_tt_highMjj"},
       }; 
-      cats["em"] = {
+      cats["em_2016"] = {
           {31, "em_ggh_lowMjj"},
           {32, "em_qqh_lowMjj"},
-          {33, "em_ztt_lowMjj"},
+          {33, "em_zttEmbed_lowMjj"},
           {34, "em_qcd_lowMjj"},
           {35, "em_tt_lowMjj"},
-          {36, "em_misc_lowMjj"},
 
           {43, "em_zttEmbed_highMjj"},
-          {45, "em_tt_highMjj"},
+          {44, "em_tt_highMjj"},
       };
       
-      cats["tt"] = {
+      cats["tt_2016"] = {
           {31, "tt_ggh_lowMjj"},
           {32, "tt_qqh_lowMjj"},
           {33, "tt_zttEmbed_lowMjj"},
           {34, "tt_jetFakes_lowMjj"},
-          {35, "tt_misc_lowMjj"},
 
           {43, "tt_zttEmbed_highMjj"},
           {44, "tt_jetFakes_highMjj"},
@@ -374,33 +370,32 @@ int main(int argc, char** argv) {
 
     }
     else {
-      cats_cp["em"] = {
-          {41, "em_ggh_loose_highMjj"},
-          {46, "em_ggh_tight_highMjj"},
-          {47, "em_ggh_loose_boost_highMjj"},
-          {48, "em_ggh_tight_boost_highMjj"},
-      };
-      
-      cats_cp["et"] = {
-          {41, "et_ggh_loose_highMjj"},
-          {46, "et_ggh_tight_highMjj"},
-          {47, "et_ggh_loose_boost_highMjj"},
-          {48, "et_ggh_tight_boost_highMjj"},
+      cats_cp["em_2016"] = {
+          
+          {41, "em_ggh_highMjj"},
+          {42, "em_qqh_highMjj"},
 
       };
       
-      cats_cp["mt"] = {
-          {41, "mt_ggh_loose_highMjj"},
-          {46, "mt_ggh_tight_highMjj"},
-          {47, "mt_ggh_loose_boost_highMjj"},
-          {48, "mt_ggh_tight_boost_highMjj"},
+      cats_cp["et_2016"] = {
+
+          {41, "et_ggh_highMjj"},
+          {42, "et_qqh_highMjj"},
+
+      };
+      
+      cats_cp["mt_2016"] = {
+
+          {41, "mt_ggh_highMjj"},
+          {42, "mt_qqh_highMjj"},
+
       };    
       
-      cats_cp["tt"] = {
-          {41, "tt_ggh_loose_highMjj"},
-          {46, "tt_ggh_tight_highMjj"},
-          {47, "tt_ggh_loose_boost_highMjj"},
-          {48, "tt_ggh_tight_boost_highMjj"},
+      cats_cp["tt_2016"] = {
+
+          {41, "tt_ggh_highMjj"},
+          {42, "tt_qqh_highMjj"},
+
       };
     }
 
@@ -683,12 +678,12 @@ int main(int argc, char** argv) {
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
     // add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
-   // auto bbb_sig = ch::BinByBinFactory()
-   // .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
-   // .SetAddThreshold(0.05)
-   // .SetMergeThreshold(0.0)
-   // .SetFixNorm(false);
-   // bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
+    // auto bbb_sig = ch::BinByBinFactory()
+    // .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
+    // .SetAddThreshold(0.05)
+    // .SetMergeThreshold(0.0)
+    // .SetFixNorm(false);
+    // bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
 
     
     //// rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
@@ -696,7 +691,18 @@ int main(int argc, char** argv) {
     //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong_13TeV","CMS_scale_embedded_t_1prong_13TeV");
     //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_1prong1pizero_13TeV","CMS_scale_embedded_t_1prong1pizero_13TeV");
     //cb.cp().process({"EmbedZTT"}).RenameSystematic(cb,"CMS_scale_t_3prong_13TeV","CMS_scale_embedded_t_3prong_13TeV");
-
+    
+     std::vector<std::string> all_sig_procs = {
+         "ggH_htt","qqH_htt","WH_htt","ZH_htt",
+         "ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", 
+         "qqHmm_htt","qqH_htt125","qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125",
+         "WH_htt125","ZH_htt125","ggH_ph_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"
+     };
+     std::vector<std::string> all_mc_bkgs = {
+         "ZL","ZLL","ZJ","ZTT","TTJ","TTT","TT",
+         "W","VV","VVT","VVJ",
+         "ggH_hww125","qqH_hww125","EWKZ"
+     };
  
     // This function modifies every entry to have a standardised bin name of
     // the form: {analysis}_{channel}_{bin_id}_{era}
