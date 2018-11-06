@@ -15,11 +15,13 @@ class CPMixture(PhysicsModel):
 	        
                 poiNames = []
  
-                self.modelBuilder.doVar('alpha[0,0,1]') 
+                self.modelBuilder.doVar('Zero[0]')               
+ 
+                self.modelBuilder.doVar('alpha[0,-1,1]') 
                 poiNames.append('alpha')
-                self.modelBuilder.doVar('mutautau[1,0,4]')
-                self.modelBuilder.doVar('muV[1,0,4]')
-                self.modelBuilder.doVar('muggH[1,0,4]')
+                self.modelBuilder.doVar('mutautau[1,0,10]')
+                self.modelBuilder.doVar('muV[1,0,10]')
+                self.modelBuilder.doVar('muggH[1,0,10]')
 
                 self.modelBuilder.doSet('POI', ','.join(poiNames))
 
@@ -45,8 +47,6 @@ class CPMixture(PhysicsModel):
 		    scalings.append('ps_scaling')
 		  elif "ggHmm" in process or "ggH2jmm" in process:
                     scalings.append('mm_scaling')
-                  elif 'ggH_ph' in process:
-                    scalings.append('muggH_mutautau')  
                    
 
                 if ('qqH' in process or 'WH' in process or 'ZH' in process) and 'hww' not in process:
