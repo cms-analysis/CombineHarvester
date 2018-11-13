@@ -413,7 +413,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   // VV
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"VVT", "VVJ"})
+      .process({"VVT", "VVJ", "VVL"})
       .AddSyst(cb, "CMS_htt_vvXsec_$ERA", "lnN", SystMap<>::init(1.05));
 
   // TT
