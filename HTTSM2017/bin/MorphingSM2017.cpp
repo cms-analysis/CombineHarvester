@@ -106,12 +106,15 @@ int main(int argc, char **argv) {
 
   // Define background processes
   map<string, VString> bkg_procs;
-  VString bkgs;
+  VString bkgs, bkgs_em;
   bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTJ", "VVJ", "VVT", "EWKZ"};
+  bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST"};
   if(embedding){
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
     bkgs = JoinStr({bkgs,{"EMB","TTL"}});
+    bkgs_em.erase(std::remove(bkgs_em.begin(), bkgs_em.end(), "ZTT"), bkgs_em.end());
+    bkgs_em = JoinStr({bkgs_em,{"EMB"}});
   }
   if(jetfakes){
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "QCD"), bkgs.end());
@@ -121,16 +124,20 @@ int main(int argc, char **argv) {
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZJ"), bkgs.end());
     bkgs = JoinStr({bkgs,{"jetFakes"}});
   }
-  if(chan == "em"){
-    bkgs = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST", "EWKZ"};
-  }
 
   std::cout << "[INFO] Considerung the following processes:\n";
-  for (unsigned int i=0; i < bkgs.size(); i++) std::cout << bkgs[i] << std::endl;
+  if (chan.find("em") != std::string::npos){
+    std::cout << "For em channel : \n";
+    for (unsigned int i=0; i < bkgs_em.size(); i++) std::cout << bkgs_em[i] << std::endl;
+  }
+  if(chan.find("mt") != std::string::npos || chan.find("et") != std::string::npos || chan.find("tt") != std::string::npos){
+    std::cout << "For et,mt,tt channels : \n";
+    for (unsigned int i=0; i < bkgs.size(); i++) std::cout << bkgs[i] << std::endl;
+  }
   bkg_procs["et"] = bkgs;
   bkg_procs["mt"] = bkgs;
   bkg_procs["tt"] = bkgs;
-  bkg_procs["em"] = bkgs;
+  bkg_procs["em"] = bkgs_em;
 
   // Define categories
   map<string, Categories> cats;
@@ -164,7 +171,14 @@ int main(int argc, char **argv) {
         {17, "tt_noniso"},
     };
      cats["em"] = {
-        // TODO
+        { 1, "em_ggh"},
+        { 2, "em_qqh"},
+        {12, "em_ztt"},
+        {13, "em_tt"},
+        {14, "em_ss"},
+        {16, "em_misc"},
+        {18, "em_st"},
+        {19, "em_vv"},
     };
   }
   // STXS stage 1 categories (optimized on STXS stage 1 splits of ggH and VBF)
