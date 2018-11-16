@@ -26,6 +26,7 @@
 #include "RooRealVar.h"
 #include "TH2.h"
 #include "TF1.h"
+#include "TMatrix.h"
 
 using namespace std;
 using boost::starts_with;
@@ -46,6 +47,257 @@ void To1Bin(T* proc)
     // integral of the hist
 }
 
+
+unsigned Get1DBinNumFrom2D(TH2 *h2d, unsigned xbin, unsigned ybin) {
+    unsigned Nxbins = h2d->GetNbinsX();
+    return (ybin-1)*Nxbins + xbin -1;
+}
+
+TH1D* UnrollHistogram(TH2 *h2d){
+    unsigned n = 0;
+    unsigned Nbins = (h2d->GetNbinsY()+n)*(h2d->GetNbinsX());
+    TH1D *h1d = new TH1D(((std::string)h2d->GetName()+"_unroll").c_str(), "", Nbins, 0, Nbins);
+    for(unsigned i=1; i<=(unsigned)h2d->GetNbinsX(); ++i){
+      for(unsigned j=1; j<=(unsigned)h2d->GetNbinsY()+n; ++j){
+        unsigned glob_bin = Get1DBinNumFrom2D(h2d,i,j);
+        double content = h2d->GetBinContent(i,j);
+        double error = h2d->GetBinError(i,j);
+        h1d->SetBinContent(glob_bin+1,content);
+        h1d->SetBinError(glob_bin+1,error);
+       }
+     }
+     return h1d;
+}
+
+TH2D* RollHistogram(TH1D *h1d, unsigned nxbins) {
+  unsigned nybins = h1d->GetNbinsX()/nxbins; 
+  TH2D *h2d = new TH2D(((std::string)h1d->GetName()+"_roll").c_str(), "", nxbins, 0, nxbins, nybins, 0, nybins);
+  unsigned j=0;
+  for(unsigned nx=1; nx<=(unsigned)h1d->GetNbinsX(); ++nx){
+   if((nx-1) % nxbins == 0) j++;
+   unsigned i = nx - (j-1)*nxbins;
+   double content = h1d->GetBinContent(nx);
+   double error = h1d->GetBinError(nx);
+   h2d->SetBinContent(i,j,content);
+   h2d->SetBinError(i,j,error);
+  }
+  return h2d;
+}
+
+TH1D *Lowess1D(TH1D *h, double bandwidth) {
+
+  double h1 = bandwidth*(h->GetBinLowEdge(1)-h->GetBinLowEdge(h->GetNbinsX()+1));
+  TH1D *hout = (TH1D*)h->Clone();
+
+  for(unsigned i=1; i<=(unsigned)h->GetNbinsX(); ++i) {
+    double x0 = h->GetBinLowEdge(i);
+  
+    double sumW=0., sumWR=0., sumWX=0., sumWX2=0., sumWXR=0.;
+
+    for(unsigned j=1; j<=(unsigned)h->GetNbinsX(); ++j) {
+      double xi = h->GetBinLowEdge(j); 
+      double ri  = h->GetBinContent(j);
+
+      double xtrans = (xi-x0);
+      double d=xtrans/h1;
+ 
+      if(xtrans > 1.) continue;
+      double wt = std::max(0., pow((1.-pow(d,3)),3));
+
+      sumW+=wt;
+      sumWX+=wt*xtrans;
+      sumWR+=wt*ri;
+      sumWXR+=wt*xtrans*ri;
+      sumWX2+=wt*xtrans*xtrans;
+
+    }
+
+    double meanX2 = sumWX2 /= sumW;
+    double meanR = sumWR /= sumW;
+    double meanX = sumWX /= sumW;
+    double meanXR = sumWXR /= sumW;  
+    double rnew = (meanX2 * meanR - meanX * meanXR) / (meanX2 - meanX*meanX);
+    rnew = std::max(0.,rnew);
+    hout->SetBinContent(i, rnew); 
+  }
+  
+  return hout;
+
+}
+
+TH2D* Lowess2D(TH2D *h, double bandwidth2, double bandwidth1) {
+
+  TH2D *hout = (TH2D*)h->Clone();
+  double h1 = bandwidth1*(h->GetXaxis()->GetBinLowEdge(1)-h->GetXaxis()->GetBinLowEdge(h->GetNbinsX()+1));
+  double h2 = bandwidth2*(h->GetYaxis()->GetBinLowEdge(1)-h->GetYaxis()->GetBinLowEdge(h->GetNbinsY()+1));
+  
+  for(unsigned i1=1; i1<=(unsigned)h->GetNbinsX(); ++i1) {
+    for(unsigned j1=1; j1<=(unsigned)h->GetNbinsY(); ++j1) {
+      double x0 = h->GetXaxis()->GetBinLowEdge(i1);
+      double y0 = h->GetYaxis()->GetBinLowEdge(j1);
+      double r0 = h->GetBinContent(j1);
+      double sumW=0., sumWXY=0., sumWR=0., sumWX=0., sumWY=0., sumWX2=0., sumWY2=0., sumWXR=0., sumWYR=0.;
+
+      for(unsigned i2=1; i2<=(unsigned)h->GetNbinsX(); ++i2) {
+        for(unsigned j2=1; j2<=(unsigned)h->GetNbinsY(); ++j2) {
+          double xi = h->GetXaxis()->GetBinLowEdge(i2);
+          double yi = h->GetYaxis()->GetBinLowEdge(j2);
+          double ri = h->GetBinContent(i2,j2);
+          
+          double xtrans = (xi-x0)/h1;
+          double ytrans = (yi-y0)/h2;
+ 
+          double d = sqrt(xtrans*xtrans + ytrans*ytrans);
+
+          if(d > 1. or ri <= 0.) continue;
+          double wt = std::max(0., pow((1-pow(d,3)),3));
+
+          sumW+=wt;
+          sumWXY+=wt*xtrans*ytrans;  
+          sumWR+=wt*ri;
+
+          sumWX+=wt*xtrans;
+          sumWY+=wt*ytrans;
+
+          sumWX2+=wt*xtrans*xtrans;
+          sumWY2+=wt*ytrans*ytrans;
+  
+          sumWXR+=wt*xtrans*ri;
+          sumWYR+=wt*ytrans*ri;
+
+        }
+    }
+
+
+    double a1[9] = {1.,         sumWX/sumW, sumWY/sumW, sumWX/sumW,  sumWX2/sumW, sumWXY/sumW, sumWY/sumW,  sumWXY/sumW, sumWY2/sumW};
+    double a2[9] = {sumWR/sumW, sumWX/sumW, sumWY/sumW, sumWXR/sumW, sumWX2/sumW, sumWXY/sumW, sumWYR/sumW, sumWXY/sumW, sumWY2/sumW};
+
+    TMatrix m1 = TMatrixD(3, 3, a1);
+    TMatrix m2 = TMatrixD(3, 3, a2);
+
+    double rnew = r0;  
+    if(m1.Determinant()!=0) rnew = m2.Determinant()/m1.Determinant();
+   
+
+    hout->SetBinContent(i1,j1,rnew);
+ 
+    }
+  }
+  return hout;
+}
+
+void SmoothShapes(ch::CombineHarvester& cb, string name, double nxbins, bool smooth, bool merge_xbins, bool merge_ybins) {
+
+  auto cb_syst = cb.cp().syst_name({name});
+  cb_syst.ForEachSyst([&](ch::Systematic *syst) {
+    if (syst->type().find("shape") != std::string::npos) {
+      TH1D *shape_u = (TH1D*)syst->ClonedShapeU().get()->Clone();
+      TH1D *shape_d = (TH1D*)syst->ClonedShapeD().get()->Clone();
+      TH1D* nominal = new TH1D();
+
+      cb.cp().ForEachProc([&](ch::Process *proc){
+        bool match_proc = (MatchingProcess(*proc,*syst));
+        if(match_proc) nominal = (TH1D*)proc->ClonedShape().get()->Clone();
+      });
+
+
+      TH1D *shape_u_smooth = new TH1D();
+      TH1D *shape_d_smooth = new TH1D(); 
+
+      if(syst->bin().find("0jet") != std::string::npos) {
+        shape_u_smooth = Lowess1D(shape_u,0.2); 
+        shape_d_smooth = Lowess1D(shape_d,0.2);
+      } else {
+        TH2D *shape_u_2d = RollHistogram(shape_u,nxbins); 
+        TH2D *nominal_2d = RollHistogram(nominal,nxbins);
+        TH2D *shape_d_2d = RollHistogram(shape_d,nxbins);
+
+        if(merge_xbins) {
+          for (unsigned j=1; j<=(unsigned)shape_u_2d->GetNbinsY(); ++j){
+           double bin_content = nominal_2d->Integral(-1,-1,j,j);
+           for (unsigned i=1; i<=(unsigned)nominal_2d->GetNbinsX(); ++i) nominal_2d->SetBinContent(i,j,bin_content);
+           double bin_content_u = shape_u_2d->Integral(-1,-1,j,j);
+           for (unsigned i=1; i<=(unsigned)shape_u_2d->GetNbinsX(); ++i) shape_u_2d->SetBinContent(i,j,bin_content_u);
+           double bin_content_d = shape_d_2d->Integral(-1,-1,j,j);
+           for (unsigned i=1; i<=(unsigned)shape_d_2d->GetNbinsX(); ++i) shape_d_2d->SetBinContent(i,j,bin_content_d);
+          }
+        }
+
+        if(merge_ybins) {
+          for (unsigned i=1; i<=(unsigned)shape_u_2d->GetNbinsX(); ++i){
+           double bin_content = nominal_2d->Integral(i,i,-1,-1);
+           for (unsigned j=1; j<=(unsigned)nominal_2d->GetNbinsY(); ++j) nominal_2d->SetBinContent(i,j,bin_content);
+           double bin_content_u = shape_u_2d->Integral(i,i,-1,-1);
+           for (unsigned j=1; j<=(unsigned)shape_u_2d->GetNbinsY(); ++j) shape_u_2d->SetBinContent(i,j,bin_content_u);
+           double bin_content_d = shape_d_2d->Integral(i,i,-1,-1);
+           for (unsigned j=1; j<=(unsigned)shape_d_2d->GetNbinsY(); ++j) shape_d_2d->SetBinContent(i,j,bin_content_d);
+          }
+        }
+
+        shape_u_2d->Divide(nominal_2d); 
+        if(smooth) shape_u_2d = Lowess2D(shape_u_2d, 1.,0.2);
+        shape_u_smooth = UnrollHistogram(shape_u_2d);
+
+        shape_d_2d->Divide(nominal_2d);
+        if(smooth) shape_d_2d = Lowess2D(shape_d_2d, 1.,0.2);
+        shape_d_smooth = UnrollHistogram(shape_d_2d); 
+      }
+
+      shape_u_smooth->Multiply(nominal);
+      shape_d_smooth->Multiply(nominal);
+
+      syst->set_shapes(std::unique_ptr<TH1>(static_cast<TH1*>(shape_u_smooth)),std::unique_ptr<TH1>(static_cast<TH1*>(shape_d_smooth)),nullptr);
+
+    }
+
+  });
+
+}
+
+void ConvertShapesToLnN (ch::CombineHarvester& cb, string name, double min_ks) {
+  auto cb_syst = cb.cp().syst_name({name});
+  cb_syst.ForEachSyst([&](ch::Systematic *syst) {
+    if (syst->type().find("shape") != std::string::npos) {
+      if(min_ks<=0) {
+        std::cout << "Converting systematic " << syst->name() << " for process " << syst->process() << " in bin " << syst->bin() << " to lnN." <<std::endl;
+        syst->set_type("lnN");
+        return;
+      }
+      auto shape_u = syst->ClonedShapeU();
+      auto shape_d = syst->ClonedShapeD();
+
+      // set uncertainties of up and down templates to zero so they are not concidered in ks test
+      for(unsigned i=0; i<=(unsigned)shape_u->GetNbinsX(); ++i) {
+        shape_u->SetBinError(i,0.);
+        shape_d->SetBinError(i,0.);
+      }
+
+      std::unique_ptr<TH1> nominal;
+
+      double ks_u = 0., ks_d = 0.;
+
+      cb.cp().ForEachProc([&](ch::Process *proc){
+        bool match_proc = (MatchingProcess(*proc,*syst));
+        if(match_proc) nominal = proc->ClonedScaledShape(); 
+      });
+
+      if(shape_u && nominal){
+        ks_u = nominal.get()->KolmogorovTest(shape_u.get()); 
+      }
+      if(shape_d && nominal){
+        ks_d = nominal.get()->KolmogorovTest(shape_d.get());
+      } 
+      if(ks_u > min_ks && ks_d > min_ks){
+        std::cout << "Converting systematic " << syst->name() << " for process " << syst->process() << " in bin " << syst->bin() << " to lnN. KS scores (u,d) = (" << ks_u << "," << ks_d << ")" <<std::endl;
+        syst->set_type("lnN");
+      }
+      else {
+        std::cout << "Not converting systematic " << syst->name() << " for process " << syst->process() << " in bin " << syst->bin() << " to lnN. KS scores (u,d) = (" << ks_u << "," << ks_d << ")" <<std::endl;
+      }
+    }
+  }); 
+
+}
 
 void DecorrelateSyst (ch::CombineHarvester& cb, string name, double correlation, std::vector<string> chans_2016, std::vector<string> chans_2017) {
   if (correlation >= 1.) return;
@@ -121,6 +373,7 @@ int main(int argc, char** argv) {
     bool do_jetfakes = true;
     bool do_mva = false;    
     bool do_control_plots = false;
+    bool useJHU = false;
  
     bool cross_check = false;
 
@@ -147,7 +400,8 @@ int main(int argc, char** argv) {
     ("do_control_plots", po::value<bool>(&do_control_plots)->default_value(false))    
     ("era", po::value<string>(&era)->default_value("2016"))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true))
-    ("cross_check", po::value<bool>(&cross_check)->default_value(false));
+    ("cross_check", po::value<bool>(&cross_check)->default_value(false))
+    ("useJHU", po::value<bool>(&useJHU)->default_value(false));
 
 
     if(cross_check){
@@ -466,8 +720,9 @@ int main(int argc, char** argv) {
     
     map<string, VString> sig_procs;
     sig_procs["ggH"] = {"ggH_ph_htt"};
-    sig_procs["qqH"] = {"qqH_htt125","WH_htt125","ZH_htt125"}; // using JHU samples for qqH
-    //sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt"};
+    if(!useJHU) sig_procs["qqH"] = {"qqH_htt125","WH_htt125","ZH_htt125"};
+    else sig_procs["qqH"] = {"qqHsm_htt125","WHsm_htt125","ZHsm_htt125"};
+    sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt","WHps_htt125","WHmm_htt125","ZHps_htt125","ZHmm_htt125"};
     sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     
     vector<string> masses = {"125"};    
@@ -503,9 +758,11 @@ int main(int argc, char** argv) {
           if(chn == "em" || chn == "et" || chn == "mt" || chn == "tt"){
             cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["qqH"], cats[chn+"_"+year], false); // SM VBF/VH are added as backgrounds
             cb.AddProcesses({"*"},   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["qqH"], cats_cp[chn+"_"+year], false);
-
-            //cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["qqH_BSM"], cats[chn+"_"+year], true); // Non-SM VBF/VH are added as signal
-            //cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["qqH_BSM"], cats_cp[chn+"_"+year], true);
+ 
+            if(useJHU){
+              cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["qqH_BSM"], cats[chn+"_"+year], true); // Non-SM VBF/VH are added as signal
+              cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["qqH_BSM"], cats_cp[chn+"_"+year], true);
+            }
 
             cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["ggHCP"], cats[chn+"_"+year], true);
             cb.AddProcesses(masses,   {"htt"}, {"13TeV"}, {chn+"_"+year}, sig_procs["ggHCP"], cats_cp[chn+"_"+year], true);
@@ -560,21 +817,6 @@ int main(int argc, char** argv) {
       }
     }    
 
-    // de-correlate systematics for 2016 and 2017
-    if((era.find("2016") != std::string::npos && era.find("2017") != std::string::npos) ||  era.find("all") != std::string::npos){
-      std::cout << "Partially Decorrelating systematics for 2016/2017" << std::endl;
-      Json::Value js;
-      string json_file = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/scripts/correlations.json";
-      js = ch::ExtractJsonFromFile(json_file);
-      std::vector<std::string> keys = js.getMemberNames();
-      for (std::vector<std::string>::const_iterator it = keys.begin(); it != keys.end(); ++it){
-        string name = *it;
-        double value = js[*it].asDouble();
-        std::vector<string> chans_2016 = {"em","em_2016","et","et_2016","mt","mt_2016","tt","tt_2016","ttbar","ttbar_2016"};
-        std::vector<string> chans_2017 = {"em_2017","et_2017","mt_2017","tt_2017","ttbar_2017"};
-        DecorrelateSyst (cb, name, value, chans_2016, chans_2017);
-      }
-    }
     
     //Now delete processes with 0 yield
     cb.FilterProcs([&](ch::Process *p) {
@@ -681,12 +923,89 @@ int main(int argc, char** argv) {
       }
   });
 
-    // set b-tag uncertainties to lnN
+    // In this part we convert shape uncertainties into lnN where the shape variations are small compared to statistical uncertainties, this helps remove artificial constraints and makes the fit simpler
+
+    // convert b-tag uncertainties to lnN:
     cb.cp().ForEachSyst([](ch::Systematic *s) {
       if (s->type().find("shape") == std::string::npos || s->type().find("CMS_eff_b") == std::string::npos) return;
          s->set_type("lnN");
     });
-    
+   
+
+    // if the analysis changes the number of jdphi or mass bins (for boosted) category then these need to be changed here also
+    int ndphibins = 12;
+    int nmassbins = 10;
+
+    // convert JES uncertainties to lnN:
+    std::vector<std::string> systs_lnN = {"CMS_scale_j_eta3to5_13TeV","CMS_scale_j_eta0to5_13TeV","CMS_scale_j_eta0to3_13TeV","CMS_scale_j_RelativeBal_13TeV","CMS_scale_j_RelativeSample_13TeV","CMS_scale_j_13TeV"};
+    for (auto i : systs_lnN) {
+      // all 0jet JES uncerts to lnN
+      ConvertShapesToLnN(cb.cp().bin_id({1}), i, 0.); 
+      // all tt channel MC backgrounds except Higgs to lnN
+      ConvertShapesToLnN(cb.cp().backgrounds().process({"TTT","VVT","EWKZ","ZL"}).channel({"tt","tt_2017","tt_2016"}), i, 0.);
+      // EWKZ and ZLL (em channel) always small so convert to lnN
+      ConvertShapesToLnN(cb.cp().backgrounds().process({"EWKZ","ZLL"}), i, 0.);
+      // all backgrounds except ttbar and Higgs to lnN for dijet categories
+      ConvertShapesToLnN(cb.cp().backgrounds().bin_id({3,4,5,6}).process({"W","VVT","VV","ZLL","ZL","EWKZ"}), i, 0.);
+      // Convert VH processes to lnN
+      ConvertShapesToLnN(cb.cp().process({"WH_htt125","ZH_htt125","WHsm_htt125","ZHsm_htt125","WHps_htt125","ZHps_htt125","WHmm_htt125","ZHmm_htt125","WH_htt","ZH_htt","WHsm_htt","ZHsm_htt","WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt"}), i, 0.);  
+      // group mass bins for boosted categories to get smooth templates
+      SmoothShapes(cb.cp().bin_id({2}), i, nmassbins, false, true, false);
+      // group mass bins for dijet categories to get smooth templates
+      SmoothShapes(cb.cp().bin_id({3,4,5,6}), i, ndphibins, false, false, true);
+    }
+    // convert MET unclustered energy uncertainties to lnN
+    ConvertShapesToLnN(cb.cp().backgrounds(), "CMS_scale_met_unclustered_13TeV", 0.);
+    //for tt channel lnN uncertainties are not needed for 0 jet and boosted categories as MET is not used in selection cuts so these are removed completly
+    cb.cp().backgrounds().channel({"tt","tt_2016","tt_2017"}).FilterSysts([&](ch::Systematic *s){
+      bool remove_syst = (s->name().find("CMS_scale_met_unclustered_13TeV") != std::string::npos);
+      return remove_syst;
+    });
+
+    // MET response and resolution uncertainties for recoil corrected samples
+    // EWKZ always small so set to lnN
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"EWKZ"}), "CMS_htt_boson_reso_met_13TeV", 0.);
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"EWKZ"}), "CMS_htt_boson_scale_met_13TeV", 0.);
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"ZLL","W"}).channel({"em","em_2016","em_2017"}), "CMS_htt_boson_reso_met_13TeV", 0.);
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"ZLL","W"}).channel({"em","em_2016","em_2017"}), "CMS_htt_boson_scale_met_13TeV", 0.);
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"ZL"}).channel({"tt","tt_2016","tt_2017"}), "CMS_htt_boson_reso_met_13TeV", 0.);
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"ZL"}).channel({"tt","tt_2016","tt_2017"}), "CMS_htt_boson_scale_met_13TeV", 0.);
+    // merge together mass bins for boosted category
+    SmoothShapes(cb.cp().bin_id({2}).process({"ZL","ggHsm_htt","ggHmm_htt","ggHps_htt","qqH_htt","qqHsm_htt","qqHps_htt","qqHmm_htt","qqH_htt125","qqHsm_htt125","qqHps_htt125","qqHmm_htt125","WH_htt125","ZH_htt125","WHsm_htt125","ZHsm_htt125","WHps_htt125","ZHps_htt125","WHmm_htt125","ZHmm_htt125","WH_htt","ZH_htt","WHsm_htt","ZHsm_htt","WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt"}), "CMS_htt_boson_reso_met_13TeV", nmassbins, false, true, false);
+    SmoothShapes(cb.cp().bin_id({2}).process({"ZL","ggHsm_htt","ggHmm_htt","ggHps_htt","qqH_htt","qqHsm_htt","qqHps_htt","qqHmm_htt","qqH_htt125","qqHsm_htt125","qqHps_htt125","qqHmm_htt125","WH_htt125","ZH_htt125","WHsm_htt125","ZHsm_htt125","WHps_htt125","ZHps_htt125","WHmm_htt125","ZHmm_htt125","WH_htt","ZH_htt","WHsm_htt","ZHsm_htt","WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt"}), "CMS_htt_boson_scale_met_13TeV", nmassbins, false, true, false);
+    // lnN uncertainties for ZL in dijet categories
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"ZL"}).bin_id({3,4,5,6}), "CMS_htt_boson_reso_met_13TeV", 0.);
+    ConvertShapesToLnN(cb.cp().backgrounds().process({"ZL"}).bin_id({3,4,5,6}), "CMS_htt_boson_scale_met_13TeV", 0.);
+    // merge jdphi bins for signal in dijet categories
+    SmoothShapes(cb.cp().bin_id({3,4,5,6}).process({"ggHsm_htt","ggHmm_htt","ggHps_htt","qqH_htt","qqHsm_htt","qqHps_htt","qqHmm_htt","qqH_htt125","qqHsm_htt125","qqHps_htt125","qqHmm_htt125"}), "CMS_htt_boson_reso_met_13TeV", ndphibins, false, true, false);
+    SmoothShapes(cb.cp().bin_id({3,4,5,6}).process({"ggHsm_htt","ggHmm_htt","ggHps_htt","qqH_htt","qqHsm_htt","qqHps_htt","qqHmm_htt","qqH_htt125","qqHsm_htt125","qqHps_htt125","qqHmm_htt125"}), "CMS_htt_boson_scale_met_13TeV", ndphibins, false, true, false);
+
+    ConvertShapesToLnN(cb.cp().bin_id({3,4,5,6}).process({"WH_htt125","ZH_htt125","WHsm_htt125","ZHsm_htt125","WHps_htt125","ZHps_htt125","WHmm_htt125","ZHmm_htt125","WH_htt","ZH_htt","WHsm_htt","ZHsm_htt","WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt"}), "CMS_htt_boson_reso_met_13TeV", 0.);
+    ConvertShapesToLnN(cb.cp().bin_id({3,4,5,6}).process({"WH_htt125","ZH_htt125","WHsm_htt125","ZHsm_htt125","WHps_htt125","ZHps_htt125","WHmm_htt125","ZHmm_htt125","WH_htt","ZH_htt","WHsm_htt","ZHsm_htt","WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt"}), "CMS_htt_boson_scale_met_13TeV", 0.);
+
+    // tau ES / electron uncertainties. Keep these as shape uncertainties but for the dijet categpory group jdphi bins together to improve statistics
+    std::vector<std::string> systs_ES = {"CMS_scale_t_1prong_13TeV","CMS_scale_t_1prong1pizero_13TeV","CMS_scale_t_3prong_13TeV","CMS_scale_e_13TeV"};
+    for (auto i : systs_ES) {
+      SmoothShapes(cb.cp().bin_id({3,4,5,6}), i, ndphibins, false, true, false);
+    }
+
+    // de-correlate systematics for 2016 and 2017
+    if((era.find("2016") != std::string::npos && era.find("2017") != std::string::npos) ||  era.find("all") != std::string::npos){
+      std::cout << "Partially Decorrelating systematics for 2016/2017" << std::endl;
+      Json::Value js;
+      string json_file = string(getenv("CMSSW_BASE")) + "/src/CombineHarvester/HTTSMCP2016/scripts/correlations.json";
+      js = ch::ExtractJsonFromFile(json_file);
+      std::vector<std::string> keys = js.getMemberNames();
+      for (std::vector<std::string>::const_iterator it = keys.begin(); it != keys.end(); ++it){
+        string name = *it;
+        double value = js[*it].asDouble();
+        std::vector<string> chans_2016 = {"em","em_2016","et","et_2016","mt","mt_2016","tt","tt_2016","ttbar","ttbar_2016"};
+        std::vector<string> chans_2017 = {"em_2017","et_2017","mt_2017","tt_2017","ttbar_2017"};
+        DecorrelateSyst (cb, name, value, chans_2016, chans_2017);
+      }
+    }
+
+ 
     ////! [part8]
     // add bbb uncertainties for all backgrounds
     auto bbb = ch::BinByBinFactory()
@@ -698,12 +1017,12 @@ int main(int argc, char** argv) {
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
     // add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
-    auto bbb_sig = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
-    .SetAddThreshold(0.05)
-    .SetMergeThreshold(0.0)
-    .SetFixNorm(false);
-    bbb_sig.AddBinByBin(cb.cp().signals().process({"qqHmm_htt","qqHps_htt","WHmm_htt","WHps_htt","ZHmm_htt","ZHps_htt"},false).bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
+   // auto bbb_sig = ch::BinByBinFactory()
+   // .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
+   // .SetAddThreshold(0.05)
+   // .SetMergeThreshold(0.0)
+   // .SetFixNorm(false);
+   // bbb_sig.AddBinByBin(cb.cp().signals().bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
 
 	
 	//// rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
