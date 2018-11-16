@@ -328,36 +328,48 @@ namespace ch {
         // QCD uncerts for em
         
         cb.cp().AddSyst(cb,
-                  "CMS_em_QCD_0JetRate_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"em","em_2016","em_2017"}, {1}, {"QCD"}, 0.904, 1.096)
+          "CMS_em_QCD_0JetRate_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"em","em_2016"}, {1}, {"QCD"}, 0.904, 1.096)
+          ({"em_2017"}, {1}, {"QCD"}, 0.923, 1.077)
         ); 
         cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).bin_id({31,32,33,34,35,36,37,100,101,102,103,104,105,106,107,108}).AddSyst(cb,
                                              "CMS_em_QCD_0JetRate_13TeV", "shape", SystMap<>::init(1.00));
     
-        // neglect these as they are small 
-        //cb.cp().AddSyst(cb,
-        //  "CMS_em_QCD_1JetRate_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-        //  ({"em","em_2016","em_2017"}, {4}, {"QCD"}, 0.995, 1.005)
-        //  ({"em","em_2016","em_2017"}, {3}, {"QCD"}, 0.995, 1.005)
-        //  ({"em","em_2016","em_2017"}, {6}, {"QCD"}, 0.993, 1.007)
-        //  ({"em","em_2016","em_2017"}, {5}, {"QCD"}, 0.995, 1.005)
-        //  ({"em","em_2016","em_2017"}, {2}, {"QCD"}, 0.995, 1.005)
-        //  ({"ttbar","ttbar_2016","ttbar_2017"}, {1}, {"QCD"}, 0.997, 1.003)
+        cb.cp().AddSyst(cb,
+          "CMS_em_QCD_1JetRate_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"em","em_2016"}, {4}, {"QCD"}, 0.995, 1.005)
+          ({"em","em_2016"}, {3}, {"QCD"}, 0.995, 1.005)
+          ({"em","em_2016"}, {6}, {"QCD"}, 0.993, 1.007)
+          ({"em","em_2016"}, {5}, {"QCD"}, 0.995, 1.005)
+          ({"em","em_2016"}, {2}, {"QCD"}, 0.995, 1.005)
+          ({"ttbar","ttbar_2016"}, {1}, {"QCD"}, 0.997, 1.003)
+          ({"ttbar_2017"}, {1}, {"QCD"}, 0.958, 1.042)
+          ({"em_2017"}, {4}, {"QCD"}, 0.940, 1.061)
+          ({"em_2017"}, {3}, {"QCD"}, 0.959, 1.041)
+          ({"em_2017"}, {6}, {"QCD"}, 0.949, 1.051)
+          ({"em_2017"}, {5}, {"QCD"}, 0.960, 1.040)
+          ({"em_2017"}, {2}, {"QCD"}, 0.958, 1.042)
 
-        //); // neglect small uncertainties
+        ); // neglect small uncertainties
 
         cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47,48,49,100,101,102,103,104,105,106,107,108}).AddSyst(cb,
                                              "CMS_em_QCD_1JetRate_13TeV", "shape", SystMap<>::init(1.00));
+
         cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).bin_id({1,31,32,33,34,35,36,37,100,101,102,103,104,105,106,107,108}).AddSyst(cb,
                                              "CMS_em_QCD_0JetShape_13TeV", "shape", SystMap<>::init(1.00));
 
         cb.cp().AddSyst(cb,
           "CMS_em_QCD_1JetShape_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
           ({"ttbar","ttbar_2016","ttbar_2017"}, {1}, {"QCD"}, 0.955, 1.045)
-          ({"em","em_2016","em_2017"}, {4}, {"QCD"}, 0.966, 1.034)
-          ({"em","em_2016","em_2017"}, {3}, {"QCD"}, 0.955, 1.045)
-          ({"em","em_2016","em_2017"}, {6}, {"QCD"}, 0.874, 1.121)
-          ({"em","em_2016","em_2017"}, {5}, {"QCD"}, 0.940, 1.060)
+          ({"em","em_2016"}, {4}, {"QCD"}, 0.966, 1.034)
+          ({"em","em_2016"}, {3}, {"QCD"}, 0.955, 1.045)
+          ({"em","em_2016"}, {6}, {"QCD"}, 0.874, 1.121)
+          ({"em","em_2016"}, {5}, {"QCD"}, 0.940, 1.060)
+          ({"ttbar_2017"}, {1}, {"QCD"}, 0.959, 1.041)
+          ({"em_2017"}, {4}, {"QCD"}, 0.903, 1.099)
+          ({"em_2017"}, {3}, {"QCD"}, 0.960, 1.040)
+          ({"em_2017"}, {6}, {"QCD"}, 0.933, 1.068)
+          ({"em_2017"}, {5}, {"QCD"}, 0.963, 1.037)
         );
 
         cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).bin_id({2,31,32,33,34,35,36,37,41,42,43,44,45,47,48,49,100,101,102,103,104,105,106,107,108}).AddSyst(cb,
@@ -365,14 +377,20 @@ namespace ch {
 
         cb.cp().AddSyst(cb,
           "CMS_em_QCD_IsoExtrap_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"ttbar","ttbar_2016","ttbar_2017"}, {1}, {"QCD"}, 0.967, 1.039)
-          ({"em","em_2016","em_2017"}, {1}, {"QCD"}, 1.050, 0.956)
-          ({"em","em_2016","em_2017"}, {4}, {"QCD"}, 1.034, 0.965)
-          ({"em","em_2016","em_2017"}, {3}, {"QCD"}, 1.042, 0.962)
-          ({"em","em_2016","em_2017"}, {6}, {"QCD"}, 0.703, 1.260)
-          ({"em","em_2016","em_2017"}, {5}, {"QCD"}, 1.040, 0.965)
-          ({"em","em_2016","em_2017"}, {2}, {"QCD"}, 1.047, 0.960)
-
+          ({"ttbar","ttbar_2016"}, {1}, {"QCD"}, 0.967, 1.039)
+          ({"em","em_2016"}, {1}, {"QCD"}, 1.050, 0.956)
+          ({"em","em_2016"}, {4}, {"QCD"}, 1.034, 0.965)
+          ({"em","em_2016"}, {3}, {"QCD"}, 1.042, 0.962)
+          ({"em","em_2016"}, {6}, {"QCD"}, 1.040, 0.965) // set to same values as for bin 5 as statistics are too bad to estimate uncertainty
+          ({"em","em_2016"}, {5}, {"QCD"}, 1.040, 0.965)
+          ({"em","em_2016"}, {2}, {"QCD"}, 1.047, 0.960)
+          ({"ttbar_2017"}, {1}, {"QCD"}, 1.076, 0.930)
+          ({"em_2017"}, {1}, {"QCD"}, 1.084, 0.925)
+          ({"em_2017"}, {4}, {"QCD"}, 1.086, 0.923) // set to same values as for bin 3 as statistics are too bad to estimate uncertainty
+          ({"em_2017"}, {3}, {"QCD"}, 1.086, 0.923)
+          ({"em_2017"}, {6}, {"QCD"}, 1.064, 0.939)
+          ({"em_2017"}, {5}, {"QCD"}, 1.091, 0.920)
+          ({"em_2017"}, {2}, {"QCD"}, 1.081, 0.927)
         );
 
         cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,47,48,49,100,101,102,103,104,105,106,107,108}).AddSyst(cb,
