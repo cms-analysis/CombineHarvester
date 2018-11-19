@@ -67,10 +67,16 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   // - FIXME: Adapt for fake factor and embedding
   // ##########################################################################
 
+  float lumi_unc = 1.0;
+  if (era == 2016) {
+      lumi_unc = 1.025
+  }else if (era == 2017) {
+      lumi_unc = 1.023
+  }
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
-      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<>::init(1.025));
+      .AddSyst(cb, "lumi_$ERA", "lnN", SystMap<>::init(lumi_unc));
 
   // ##########################################################################
   // Uncertainty: Trigger efficiency
