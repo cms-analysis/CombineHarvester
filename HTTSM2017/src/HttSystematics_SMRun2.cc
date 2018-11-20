@@ -69,9 +69,9 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   float lumi_unc = 1.0;
   if (era == 2016) {
-      lumi_unc = 1.025
-  }else if (era == 2017) {
-      lumi_unc = 1.023
+      lumi_unc = 1.025;
+  } else if (era == 2017) {
+      lumi_unc = 1.023;
   }
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
@@ -512,7 +512,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
           .channel({"et"})
           .process({"ZL"})
           .AddSyst(cb, "CMS_eFakeTau_$ERA", "lnN", SystMap<>::init(1.155));
-  }else if (era == 2017) {
+  } else if (era == 2017) {
       cb.cp()
           .channel({"et"})
           .process({"ZL"})
@@ -525,7 +525,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
           .channel({"mt"})
           .process({"ZL"})
           .AddSyst(cb, "CMS_mFakeTau_$ERA", "lnN", SystMap<>::init(1.272));
-  }else if (era == 2017) {
+  } else if (era == 2017) {
       cb.cp()
           .channel({"mt"})
           .process({"ZL"})
