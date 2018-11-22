@@ -4,12 +4,12 @@ import math
 class CPMixture(PhysicsModel):
     def __init__(self):
         PhysicsModel.__init__(self)
-        self.sm_fix = False
+        self.sm_fix = True
 
     def setPhysicsOptions(self, physOptions):
         for po in physOptions:
-            if po.startswith("sm_fix"):
-                self.sm_fix = True
+            if po.startswith("no_sm_fix"):
+                self.sm_fix = False
 
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
@@ -64,13 +64,12 @@ class CPMixture(PhysicsModel):
 
         # For the 0jet and boosted categories since all templates should be the same for SM, MM, and PS sum together all the templates but weight by event numbers in the samples
 
-        self.modelBuilder.doVar('sm_01jetnorm_2016[{sm_evt_2016}/({sm_evt_2016}+{mm_evt_2016}+{ps_evt_2016})]'.format(**params))
-        self.modelBuilder.doVar('mm_01jetnorm_2016[{mm_evt_2016}/({sm_evt_2016}+{mm_evt_2016}+{ps_evt_2016})]'.format(**params))
-        self.modelBuilder.doVar('ps_01jetnorm_2016[{ps_evt_2016}/({sm_evt_2016}+{mm_evt_2016}+{ps_evt_2016})]'.format(**params))
-
-        self.modelBuilder.doVar('sm_01jetnorm_2017[{sm_evt_2017}/({sm_evt_2017}+{mm_evt_2017}+{ps_evt_2017})]'.format(**params))
-        self.modelBuilder.doVar('mm_01jetnorm_2017[{mm_evt_2017}/({sm_evt_2017}+{mm_evt_2017}+{ps_evt_2017})]'.format(**params))
-        self.modelBuilder.doVar('ps_01jetnorm_2017[{ps_evt_2017}/({sm_evt_2017}+{mm_evt_2017}+{ps_evt_2017})]'.format(**params))
+        self.modelBuilder.doVar('expr::muggH_mutautau_sm_01jetnorm_2016("@0*{sm_evt_2016}/({sm_evt_2016}+{mm_evt_2016}+{ps_evt_2016})", muggH_mutautau)'.format(**params))
+        self.modelBuilder.doVar('expr::muggH_mutautau_mm_01jetnorm_2016("@0*{mm_evt_2016}/({sm_evt_2016}+{mm_evt_2016}+{ps_evt_2016})", muggH_mutautau)'.format(**params))
+        self.modelBuilder.doVar('expr::muggH_mutautau_ps_01jetnorm_2016("@0*{ps_evt_2016}/({sm_evt_2016}+{mm_evt_2016}+{ps_evt_2016})", muggH_mutautau)'.format(**params))
+        self.modelBuilder.doVar('expr::muggH_mutautau_sm_01jetnorm_2017("@0*{sm_evt_2017}/({sm_evt_2017}+{mm_evt_2017}+{ps_evt_2017})", muggH_mutautau)'.format(**params))
+        self.modelBuilder.doVar('expr::muggH_mutautau_mm_01jetnorm_2017("@0*{mm_evt_2017}/({sm_evt_2017}+{mm_evt_2017}+{ps_evt_2017})", muggH_mutautau)'.format(**params))
+        self.modelBuilder.doVar('expr::muggH_mutautau_ps_01jetnorm_2017("@0*{ps_evt_2017}/({sm_evt_2017}+{mm_evt_2017}+{ps_evt_2017})", muggH_mutautau)'.format(**params))
 
         # define scaling for JHU VBF/VH templates as a function of muV,mutautau, and fa3 - this uses VBF definition of fa3 
         self.modelBuilder.factory_('expr::signf("@0/abs(@0)", f)')  

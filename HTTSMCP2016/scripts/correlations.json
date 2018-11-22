@@ -22,6 +22,7 @@
   "CMS_em_QCD_0JetShape_13TeV": 0.0,
   "CMS_em_QCD_1JetRate_13TeV": 0.0,
   "CMS_em_QCD_1JetShape_13TeV": 0.0,
+  "CMS_em_QCD_BackgroundSubtraction_13TeV": 0.5,
   "ff_qcd_dm0_njet0_et_stat": 0.0,
   "ff_qcd_dm0_njet1_et_stat": 0.0,
   "ff_qcd_dm1_njet0_et_stat": 0.0,
@@ -70,5 +71,7 @@
   "CMS_scale_j_uncorr_13TeV": 0.0,
   "CMS_scale_j_eta0to5_uncorr_13TeV": 0.0,
   "CMS_scale_j_eta0to3_uncorr_13TeV": 0.0,
-  "CMS_scale_j_eta3to5_uncorr_13TeV": 0.0
+  "CMS_scale_j_eta3to5_uncorr_13TeV": 0.0,
+  "CMS_htt_boson_reso_met_13TeV": 0.0,
+  "CMS_htt_boson_scale_met_13TeV": 0.0
 }

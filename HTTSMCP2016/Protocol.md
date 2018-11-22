@@ -36,6 +36,10 @@ To take the H->tautau BR as SM use:
 To scan alpha:
     `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1 --points 20 --redefineSignalPOIs alpha  -d output/test/cmb/125/ws.root --algo grid -t -1 --there -n .alpha --floatOtherPOIs 1`
 
+To scan mu:
+We need to freeze tautau BR to 1 as the fit has no sensitivity to muggH it only has sensitivity to muggH*mutautau so by setting mutautau to 1 we effecitivly just get one rate parameter that scales the XS*BR
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muggH=1 --setPhysicsModelParameterRanges muggH=-0.1,3 --points 20 --redefineSignalPOIs muggH --freezeNuisances mutautau -d ws.root --algo grid -t -1 --there -n .mu --floatOtherPOIs 1`
+
 To run on IC batch use (1 point per job):
  `--job-mode 'SGE' --prefix-file ic --sub-opts "-q hep.q -l h_rt=0:180:0" --split-points 1`
 To run on lx batch use:

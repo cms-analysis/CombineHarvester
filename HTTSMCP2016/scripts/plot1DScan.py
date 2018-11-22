@@ -169,6 +169,8 @@ parser.add_argument('--envelope', action='store_true', help='do envelope plot')
 parser.add_argument('--upper-cl', type=float, help='quote upper limit instead')
 parser.add_argument('--chop', type=float, default=100., help='remove vals above')
 parser.add_argument('--y-max', type=float, default=8., help='max y to draw')
+parser.add_argument('--x-max', type=float, default=None, help='max x to draw')
+parser.add_argument('--x-min', type=float, default=None, help='min x to draw')
 parser.add_argument('--remove-near-min', type=float, help='remove points with this fraction of the average x-spacing to the best-fit point')
 parser.add_argument('--rezero', action='store_true', help='correct y-values if a point with a lower minimum than zero is found')
 parser.add_argument('--output', '-o', help='output name')
@@ -249,6 +251,12 @@ axishist.SetMaximum(args.y_max)
 axishist.GetYaxis().SetTitle("- 2 #Delta ln L")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
 axishist.GetXaxis().SetTitleOffset(0.97)
+x_max=  axishist.GetXaxis().GetXmax()
+x_min = axishist.GetXaxis().GetXmin()
+if args.x_min is not None: x_min=args.x_min
+if args.x_max is not None: x_max=args.x_max
+axishist.GetXaxis().SetLimits(x_min,x_max)
+print x_min, axishist.GetXaxis().GetXmin()
 if args.x_title: axishist.GetXaxis().SetTitle(args.x_title)
 #if args.POI == 'alpha':
 #  new_min=-90.

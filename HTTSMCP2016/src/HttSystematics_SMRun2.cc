@@ -50,7 +50,7 @@ namespace ch {
             "VV","VVT","VVJ",
             "ggH_hww125","qqH_hww125","EWKZ"};
         std::vector<std::string> embed = {"EmbedZTT"};
-        std::vector<std::string> real_tau_mc_bkgs = {"ZTT","TTT","TT","VV","VVT","EWKZ"};
+        std::vector<std::string> real_tau_mc_bkgs = {"ZTT","TTT","TT","VV","VVT"};
             
         //##############################################################################
         //  lumi
@@ -284,9 +284,9 @@ namespace ch {
         // Decay Mode based TES Settings
         cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed, {"jetFakes"}})).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017"}).AddSyst(cb,
                                                 "CMS_scale_t_1prong_13TeV", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed, {"jetFakes"})).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed, {"jetFakes"}})).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017"}).AddSyst(cb,
                                                 "CMS_scale_t_1prong1pizero_13TeV", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed, {"jetFakes"})).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed, {"jetFakes"}})).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017"}).AddSyst(cb,
                                                 "CMS_scale_t_3prong_13TeV", "shape", SystMap<>::init(1.00));
         
         //##############################################################################
@@ -303,32 +303,26 @@ namespace ch {
                                                   "CMS_scale_met_unclustered_13TeV", "shape", SystMap<>::init(1.00));
 
 
-       // recoil uncertainties only for 2016 so far, add these back for 2017 when they are available - ask DESY about correlations
-       // cb.cp().process(JoinStr({sig_procs, {"ZTT","ZLL","ZL","ZJ","EWKZ","W"}})).AddSyst(cb,
-       //                                           "CMS_htt_boson_reso_met_13TeV", "shape", SystMap<>::init(1.00)); 
-       // cb.cp().process(JoinStr({sig_procs, {"ZTT","ZLL","ZL","ZJ","EWKZ","W"}})).AddSyst(cb,
-       //                                           "CMS_htt_boson_scale_met_13TeV", "shape", SystMap<>::init(1.00));
-
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","ZLL","ZL","ZJ","EWKZ","W"}})).channel({"tt","tt_2016","et","et_2016","mt","mt_2016","em","em_2016","ttbar","ttbar_2016"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","ZLL","ZL","ZJ","EWKZ","W"}})).AddSyst(cb,
                                                   "CMS_htt_boson_reso_met_13TeV", "shape", SystMap<>::init(1.00)); 
-        cb.cp().process(JoinStr({sig_procs, {"ZTT","ZLL","ZL","ZJ","EWKZ","W"}})).channel({"tt","tt_2016","et","et_2016","mt","mt_2016","em","em_2016","ttbar","ttbar_2016"}).AddSyst(cb,
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","ZLL","ZL","ZJ","EWKZ","W"}})).AddSyst(cb,
                                                   "CMS_htt_boson_scale_met_13TeV", "shape", SystMap<>::init(1.00));      
  
 
       
 
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_corr_13TeV", "shape", SystMap<>::init(1.00));
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_uncorr_13TeV", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_corr_13TeV", "shape", SystMap<>::init(1.00));
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_uncorr_13TeV", "shape", SystMap<>::init(1.00));
  
         // uncomment for regional JES uncertainties
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_corr_13TeV", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_corr_13TeV", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_corr_13TeV", "shape", SystMap<>::init(1.00)); 
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_uncorr_13TeV", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_uncorr_13TeV", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_uncorr_13TeV", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_RelativeBal_13TeV", "shape", SystMap<>::init(1.00));
-        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em_2017","et_2017","mt_2017","tt_2017","ttbar_2017"}).AddSyst(cb,"CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_corr_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_corr_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_corr_13TeV", "shape", SystMap<>::init(1.00)); 
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to5_uncorr_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta0to3_uncorr_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_eta3to5_uncorr_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).AddSyst(cb,"CMS_scale_j_RelativeBal_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"em_2017","et_2017","mt_2017","tt_2017","ttbar_2017"}).AddSyst(cb,"CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
 
         
         //##############################################################################
@@ -512,38 +506,25 @@ namespace ch {
 
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_qcd_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_qcd_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_qcd_dm1_njet0_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_qcd_dm1_njet1_et_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_w_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_w_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_w_dm1_njet0_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_w_dm1_njet1_et_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_tt_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_tt_dm1_njet0_et_stat", "shape", SystMap<>::init(1.00));
 
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_qcd_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_qcd_dm0_njet1_mt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_qcd_dm1_njet0_mt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_qcd_dm1_njet1_mt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_w_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_w_dm0_njet1_mt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_w_dm1_njet0_mt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_w_dm1_njet1_mt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_tt_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_tt_dm1_njet0_mt_stat", "shape", SystMap<>::init(1.00));
 
         // tt statistical uncertainties
 
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_qcd_dm0_njet0_tt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_qcd_dm0_njet1_tt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_qcd_dm1_njet0_tt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_qcd_dm1_njet1_tt_stat", "shape", SystMap<>::init(1.00));
 
         // FF systematic uncertainties 
 
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017","et","et_2016","et_2017"}).AddSyst(cb, "ff_w_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017","et","et_2016","et_2017"}).AddSyst(cb, "ff_tt_syst", "shape", SystMap<>::init(1.00));
-        //cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017","et","et_2016"}).AddSyst(cb, "ff_tt_syst", "shape", SystMap<>::init(1.00)); // add back for et 2017
 
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_w_tt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_tt_tt_syst", "shape", SystMap<>::init(1.00));
@@ -552,20 +533,16 @@ namespace ch {
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_qcd_mt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_qcd_tt_syst", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016"}).AddSyst(cb,"ff_dy_frac_tt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_w_frac_tt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_tt_frac_tt_syst", "shape", SystMap<>::init(1.00));
 
         // et subtraction uncertainties
-
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_sub_syst_et", "shape", SystMap<>::init(1.00));
 
         // mt subtraction uncertainties
-
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_sub_syst_mt", "shape", SystMap<>::init(1.00));
 
         // tt subtraction uncertainties
-
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_sub_syst_tt", "shape", SystMap<>::init(1.00));
 
         //##############################################################################
