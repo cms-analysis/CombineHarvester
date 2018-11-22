@@ -314,18 +314,18 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process({"EMB"})
+      .process(mc_processes)
       .AddSyst(cb, "CMS_scale_mc_t_1prong_$ERA", "shape", SystMap<>::init(1.41));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process({"EMB"})
+      .process(mc_processes)
       .AddSyst(cb, "CMS_scale_mc_t_1prong1pizero_$ERA", "shape",
                SystMap<>::init(1.41));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process({"EMB"})
+      .process(mc_processes)
       .AddSyst(cb, "CMS_scale_mc_t_3prong_$ERA", "shape", SystMap<>::init(1.41));
 
   // Embedded uncorrelated uncertainty
@@ -350,18 +350,18 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process({"EMB"})
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.41));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process({"EMB"})
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_scale_t_1prong1pizero_$ERA", "shape",
                SystMap<>::init(1.41));
 
   cb.cp()
       .channel({"et", "mt", "tt"})
-      .process({"EMB"})
+      .process(JoinStr({mc_processes, {"EMB"}}))
       .AddSyst(cb, "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.41));
 
 
