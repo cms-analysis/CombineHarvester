@@ -462,9 +462,9 @@ int main(int argc, char** argv) {
       bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "EWKZ", "jetFakes"};
 
       if(do_embedding){
-        bkg_procs["et"] = {"ZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
-        bkg_procs["mt"] = {"ZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
-        bkg_procs["tt"] = {"ZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
+        bkg_procs["et"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
+        bkg_procs["mt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
+        bkg_procs["tt"] = {"EmbedZTT", "ZL", "TTT", "VVT", "jetFakes", "EWKZ"};
       }
 
     }

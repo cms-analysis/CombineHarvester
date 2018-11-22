@@ -5,11 +5,14 @@ class CPMixture(PhysicsModel):
     def __init__(self):
         PhysicsModel.__init__(self)
         self.sm_fix = True
+        self.do_fa3 = False
 
     def setPhysicsOptions(self, physOptions):
         for po in physOptions:
             if po.startswith("no_sm_fix"):
                 self.sm_fix = False
+            if po.startswith("do_fa3"):
+                self.do_fa3 = True
 
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
@@ -17,8 +20,12 @@ class CPMixture(PhysicsModel):
             
         poiNames = []
  
-        self.modelBuilder.doVar('alpha[0,0,1]') 
-        poiNames.append('alpha')
+        if not self.do_fa3:
+          self.modelBuilder.doVar('alpha[0,-1,1]') 
+          poiNames.append('alpha')
+        else:
+          self.modelBuilder.doVar('fa3[0,0,1]')
+          poiNames.append('fa3')
 
         self.modelBuilder.doVar('mutautau[1,0,10]')
         self.modelBuilder.doVar('muV[1,0,10]')
@@ -56,8 +63,13 @@ class CPMixture(PhysicsModel):
         self.modelBuilder.factory_('expr::muV_mutautau("@0*@1", muV, mutautau)')
         self.modelBuilder.factory_('expr::muggH_mutautau("@0*@1", muggH, mutautau)')
 
-        self.modelBuilder.factory_('expr::a1("sqrt(@0)*cos(@1*{pi}/2)", muggH_mutautau, alpha)'.format(**params))
-        self.modelBuilder.factory_('expr::a3("sqrt(@0)*sin(@1*{pi}/2)", muggH_mutautau, alpha)'.format(**params))
+        if not self.do_fa3:
+          self.modelBuilder.factory_('expr::a1("sqrt(@0)*cos(@1*{pi}/2)", muggH_mutautau, alpha)'.format(**params))
+          self.modelBuilder.factory_('expr::a3("sqrt(@0)*sin(@1*{pi}/2)", muggH_mutautau, alpha)'.format(**params))
+        else:
+          self.modelBuilder.factory_('expr::a1("sqrt(@0*(1-@1))", muggH_mutautau, fa3)'.format(**params))
+          self.modelBuilder.factory_('expr::a3("sqrt(@0*@1)", muggH_mutautau, fa3)'.format(**params))
+
         self.modelBuilder.factory_('expr::sm_scaling("@0*@0 - @0*@1", a1, a3)')
         self.modelBuilder.factory_('expr::ps_scaling("@1*@1 - @0*@1", a1, a3)')
         self.modelBuilder.factory_('expr::mm_scaling("2*@0*@1", a1, a3)')
