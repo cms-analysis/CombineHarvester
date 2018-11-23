@@ -1032,12 +1032,12 @@ int main(int argc, char** argv) {
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
     // add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
-   // auto bbb_sig = ch::BinByBinFactory()
-   // .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
-   // .SetAddThreshold(0.05)
-   // .SetMergeThreshold(0.0)
-   // .SetFixNorm(false);
-   // bbb_sig.AddBinByBin(cb.cp().signals().bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
+    auto bbb_sig = ch::BinByBinFactory()
+    .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
+    .SetAddThreshold(0.0)
+    .SetMergeThreshold(0.0)
+    .SetFixNorm(false);
+    bbb_sig.AddBinByBin(cb.cp().signals().bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
 
 	
 	//// rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
@@ -1070,6 +1070,11 @@ int main(int argc, char** argv) {
 	
 	if(!do_control_plots) writer.WriteCards("cmb", cb);
 	//Add all di-jet categories combined
+	//
+	
+        writer.WriteCards("htt_2016", cb.cp().channel({"em_2016","et_2016","mt_2016","tt_2016","ttbar_2016"}));
+        writer.WriteCards("htt_2017", cb.cp().channel({"em_2017","et_2017","mt_2017","tt_2017","ttbar_2017"})); 
+
 	writer.WriteCards("htt_0jet", cb.cp().bin_id({1}));
 	writer.WriteCards("htt_boosted", cb.cp().bin_id({2}));
 	writer.WriteCards("htt_01jet", cb.cp().bin_id({1,2}));
