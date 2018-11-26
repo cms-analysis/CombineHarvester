@@ -262,11 +262,16 @@ int main(int argc, char **argv) {
   ch::CombineHarvester cb;
 
   // Add observations and processes
+  std::string era_tag;
+  if (era == 2016) era_tag = "Run2016";
+  else if (era == 2017) era_tag = "Run2017";
+  else std::runtime_error("Given era is not implemented.");
+
   for (auto chn : chns) {
-    cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
-    cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn],
+    cb.AddObservations({"*"}, {"htt"}, {era_tag}, {chn}, cats[chn]);
+    cb.AddProcesses({"*"}, {"htt"}, {era_tag}, {chn}, bkg_procs[chn], cats[chn],
                     false);
-    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, sig_procs, cats[chn],
+    cb.AddProcesses(masses, {"htt"}, {era_tag}, {chn}, sig_procs, cats[chn],
                     true);
   }
 
@@ -276,10 +281,10 @@ int main(int argc, char **argv) {
   // Extract shapes from input ROOT files
   for (string chn : chns) {
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir[chn] + "htt_" + chn + ".inputs-sm-13TeV" + postfix + ".root",
+        input_dir[chn] + "htt_" + chn + ".inputs-sm-" + era_tag + postfix + ".root",
         "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(sig_procs).ExtractShapes(
-        input_dir[chn] + "htt_" + chn + ".inputs-sm-13TeV" + postfix + ".root",
+        input_dir[chn] + "htt_" + chn + ".inputs-sm-" + era_tag + postfix + ".root",
         "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
   }
 
