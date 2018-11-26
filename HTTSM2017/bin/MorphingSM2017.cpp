@@ -345,8 +345,8 @@ int main(int argc, char **argv) {
 
   // Merge bins and set bin-by-bin uncertainties
   auto bbb = ch::BinByBinFactory()
-                 .SetAddThreshold(0.05)
-                 .SetMergeThreshold(0.8)
+                 .SetAddThreshold(0.00)
+                 .SetMergeThreshold(0.5)
                  .SetFixNorm(false);
   bbb.MergeBinErrors(cb.cp().backgrounds());
   bbb.AddBinByBin(cb.cp().backgrounds(), cb);
