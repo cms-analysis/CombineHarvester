@@ -366,7 +366,7 @@ int main(int argc, char **argv) {
   string output_prefix = "output/";
   ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$MASS/$BIN.txt",
                         output_prefix + output_folder +
-                            "/$TAG/common/htt_input.root");
+                            "/$TAG/common/htt_input_" + era_tag + ".root");
 
   // We're not using mass as an identifier - which we need to tell the
   // CardWriter
