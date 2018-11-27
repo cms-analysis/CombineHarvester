@@ -262,11 +262,16 @@ int main(int argc, char **argv) {
   ch::CombineHarvester cb;
 
   // Add observations and processes
+  std::string era_tag;
+  if (era == 2016) era_tag = "Run2016";
+  else if (era == 2017) era_tag = "Run2017";
+  else std::runtime_error("Given era is not implemented.");
+
   for (auto chn : chns) {
-    cb.AddObservations({"*"}, {"htt"}, {"13TeV"}, {chn}, cats[chn]);
-    cb.AddProcesses({"*"}, {"htt"}, {"13TeV"}, {chn}, bkg_procs[chn], cats[chn],
+    cb.AddObservations({"*"}, {"htt"}, {era_tag}, {chn}, cats[chn]);
+    cb.AddProcesses({"*"}, {"htt"}, {era_tag}, {chn}, bkg_procs[chn], cats[chn],
                     false);
-    cb.AddProcesses(masses, {"htt"}, {"13TeV"}, {chn}, sig_procs, cats[chn],
+    cb.AddProcesses(masses, {"htt"}, {era_tag}, {chn}, sig_procs, cats[chn],
                     true);
   }
 
@@ -276,10 +281,10 @@ int main(int argc, char **argv) {
   // Extract shapes from input ROOT files
   for (string chn : chns) {
     cb.cp().channel({chn}).backgrounds().ExtractShapes(
-        input_dir[chn] + "htt_" + chn + ".inputs-sm-13TeV" + postfix + ".root",
+        input_dir[chn] + "htt_" + chn + ".inputs-sm-" + era_tag + postfix + ".root",
         "$BIN/$PROCESS", "$BIN/$PROCESS_$SYSTEMATIC");
     cb.cp().channel({chn}).process(sig_procs).ExtractShapes(
-        input_dir[chn] + "htt_" + chn + ".inputs-sm-13TeV" + postfix + ".root",
+        input_dir[chn] + "htt_" + chn + ".inputs-sm-" + era_tag + postfix + ".root",
         "$BIN/$PROCESS$MASS", "$BIN/$PROCESS$MASS_$SYSTEMATIC");
   }
 
@@ -345,15 +350,15 @@ int main(int argc, char **argv) {
 
   // Merge bins and set bin-by-bin uncertainties
   auto bbb = ch::BinByBinFactory()
-                 .SetAddThreshold(0.05)
-                 .SetMergeThreshold(0.8)
+                 .SetAddThreshold(0.00)
+                 .SetMergeThreshold(0.5)
                  .SetFixNorm(false);
   bbb.MergeBinErrors(cb.cp().backgrounds());
   bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
-  ch::SetStandardBinNames(cb);
+  ch::SetStandardBinNames(cb, "$ANALYSIS_$CHANNEL_$BINID_$ERA");
 
   // Write out datacards. Naming convention important for rest of workflow. We
   // make one directory per chn-cat, one per chn and cmb. In this code we only
@@ -361,7 +366,7 @@ int main(int argc, char **argv) {
   string output_prefix = "output/";
   ch::CardWriter writer(output_prefix + output_folder + "/$TAG/$MASS/$BIN.txt",
                         output_prefix + output_folder +
-                            "/$TAG/common/htt_input.root");
+                            "/$TAG/common/htt_input_" + era_tag + ".root");
 
   // We're not using mass as an identifier - which we need to tell the
   // CardWriter
