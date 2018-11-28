@@ -55,7 +55,7 @@ class CPMixture(PhysicsModel):
                 'sm_evt_2016': 1612810.,
                 'mm_evt_2016': 1728080.,
                 'ps_evt_2016': 1751196.,
-                'sm_evt_2017': 6802377.,
+                'sm_evt_2017': 7833676.,
                 'mm_evt_2017': 1803052.,
                 'ps_evt_2017': 1879685.,
         }
@@ -123,12 +123,24 @@ class CPMixture(PhysicsModel):
                 scalings.append('muggH_mutautau')
 
         if ('qqH' in process or 'WH' in process or 'ZH' in process) and 'hww' not in process:
-            if "qqHsm" in process or "ggH2jsm" in process:
-                scalings.append('sm_scaling')
-            elif "qqHps" in process or "ggH2jps" in process:
-                scalings.append('ps_scaling')
+            if "qqHsm" in process:
+                scalings.append('vbf_sm_scaling')
+            elif "qqHps" in process:
+                scalings.append('vbf_ps_scaling')
             elif "qqHmm" in process:
-                scalings.append('mm_scaling')
+                scalings.append('vbf_mm_scaling')
+            elif "WHsm" in process:
+                scalings.append('wh_sm_scaling')
+            elif "WHps" in process:
+                scalings.append('wh_ps_scaling')
+            elif "WHmm" in process:
+                scalings.append('wh_mm_scaling')
+            elif "ZHsm" in process:
+                scalings.append('zh_sm_scaling')
+            elif "ZHps" in process:
+                scalings.append('zh_ps_scaling')
+            elif "ZHmm" in process:
+                scalings.append('zh_mm_scaling')
             else:
                scalings.append('muV_mutautau')
 

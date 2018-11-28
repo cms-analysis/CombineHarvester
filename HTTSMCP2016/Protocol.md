@@ -46,8 +46,7 @@ To run on lx batch use:
   `--job-mode lxbatch --sub-opts '-q 1nh --split-points 1'
 
 Run 2D liklihood scan of mu vs alpha using:
-  (this needs to be updated)
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muF=1,muV=1,alpha=0,f=0 --freezeNuisances f --setPhysicsModelParameterRanges alpha=0,1 --redefineSignalPOIs alpha,muF -d output/cp310118/cmb/125/ws.root --there -n ".2DScan" --points 500 --algo grid -t -1 --parallel=8 `
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muggH=1,alpha=0 --freezeNuisances mutautau --setPhysicsModelParameterRanges alpha=-1,1:muggH=0,2.5 --redefineSignalPOIs alpha,muggH -d output/cp261118_nobbb/cmb/125/ws.root --there -n ".2DScan" --points 2000 --algo grid -t -1 --parallel=8`
 
 # Plot scan
 

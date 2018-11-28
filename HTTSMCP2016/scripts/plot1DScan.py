@@ -307,7 +307,7 @@ if args.POI == 'alpha':
   latex.SetNDC()
   latex.SetTextSize(0.04)
   latex.SetTextAlign(12)
-  latex.DrawLatex(.7,.9,"0^{+} vs 0^{-} = %.2f#sigma" % significance)
+  #latex.DrawLatex(.7,.9,"0^{+} vs 0^{-} = %.2f#sigma" % significance)
   print "0^{+} vs 0^{-} = %.2f#sigma" % significance
 
 for other in other_scans:
@@ -501,8 +501,9 @@ plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.045, 0.035, 1.2,  cmsT
 # plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
 
 #if not args.no_input_label: plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
-plot.DrawTitle(pads[0], '35.9 fb^{-1} (13 TeV)', 3)
+#plot.DrawTitle(pads[0], '35.9 fb^{-1} (13 TeV)', 3)
 #plot.DrawTitle(pads[0], '41.9 fb^{-1} (13 TeV)', 3)
+plot.DrawTitle(pads[0], '77.8 fb^{-1} (13 TeV)', 3)
 #plot.DrawTitle(pads[0], 'm_{H} = 125 GeV', 1)
 pads[0].SetTicks(1)
 

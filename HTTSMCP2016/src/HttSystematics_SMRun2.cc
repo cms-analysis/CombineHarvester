@@ -505,9 +505,11 @@ namespace ch {
         // FF ststistical uncertainties are uncorrelated between 2016 and 2017
 
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_qcd_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({1},false).AddSyst(cb, "ff_qcd_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"et","et_2016"}).bin_id({1},false).AddSyst(cb, "ff_qcd_dm0_njet1_et_stat", "shape", SystMap<>::init(2.00));
+        cb.cp().process({"jetFakes"}).channel({"et_2017"}).bin_id({1},false).AddSyst(cb, "ff_qcd_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_w_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({1},false).AddSyst(cb, "ff_w_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"et","et_2016"}).bin_id({1},false).AddSyst(cb, "ff_w_dm0_njet1_et_stat", "shape", SystMap<>::init(2.00));
+        cb.cp().process({"jetFakes"}).channel({"et_2017"}).bin_id({1},false).AddSyst(cb, "ff_w_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_tt_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
 
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_qcd_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));

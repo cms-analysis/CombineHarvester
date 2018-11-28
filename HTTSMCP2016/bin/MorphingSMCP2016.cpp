@@ -372,7 +372,7 @@ int main(int argc, char** argv) {
     bool no_jec_split = false;    
     bool do_jetfakes = true;
     bool do_mva = false;    
-    bool do_control_plots = false;
+    int do_control_plots = 0;
     bool useJHU = false;
  
     bool cross_check = false;
@@ -397,7 +397,7 @@ int main(int argc, char** argv) {
     ("auto_rebin", po::value<bool>(&auto_rebin)->default_value(false))
     ("no_jec_split", po::value<bool>(&no_jec_split)->default_value(true))    
     ("do_mva", po::value<bool>(&do_mva)->default_value(false))
-    ("do_control_plots", po::value<bool>(&do_control_plots)->default_value(false))    
+    ("do_control_plots", po::value<int>(&do_control_plots)->default_value(0))    
     ("era", po::value<string>(&era)->default_value("2016"))
     ("ttbar_fit", po::value<bool>(&ttbar_fit)->default_value(true))
     ("cross_check", po::value<bool>(&cross_check)->default_value(false))
@@ -407,7 +407,6 @@ int main(int argc, char** argv) {
     po::notify(vm);
     typedef vector<string> VString;
 
-    std::cout << input_folder_mt << std::endl;
     if(cross_check){
       //no_shape_systs = true;
       ttbar_fit = false;
@@ -416,7 +415,15 @@ int main(int argc, char** argv) {
       input_folder_mt="Imperial/CP/cross_check/";
       input_folder_tt="Imperial/CP/cross_check/";
     }
-    std::cout << input_folder_mt << std::endl;
+ 
+    if(do_control_plots>0){
+      ttbar_fit = false;
+      input_folder_em="/Imperial/control_cards_"+era+"/";
+      input_folder_et="/Imperial/control_cards_"+era+"/";
+      input_folder_mt="/Imperial/control_cards_"+era+"/";
+      input_folder_tt="/Imperial/control_cards_"+era+"/";
+    }
+
  
     VString years;
     if ( era.find("2016") != std::string::npos ) years.push_back("2016");
@@ -677,62 +684,118 @@ int main(int argc, char** argv) {
       };
     }
 
-    if(do_control_plots) {
-      cats_cp["et_2016"] = {};
-      cats_cp["mt_2016"] = {};
-      cats_cp["tt_2016"] = {};
-      cats_cp["em_2016"] = {};
-      cats["et_2016"] = {
-        {100, "et_pt_1"},
-        {101, "et_pt_2"},
-        {102, "et_met"},
-        {103, "et_pt_tt"},
-        {104, "et_m_vis"},
-        {105, "et_mjj"},
-        //{106, "et_sjdphi"},
-        {107, "et_n_jets"}, 
-        {108, "et_m_sv"}
-       };
-       cats["mt_2016"] = {
-        {100, "mt_pt_1"},
-        {101, "mt_pt_2"},
-        {102, "mt_met"},
-        {103, "mt_pt_tt"},
-        {104, "mt_m_vis"},
-        {105, "mt_mjj"},
-        //{106, "mt_sjdphi"},  
-        {107, "mt_n_jets"},
-        {108, "mt_m_sv"}
-       };
-       cats["tt_2016"] = {
-        {100, "tt_pt_1"},
-        {101, "tt_pt_2"},
-        {102, "tt_met"},
-        {103, "tt_pt_tt"},
-        {104, "tt_m_vis"},
-        {105, "tt_mjj"},
-        //{106, "tt_sjdphi"},  
-        {107, "tt_n_jets"},
-        {108, "tt_m_sv"}
-       };
-       cats["em_2016"] = {
-        {100, "em_pt_1"},
-        {101, "em_pt_2"},
-        {102, "em_met"},
-        {103, "em_pt_tt"},
-        {104, "em_m_vis"},
-        {105, "em_mjj"},
-        //{106, "em_sjdphi"},
-        {107, "em_n_jets"},
-        {108, "em_m_sv"}
-       }; 
+    if(do_control_plots>0) {
+      std::string extra="";
+      if(do_control_plots==2) extra="lomsv_";
+      if(do_control_plots==3) extra="himsv_";
+      if(era=="2016"){
+        cats_cp["et_2016"] = {};
+        cats_cp["mt_2016"] = {};
+        cats_cp["tt_2016"] = {};
+        cats_cp["em_2016"] = {};
+        cats["et_2016"] = {
+          {100, "et_"+extra+"pt_1"},
+          {101, "et_"+extra+"pt_2"},
+          {102, "et_"+extra+"met"},
+          {103, "et_"+extra+"pt_tt"},
+          {104, "et_"+extra+"m_vis"},
+          {105, "et_"+extra+"mjj"},
+          {106, "et_"+extra+"sjdphi"},
+          {107, "et_"+extra+"n_jets"}, 
+          {108, "et_"+extra+"m_sv"}
+         };
+         cats["mt_2016"] = {
+          {100, "mt_"+extra+"pt_1"},
+          {101, "mt_"+extra+"pt_2"},
+          {102, "mt_"+extra+"met"},
+          {103, "mt_"+extra+"pt_tt"},
+          {104, "mt_"+extra+"m_vis"},
+          {105, "mt_"+extra+"mjj"},
+          {106, "mt_"+extra+"sjdphi"},  
+          {107, "mt_"+extra+"n_jets"},
+          {108, "mt_"+extra+"m_sv"}
+         };
+         cats["tt_2016"] = {
+          {100, "tt_"+extra+"pt_1"},
+          {101, "tt_"+extra+"pt_2"},
+          {102, "tt_"+extra+"met"},
+          {103, "tt_"+extra+"pt_tt"},
+          {104, "tt_"+extra+"m_vis"},
+          {105, "tt_"+extra+"mjj"},
+          {106, "tt_"+extra+"sjdphi"},  
+          {107, "tt_"+extra+"n_jets"},
+          {108, "tt_"+extra+"m_sv"}
+         };
+         cats["em_2016"] = {
+          {100, "em_"+extra+"pt_1"},
+          {101, "em_"+extra+"pt_2"},
+          {102, "em_"+extra+"met"},
+          {103, "em_"+extra+"pt_tt"},
+          {104, "em_"+extra+"m_vis"},
+          {105, "em_"+extra+"mjj"},
+          {106, "em_"+extra+"sjdphi"},
+          {107, "em_"+extra+"n_jets"},
+          {108, "em_"+extra+"m_sv"}
+         }; 
+       }
+     if(era=="2017"){
+        cats_cp["et_2017"] = {};
+        cats_cp["mt_2017"] = {};
+        cats_cp["tt_2017"] = {};
+        cats_cp["em_2017"] = {};
+        cats["et_2017"] = {
+          {100, "et_"+extra+"pt_1"},
+          {101, "et_"+extra+"pt_2"},
+          {102, "et_"+extra+"met"},
+          {103, "et_"+extra+"pt_tt"},
+          {104, "et_"+extra+"m_vis"},
+          {105, "et_"+extra+"mjj"},
+          {106, "et_"+extra+"sjdphi"},
+          {107, "et_"+extra+"n_jets"},
+          {108, "et_"+extra+"m_sv"}
+         };
+         cats["mt_2017"] = {
+          {100, "mt_"+extra+"pt_1"},
+          {101, "mt_"+extra+"pt_2"},
+          {102, "mt_"+extra+"met"},
+          {103, "mt_"+extra+"pt_tt"},
+          {104, "mt_"+extra+"m_vis"},
+          {105, "mt_"+extra+"mjj"},
+          {106, "mt_"+extra+"sjdphi"},
+          {107, "mt_"+extra+"n_jets"},
+          {108, "mt_"+extra+"m_sv"}
+         };
+         cats["tt_2017"] = {
+          {100, "tt_"+extra+"pt_1"},
+          {101, "tt_"+extra+"pt_2"},
+          {102, "tt_"+extra+"met"},
+          {103, "tt_"+extra+"pt_tt"},
+          {104, "tt_"+extra+"m_vis"},
+          {105, "tt_"+extra+"mjj"},
+          {106, "tt_"+extra+"sjdphi"},
+          {107, "tt_"+extra+"n_jets"},
+          {108, "tt_"+extra+"m_sv"}
+         };
+         cats["em_2017"] = {
+          {100, "em_"+extra+"pt_1"},
+          {101, "em_"+extra+"pt_2"},
+          {102, "em_"+extra+"met"},
+          {103, "em_"+extra+"pt_tt"},
+          {104, "em_"+extra+"m_vis"},
+          {105, "em_"+extra+"mjj"},
+          {106, "em_"+extra+"sjdphi"},
+          {107, "em_"+extra+"n_jets"},
+          {108, "em_"+extra+"m_sv"}
+         };
+       }
+
      }
     
     map<string, VString> sig_procs;
     sig_procs["ggH"] = {"ggH_ph_htt"};
     if(!useJHU) sig_procs["qqH"] = {"qqH_htt125","WH_htt125","ZH_htt125"};
     else sig_procs["qqH"] = {"qqHsm_htt125","WHsm_htt125","ZHsm_htt125"};
-    sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt","WHps_htt125","WHmm_htt125","ZHps_htt125","ZHmm_htt125"};
+    sig_procs["qqH_BSM"] = {"qqHmm_htt","qqHps_htt","WHps_htt","WHmm_htt","ZHps_htt","ZHmm_htt"};
     sig_procs["ggHCP"] = {"ggHsm_htt", "ggHps_htt", "ggHmm_htt"};
     
     vector<string> masses = {"125"};    
@@ -804,17 +867,19 @@ int main(int argc, char** argv) {
       for (string chn : chns){
           string channel = chn;
           string extra = "";
-          if (year == "2017") extra = "/2017/";
+          if (year == "2017" && !do_control_plots) extra = "/2017/";
           if(chn == "ttbar") channel = "em"; 
           cb.cp().channel({chn+"_"+year}).backgrounds().ExtractShapes(
                                                              input_dir[chn] + extra + "htt_"+channel+".inputs-sm-13TeV"+postfix+".root",
                                                              "$BIN/$PROCESS",
                                                              "$BIN/$PROCESS_$SYSTEMATIC");
           if(chn == "em" || chn == "et" || chn == "mt" || chn == "tt"){
-            //cb.cp().channel({chn+"_"+year}).process(sig_procs["qqH_BSM"]).ExtractShapes(
-            //                                                        input_dir[chn]+ extra + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
-            //                                                        "$BIN/$PROCESS$MASS",
-            //                                                        "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+            if(useJHU) {
+              cb.cp().channel({chn+"_"+year}).process(sig_procs["qqH_BSM"]).ExtractShapes(
+                                                                      input_dir[chn]+ extra + "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
+                                                                      "$BIN/$PROCESS$MASS",
+                                                                      "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+            }
             cb.cp().channel({chn+"_"+year}).process(sig_procs["ggH"]).ExtractShapes(
                                                                     input_dir[chn] + extra +  "htt_"+chn+".inputs-sm-13TeV"+postfix+".root",
                                                                     "$BIN/$PROCESS$MASS",
@@ -933,7 +998,7 @@ int main(int argc, char** argv) {
       }
   });
 
-    if(!cross_check) {
+    if(!cross_check && do_control_plots==0)  {
 
       // In this part we convert shape uncertainties into lnN where the shape variations are small compared to statistical uncertainties, this helps remove artificial constraints and makes the fit simpler
 
@@ -1031,13 +1096,13 @@ int main(int argc, char** argv) {
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
-    // add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
-    auto bbb_sig = ch::BinByBinFactory()
-    .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
-    .SetAddThreshold(0.0)
-    .SetMergeThreshold(0.0)
-    .SetFixNorm(false);
-    bbb_sig.AddBinByBin(cb.cp().signals().bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
+    //// add bbb uncertainties for the signal but only if uncertainties are > 5% and only for categories with significant amount of signal events to reduce the total number of bbb uncertainties
+    //auto bbb_sig = ch::BinByBinFactory()
+    //.SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_bin_$#")
+    //.SetAddThreshold(0.05)
+    //.SetMergeThreshold(0.0)
+    //.SetFixNorm(false);
+    //bbb_sig.AddBinByBin(cb.cp().signals().bin_id({1,2,3,4,5,6,31,32,41,42}),cb); 
 
 	
 	//// rename embedded energy-scale uncertainties so that they are not correlated with MC energy-scales
@@ -1068,7 +1133,7 @@ int main(int argc, char** argv) {
 	    	    output_prefix + output_folder + "/$TAG/common/htt_input.root");
 	
 	
-	if(!do_control_plots) writer.WriteCards("cmb", cb);
+	if(do_control_plots==0) writer.WriteCards("cmb", cb);
 	//Add all di-jet categories combined
 	//
 	

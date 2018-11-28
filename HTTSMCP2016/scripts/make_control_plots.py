@@ -3,7 +3,7 @@ import os
 bins = ['100','101','102','103','104','105','106','107','108']
 chans = ['em', 'mt', 'et', 'tt']
 
-chans=['em']
+#chans=['em']
 
 plots = {}
 plots['100'] = 'pt_1'
@@ -17,7 +17,7 @@ plots['107'] = 'n_jets'
 plots['108'] = 'm_sv'
 
 modes=['1','2','3']
-year='2016'
+year='2017'
 
 for chn in chans:
   
@@ -74,16 +74,18 @@ for chn in chans:
         if chn == 'tt': extra=' --custom_x_range --x_axis_min=40 --x_axis_max=100 '
       if 'met' in plots[x]: 
         extra=' --custom_x_range --x_axis_min=0 --x_axis_max=100 '
-
-      if 'sjdphi' in plots[x]: extra+= ' --extra_pad=0.5 '
-  
+      if 'pt_tt' in plots[x]: extra=' --custom_x_range --x_axis_min=0 --x_axis_max=300 '
+      if 'sjdphi' in plots[x]: extra+= ' --extra_pad=0.55 '
+ 
+      if year == '2017': extra+= ' --lumi="41.9 fb^{-1} (13 TeV)" '
+ 
       mode_str=''
       if mode == '2': mode_str='lowmsv_'
       if mode == '3': mode_str='himsv_'
   
       outname='%s_%s_%s%s' % (plots[x], chn, mode_str, year)
   
-      command='python $CMSSW_BASE/src/CombineHarvester/HTTSMCP2016/scripts/postFitControlPlot.py -f shapes_%s_control_2016_%s.root  --file_dir=%s_13TeV_prefit --mode prefit --no_signal --ratio --x_title="%s" --y_title="%s" --outname="%s" --channel_label="%s" %s' % (chn, mode, x, x_title, y_title, outname, chn_lab, extra)
+      command='python $CMSSW_BASE/src/CombineHarvester/HTTSMCP2016/scripts/postFitControlPlot.py -f shapes_%s_control_%s_%s.root  --file_dir=%s_13TeV_prefit --mode prefit --no_signal --ratio --x_title="%s" --y_title="%s" --outname="%s" --channel_label="%s" %s' % (chn, year, mode, x, x_title, y_title, outname, chn_lab, extra)
  
       print command 
 
