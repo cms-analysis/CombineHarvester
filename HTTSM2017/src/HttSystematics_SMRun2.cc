@@ -685,12 +685,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   // Uncertainty of hadronic tau track efficiency correction
   cb.cp()
-    .channel({"et", "mt", "tt", "em"})
+    .channel({"et", "mt", "tt"})
     .process({"EMB"})
     .AddSyst(cb, "CMS_3ProngEff_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp()
-    .channel({"et", "mt", "tt", "em"})
+    .channel({"et", "mt", "tt"})
     .process({"EMB"})
     .AddSyst(cb, "CMS_1ProngPi0Eff_$ERA", "shape", SystMap<>::init(1.00));
 
