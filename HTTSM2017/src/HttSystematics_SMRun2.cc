@@ -768,7 +768,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 	       ({"mt"}, {11},  1.028) //w
 	       ({"mt"}, {12},  1.037) //ztt
 	       ({"mt"}, {13},  1.036) //tt
-	       ({"mt"}, {14},  1.022) //ss
+	       ({"mt"}, {14},  1.033) //ss
 	       ({"mt"}, {15},  1.028) //zll
 	       ({"mt"}, {16},  1.042) //misc
 	       ({"mt"}, {100}, 1.026) //incl
@@ -777,16 +777,16 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 	       ({"et"}, {11},  1.047) //w
 	       ({"et"}, {12},  1.067) //ztt
 	       ({"et"}, {13},  1.059) //tt
-	       ({"et"}, {14},  1.037) //ss
+	       ({"et"}, {14},  1.038) //ss
 	       ({"et"}, {15},  1.067) //zll
 	       ({"et"}, {16},  1.076) //misc
 	       ({"et"}, {100}, 1.046) //incl
 	       ({"tt"}, {1},   1.029) //ggh
 	       ({"tt"}, {2},   1.037) //qqh
-	       ({"tt"}, {12},  1.035) //ztt !
+	       ({"tt"}, {12},  1.035) //ztt
 	       ({"tt"}, {16},  1.020) //misc
-	       ({"tt"}, {17},  1.028) //noniso
-	       ({"tt"}, {100}, 1.028) //incl
+	       ({"tt"}, {17},  1.029) //noniso
+	       ({"tt"}, {100}, 1.029) //incl
 	       );
 
   // Syst. norm: Bin-correlated (to do: partially correlated across years)
@@ -796,19 +796,19 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .AddSyst(cb, "CMS_ff_norm_syst_$CHANNEL_$ERA", "lnN", SystMap<channel, bin_id>::init
 	       ({"mt"}, {1},   1.070) //ggh
 	       ({"mt"}, {2},   1.058) //qqh
-	       ({"mt"}, {11},  1.052) //w
+	       ({"mt"}, {11},  1.054) //w
 	       ({"mt"}, {12},  1.097) //ztt
-	       ({"mt"}, {13},  1.051) //tt
-	       ({"mt"}, {14},  1.053) //ss
+	       ({"mt"}, {13},  1.053) //tt
+	       ({"mt"}, {14},  1.091) //ss
 	       ({"mt"}, {15},  1.068) //zll
-	       ({"mt"}, {16},  1.053) //misc
+	       ({"mt"}, {16},  1.091) //misc
 	       ({"mt"}, {100}, 1.059) //incl
 	       ({"et"}, {1},   1.060) //ggh
 	       ({"et"}, {2},   1.057) //qqh
 	       ({"et"}, {11},  1.053) //w
 	       ({"et"}, {12},  1.088) //ztt
-	       ({"et"}, {13},  1.055) //tt
-	       ({"et"}, {14},  1.060) //ss
+	       ({"et"}, {13},  1.057) //tt
+	       ({"et"}, {14},  1.063) //ss
 	       ({"et"}, {15},  1.072) //zll
 	       ({"et"}, {16},  1.058) //misc
 	       ({"et"}, {100}, 1.060) //incl
