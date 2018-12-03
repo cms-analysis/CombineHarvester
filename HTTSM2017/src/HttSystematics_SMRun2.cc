@@ -263,12 +263,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   // ##########################################################################
 
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_htt_eff_b_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp()
-      .channel({"et", "mt", "tt"})
+      .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_htt_mistag_b_$ERA", "shape", SystMap<>::init(1.00));
 
@@ -381,28 +381,28 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   // Regional JES
   else {
     cb.cp()
-        .channel({"et", "mt", "tt"})
+        .channel({"et", "mt", "tt", "em"})
         .process(mc_processes)
         .AddSyst(cb, "CMS_scale_j_eta0to3_$ERA", "shape", SystMap<>::init(1.00));
 
     cb.cp()
-        .channel({"et", "mt", "tt"})
+        .channel({"et", "mt", "tt", "em"})
         .process(mc_processes)
         .AddSyst(cb, "CMS_scale_j_eta0to5_$ERA", "shape", SystMap<>::init(1.00));
 
     cb.cp()
-        .channel({"et", "mt", "tt"})
+        .channel({"et", "mt", "tt", "em"})
         .process(mc_processes)
         .AddSyst(cb, "CMS_scale_j_eta3to5_$ERA", "shape", SystMap<>::init(1.00));
 
     cb.cp()
-        .channel({"et", "mt", "tt"})
+        .channel({"et", "mt", "tt", "em"})
         .process(mc_processes)
         .AddSyst(cb, "CMS_scale_j_RelativeBal_$ERA", "shape", SystMap<>::init(1.00));
 
     if (era == 2017) {
       cb.cp()
-          .channel({"et", "mt", "tt"})
+	  .channel({"et", "mt", "tt", "em"})
           .process(mc_processes)
           .AddSyst(cb, "CMS_scale_j_RelativeSample_$ERA", "shape", SystMap<>::init(1.00));
     }
@@ -478,10 +478,23 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .channel({"tt"})
       .process({"QCD"})
       .AddSyst(cb, "CMS_ExtrapABCD_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.03));
+
   cb.cp()
       .channel({"em"})
       .process({"QCD"})
-      .AddSyst(cb, "CMS_ExtrapSSOS_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.10));
+      .AddSyst(cb, "CMS_htt_qcd_0jet_rate_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+      .channel({"em"})
+      .process({"QCD"})
+      .AddSyst(cb, "CMS_htt_qcd_0jet_shape_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+      .channel({"em"})
+      .process({"QCD"})
+      .AddSyst(cb, "CMS_htt_qcd_1jet_shape_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+      .channel({"em"})
+      .process({"QCD"})
+      .AddSyst(cb, "CMS_htt_qcd_iso_$ERA", "shape", SystMap<>::init(1.00));
 
   // ##########################################################################
   // Uncertainty: Drell-Yan LO->NLO reweighting
