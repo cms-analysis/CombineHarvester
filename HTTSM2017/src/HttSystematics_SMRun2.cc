@@ -538,7 +538,6 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_scale_j_$ERA", "shape", SystMap<>::init(0.71));
-  }
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(mc_processes)
