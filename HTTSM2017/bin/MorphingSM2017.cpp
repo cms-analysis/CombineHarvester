@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
   // Specify signal processes and masses
   vector<string> sig_procs;
   // STXS stage 0: ggH and VBF processes
-  if(stxs_signals == "stxs_stage0") sig_procs = {"ggH", "qqH"};
+  if(stxs_signals == "stxs_stage0") sig_procs = {"ggH", "qqH", "WH", "ZH"};
   // STXS stage 1: Splits of ggH and VBF processes
   // References:
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGFiducialAndSTXS
@@ -254,7 +254,9 @@ int main(int argc, char **argv) {
       "ggH_VBFTOPO_JET3",
       // VBF
       "qqH_VBFTOPO_JET3VETO", "qqH_VBFTOPO_JET3", "qqH_REST",
-      "qqH_PTJET1_GT200", "qqH_VH2JET"};
+      "qqH_PTJET1_GT200", "qqH_VH2JET"
+      // VH
+      "WH", "ZH"};
   else throw std::runtime_error("Given STXS signals are not known.");
   vector<string> masses = {"125"};
 

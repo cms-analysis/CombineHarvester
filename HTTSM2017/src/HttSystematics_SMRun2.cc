@@ -41,7 +41,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       "qqH_PTJET1_GT200", "qqH_VH2JET"};
   std::vector<std::string> signals_VH = {
       // STXS stage 0
-      "WH_htt", "ZH_htt"};
+      "WH", "ZH"};
   std::vector<std::string> signals = JoinStr({signals_ggH, signals_qqH, signals_VH});
 
   // Background processes
@@ -821,6 +821,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   //           - PDF uncertainties splitted by category?
   //           - QCDUnc uncertainties?
   //           - UEPS uncertainties?
+  // - FIXME: Check VH QCD scale uncertainty
   // - FIXME: References?
   // ##########################################################################
 
@@ -848,7 +849,15 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(signals_qqH)
-      .AddSyst(cb, "QCDScale_qqH", "lnN", SystMap<>::init(1.004));
+      .AddSyst(cb, "QCDScale_qqH", "lnN", SystMap<>::init(1.005));
+  cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process({"ZH"})
+      .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.009));
+  cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process({"WH"})
+      .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.008));
 
   // PDF
   cb.cp()
@@ -861,12 +870,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .AddSyst(cb, "pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"WH_htt"})
-      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.019));
+      .process({"ZH"})
+      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.013));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"ZH_htt"})
-      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
+      .process({"WH"})
+      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.018));
 
   // Gluon-fusion WG1 uncertainty scheme
   if (ggh_wg1) {
