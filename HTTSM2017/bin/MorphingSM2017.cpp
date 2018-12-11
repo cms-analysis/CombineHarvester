@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
   // Define background processes
   map<string, VString> bkg_procs;
   VString bkgs, bkgs_em;
-  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTL", "TTJ", "VVJ", "VVT", "VVL"};
+  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTL", "TTJ", "VVJ", "VVT", "VVL", "WH125", "ZH125"};
   bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST"};
   if(embedding){
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
   // Specify signal processes and masses
   vector<string> sig_procs;
   // STXS stage 0: ggH and VBF processes
-  if(stxs_signals == "stxs_stage0") sig_procs = {"ggH", "qqH", "WH", "ZH"};
+  if(stxs_signals == "stxs_stage0") sig_procs = {"ggH", "qqH"};
   // STXS stage 1: Splits of ggH and VBF processes
   // References:
   // - https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGFiducialAndSTXS
