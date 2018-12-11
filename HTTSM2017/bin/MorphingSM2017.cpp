@@ -254,9 +254,7 @@ int main(int argc, char **argv) {
       "ggH_VBFTOPO_JET3",
       // VBF
       "qqH_VBFTOPO_JET3VETO", "qqH_VBFTOPO_JET3", "qqH_REST",
-      "qqH_PTJET1_GT200", "qqH_VH2JET"
-      // VH
-      "WH", "ZH"};
+      "qqH_PTJET1_GT200", "qqH_VH2JET"};
   else throw std::runtime_error("Given STXS signals are not known.");
   vector<string> masses = {"125"};
 
