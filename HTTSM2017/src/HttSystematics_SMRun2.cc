@@ -41,7 +41,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       "qqH_PTJET1_GT200", "qqH_VH2JET"};
   std::vector<std::string> signals_VH = {
       // STXS stage 0
-      "WH_htt", "ZH_htt"};
+      "WH", "ZH"};
   std::vector<std::string> signals = JoinStr({signals_ggH, signals_qqH, signals_VH});
 
   // Background processes
@@ -85,15 +85,44 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   // - FIXME: References?
   // ##########################################################################
 
-  cb.cp()
+  if (era == 2016) {
+    cb.cp()
       .channel({"et"})
       .process(mc_processes)
       .AddSyst(cb, "CMS_eff_trigger_et_$ERA", "lnN", SystMap<>::init(1.02));
+    // 100% uncorrelated for embedded
+    cb.cp()
+      .channel({"et"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_eff_trigger_emb_et_$ERA", "lnN", SystMap<>::init(1.02));
+  } else if (era == 2017) {
+    cb.cp()
+      .channel({"et"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_eff_trigger_et_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_eff_xtrigger_et_$ERA", "shape", SystMap<>::init(1.00));
+    // 100% uncorrelated for embedded
+    cb.cp()
+      .channel({"et"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_eff_trigger_emb_et_$ERA", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et"})
+      .process({"EMB"})
+      .AddSyst(cb, "CMS_eff_xtrigger_emb_et_$ERA", "shape", SystMap<>::init(1.00));
+  }
 
   cb.cp()
       .channel({"mt"})
       .process(mc_processes)
-      .AddSyst(cb, "CMS_eff_trigger_mt_$ERA", "lnN", SystMap<>::init(1.02));
+      .AddSyst(cb, "CMS_eff_trigger_mt_$ERA", "shape", SystMap<>::init(1.00));
+  cb.cp()
+      .channel({"mt"})
+      .process(mc_processes)
+      .AddSyst(cb, "CMS_eff_xtrigger_mt_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp()
       .channel({"tt"})
@@ -112,14 +141,13 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   // 100% uncorrelated for embedded
   cb.cp()
-      .channel({"et"})
+      .channel({"mt"})
       .process({"EMB"})
-      .AddSyst(cb, "CMS_eff_trigger_emb_et_$ERA", "lnN", SystMap<>::init(1.02));
-
+      .AddSyst(cb, "CMS_eff_trigger_emb_mt_$ERA", "shape", SystMap<>::init(1.00));
   cb.cp()
       .channel({"mt"})
       .process({"EMB"})
-      .AddSyst(cb, "CMS_eff_trigger_emb_mt_$ERA", "lnN", SystMap<>::init(1.02));
+      .AddSyst(cb, "CMS_eff_xtrigger_emb_mt_$ERA", "shape", SystMap<>::init(1.00));
 
   cb.cp()
       .channel({"tt"})
@@ -693,7 +721,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process({"ZTT", "ZL", "ZJ"})
-      .AddSyst(cb, "CMS_htt_dyShape", "shape", SystMap<>::init(1.00));
+      .AddSyst(cb, "CMS_htt_dyShape_$ERA", "shape", SystMap<>::init(0.10));
 
   // ##########################################################################
   // Uncertainty: TT shape reweighting
@@ -793,6 +821,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   //           - PDF uncertainties splitted by category?
   //           - QCDUnc uncertainties?
   //           - UEPS uncertainties?
+  // - FIXME: Check VH QCD scale uncertainty
   // - FIXME: References?
   // ##########################################################################
 
@@ -820,7 +849,15 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
       .process(signals_qqH)
-      .AddSyst(cb, "QCDScale_qqH", "lnN", SystMap<>::init(1.004));
+      .AddSyst(cb, "QCDScale_qqH", "lnN", SystMap<>::init(1.005));
+  cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process({"ZH"})
+      .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.009));
+  cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+      .process({"WH"})
+      .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.008));
 
   // PDF
   cb.cp()
@@ -833,12 +870,12 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .AddSyst(cb, "pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"WH_htt"})
-      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.019));
+      .process({"ZH"})
+      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.013));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"ZH_htt"})
-      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.016));
+      .process({"WH"})
+      .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.018));
 
   // Gluon-fusion WG1 uncertainty scheme
   if (ggh_wg1) {
