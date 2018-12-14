@@ -484,6 +484,9 @@ python ../CombineTools/scripts/plotGof.py --statistic saturated --mass 125.0 -o 
 ```
 
 ## Freezing groups of nuisances
+
+**Note** this is not exactly what was done for the uncertainty breakdown in the paper. See the next section for this.
+
 To determine the effect of addition or removal of a group of nuisances on the signal strength. The nuisance groups are defined in VH2017.py, search for `SetGroup`. Note that a group for the bin-by-bin parameters has to be created during the text2workspace step and cannot be defined at the datacard making stage. You will need to merge this PR: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/478 to be able to do this. The group is called autoMCStats.
 With that in hand the groups defined now are: signal_theory, bkg_theory, sim_modelling, jes, jer, btag, mistag, lumi, lep_eff, met, autoMCStats.
 
@@ -514,6 +517,40 @@ The effect of addition of this group on the uncertainty is sqrt((uncertainty wit
 
 A handy thing we can do is to run everything in one go just generating the fits separately and running it in the background, or submitting to the batch/condor once the fit starts taking longer:
 `combineTool.py -M MultiDimFit -d output/<output_folder>/cmb/higgsCombine.snapshot.MultiDimFit.mH120.123456.root --cminDefaultMinimizerStrategy 0 --snapshotName MultiDimFit --algo singles -t -1 --toysFrequentist --toysFile higgsCombine.Test.GenerateOnly.mH120.123456.root --there --robustFit 1 --generate 'freezeNuisanceGroups;n;;!,fr.nominal;signal_theory,fr.signaltheory;bkg_theory,fr.bkgtheory;sim_modelling,fr.modelling;jes,fr.jes;jer,fr.jer;btag,fr.btag;mistag,fr.mistag;lumi,fr.lumi;lep_eff,fr.lep_eff;met,fr.met;autoMCStats,fr.autoMCStats;^signal_theory,nofr.signaltheory;^bkg_theory,nofr.bkgtheory;^sim_modelling,nofr.modelling;^jes,nofr.jes;^jer,nofr.jer;^btag,nofr.btag;^mistag,nofr.mistag;^lumi,nofr.lumi;^lep_eff,nofr.lep_eff;^met,nofr.met;^autoMCStats,nofr.autoMCStats'
+
+## Uncertainty breakdown as done for the paper
+This should be executed from the `comb_scripts` directory.
+First create the slightly modified datacards as used for the combination (changes some of the nuisance parameter names slightly):
+`python prepareComb_Hbb.py -i /path/to/cadi/directory/from/cmshcg/svn`
+
+Run text2workspace:
+`combineTool.py -M T2W -i comb_2017_Hbb_mu_vhbb_2017.txt -o comb_Hbb_vhbb_2017_A1.root -m 125 -P HiggsAnalysisCombinedLimit.LHCHCGModels:A1 --PO dohccgluglu=1 --for-fits --job-mode interactive`
+
+Add attributes (alternative to defining groups of nuisance parameters):
+`python addAttributes.py -i comb_Hbb_mu_vhbb_2017_A1.root --json attributes_hbb.json -o comb_Hbb_vhbb_2017_A1_attr.root | tee attr_vhbb_2017_A1.log`
+
+Run the initial fits:
+`for CARD in vhbb_2017; do for M in A1_hbb); do combineTool.py -M MultiDimFit -m 125.09 -d comb_Hbb_${CARD}_A1_attr.root --redefineSignalPOIs $(./getPOIs_hbb.py ${M} -p) --setParameters $(./getPOIs_hbb.py ${M} -s) --setParameterRanges $(./getPOIs_hbb.py ${M} -r) $(./getPOIs_hbb.py ${M} -O) --freezeParameters 'MH' --saveInactivePOI=1 --saveToys --saveWorkspace --generate 't;n;toysFrequentist;;!,observed,!;-1,postfit_asimov, ' -n .${M}_BestFit_${CARD} -v 3 --job-mode condor --task-name ${M}_BestFit_${CARD} --sub-opts='+JobFlavour = "workday"\nRequestCpus = 2'; done; done`
+
+`for CARD in vhbb_2017; do for M in A1_hbb; do for TYPE in observed postfit_asimov; do mv higgsCombine.${M}_BestFit_${CARD}.${TYPE}.MultiDimFit.mH125.09*.root comb_Hbb_${CARD}_${M}_${TYPE}.root; done; done; done`
+
+Run the full scans for the main breakdown (uncertainties added in quadrature give the total by definition):
+`for CARD in vhbb_2017; do for M in A1_hbb; do combineTool.py -M MultiDimFit -m 125.09  --generate "d;D;n;;comb_Hbb_${CARD}_${M}_observed.root,data_obs,observed;comb_Hbb_${CARD}_${M}_postfit_asimov.root,toys/toy_asimov,postfit_asimov" 'freezeNuisanceGroups;n;;!,nominal;sigTheory,bkgTheory,,fr.Theory;sigTheory,bkgTheory,mcStats,,fr.TheoryMCStat;all,fr.all' $(./getPOIs_hbb.py ${M} -g) --redefineSignalPOIs $(./getPOIs_hbb.py ${M} -p) --setParameterRanges $(./getPOIs_hbb.py ${M} -r) $(./getPOIs_hbb.py ${M} -O) --freezeParameters 'MH' --saveInactivePOI=1 --points 30 --floatOtherPOIs 1 --snapshotName "MultiDimFit" --skipInitialFit --algo grid --split-points 6 --job-mode crab3 --task-name ${CARD}_${M}_scans --custom-crab custom_crab.py --crab-area HbbComb_Scans -n .${CARD}.${M}; done; done`
+
+Run the additional scans for the N-1 breakdowns (subcategories in the breakdown table):
+`for CARD in vhbb_2017; do for M in A1_hbb; do combineTool.py -M MultiDimFit -m 125.09 -d comb_Hbb_${CARD}_${M}_observed.root -D data_obs --generate 'freezeNuisanceGroups;n;;!,nominal;sigTheory,fr.SigTheory;bkgTheory,fr.BkgTheory;mcStats,fr.MCStats;bTag,fr.bTag;JES,fr.JES;Lepton,fr.Lepton;Lumi,fr.Lumi;Other,fr.Other' $(./getPOIs_hbb.py ${M} -g) --redefineSignalPOIs $(./getPOIs_hbb.py ${M} -p) --setParameterRanges $(./getPOIs_hbb.py ${M} -r) $(./getPOIs_hbb.py ${M} -O) --freezeParameters 'MH' --saveInactivePOI=1 --points 30 --snapshotName "MultiDimFit" --skipInitialFit --algo grid --split-points 6 --job-mode crab3 --task-name ${CARD}_${M}_Nm1scans --custom-crab custom_crab.py --crab-area HbbComb_Scans -n .${CARD}.${M}; done; done`
+
+`for CARD in vhbb_2017; do for M in A1_hbb; do combineTool.py -M MultiDimFit -m 125.09 -d comb_Hbb_${CARD}_${M}_observed.root -D data_obs  --generate $(./getPOIs_hbb.py ${M} -g) --redefineSignalPOIs $(./getPOIs_hbb.py ${M} -p) --setParameterRanges $(./getPOIs_hbb.py ${M} -r) $(./getPOIs_hbb.py ${M} -O) --freezeParameters 'MH,SF_TT_Wln,SF_TT_Wln_2017,SF_TT_Znn,SF_TT_Znn_2017,SF_TT_high_Zll_2017,SF_TT_low_Zll_2017,SF_TT_norm_high_Zll,SF_TT_norm_low_Zll,SF_Wj0b_Wln,SF_Wj0b_Wln_2017,SF_Wj1b_Wln,SF_Wj1b_Wln_2017,SF_Wj2b_Wln,SF_Wj2b_Wln_2017,SF_Zj0b_Znn,SF_Zj0b_Znn_2017,SF_Zj0b_high_Zll_2017,SF_Zj0b_low_Zll_2017,SF_Zj0b_norm_high_Zll,SF_Zj0b_norm_low_Zll,SF_Zj1b_Znn,SF_Zj1b_Znn_2017,SF_Zj1b_high_Zll_2017,SF_Zj1b_low_Zll_2017,SF_Zj1b_norm_high_Zll,SF_Zj1b_norm_low_Zll,SF_Zj2b_Znn,SF_Zj2b_Znn_2017,SF_Zj2b_high_Zll_2017,SF_Zj2b_low_Zll_2017,SF_Zj2b_norm_high_Zll,SF_Zj2b_norm_low_Zll' --saveInactivePOI=1 --points 30 --snapshotName "MultiDimFit" --skipInitialFit --algo grid --split-points 6 --job-mode crab3 --task-name ${CARD}_${M}_rateparamscans --custom-crab custom_crab.py --crab-area HbbComb_Scans -n .${CARD}.${M}.fr.rateParam; done; done`
+
+Hadd all the results, example:
+`LOC="/path/to/output/of/results/from/crab"; for CARD in vhbb_2017; do for M in A1_hbb; do DIR=${CARD}_${M}_scans; for FILE in ${LOC}/${DIR}/*/*/combine_output_*.tar; do tar -xf $FILE; done; for W in observed postfit_asimov; do for T in nominal fr.all fr.Theory fr.TheoryMCStat; do for P in $(../getPOIs_hbb.py ${M} -P); do hadd -k -f scan.${CARD}.${M}.${W}.${T}.${P}.root higgsCombine.${CARD}.${M}.${W}.${T}.${P}.POINTS.*.root; rm higgsCombine.${CARD}.${M}.${W}.${T}.${P}.POINTS.*.root; done; done; done; done; done`
+
+Will have to do the same thing for the N-1 breakdowns!
+
+Plot the likelihood scans, example for the main breakdown:
+`INPUT="some/path/results"; OUTPUT="some/path/plots"; for CARD in vhbb_2017; do for M in A1_hbb; do mkdir -p ${OUTPUT}/${CARD}/${M}; for W in observed postfit_asimov; do case ${W} in postfit_asimov) EXTRA='--main-label "SM Expected" --main-color 2';; *) EXTRA="";; esac; for P in $(./getPOIs_hbb.py ${M} -P);  do eval python plot1DScan.py -o scan_full_split_${W}_${M}_${P} --POI ${P} --model ${M} --others \"${INPUT}/scan.${CARD}.${M}.${W}.fr.Theory.${P}.root:Freeze Th.:2\" \"${INPUT}/scan.${CARD}.${M}.${W}.fr.TheoryMCStat.${P}.root:Freeze Th. + MC Stat:38\" \"${INPUT}/scan.${CARD}.${M}.${W}.fr.all.${P}.root:Freeze Exp.+Th. MC Stat.:8\" --breakdown "Th,MCStat,Exp,Stat" --json ${OUTPUT}/${CARD}/${W}.json --translate pois.json --meta "Types:${W},Scans:full_split,POIs:${P}" -m ${INPUT}/scan.${CARD}.${M}.${W}.nominal.${P}.root  --y-max 10 ${EXTRA} --remove-near-min 0.8 --no-input-label --outdir ${OUTPUT}/${CARD}/${M}; done; done; done; done`
+
+This gives the main breakdown categories; for the N-1 scans should plot the breakdown with just the nominal and each N-1 frozen group in turn to get the uncertainty.
 
 
 ## Diagnostic tools
