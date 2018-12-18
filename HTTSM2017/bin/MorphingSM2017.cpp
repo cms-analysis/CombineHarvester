@@ -100,15 +100,14 @@ int main(int argc, char **argv) {
     chns.push_back("tt");
   if (chan.find("em") != std::string::npos)
     chns.push_back("em");
-  //TODO: add back "em" below once it is ready
   if (chan == "all")
-    chns = {"mt", "et", "tt"};
+    chns = {"mt", "et", "tt", "em"};
 
   // Define background processes
   map<string, VString> bkg_procs;
   VString bkgs, bkgs_em;
   bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTL", "TTJ", "VVJ", "VVT", "VVL", "WH125", "ZH125"};
-  bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST"};
+  bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST", "WH125", "ZH125"};
   if(embedding){
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
