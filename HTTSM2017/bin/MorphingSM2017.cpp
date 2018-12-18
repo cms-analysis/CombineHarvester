@@ -348,9 +348,17 @@ int main(int argc, char **argv) {
     }
   });
 
+  // Perform auto-rebinning
+  if (auto_rebin) {
+    auto rebin = ch::AutoRebin()
+                    .SetRebinMode(0)
+                    .SetBinThreshold(1.0);
+    rebin.Rebin(cb.cp().backgrounds(), cb);
+  }
+
   // Merge bins and set bin-by-bin uncertainties
   auto bbb = ch::BinByBinFactory()
-                 .SetAddThreshold(0.00)
+                 .SetAddThreshold(0.05)
                  .SetMergeThreshold(0.5)
                  .SetFixNorm(false);
   bbb.MergeBinErrors(cb.cp().backgrounds());
