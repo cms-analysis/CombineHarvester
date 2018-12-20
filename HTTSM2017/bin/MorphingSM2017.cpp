@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
         auto shape = cb.cp().bin({b}).backgrounds().GetShape();
         auto min = shape.GetBinLowEdge(1);
         auto range = 1.0 - min;
-        vector<double> raw_binning = {0.4, 0.6, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0};
+        vector<double> raw_binning = {0.4, 0.6, 0.7, 0.8, 0.85, 0.90, 0.95, 1.0};
         vector<double> binning = {min};
         for (int i=0; i<5; i++){
           for (auto border : raw_binning) {
@@ -416,14 +416,14 @@ int main(int argc, char **argv) {
         // if it's a multiple of the width between minimum NN score and 1.0.
         auto low_edge = shape.GetBinLowEdge(i);
         auto is_boundary = fabs(fmod(low_edge - offset, width)) < tolerance ? true : false;
+        c += shape.GetBinContent(i);
         if (is_boundary) { // If the lower edge is a boundary, set a bin edge.
-          if (c <= threshold && !(fabs(fmod(binning[0] - offset, width)) < tolerance)) { // Special case: If this bin is at a boundary but it is below the threshold and the bin above is not again a boundary, merge to the right.
+          if (c <= threshold && !(fabs(fmod(binning[0] - offset, width)) < tolerance || fabs(fmod(binning[0] - offset, width)) - width < tolerance)) { // Special case: If this bin is at a boundary but it is below the threshold and the bin above is not again a boundary, merge to the right.
             binning.erase(binning.begin());
           }
           binning.insert(binning.begin(), low_edge);
           c = 0.0;
         } else { // If this is not a boundary, check whether the content is above the threshold.
-          c += shape.GetBinContent(i);
           if (c > threshold) { // Set lower edge if the bin content is above the threshold.
             binning.insert(binning.begin(), low_edge);
             c = 0.0;
