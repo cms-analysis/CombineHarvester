@@ -323,6 +323,52 @@ int main(int argc, char **argv) {
       std::cout << "[INFO] Rebinning by hand for bin: " << b << std::endl;
       cb.cp().bin({b}).VariableRebin(binning);
     }
+  }else{
+    //rebin background categories
+    for (auto b : cb.cp().bin_set()) {
+      TString bstr = b;
+      if (bstr.Contains("unrolled")) continue;
+      std::cout << "[INFO] Rebin background bin " << b << "\n";
+      auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+      auto min = shape.GetBinLowEdge(1);
+      cb.cp().bin({b}).VariableRebin({min, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0});
+    }
+    //rebin ggh categories
+    for (auto b : cb.cp().bin_set()) {
+      TString bstr = b;
+      if (bstr.Contains("ggh_unrolled")){
+        std::cout << "[INFO] Rebin background bin " << b << "\n";
+        auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+        auto min = shape.GetBinLowEdge(1);
+        auto range = 1.0 - min;
+        vector<double> raw_binning = {0.3, 0.4, 0.5, 0.6, 0.7, 1.0};
+        vector<double> binning = {min};
+        for (int i=0; i<9; i++){
+          for (auto border : raw_binning) {
+            binning.push_back(i*range+border);
+          }
+        }
+        cb.cp().bin({b}).VariableRebin(binning);
+      }
+    }
+    //rebin qqh categories
+    for (auto b : cb.cp().bin_set()) {
+      TString bstr = b;
+      if (bstr.Contains("qqh_unrolled")){
+        std::cout << "[INFO] Rebin background bin " << b << "\n";
+        auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+        auto min = shape.GetBinLowEdge(1);
+        auto range = 1.0 - min;
+        vector<double> raw_binning = {0.4, 0.6, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0};
+        vector<double> binning = {min};
+        for (int i=0; i<5; i++){
+          for (auto border : raw_binning) {
+            binning.push_back(i*range+border);
+          }
+        }
+        cb.cp().bin({b}).VariableRebin(binning);
+      }
+    }
   }
 
   // At this point we can fix the negative bins
@@ -390,7 +436,7 @@ int main(int argc, char **argv) {
 
   // Merge bins and set bin-by-bin uncertainties
   auto bbb = ch::BinByBinFactory()
-                 .SetAddThreshold(0.05)
+                 .SetAddThreshold(0.0)
                  .SetMergeThreshold(0.5)
                  .SetFixNorm(false);
   bbb.MergeBinErrors(cb.cp().backgrounds());
