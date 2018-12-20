@@ -24,6 +24,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <math.h>
 
 using namespace std;
 using boost::starts_with;
@@ -100,15 +101,14 @@ int main(int argc, char **argv) {
     chns.push_back("tt");
   if (chan.find("em") != std::string::npos)
     chns.push_back("em");
-  //TODO: add back "em" below once it is ready
   if (chan == "all")
-    chns = {"mt", "et", "tt"};
+    chns = {"mt", "et", "tt", "em"};
 
   // Define background processes
   map<string, VString> bkg_procs;
   VString bkgs, bkgs_em;
   bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTL", "TTJ", "VVJ", "VVT", "VVL", "WH125", "ZH125"};
-  bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST"};
+  bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST", "WH125", "ZH125"};
   if(embedding){
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
@@ -348,9 +348,49 @@ int main(int argc, char **argv) {
     }
   });
 
+  // Perform auto-rebinning
+  if (auto_rebin) {
+    for (auto b : cb.cp().bin_set()) {
+      std::cout << "[INFO] Rebin bin " << b << "\n";
+      // Get shape of this category with sum of backgrounds
+      auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+      // Push back last bin edge
+      vector<double> binning;
+      const auto num_bins = shape.GetNbinsX();
+      binning.push_back(shape.GetBinLowEdge(num_bins + 1));
+      // Now, go backwards through bins (from right to left) and merge a bin if
+      // the background yield is below a given threshold.
+      auto offset = shape.GetBinLowEdge(1);
+      auto width = 1.0 - offset;
+      auto c = 0.0;
+      const auto threshold = 1.0;
+      const auto tolerance = 1e-4;
+      for(auto i = num_bins; i > 0; i--) {
+        // Determine whether this is a boundary of an unrolled category
+        // if it's a multiple of the width between minimum NN score and 1.0.
+        auto low_edge = shape.GetBinLowEdge(i);
+        auto is_boundary = fabs(fmod(low_edge - offset, width)) < tolerance ? true : false;
+        if (is_boundary) { // If the lower edge is a boundary, set a bin edge.
+          if (c <= threshold && !(fabs(fmod(binning[0] - offset, width)) < tolerance)) { // Special case: If this bin is at a boundary but it is below the threshold and the bin above is not again a boundary, merge to the right.
+            binning.erase(binning.begin());
+          }
+          binning.insert(binning.begin(), low_edge);
+          c = 0.0;
+        } else { // If this is not a boundary, check whether the content is above the threshold.
+          c += shape.GetBinContent(i);
+          if (c > threshold) { // Set lower edge if the bin content is above the threshold.
+            binning.insert(binning.begin(), low_edge);
+            c = 0.0;
+          }
+        }
+      }
+      cb.cp().bin({b}).VariableRebin(binning);
+    }
+  }
+
   // Merge bins and set bin-by-bin uncertainties
   auto bbb = ch::BinByBinFactory()
-                 .SetAddThreshold(0.00)
+                 .SetAddThreshold(0.05)
                  .SetMergeThreshold(0.5)
                  .SetFixNorm(false);
   bbb.MergeBinErrors(cb.cp().backgrounds());
