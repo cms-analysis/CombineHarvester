@@ -435,12 +435,14 @@ int main(int argc, char **argv) {
   }
 
   // Merge bins and set bin-by-bin uncertainties
+  /*
   auto bbb = ch::BinByBinFactory()
                  .SetAddThreshold(0.0)
                  .SetMergeThreshold(0.5)
                  .SetFixNorm(false);
   bbb.MergeBinErrors(cb.cp().backgrounds());
   bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+  */
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
