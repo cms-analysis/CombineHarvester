@@ -359,8 +359,7 @@ int main(int argc, char **argv) {
         auto shape = cb.cp().bin({b}).backgrounds().GetShape();
         auto min = shape.GetBinLowEdge(1);
         auto range = 1.0 - min;
-        vector<double> raw_binning = {0.4, 0.6, 0.7, 0.8, 0.84, 0.88, 0.92, 0.96, 1.0};
-        if (bstr.Contains("em_")||bstr.Contains("tt_")) raw_binning = {0.4, 0.6, 0.7, 0.8, 0.85, 0.90, 0.95, 1.0};
+        vector<double> raw_binning = {0.4, 0.6, 0.7, 0.8, 0.85, 0.90, 0.95, 1.0};
         vector<double> binning = {min};
         for (int i=0; i<5; i++){
           for (auto border : raw_binning) {
@@ -437,7 +436,7 @@ int main(int argc, char **argv) {
 
   // Merge bins and set bin-by-bin uncertainties
   auto bbb = ch::BinByBinFactory()
-                 .SetAddThreshold(0.2)
+                 .SetAddThreshold(0.0)
                  .SetMergeThreshold(0.5)
                  .SetFixNorm(false);
   bbb.MergeBinErrors(cb.cp().backgrounds());
