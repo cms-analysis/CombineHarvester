@@ -1,4 +1,6 @@
 
+The following is obsolete (old instructions for CMSSW_7_4_7). Please refer to Protocol_SM_Htt_2017.md.
+
 # Setting up the environment
 ```
 export SCRAM_ARCH=slc6_amd64_gcc481 #bash, for tcsh: setenv SCRAM_ARCH slc6_amd64_gcc481

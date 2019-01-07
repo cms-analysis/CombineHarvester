@@ -1,6 +1,6 @@
 # Links
-[CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)
-[Combine gitbook](https://cms-hcomb.gitbooks.io/combine/content/)
+[CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)  
+[Combine gitbook](https://cms-hcomb.gitbooks.io/combine/content/)  
 
 # Compiling the correct CMSSW version
 
@@ -21,11 +21,14 @@ cd ../..
 
 # Clone CombineHarvester
 git clone ssh://git@github.com/cms-analysis/CombineHarvester CombineHarvester -b SMHTT2017-dev
-mkdir -p CombineHarvester/HTTSM2017/shapes
 
 # Build
 scram b -j 24
 scram b python
+
+# Get shapes
+cd CombineHarvester/HTTSM2017
+git clone https://:@gitlab.cern.ch:8443/cms-htt/SM-ML-2017.git shapes
 ```
 
 # Creating datacards
