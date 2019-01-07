@@ -2,10 +2,38 @@
 [CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)
 [Combine gitbook](https://cms-hcomb.gitbooks.io/combine/content/)
 
-# Creating datacards
+# Compiling the correct CMSSW version
 
 ```bash
-$CMSSW_BASE/bin/slc6_amd64_gcc491/MorphingSM2017 \
+export SCRAM_ARCH=slc6_amd64_gcc530
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
+
+scram project CMSSW CMSSW_8_1_0
+cd CMSSW_8_1_0/src
+
+# Clone combine
+git clone ssh://git@github.com/cms-analysis/HiggsAnalysis-CombinedLimit HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+git fetch origin
+git checkout v7.0.12
+cd ../..
+
+# Clone CombineHarvester
+git clone ssh://git@github.com/cms-analysis/CombineHarvester CombineHarvester -b SMHTT2017-dev
+mkdir -p CombineHarvester/HTTSM2017/shapes
+
+# Build
+scram b -j 24
+scram b python
+```
+
+# Creating datacards
+
+## Create datacards without bin-by-bin uncertainties
+
+```bash
+$CMSSW_BASE/bin/slc6_amd64_gcc530/MorphingSM2017 \
     --base_path=$BASE_PATH \        # Base path for finding ROOT files with shapes
     --input_folder_mt="/mt/" \      # Path relative to base_path containing the
                                     # mt shapes
@@ -13,14 +41,18 @@ $CMSSW_BASE/bin/slc6_amd64_gcc491/MorphingSM2017 \
                                     # et shapes
     --input_folder_tt="/tt/" \      # Path relative to base_path containing the
                                     # tt shapes
+    --input_folder_em="/em/" \      # Path relative to base_path containing the
+                                    # em shapes
     --real_data=false \             # Fit with real data or Asimov data
     --jetfakes=$JETFAKES \          # Toggle usage of fake-factor method
     --embedding=$EMBEDDING \        # Toggle usage of embedded samples
+    --classic_bbb=false \           # Toggle usage of classic bin-by-bin uncertainties
     --postfix="-ML" \               # Expected postfix for the input ROOT files
                                     # with the shapes
     --channel="${CHANNELS}" \       # Analysis channels: Any combination of "em",
                                     # "et", "mt" and "tt" as single string
-    --auto_rebin=true \             # Enable automatic rebinning
+    --auto_rebin=true \             # Enable automatic rebinning, which merges bins
+                                    # without background contribution
     --stxs_signals=$STXS_SIGNALS \  # Signal templates: "stxs_stage0" for ggH and qqH
                                     # or "stxs_stag1" for the stage 1 splitting
     --categories=$CATEGORIES \      # Categorization optimized for STXS stages:
@@ -29,6 +61,15 @@ $CMSSW_BASE/bin/slc6_amd64_gcc491/MorphingSM2017 \
     --output="${ERA}_smhtt"         # name of subdirectory in output directory
 ```
 
+## Add autoMCStats bin-by-bin uncertainties
+
+```bash
+cd output/${ERA}_smhtt/cmb/125/
+for FILE in *.txt
+do
+    sed -i '$s/$/\n * autoMCStats 0.0/' $FILE
+done
+```
 
 # Building the workspaces
 

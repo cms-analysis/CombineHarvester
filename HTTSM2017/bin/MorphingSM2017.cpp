@@ -48,10 +48,10 @@ int main(int argc, char **argv) {
   bool regional_jec = true;
   bool ggh_wg1 = true;
   bool auto_rebin = false;
-  bool manual_rebin = false;
   bool real_data = false;
   bool jetfakes = true;
   bool embedding = false;
+  bool classic_bbb = false;
   bool verbose = false;
   string stxs_signals = "stxs_stage0"; // "stxs_stage0" or "stxs_stage1"
   string categories = "stxs_stage0"; // "stxs_stage0", "stxs_stage1" or "gof"
@@ -71,7 +71,6 @@ int main(int argc, char **argv) {
       ("regional_jec", po::value<bool>(&regional_jec)->default_value(regional_jec))
       ("ggh_wg1", po::value<bool>(&ggh_wg1)->default_value(ggh_wg1))
       ("real_data", po::value<bool>(&real_data)->default_value(real_data))
-      ("manual_rebin", po::value<bool>(&manual_rebin)->default_value(manual_rebin))
       ("verbose", po::value<bool>(&verbose)->default_value(verbose))
       ("output_folder", po::value<string>(&output_folder)->default_value(output_folder))
       ("stxs_signals", po::value<string>(&stxs_signals)->default_value(stxs_signals))
@@ -79,6 +78,7 @@ int main(int argc, char **argv) {
       ("gof_category_name", po::value<string>(&gof_category_name)->default_value(gof_category_name))
       ("jetfakes", po::value<bool>(&jetfakes)->default_value(jetfakes))
       ("embedding", po::value<bool>(&embedding)->default_value(embedding))
+      ("classic_bbb", po::value<bool>(&classic_bbb)->default_value(classic_bbb))
       ("era", po::value<int>(&era)->default_value(era));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
@@ -316,11 +316,50 @@ int main(int argc, char **argv) {
     }
   }
 
-  // Rebin manually
-  if (manual_rebin) {
-    vector<double> binning = {0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
-    for (auto b : cb.cp().bin_set()) {
-      std::cout << "[INFO] Rebinning by hand for bin: " << b << std::endl;
+  // Rebin categories to predefined binning
+
+  // Rebin background categories
+  for (auto b : cb.cp().bin_set()) {
+    TString bstr = b;
+    if (bstr.Contains("unrolled")) continue;
+    std::cout << "[INFO] Rebin background bin " << b << "\n";
+    auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+    auto min = shape.GetBinLowEdge(1);
+    cb.cp().bin({b}).VariableRebin({min, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0});
+  }
+  // Rebin ggh categories
+  for (auto b : cb.cp().bin_set()) {
+    TString bstr = b;
+    if (bstr.Contains("ggh_unrolled")) {
+      std::cout << "[INFO] Rebin background bin " << b << "\n";
+      auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+      auto min = shape.GetBinLowEdge(1);
+      auto range = 1.0 - min;
+      vector<double> raw_binning = {0.3, 0.4, 0.5, 0.6, 0.7, 1.0};
+      vector<double> binning = {min};
+      for (int i=0; i<9; i++){
+        for (auto border : raw_binning) {
+          binning.push_back(i*range+border);
+        }
+      }
+      cb.cp().bin({b}).VariableRebin(binning);
+    }
+  }
+  // Rebin qqh categories
+  for (auto b : cb.cp().bin_set()) {
+    TString bstr = b;
+    if (bstr.Contains("qqh_unrolled")) {
+      std::cout << "[INFO] Rebin background bin " << b << "\n";
+      auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+      auto min = shape.GetBinLowEdge(1);
+      auto range = 1.0 - min;
+      vector<double> raw_binning = {0.4, 0.6, 0.7, 0.8, 0.85, 0.90, 0.95, 1.0};
+      vector<double> binning = {min};
+      for (int i=0; i<5; i++){
+        for (auto border : raw_binning) {
+          binning.push_back(i*range+border);
+        }
+      }
       cb.cp().bin({b}).VariableRebin(binning);
     }
   }
@@ -370,14 +409,14 @@ int main(int argc, char **argv) {
         // if it's a multiple of the width between minimum NN score and 1.0.
         auto low_edge = shape.GetBinLowEdge(i);
         auto is_boundary = fabs(fmod(low_edge - offset, width)) < tolerance ? true : false;
+        c += shape.GetBinContent(i);
         if (is_boundary) { // If the lower edge is a boundary, set a bin edge.
-          if (c <= threshold && !(fabs(fmod(binning[0] - offset, width)) < tolerance)) { // Special case: If this bin is at a boundary but it is below the threshold and the bin above is not again a boundary, merge to the right.
+          if (c <= threshold && !(fabs(fmod(binning[0] - offset, width)) < tolerance || fabs(fmod(binning[0] - offset, width)) - width < tolerance)) { // Special case: If this bin is at a boundary but it is below the threshold and the bin above is not again a boundary, merge to the right.
             binning.erase(binning.begin());
           }
           binning.insert(binning.begin(), low_edge);
           c = 0.0;
         } else { // If this is not a boundary, check whether the content is above the threshold.
-          c += shape.GetBinContent(i);
           if (c > threshold) { // Set lower edge if the bin content is above the threshold.
             binning.insert(binning.begin(), low_edge);
             c = 0.0;
@@ -388,13 +427,15 @@ int main(int argc, char **argv) {
     }
   }
 
-  // Merge bins and set bin-by-bin uncertainties
-  auto bbb = ch::BinByBinFactory()
-                 .SetAddThreshold(0.05)
-                 .SetMergeThreshold(0.5)
-                 .SetFixNorm(false);
-  bbb.MergeBinErrors(cb.cp().backgrounds());
-  bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+  // Merge bins and set bin-by-bin uncertainties if no autoMCStats is used.
+  if (classic_bbb) {
+    auto bbb = ch::BinByBinFactory()
+                   .SetAddThreshold(0.0)
+                   .SetMergeThreshold(0.5)
+                   .SetFixNorm(false);
+    bbb.MergeBinErrors(cb.cp().backgrounds());
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+  }
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
@@ -412,6 +453,8 @@ int main(int argc, char **argv) {
   // CardWriter
   // otherwise it will see "*" as the mass value for every object and skip it
   //    writer.SetWildcardMasses({});
+
+  // Set verbosity
   if (verbose)
     writer.SetVerbosity(1);
 
