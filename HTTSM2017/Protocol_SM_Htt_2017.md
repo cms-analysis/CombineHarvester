@@ -128,7 +128,7 @@ combineTool.py -M T2W -o ${ERA}_workspace.root -i ${DATACARD_PATH} --parallel $N
 ERA=2016
 combine -M MaxLikelihoodFit -m 125 ${ERA}_workspace.root \
     --robustFit 1 -n $ERA \
-    --minimizerAlgoForMinos=Minuit2,Migrad
+    --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
 ```
 
 ## STXS stage 0 and stage 1 signals
@@ -137,9 +137,8 @@ combine -M MaxLikelihoodFit -m 125 ${ERA}_workspace.root \
 ERA=2016
 combineTool.py -M MultiDimFit -m 125 -d ${ERA}_workspace.root \
     --algo singles -t -1 --expectSignal 1 \
-    --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP \
     --robustFit 1 -n $ERA \
-    --minimizerAlgoForMinos=Minuit2,Migrad
+    --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
 ```
 
 # Pulls and nuisance impacts
@@ -149,9 +148,9 @@ combineTool.py -M MultiDimFit -m 125 -d ${ERA}_workspace.root \
 ```bash
 ERA=2016
 # This puts the pulls in an HTML page. The option -f text puts the results in a text file.
-# The file mlfit${ERA}.root is the result of the MaxLikelihoodFit above.
+# The file fitDiagnostics${ERA}.root is the result of the MaxLikelihoodFit above.
 python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -a \
-    -f html mlfit${ERA}.root > ${ERA}_diff_nuisances.html
+    -f html fitDiagnostics${ERA}.root > ${ERA}_diff_nuisances.html
 ```
 
 ## Nuisance impacts
@@ -177,8 +176,8 @@ PostFitShapesFromWorkspace -m 125 -w ${ERA}_workspace.root \
     -d output/${ERA}_smhtt/cmb/125/combined.txt.cmb -o ${ERA}_datacard_shapes_prefit.root
 
 # Postfit shapes
-# The file mlfit${ERA}.root is the result of the MaxLikelihoodFit above
+# The file fitDiagnostics${ERA}.root is the result of the MaxLikelihoodFit above
 PostFitShapesFromWorkspace -m 125 -w ${ERA}_workspace.root \
     -d output/${ERA}_smhtt/cmb/125/combined.txt.cmb -o ${ERA}_datacard_shapes_postfit_sb.root \
-    -f mlfit${ERA}.root:fit_s --postfit
+    -f fitDiagnostics${ERA}.root:fit_s --postfit
 ```
