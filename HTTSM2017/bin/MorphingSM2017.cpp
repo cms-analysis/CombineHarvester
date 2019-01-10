@@ -292,7 +292,7 @@ int main(int argc, char **argv) {
   cb.FilterProcs([&](ch::Process *p) {
     bool null_yield = !(p->rate() > 0.0);
     if (null_yield) {
-      std::cout << "[INFO] Removing process with null yield: \n ";
+      std::cout << "[WARNING] Removing process with null yield: \n ";
       std::cout << ch::Process::PrintHeader << *p << "\n";
       cb.FilterSysts([&](ch::Systematic *s) {
         bool remove_syst = (MatchingProcess(*p, *s));
@@ -300,6 +300,23 @@ int main(int argc, char **argv) {
       });
     }
     return null_yield;
+  });
+
+  // Delete systematics with 0 yield since these result in a bogus norm error in combine
+  cb.FilterSysts([&](ch::Systematic *s) {
+    if (s->type() == "shape") {
+      if (s->shape_u()->Integral() == 0.0) {
+        std::cout << "[WARNING] Removing systematic with null yield in up shift:" << std::endl;
+        std::cout << ch::Systematic::PrintHeader << *s << "\n";
+        return true;
+      }
+      if (s->shape_d()->Integral() == 0.0) {
+        std::cout << "[WARNING] Removing systematic with null yield in down shift:" << std::endl;
+        std::cout << ch::Systematic::PrintHeader << *s << "\n";
+        return true;
+      }
+    }
+    return false;
   });
 
   // Replacing observation with the sum of the backgrounds (Asimov data)
