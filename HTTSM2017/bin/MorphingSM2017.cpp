@@ -318,6 +318,42 @@ int main(int argc, char **argv) {
     }
     return false;
   });
+  
+  int count_lnN = 0;
+  int count_all = 0;
+  cb.cp().ForEachSyst([&count_lnN, &count_all](ch::Systematic *s) {
+    if (TString(s->name()).Contains("scale")||TString(s->name()).Contains("CMS_htt_boson_reso_met")){
+      count_all++;
+      double err_u = 0.0;
+      double err_d = 0.0;
+      int nbins = s->shape_u()->GetNbinsX();
+      double yield_u = s->shape_u()->IntegralAndError(1,nbins,err_u);
+      double yield_d = s->shape_d()->IntegralAndError(1,nbins,err_d);
+      double value_u = s->value_u();
+      double value_d = s->value_d();
+      if (std::abs(value_u-1.0)+std::abs(value_d-1.0)<err_u/yield_u+err_d/yield_d){
+          count_lnN++;
+          std::cout << "[WARNING] Replacing systematic by lnN:" << std::endl;
+          std::cout << ch::Systematic::PrintHeader << *s << "\n";
+          s->set_type("lnN");
+          bool up_is_larger = (value_u>value_d);
+          if (value_u < 1.0) value_u = 1.0 / value_u;
+          if (value_d < 1.0) value_d = 1.0 / value_d;
+          if (up_is_larger){
+              value_u = std::sqrt(value_u*value_d);
+              value_d = 1.0 / value_u;
+          }else{
+              value_d = std::sqrt(value_u*value_d);
+              value_u = 1.0 / value_d;
+          }
+          std::cout << "Former relative integral up shift: " << s->value_u() << "; New relative integral up shift: " << value_u << std::endl;
+          std::cout << "Former relative integral down shift: " << s->value_d() << "; New relative integral down shift: " << value_d << std::endl;
+          s->set_value_u(value_u);
+          s->set_value_d(value_d);
+      }
+    }
+  });
+  std::cout << "[WARNING] Turned " << count_lnN << " of " << count_all << " checked systematics into lnN:" << std::endl;
 
   // Replacing observation with the sum of the backgrounds (Asimov data)
   // useful to be able to check this, so don't do the replacement
@@ -352,7 +388,7 @@ int main(int argc, char **argv) {
       auto shape = cb.cp().bin({b}).backgrounds().GetShape();
       auto min = shape.GetBinLowEdge(1);
       auto range = 1.0 - min;
-      vector<double> raw_binning = {0.3, 0.4, 0.5, 0.6, 0.7, 1.0};
+      vector<double> raw_binning = {0.3, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 1.0};
       vector<double> binning = {min};
       for (int i=0; i<9; i++){
         for (auto border : raw_binning) {
@@ -370,7 +406,7 @@ int main(int argc, char **argv) {
       auto shape = cb.cp().bin({b}).backgrounds().GetShape();
       auto min = shape.GetBinLowEdge(1);
       auto range = 1.0 - min;
-      vector<double> raw_binning = {0.4, 0.6, 0.7, 0.8, 0.85, 0.90, 0.95, 1.0};
+      vector<double> raw_binning = {0.4, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.90, 0.95, 1.0};
       vector<double> binning = {min};
       for (int i=0; i<5; i++){
         for (auto border : raw_binning) {
