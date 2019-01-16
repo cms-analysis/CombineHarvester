@@ -1,6 +1,6 @@
 # Links
-[CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)  
-[Combine gitbook](https://cms-hcomb.gitbooks.io/combine/content/)  
+[CombineHarvester twiki](http://cms-analysis.github.io/CombineHarvester/index.html)
+[Combine gitbook](https://cms-hcomb.gitbooks.io/combine/content/)
 
 # Compiling the correct CMSSW version
 
@@ -123,18 +123,9 @@ combineTool.py -M T2W -o ${ERA}_workspace.root -i ${DATACARD_PATH} --parallel $N
     --PO '"map=^.*/qqH_PTJET1_GT200.?$:r_qqH_PTJET1_GT200[1,-30,30]"'
 ```
 
-# Calculating signal strength constraints
+# Fit signal strength and compute Hesse matrix
 
-## Inclusive signal
-
-```bash
-ERA=2016
-combine -M MaxLikelihoodFit -m 125 ${ERA}_workspace.root \
-    --robustFit 1 -n $ERA \
-    --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
-```
-
-## STXS stage 0 and stage 1 signals
+## Fit signal strength modifier for inclusive, STXS stage 0 and STXS stage 1
 
 ```bash
 ERA=2016
@@ -144,6 +135,18 @@ combineTool.py -M MultiDimFit -m 125 -d ${ERA}_workspace.root \
     --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
 ```
 
+## Calculate Hesse matrix
+
+```bash
+# The workspace is built using the inclusive signal definition.
+# The fit result is used for pulls and prefit/postfit shapes.
+ERA=2016
+combine -M FitDiagnostics -m 125 -d ${ERA}_workspace.root \
+        --robustFit 1 -n $ERA -v1 \
+        --robustHesse 1 \
+        --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
+```
+
 # Pulls and nuisance impacts
 
 ## Pulls
@@ -151,7 +154,7 @@ combineTool.py -M MultiDimFit -m 125 -d ${ERA}_workspace.root \
 ```bash
 ERA=2016
 # This puts the pulls in an HTML page. The option -f text puts the results in a text file.
-# The file fitDiagnostics${ERA}.root is the result of the MaxLikelihoodFit above.
+# The file fitDiagnostics${ERA}.root is the result of the FitDiagnostics above.
 python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -a \
     -f html fitDiagnostics${ERA}.root > ${ERA}_diff_nuisances.html
 ```
@@ -161,9 +164,9 @@ python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -a \
 ```bash
 ERA=2016
 combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root --doInitialFit \
-    --robustFit 1 -t -1 --expectSignal=1 --parallel 20 --minimizerAlgoForMinos=Minuit2,Migrad
+    --robustFit 1 -t -1 --expectSignal=1 --parallel 20
 combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root --doFits \
-    --parallel 20 --robustFit 1 -t -1 --expectSignal=1 --minimizerAlgoForMinos=Minuit2,Migrad
+    --parallel 20 --robustFit 1 -t -1 --expectSignal=1
 combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root --output ${ERA}_impacts.json
 plotImpacts.py -i ${ERA}_impacts.json -o ${ERA}_impacts
 ```
@@ -179,8 +182,49 @@ PostFitShapesFromWorkspace -m 125 -w ${ERA}_workspace.root \
     -d output/${ERA}_smhtt/cmb/125/combined.txt.cmb -o ${ERA}_datacard_shapes_prefit.root
 
 # Postfit shapes
-# The file fitDiagnostics${ERA}.root is the result of the MaxLikelihoodFit above
+# The file fitDiagnostics${ERA}.root is the result of the FitDiagnostics shown
 PostFitShapesFromWorkspace -m 125 -w ${ERA}_workspace.root \
     -d output/${ERA}_smhtt/cmb/125/combined.txt.cmb -o ${ERA}_datacard_shapes_postfit_sb.root \
     -f fitDiagnostics${ERA}.root:fit_s --postfit
+```
+
+# Extract POI correlation from the `RooFitResult`
+
+```python
+import ROOT
+f = ROOT.TFile(filename)
+result = f.Get("fit_s")
+params = result.floatParsInit()
+correlation = result.correlation(
+                params.find(name_poi_1),
+                params.find(name_poi_2))
+```
+
+# Perform NLL scan and plot
+
+```bash
+ERA=2016
+POI=r
+NUM=20
+MIN=0
+MAX=2
+
+# Perform scan
+combineTool.py -M MultiDimFit -d ${ERA}_workspace.root -m 125 \
+    --algo grid \
+    -P ${POI} \
+    --floatOtherPOIs 1 \
+    --points $NUM \
+    --rMin $MIN --rMax $MAX \
+    -n ${ERA}_${POI}
+
+# Create dummy translate.json file needed for plotting
+echo "{}" > translate.json
+
+# Plot 2*deltaNLL vs POI
+python ${CMSSW_BASE}/bin/slc6_amd64_gcc530/plot1DScan.py \
+    --main higgsCombine${ERA}_${POI}.MultiDimFit.mH125.root \
+    --POI $POI \
+    --output ${ERA}_${POI}_plot_nll \
+    --translate translate.json
 ```
