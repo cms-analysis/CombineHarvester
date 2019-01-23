@@ -11,9 +11,9 @@ def main():
     era = sys.argv[4]
     datacards = [(sys.argv[1],sys.argv[3]),(sys.argv[2],sys.argv[3])]
     plot_range = 1.0
-    # channels = ["tt","et","mt","cmb"]
+    channels = ["tt","et","mt","cmb"]
     # channels = ["tt","et","mt"]
-    channels = ["et"]
+    # channels = ["et"]
 
     limits = {}
     for datacard, real in datacards:
