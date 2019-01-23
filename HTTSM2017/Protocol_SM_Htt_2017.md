@@ -228,3 +228,17 @@ python ${CMSSW_BASE}/bin/slc6_amd64_gcc530/plot1DScan.py \
     --output ${ERA}_${POI}_plot_nll \
     --translate translate.json
 ```
+# Perform expected/observed synchronization
+
+Needed scripts can be found under `$CMSSW_BASE/src/CombineHarvester/HTTSM2017/synctools`. The shape files to be compared have to be in the folder `$CMSSW_BASE/src/CombineHarvester/HTTSM2017/shapes`.
+The synchronization can be performed on the signal strength using `show_sync_signalstrength.py` or on the significance using `show_sync_significance.py`. The output is a `json` file containing the sync result and a visualization in form of a `png` file.
+
+How to run:
+```
+python show_sync_signalstrength.py shape1 shape2 real_data era
+python show_sync_significance.py shape1 shape2 real_data era
+
+shape1,shape2       input folder from $CMSSW_BASE/src/CombineHarvester/HTTSM2017/shapes (e.g Vienna KIT)
+real_data           true or false
+era                 2016 or 2017
+```
