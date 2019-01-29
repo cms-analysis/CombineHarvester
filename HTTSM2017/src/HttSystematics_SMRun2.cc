@@ -41,7 +41,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       "qqH_PTJET1_GT200", "qqH_VH2JET"};
   std::vector<std::string> signals_VH = {
       // STXS stage 0
-      "WH", "ZH"};
+      "WH125", "ZH125"};
   std::vector<std::string> signals = JoinStr({signals_ggH, signals_qqH, signals_VH});
 
   // Background processes
@@ -633,7 +633,7 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
 
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process(mc_processes)
+      .process({"ZTT", "TT", "TTT", "TTL", "TTJ", "W", "ZJ", "ZL", "VV", "VVT", "VVL", "VVJ", "ST"})  //Z and W processes are only included due to the EWK fraction. Make sure that there is no contribution to the shift from the DY or Wjets samples.
       .AddSyst(cb, "CMS_scale_met_unclustered", "shape", SystMap<>::init(1.00));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
@@ -852,11 +852,11 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .AddSyst(cb, "QCDScale_qqH", "lnN", SystMap<>::init(1.005));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"ZH"})
+      .process({"ZH125"})
       .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.009));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"WH"})
+      .process({"WH125"})
       .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.008));
 
   // PDF
@@ -870,11 +870,11 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .AddSyst(cb, "pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"ZH"})
+      .process({"ZH125"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.013));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"WH"})
+      .process({"WH125"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.018));
 
   // Gluon-fusion WG1 uncertainty scheme
