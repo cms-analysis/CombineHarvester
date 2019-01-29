@@ -852,11 +852,11 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .AddSyst(cb, "QCDScale_qqH", "lnN", SystMap<>::init(1.005));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"ZH"})
+      .process({"ZH125"})
       .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.009));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"WH"})
+      .process({"WH125"})
       .AddSyst(cb, "QCDScale_VH", "lnN", SystMap<>::init(1.008));
 
   // PDF
@@ -870,11 +870,11 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
       .AddSyst(cb, "pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"ZH"})
+      .process({"ZH125"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.013));
   cb.cp()
       .channel({"et", "mt", "tt", "em"})
-      .process({"WH"})
+      .process({"WH125"})
       .AddSyst(cb, "pdf_Higgs_VH", "lnN", SystMap<>::init(1.018));
 
   // Gluon-fusion WG1 uncertainty scheme
