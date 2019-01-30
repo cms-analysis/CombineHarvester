@@ -206,6 +206,37 @@ correlation = result.correlation(
                 params.find(name_poi_2))
 ```
 
+# Perform goodness of fit test
+
+## Saturated
+
+```bash
+ERA=$1
+SEED=1234
+MASS=125
+TOYS=300
+
+# Get test statistic value
+combine -M GoodnessOfFit --algo=saturated -m $MASS -d ${ERA}_workspace.root \
+        -n ${ERA} \
+        --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
+
+# Throw toys
+combine -M GoodnessOfFit --algo=saturated -m $MASS -d ${ERA}_workspace.root \
+        -n ${ERA} \
+        -s $SEED -t $TOYS \
+        --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
+
+# Collect results
+combineTool.py -M CollectGoodnessOfFit \
+    --input higgsCombine${ERA}.GoodnessOfFit.mH$MASS.root \
+        higgsCombine${ERA}.GoodnessOfFit.mH$MASS.$SEED.root \
+    --output gof.json
+
+# Plot
+plotGof.py --statistic saturated --mass $MASS.0 --output gof gof.json
+```
+
 # Perform NLL scan and plot
 
 ```bash
