@@ -208,21 +208,21 @@ correlation = result.correlation(
 
 # Perform goodness of fit test
 
-## Saturated
-
 ```bash
 ERA=$1
 SEED=1234
 MASS=125
 TOYS=300
 
+STATISTIC=saturated # or KS or AD
+
 # Get test statistic value
-combine -M GoodnessOfFit --algo=saturated -m $MASS -d ${ERA}_workspace.root \
+combine -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
         -n ${ERA} \
         --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
 
 # Throw toys
-combine -M GoodnessOfFit --algo=saturated -m $MASS -d ${ERA}_workspace.root \
+combine -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
         -n ${ERA} \
         -s $SEED -t $TOYS \
         --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
@@ -234,7 +234,7 @@ combineTool.py -M CollectGoodnessOfFit \
     --output gof.json
 
 # Plot
-plotGof.py --statistic saturated --mass $MASS.0 --output gof gof.json
+plotGof.py --statistic ${STATISTIC} --mass $MASS.0 --output gof gof.json
 ```
 
 # Perform NLL scan and plot
