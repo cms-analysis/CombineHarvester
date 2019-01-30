@@ -442,6 +442,8 @@ int main(int argc, char **argv) {
 
   // Perform auto-rebinning
   if (auto_rebin) {
+    const auto threshold = 1.0;
+    const auto tolerance = 1e-4;
     for (auto b : cb.cp().bin_set()) {
       std::cout << "[INFO] Rebin bin " << b << "\n";
       // Get shape of this category with sum of backgrounds
@@ -455,8 +457,6 @@ int main(int argc, char **argv) {
       auto offset = shape.GetBinLowEdge(1);
       auto width = 1.0 - offset;
       auto c = 0.0;
-      const auto threshold = 1.0;
-      const auto tolerance = 1e-4;
       for(auto i = num_bins; i > 0; i--) {
         // Determine whether this is a boundary of an unrolled category
         // if it's a multiple of the width between minimum NN score and 1.0.
@@ -477,6 +477,40 @@ int main(int argc, char **argv) {
         }
       }
       cb.cp().bin({b}).VariableRebin(binning);
+    }
+    // blind subcategories with to little events
+    for (auto b : cb.cp().bin_set()) {
+      // Get shape of this category with sum of backgrounds
+      auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+      const auto num_bins = shape.GetNbinsX();
+      for(auto i = num_bins; i > 0; i--) {
+        if(shape.GetBinContent(i) < threshold){
+          std::cout << "[INFO] Blind bin " << i << " in " << b << " due to insufficient population!" << "\n";
+          cb.cp().bin({b}).ForEachProc([i](ch::Process *p) {
+            auto newhist = p->ClonedShape();
+            newhist->SetBinContent(i, 0.0);
+            newhist->SetBinError(i, 0.0);
+            p->set_shape(std::move(newhist), false);
+          });
+          cb.cp().bin({b}).ForEachObs([i](ch::Observation *p) {
+            auto newhist = p->ClonedShape();
+            newhist->SetBinContent(i, 0.0);
+            newhist->SetBinError(i, 0.0);
+            p->set_shape(std::move(newhist), false);
+          });
+          cb.cp().bin({b}).ForEachSyst([i](ch::Systematic *s) {
+            if (s->type().find("shape") == std::string::npos)
+                return;
+            auto newhist_u = s->ClonedShapeU();
+            auto newhist_d = s->ClonedShapeD();
+            newhist_u->SetBinContent(i, 0.0);
+            newhist_u->SetBinError(i, 0.0);
+            newhist_d->SetBinContent(i, 0.0);
+            newhist_d->SetBinError(i, 0.0);
+            s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
+          });
+        }
+      }
     }
   }
 
