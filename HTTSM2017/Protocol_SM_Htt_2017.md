@@ -163,10 +163,16 @@ python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -a \
 
 ```bash
 ERA=2016
-combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root --doInitialFit \
-    --robustFit 1 -t -1 --expectSignal=1 --parallel 20
-combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root --doFits \
-    --parallel 20 --robustFit 1 -t -1 --expectSignal=1
+combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root \
+    --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
+    --doInitialFit --robustFit 1 \
+    -t -1 --expectSignal=1 \
+    --parallel 32
+combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root \
+    --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
+    --doFits --parallel 20 --robustFit 1 \
+    -t -1 --expectSignal=1 \
+    --parallel 32
 combineTool.py -M Impacts -m 125 -d ${ERA}_workspace.root --output ${ERA}_impacts.json
 plotImpacts.py -i ${ERA}_impacts.json -o ${ERA}_impacts
 ```
@@ -198,6 +204,42 @@ params = result.floatParsInit()
 correlation = result.correlation(
                 params.find(name_poi_1),
                 params.find(name_poi_2))
+```
+
+# Perform goodness of fit test
+
+```bash
+ERA=$1
+MASS=125
+TOYS=30
+NUM_THREADS=20
+
+STATISTIC=saturated # or KS or AD
+
+# Get test statistic value
+# NOTE: --plots makes for KS and AD plots showing the bins with most tension.
+# These plots can be found in the higgsCombine${NAME}.GoodnessOfFit.mH125.root
+# file in the folder GoodnessOfFit.
+combineTool.py -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
+        -n ${ERA} \
+        --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
+        --plots
+
+# Throw toys
+combineTool.py -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
+        -n ${ERA} \
+        -s 1230:1249:1 -t $TOYS \
+        --parallel $NUM_THREADS \
+        --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
+
+# Collect results
+combineTool.py -M CollectGoodnessOfFit \
+    --input higgsCombine${ERA}.GoodnessOfFit.mH$MASS.root \
+        higgsCombine${ERA}.GoodnessOfFit.mH$MASS.*.root \
+    --output gof.json
+
+# Plot
+plotGof.py --statistic ${STATISTIC} --mass $MASS.0 --output gof gof.json
 ```
 
 # Perform NLL scan and plot
