@@ -210,27 +210,32 @@ correlation = result.correlation(
 
 ```bash
 ERA=$1
-SEED=1234
 MASS=125
-TOYS=300
+TOYS=30
+NUM_THREADS=20
 
 STATISTIC=saturated # or KS or AD
 
 # Get test statistic value
-combine -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
+# NOTE: --plots makes for KS and AD plots showing the bins with most tension.
+# These plots can be found in the higgsCombine${NAME}.GoodnessOfFit.mH125.root
+# file in the folder GoodnessOfFit.
+combineTool.py -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
         -n ${ERA} \
-        --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
+        --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
+        --plots
 
 # Throw toys
-combine -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
+combineTool.py -M GoodnessOfFit --algo=${STATISTIC} -m $MASS -d ${ERA}_workspace.root \
         -n ${ERA} \
-        -s $SEED -t $TOYS \
+        -s 1230:1249:1 -t $TOYS \
+        --parallel $NUM_THREADS \
         --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
 
 # Collect results
 combineTool.py -M CollectGoodnessOfFit \
     --input higgsCombine${ERA}.GoodnessOfFit.mH$MASS.root \
-        higgsCombine${ERA}.GoodnessOfFit.mH$MASS.$SEED.root \
+        higgsCombine${ERA}.GoodnessOfFit.mH$MASS.*.root \
     --output gof.json
 
 # Plot
