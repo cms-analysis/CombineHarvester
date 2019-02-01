@@ -253,6 +253,7 @@ MAX=2
 
 # Perform scan
 combineTool.py -M MultiDimFit -d ${ERA}_workspace.root -m 125 \
+    --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
     --algo grid \
     -P ${POI} \
     --floatOtherPOIs 1 \
