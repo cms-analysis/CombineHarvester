@@ -131,7 +131,7 @@ combineTool.py -M T2W -o ${ERA}_workspace.root -i ${DATACARD_PATH} --parallel $N
 ERA=2016
 combineTool.py -M MultiDimFit -m 125 -d ${ERA}_workspace.root \
     --algo singles -t -1 --expectSignal 1 \
-    --robustFit 1 -n $ERA \
+    --robustFit 1 -n $ERA --floatOtherPOIs 1 \
     --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
 ```
 
@@ -253,6 +253,7 @@ MAX=2
 
 # Perform scan
 combineTool.py -M MultiDimFit -d ${ERA}_workspace.root -m 125 \
+    --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
     --algo grid \
     -P ${POI} \
     --floatOtherPOIs 1 \
