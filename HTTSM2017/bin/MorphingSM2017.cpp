@@ -384,13 +384,15 @@ int main(int argc, char **argv) {
   for (auto b : cb.cp().bin_set()) {
     TString bstr = b;
     if (bstr.Contains("ggh_unrolled")) {
-      std::cout << "[INFO] Rebin background bin " << b << "\n";
+      std::cout << "[INFO] Rebin ggh signal bin " << b << "\n";
       auto shape = cb.cp().bin({b}).backgrounds().GetShape();
       auto min = shape.GetBinLowEdge(1);
       auto range = 1.0 - min;
       vector<double> raw_binning = {0.3, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 1.0};
       vector<double> binning = {min};
-      for (int i=0; i<9; i++){
+      int n_stage1cats = 9;
+      if (bstr.Contains("et_")||bstr.Contains("mt_")) n_stage1cats = 7;
+      for (int i=0; i<n_stage1cats; i++){
         for (auto border : raw_binning) {
           binning.push_back(i*range+border);
         }
@@ -402,7 +404,7 @@ int main(int argc, char **argv) {
   for (auto b : cb.cp().bin_set()) {
     TString bstr = b;
     if (bstr.Contains("qqh_unrolled")) {
-      std::cout << "[INFO] Rebin background bin " << b << "\n";
+      std::cout << "[INFO] Rebin qqh signal bin " << b << "\n";
       auto shape = cb.cp().bin({b}).backgrounds().GetShape();
       auto min = shape.GetBinLowEdge(1);
       auto range = 1.0 - min;
