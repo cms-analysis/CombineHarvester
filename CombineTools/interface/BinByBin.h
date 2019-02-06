@@ -101,6 +101,22 @@ class BinByBinFactory {
     return *this;
   }
 
+    /**
+   * Set value of probability p for event passing in embedded kinematic filtering
+   */
+  inline BinByBinFactory& SetBinomialP(double val) {
+    binomial_p_ = val;
+    return *this;
+  }
+
+    /**
+   * Set value of number of tries n for event passing in embedded kinematic filtering
+   */
+  inline BinByBinFactory& SetBinomialN(double val) {
+    binomial_n_ = val;
+    return *this;
+  }
+
   /**
    * The threshold for the merging algorithm
    */
@@ -135,6 +151,14 @@ class BinByBinFactory {
   }
 
   /**
+   * Construct approximate Binomial uncertainties instead of default Gaussian. Needs n and p specified with SetBinomialP() and SetBinomialN()
+   */
+  inline BinByBinFactory& SetBinomialErrors(bool embedded_binomial_errors) {
+    embedded_binomial_errors_ = embedded_binomial_errors;
+    return *this;
+  }
+  
+  /**
    * Set whether bins with zero content can participate in the merging procedure
    */
   inline BinByBinFactory& SetMergeZeroBins(bool merge) {
@@ -155,8 +179,11 @@ class BinByBinFactory {
   unsigned v_;
   double bbb_threshold_;
   double merge_threshold_;
+  double binomial_p_;
+  double binomial_n_;
   bool fix_norm_;
   bool poisson_errors_;
+  bool embedded_binomial_errors_;
   bool merge_zero_bins_;
   bool merge_saturated_bins_;
 };

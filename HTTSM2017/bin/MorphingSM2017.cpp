@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
   bool jetfakes = true;
   bool embedding = false;
   bool classic_bbb = false;
+  bool binomial_bbb = false;
   bool verbose = false;
   string stxs_signals = "stxs_stage0"; // "stxs_stage0" or "stxs_stage1"
   string categories = "stxs_stage0"; // "stxs_stage0", "stxs_stage1" or "gof"
@@ -79,6 +80,7 @@ int main(int argc, char **argv) {
       ("jetfakes", po::value<bool>(&jetfakes)->default_value(jetfakes))
       ("embedding", po::value<bool>(&embedding)->default_value(embedding))
       ("classic_bbb", po::value<bool>(&classic_bbb)->default_value(classic_bbb))
+      ("binomial_bbb", po::value<bool>(&binomial_bbb)->default_value(binomial_bbb))
       ("era", po::value<int>(&era)->default_value(era));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
@@ -525,6 +527,16 @@ int main(int argc, char **argv) {
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
   }
+  if (binomial_bbb) {
+    auto bbb = ch::BinByBinFactory()
+                   .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_binomial_bin_$#")
+                   .SetBinomialP(0.022)
+                   .SetBinomialErrors(true)
+                   .SetBinomialN(1000.0)
+                   .SetFixNorm(false);
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+  }
+
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
