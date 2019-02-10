@@ -850,15 +850,15 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   cb.cp()
      .channel({"em"})
      .process(JoinStr({signals_ggHToWW,signals_qqHToWW}))
-     .AddSyst(cb, "BR_htt_hww_THU", "lnN", SystMap<>::init(1.0099));   
+     .AddSyst(cb, "BR_hww_THU", "lnN", SystMap<>::init(1.0099));   
   cb.cp()
      .channel({"em"})
      .process(JoinStr({signals_ggHToWW,signals_qqHToWW}))
-     .AddSyst(cb, "BR_htt_hww_PU_mq", "lnN", SystMap<>::init(1.0099));
+     .AddSyst(cb, "BR_hww_PU_mq", "lnN", SystMap<>::init(1.0099));
   cb.cp()
      .channel({"em"})
      .process(JoinStr({signals_ggHToWW,signals_qqHToWW}))
-     .AddSyst(cb, "BR_htt_hww_PU_alphas", "lnN", SystMap<>::init(1.0066));
+     .AddSyst(cb, "BR_hww_PU_alphas", "lnN", SystMap<>::init(1.0066));
   // QCD scale
   if (!ggh_wg1) {
   cb.cp()
