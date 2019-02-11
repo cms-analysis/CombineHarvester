@@ -909,40 +909,44 @@ void AddSMRun2Systematics(CombineHarvester &cb, bool jetfakes, bool embedding, b
   if (ggh_wg1) {
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_Mig01", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_Mig12", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_Mu", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_PT120", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_PT60", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_Res", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_VBF2j", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_VBF3j", "shape", SystMap<>::init(1.00));
     cb.cp()
       .channel({"et", "mt", "tt", "em"})
-       .process(JoinStr({signals_ggH,signals_ggHToWW}))
+       .process({signals_ggH})
       .AddSyst(cb, "THU_ggH_qmtop", "shape", SystMap<>::init(1.00));
+    cb.cp()
+      .channel({"et", "mt", "tt", "em"})
+     .process({signals_ggHToWW})
+      .AddSyst(cb, "QCDScale_ggHWW", "lnN", SystMap<>::init(1.039));
   }
 
   // ##########################################################################
