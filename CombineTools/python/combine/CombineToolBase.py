@@ -23,6 +23,7 @@ arguments = $(ProcId)
 output                = %(TASK)s.$(ClusterId).$(ProcId).out
 error                 = %(TASK)s.$(ClusterId).$(ProcId).err
 log                   = %(TASK)s.$(ClusterId).log
+getenv                = true
 
 # Send the job to Held state on failure.
 on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
@@ -263,6 +264,8 @@ class CombineToolBase:
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
             outscript.close()
+            st = os.stat(outscriptname)
+            os.chmod(outscriptname, st.st_mode | stat.S_IEXEC)
             subfile = open(subfilename, "w")
             condor_settings = CONDOR_TEMPLATE % {
               'EXE': outscriptname,

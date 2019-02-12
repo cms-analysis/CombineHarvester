@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
   bool jetfakes = true;
   bool embedding = false;
   bool classic_bbb = false;
+  bool binomial_bbb = false;
   bool verbose = false;
   string stxs_signals = "stxs_stage0"; // "stxs_stage0" or "stxs_stage1"
   string categories = "stxs_stage0"; // "stxs_stage0", "stxs_stage1" or "gof"
@@ -79,6 +80,7 @@ int main(int argc, char **argv) {
       ("jetfakes", po::value<bool>(&jetfakes)->default_value(jetfakes))
       ("embedding", po::value<bool>(&embedding)->default_value(embedding))
       ("classic_bbb", po::value<bool>(&classic_bbb)->default_value(classic_bbb))
+      ("binomial_bbb", po::value<bool>(&binomial_bbb)->default_value(binomial_bbb))
       ("era", po::value<int>(&era)->default_value(era));
   po::store(po::command_line_parser(argc, argv).options(config).run(), vm);
   po::notify(vm);
@@ -107,8 +109,8 @@ int main(int argc, char **argv) {
   // Define background processes
   map<string, VString> bkg_procs;
   VString bkgs, bkgs_em;
-  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTL", "TTJ", "VVJ", "VVT", "VVL", "WH125", "ZH125"};
-  bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST", "WH125", "ZH125"};
+  bkgs = {"W", "ZTT", "QCD", "ZL", "ZJ", "TTT", "TTL", "TTJ", "VVJ", "VVT", "VVL", "WH125", "ZH125", "ttH125"};
+  bkgs_em = {"W", "ZTT", "QCD", "ZL", "TT", "VV", "ST", "WH125", "ZH125", "ttH125","ggHWW125","qqHWW125"};
   if(embedding){
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "ZTT"), bkgs.end());
     bkgs.erase(std::remove(bkgs.begin(), bkgs.end(), "TTT"), bkgs.end());
@@ -384,13 +386,15 @@ int main(int argc, char **argv) {
   for (auto b : cb.cp().bin_set()) {
     TString bstr = b;
     if (bstr.Contains("ggh_unrolled")) {
-      std::cout << "[INFO] Rebin background bin " << b << "\n";
+      std::cout << "[INFO] Rebin ggh signal bin " << b << "\n";
       auto shape = cb.cp().bin({b}).backgrounds().GetShape();
       auto min = shape.GetBinLowEdge(1);
       auto range = 1.0 - min;
       vector<double> raw_binning = {0.3, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 1.0};
       vector<double> binning = {min};
-      for (int i=0; i<9; i++){
+      int n_stage1cats = 9;
+      if (bstr.Contains("et_")||bstr.Contains("mt_")) n_stage1cats = 7;
+      for (int i=0; i<n_stage1cats; i++){
         for (auto border : raw_binning) {
           binning.push_back(i*range+border);
         }
@@ -402,7 +406,7 @@ int main(int argc, char **argv) {
   for (auto b : cb.cp().bin_set()) {
     TString bstr = b;
     if (bstr.Contains("qqh_unrolled")) {
-      std::cout << "[INFO] Rebin background bin " << b << "\n";
+      std::cout << "[INFO] Rebin qqh signal bin " << b << "\n";
       auto shape = cb.cp().bin({b}).backgrounds().GetShape();
       auto min = shape.GetBinLowEdge(1);
       auto range = 1.0 - min;
@@ -442,6 +446,8 @@ int main(int argc, char **argv) {
 
   // Perform auto-rebinning
   if (auto_rebin) {
+    const auto threshold = 1.0;
+    const auto tolerance = 1e-4;
     for (auto b : cb.cp().bin_set()) {
       std::cout << "[INFO] Rebin bin " << b << "\n";
       // Get shape of this category with sum of backgrounds
@@ -455,8 +461,6 @@ int main(int argc, char **argv) {
       auto offset = shape.GetBinLowEdge(1);
       auto width = 1.0 - offset;
       auto c = 0.0;
-      const auto threshold = 1.0;
-      const auto tolerance = 1e-4;
       for(auto i = num_bins; i > 0; i--) {
         // Determine whether this is a boundary of an unrolled category
         // if it's a multiple of the width between minimum NN score and 1.0.
@@ -478,6 +482,40 @@ int main(int argc, char **argv) {
       }
       cb.cp().bin({b}).VariableRebin(binning);
     }
+    // blind subcategories with to little events
+    for (auto b : cb.cp().bin_set()) {
+      // Get shape of this category with sum of backgrounds
+      auto shape = cb.cp().bin({b}).backgrounds().GetShape();
+      const auto num_bins = shape.GetNbinsX();
+      for(auto i = num_bins; i > 0; i--) {
+        if(shape.GetBinContent(i) < threshold){
+          std::cout << "[INFO] Blind bin " << i << " in " << b << " due to insufficient population!" << "\n";
+          cb.cp().bin({b}).ForEachProc([i](ch::Process *p) {
+            auto newhist = p->ClonedShape();
+            newhist->SetBinContent(i, 0.0);
+            newhist->SetBinError(i, 0.0);
+            p->set_shape(std::move(newhist), false);
+          });
+          cb.cp().bin({b}).ForEachObs([i](ch::Observation *p) {
+            auto newhist = p->ClonedShape();
+            newhist->SetBinContent(i, 0.0);
+            newhist->SetBinError(i, 0.0);
+            p->set_shape(std::move(newhist), false);
+          });
+          cb.cp().bin({b}).ForEachSyst([i](ch::Systematic *s) {
+            if (s->type().find("shape") == std::string::npos)
+                return;
+            auto newhist_u = s->ClonedShapeU();
+            auto newhist_d = s->ClonedShapeD();
+            newhist_u->SetBinContent(i, 0.0);
+            newhist_u->SetBinError(i, 0.0);
+            newhist_d->SetBinContent(i, 0.0);
+            newhist_d->SetBinError(i, 0.0);
+            s->set_shapes(std::move(newhist_u), std::move(newhist_d), nullptr);
+          });
+        }
+      }
+    }
   }
 
   // Merge bins and set bin-by-bin uncertainties if no autoMCStats is used.
@@ -489,6 +527,16 @@ int main(int argc, char **argv) {
     bbb.MergeBinErrors(cb.cp().backgrounds());
     bbb.AddBinByBin(cb.cp().backgrounds(), cb);
   }
+  if (binomial_bbb) {
+    auto bbb = ch::BinByBinFactory()
+                   .SetPattern("CMS_$ANALYSIS_$CHANNEL_$BIN_$ERA_$PROCESS_binomial_bin_$#")
+                   .SetBinomialP(0.022)
+                   .SetBinomialErrors(true)
+                   .SetBinomialN(1000.0)
+                   .SetFixNorm(false);
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+  }
+
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}

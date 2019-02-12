@@ -13,8 +13,11 @@ BinByBinFactory::BinByBinFactory()
       v_(0),
       bbb_threshold_(0.),
       merge_threshold_(0.),
+      binomial_p_(0.),
+      binomial_n_(0.),
       fix_norm_(true),
       poisson_errors_(false),
+      embedded_binomial_errors_(false),
       merge_zero_bins_(true),
       merge_saturated_bins_(true) {}
 
@@ -175,6 +178,18 @@ void BinByBinFactory::AddBinByBin(CombineHarvester &src, CombineHarvester &dest)
         boost::replace_all(name, "$PROCESS", sys.process());
         boost::replace_all(name, "$MASS", sys.mass());
         boost::replace_all(name, "$#", boost::lexical_cast<std::string>(j));
+        if (embedded_binomial_errors_) {
+          std::string binomial_channel ("em");
+          if(sys.channel().compare(binomial_channel)!=0) {
+            continue;
+            }
+          std::string binomial_process ("EMB");
+          if(sys.process().compare(binomial_process)!=0) {
+            continue;
+            }
+          err_hi = sqrt(val*binomial_p_/binomial_n_*(1.-binomial_p_));
+          err_lo = sqrt(val*binomial_p_/binomial_n_*(1.-binomial_p_));
+        }
         sys.set_name(name);
         sys.set_asymm(true);
         std::unique_ptr<TH1> h_d(static_cast<TH1 *>(h->Clone()));
