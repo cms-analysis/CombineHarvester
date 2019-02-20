@@ -23,8 +23,8 @@ class AsymptoticGrid(CombineToolBase):
 
   def attach_intercept_args(self, group):
     CombineToolBase.attach_intercept_args(self, group)
-    group.add_argument('--setPhysicsModelParameters', default=None)
-    group.add_argument('--freezeNuisances', default=None)
+    group.add_argument('--setParameters', default=None)
+    group.add_argument('--freezeParameters', default=None)
 
   def attach_args(self, group):
     CombineToolBase.attach_args(self, group)
@@ -68,22 +68,22 @@ class AsymptoticGrid(CombineToolBase):
     # Have to merge some arguments from both the command line and the "opts" in the json file
     to_freeze = []
     to_set = []
-    set_opt, opts = self.extract_arg('--setPhysicsModelParameters', opts)
+    set_opt, opts = self.extract_arg('--setParameters', opts)
     if set_opt is not None: to_set.append(set_opt)
-    freeze_opt, opts = self.extract_arg('--freezeNuisances', opts)
+    freeze_opt, opts = self.extract_arg('--freezeParameters', opts)
     if freeze_opt is not None: to_freeze.append(freeze_opt)
-    if hasattr(self.args, 'setPhysicsModelParameters') and self.args.setPhysicsModelParameters is not None:
-        to_set.append(self.args.setPhysicsModelParameters)
-    if hasattr(self.args, 'freezeNuisances') and self.args.freezeNuisances is not None:
-        to_freeze.append(self.args.freezeNuisances)
+    if hasattr(self.args, 'setParameters') and self.args.setParameters is not None:
+        to_set.append(self.args.setParameters)
+    if hasattr(self.args, 'freezeParameters') and self.args.freezeParameters is not None:
+        to_freeze.append(self.args.freezeParameters)
 
     file_dict = { }
     for p in points:
       file_dict[p] = []
 
-    for f in glob.glob('higgsCombine.%s.*.%s.*.Asymptotic.mH*.root' % (POIs[0], POIs[1])):
+    for f in glob.glob('higgsCombine.%s.*.%s.*.AsymptoticLimits.mH*.root' % (POIs[0], POIs[1])):
       # print f
-      rgx = re.compile('higgsCombine\.%s\.(?P<p1>.*)\.%s\.(?P<p2>.*)\.Asymptotic\.mH.*\.root' % (POIs[0], POIs[1]))
+      rgx = re.compile('higgsCombine\.%s\.(?P<p1>.*)\.%s\.(?P<p2>.*)\.AsymptoticLimits\.mH.*\.root' % (POIs[0], POIs[1]))
       matches = rgx.search(f)
       p = (matches.group('p1'), matches.group('p2'))
       if p in file_dict:
@@ -96,8 +96,8 @@ class AsymptoticGrid(CombineToolBase):
         print 'Going to run limit for point %s' % (key,)
         set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
         freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
-        point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
-        cmd = ' '.join(['combine -M Asymptotic', opts, point_args] + self.passthru)
+        point_args = '-n .%s --setParameters %s --freezeParameters %s' % (name, set_arg, freeze_arg)
+        cmd = ' '.join(['combine -M AsymptoticLimits', opts, point_args] + self.passthru)
         self.job_queue.append(cmd)
 
     bail_out = len(self.job_queue) > 0
@@ -177,8 +177,8 @@ class HybridNewGrid(CombineToolBase):
 
     def attach_intercept_args(self, group):
         CombineToolBase.attach_intercept_args(self, group)
-        group.add_argument('--setPhysicsModelParameters', default=None)
-        group.add_argument('--freezeNuisances', default=None)
+        group.add_argument('--setParameters', default=None)
+        group.add_argument('--freezeParameters', default=None)
 
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
@@ -345,14 +345,14 @@ class HybridNewGrid(CombineToolBase):
         # Have to merge some arguments from both the command line and the "opts" in the json file
         to_freeze = []
         to_set = []
-        set_opt, opts = self.extract_arg('--setPhysicsModelParameters', opts)
+        set_opt, opts = self.extract_arg('--setParameters', opts)
         if set_opt is not None: to_set.append(set_opt)
-        freeze_opt, opts = self.extract_arg('--freezeNuisances', opts)
+        freeze_opt, opts = self.extract_arg('--freezeParameters', opts)
         if freeze_opt is not None: to_freeze.append(freeze_opt)
-        if hasattr(self.args, 'setPhysicsModelParameters') and self.args.setPhysicsModelParameters is not None:
-            to_set.append(self.args.setPhysicsModelParameters)
-        if hasattr(self.args, 'freezeNuisances') and self.args.freezeNuisances is not None:
-            to_freeze.append(self.args.freezeNuisances)
+        if hasattr(self.args, 'setParameters') and self.args.setParameters is not None:
+            to_set.append(self.args.setParameters)
+        if hasattr(self.args, 'freezeParameters') and self.args.freezeParameters is not None:
+            to_freeze.append(self.args.freezeParameters)
 
         points = []
         blacklisted_points = []
@@ -585,15 +585,15 @@ class HybridNewGrid(CombineToolBase):
                 if not feldman_cousins:
                     set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
                     freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
-                    point_args = '-n .%s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, set_arg, freeze_arg)
+                    point_args = '-n .%s --setParameters %s --freezeParameters %s' % (name, set_arg, freeze_arg)
                 else:
                     single_point_arg = '.'.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])])
                     if len(to_set) > 0 and len(to_freeze) > 0:
-                        point_args = '-n .%s --singlePoint %s --setPhysicsModelParameters %s --freezeNuisances %s' % (name, single_point_arg, to_set, to_freeze)
+                        point_args = '-n .%s --singlePoint %s --setParameters %s --freezeParameters %s' % (name, single_point_arg, to_set, to_freeze)
                     elif len(to_set) > 0:
-                        point_args = '-n .%s --singlePoint %s --setPhysicsModelParameters %s' % (name, single_point_arg, to_set)
+                        point_args = '-n .%s --singlePoint %s --setParameters %s' % (name, single_point_arg, to_set)
                     elif len(to_freeze) > 0:
-                        point_args = '-n .%s --singlePoint %s --freezeNuisances %s' % (name, single_point_arg, to_freeze)
+                        point_args = '-n .%s --singlePoint %s --freezeParameters %s' % (name, single_point_arg, to_freeze)
                     else :
                         point_args = '-n .%s --singlePoint %s ' % (name, single_point_arg)
 
@@ -614,7 +614,7 @@ class HybridNewGrid(CombineToolBase):
                             lower_bound += 1
                         command.append('%s=%g,%g' % (par, bound_vals[par][lower_bound-1][1], bound_vals[par][lower_bound-1][2]))
                     if len(command) > 0:
-                        point_args += (' --setPhysicsModelParameterRanges %s' % (':'.join(command)))
+                        point_args += (' --setParameterRanges %s' % (':'.join(command)))
                     # print per_mass_point_args
                     point_args += ' --singlePoint %s' % key[1]
                     point_args += ' -m %s' % mval
