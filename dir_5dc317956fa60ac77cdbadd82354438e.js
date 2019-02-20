@@ -42,5 +42,6 @@ var dir_5dc317956fa60ac77cdbadd82354438e =
     ] ],
     [ "Systematics.h", "_systematics_8h.html", "_systematics_8h" ],
     [ "TFileIO.h", "_t_file_i_o_8h.html", "_t_file_i_o_8h" ],
-    [ "Utilities.h", "_utilities_8h.html", "_utilities_8h" ]
+    [ "Utilities.h", "_utilities_8h.html", "_utilities_8h" ],
+    [ "ValidationTools.h", "_validation_tools_8h.html", "_validation_tools_8h" ]
 ];

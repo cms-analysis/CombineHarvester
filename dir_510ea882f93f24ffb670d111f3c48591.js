@@ -26,5 +26,6 @@ var dir_510ea882f93f24ffb670d111f3c48591 =
     [ "SOverBTools.cc", "_s_over_b_tools_8cc.html", "_s_over_b_tools_8cc" ],
     [ "Systematic.cc", "_systematic_8cc.html", "_systematic_8cc" ],
     [ "TFileIO.cc", "_t_file_i_o_8cc.html", "_t_file_i_o_8cc" ],
-    [ "Utilities.cc", "_utilities_8cc.html", "_utilities_8cc" ]
+    [ "Utilities.cc", "_utilities_8cc.html", "_utilities_8cc" ],
+    [ "ValidationTools.cc", "_validation_tools_8cc.html", "_validation_tools_8cc" ]
 ];

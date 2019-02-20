@@ -26,5 +26,9 @@ var _combine_harvester___python_8cc =
     [ "Overload_AddBinByBin", "_combine_harvester___python_8cc.html#aa2f8905924850bfc4854a97020c11bda", null ],
     [ "Overload_Obs_set_shape", "_combine_harvester___python_8cc.html#a50a42ab1acdb345846900e61aa878b94", null ],
     [ "Overload_Proc_set_shape", "_combine_harvester___python_8cc.html#a133b8f1f3f1955a3c611973b3d8fe278", null ],
-    [ "Overload_Syst_set_shapes", "_combine_harvester___python_8cc.html#a86e2aea602ce977b36f660b2aea3f830", null ]
+    [ "Overload_Syst_set_shapes", "_combine_harvester___python_8cc.html#a86e2aea602ce977b36f660b2aea3f830", null ],
+    [ "Overload1_ValidateShapeUncertaintyDirection", "_combine_harvester___python_8cc.html#a021efa6d854f9fec892bed1acd2fdf85", null ],
+    [ "Overload1_CheckEmptyShapes", "_combine_harvester___python_8cc.html#ab118f45e8db07ec6b0c79488c2a5d101", null ],
+    [ "Overload1_CheckNormEff", "_combine_harvester___python_8cc.html#a108baacefe6e0656339223553dd15ee9", null ],
+    [ "Overload1_CheckSizeOfShapeEffect", "_combine_harvester___python_8cc.html#a0e99fec9c18710ed301484ad7d41bdb2", null ]
 ];

@@ -2,6 +2,7 @@ var searchData=
 [
   ['addbinbybin',['AddBinByBin',['../classch_1_1_bin_by_bin_factory.html#ab097f067dce0a722af70dd86bf1b5398',1,'ch::BinByBinFactory::AddBinByBin()'],['../classch_1_1_combine_harvester.html#a20c5575a1983fbd8ff1b4232128610ff',1,'ch::CombineHarvester::AddBinByBin(double threshold, bool fixed_norm, CombineHarvester *other)'],['../classch_1_1_combine_harvester.html#aaf7c0e7a370d1a43290815e818058735',1,'ch::CombineHarvester::AddBinByBin(double threshold, bool fixed_norm, CombineHarvester &amp;other)']]],
   ['adddatacardlineatend',['AddDatacardLineAtEnd',['../classch_1_1_combine_harvester.html#a59b5a637f7f11c2ee77a9b07bc1deb02',1,'ch::CombineHarvester']]],
+  ['addextargvalue',['AddExtArgValue',['../classch_1_1_combine_harvester.html#ae94f5954e44697ce22d5516515c8627c',1,'ch::CombineHarvester']]],
   ['addmssmsystematics',['AddMSSMSystematics',['../namespacech.html#aa94f943eeda46d951fd794b7532944ed',1,'ch::AddMSSMSystematics(CombineHarvester &amp;cb, CombineHarvester src)'],['../namespacech.html#a597c0a29e463a96eb05f9df8cb9dfe90',1,'ch::AddMSSMSystematics(CombineHarvester &amp;cb)']]],
   ['addmssmupdatesystematics_5fem',['AddMSSMUpdateSystematics_em',['../namespacech.html#ae6eebbd180b87701e7724c3db9d6cd5a',1,'ch::AddMSSMUpdateSystematics_em(CombineHarvester &amp;cb, CombineHarvester src)'],['../namespacech.html#acec5cdd79f370c7bee88f4de418c9423',1,'ch::AddMSSMUpdateSystematics_em(CombineHarvester &amp;cb)']]],
   ['addmssmupdatesystematics_5fet_5fmt',['AddMSSMUpdateSystematics_et_mt',['../namespacech.html#a0d7482a8b0989a1b6b7fe1689c65b0e1',1,'ch::AddMSSMUpdateSystematics_et_mt(CombineHarvester &amp;cb, CombineHarvester src)'],['../namespacech.html#a2718097dd3af197ac2ad9d728b70ddde',1,'ch::AddMSSMUpdateSystematics_et_mt(CombineHarvester &amp;cb)']]],
@@ -21,8 +22,8 @@ var searchData=
   ['addworkspace',['AddWorkspace',['../classch_1_1_combine_harvester.html#a17500b104a107f1ca619a9b659d4a76d',1,'ch::CombineHarvester']]],
   ['algorithm_2eh',['Algorithm.h',['../_algorithm_8h.html',1,'']]],
   ['all_5fattributes',['all_attributes',['../classch_1_1_object.html#ac67ae0228db7343bdb8d408e11e19318',1,'ch::Object']]],
-  ['analysis',['analysis',['../structch_1_1syst_1_1analysis.html',1,'ch::syst']]],
   ['analysis',['analysis',['../classch_1_1_combine_harvester.html#a672af065808c26e0795259876787c57f',1,'ch::CombineHarvester::analysis()'],['../classch_1_1_object.html#acc6dfa0e69fd9c9647e4b242bfe6a93e',1,'ch::Object::analysis()']]],
+  ['analysis',['analysis',['../structch_1_1syst_1_1analysis.html',1,'ch::syst']]],
   ['analysis_5fset',['analysis_set',['../classch_1_1_combine_harvester.html#ad2c92025d60e32b438a3445aa756d631',1,'ch::CombineHarvester']]],
   ['any_5fof',['any_of',['../namespacech.html#a9ae81b01c3e51356f05c2734d4e7fd8d',1,'ch']]],
   ['applygraphyoffset',['ApplyGraphYOffset',['../namespaceplotting.html#a9199ca7348c6e70e13e9ec5205437f70',1,'plotting']]],

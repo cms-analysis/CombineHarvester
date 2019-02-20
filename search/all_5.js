@@ -22,7 +22,7 @@ var searchData=
   ['fixboxpadding',['FixBoxPadding',['../_plotting_8h.html#a0d9c9cc36ba7c24dcdca74b6173a0335',1,'FixBoxPadding():&#160;Plotting.h'],['../namespaceplotting.html#ad0aa26b4d88d4ebd4d80bda85073236c',1,'plotting.FixBoxPadding()']]],
   ['fixoverlay',['FixOverlay',['../_plotting_8h.html#a3ab873b129878269a347a387a5f6ff4b',1,'FixOverlay():&#160;Plotting.h'],['../namespaceplotting.html#a923135db9a7c26ccf9ebb3098f779377',1,'plotting.FixOverlay()']]],
   ['fixtoprange',['FixTopRange',['../_plotting_8h.html#a5f529c55b51440415c95a200a9e0708f',1,'FixTopRange():&#160;Plotting.h'],['../namespaceplotting.html#ace775a1f04211b54e089d44d3d28b1c4',1,'plotting.FixTopRange()']]],
-  ['fnerror',['FNERROR',['../_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112',1,'FNERROR():&#160;Logging.h'],['../namespacech.html#afdabce9fcf0e565dcd93d273e771ef68',1,'ch::FnError()']]],
+  ['fnerror',['FnError',['../namespacech.html#afdabce9fcf0e565dcd93d273e771ef68',1,'ch::FnError()'],['../_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112',1,'FNERROR():&#160;Logging.h']]],
   ['fnlog',['FNLOG',['../_logging_8h.html#ada13f286e68b5dcf51c75365e99c7a68',1,'Logging.h']]],
   ['fnlogc',['FNLOGC',['../_logging_8h.html#a3eb848e20af411db5ba7f1d4f082fed0',1,'Logging.h']]],
   ['fntimer',['FnTimer',['../classch_1_1_fn_timer.html',1,'ch']]],
