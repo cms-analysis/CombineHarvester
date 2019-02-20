@@ -54,7 +54,7 @@ def FixGraph(gr):
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 plot.ModTDRStyle()
-
+ROOT.gStyle.SetGridColor(17)
 
 parser = argparse.ArgumentParser()
 
@@ -186,7 +186,7 @@ for POI in POIs:
     gr_bkgth.Draw('PLSAME')
     gr_exp.Draw('PLSAME')
 
-    legend = ROOT.TLegend(0.75, 0.7, 0.92, 0.93, '', 'NBNDC')
+    legend = ROOT.TLegend(0.76, 0.7, 0.94, 0.93, '', 'NBNDC')
     legend.AddEntry(gr, 'Total', 'LP')
     # legend.AddEntry(gr_pred, '1/sqrt(L)', 'L')
     legend.AddEntry(gr_stat, 'Stat', 'LP')
@@ -204,7 +204,7 @@ for POI in POIs:
     # plot.Set(latex, TextFont=42, TextAlign=12, TextSize=0.05)
     # latex.DrawLatexNDC(0.50, 0.87, 'Parameter: #bf{%s}' % texname)
 
-    box = ROOT.TPaveText(0.37, 0.77, 0.72, 0.93, 'NDCNB')
+    box = ROOT.TPaveText(0.30, 0.78, 0.74, 0.93, 'NDCNB')
     plot.Set(box, TextFont=42, TextAlign=11)
     if args.scenario == 'S1':
         box.AddText('w/ Run 2 syst. uncert. (S1)')
@@ -213,8 +213,10 @@ for POI in POIs:
     box.AddText('Parameter: %s' % texname)
     box.Draw()
 
+    plot.FixOverlay()
+
     plot.DrawCMSLogo(pads[0], 'CMS', args.subline, 0, 0.14, 0.035, 1.2)
-    # plot.DrawTitle(pads[0], 'YR2018 %s' % args.scenario, 3)
+    plot.DrawTitle(pads[0], '13 TeV', 3)
     canv.Print('.pdf')
     canv.Print('.png')
 

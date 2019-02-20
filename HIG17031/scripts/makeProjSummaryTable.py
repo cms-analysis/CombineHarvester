@@ -2,6 +2,7 @@
 import argparse
 import json
 import math
+import copy
 # import pprint
 import ROOT
 import CombineHarvester.CombineTools.plotting as plot
@@ -139,8 +140,15 @@ if args.sync_bkgth and 'BkgTh' in breakdown:
 
 if args.dump_json is not None:
     with open(args.dump_json, 'w') as outjson:
+        X_copy = copy.deepcopy(X)
+        for l in lumis:
+            for s in scenarios:
+                for P in POIs:
+                    for key in X_copy[l][s][P].keys():
+                        if not key.endswith('Sym'):
+                            del X_copy[l][s][P][key]
         json.dump(
-            X, outjson, sort_keys=True, indent=4, separators=(',', ': '))
+            X_copy, outjson, sort_keys=True, indent=4, separators=(',', ': '))
 
 nsubrows = len(scenarios)
 nsubcols = len(breakdown) + 1
@@ -159,9 +167,9 @@ output.append(' \\hline')
 hsections = []
 for i, l in enumerate(lumis):
     if i < (len(lumis) - 1):
-        hsections.append('\\multicolumn{%i}{c@{\hskip 0.3in}}{%s $\\text{fb}^{-1}$}' % (nsubcols, l))
+        hsections.append('\\multicolumn{%i}{c@{\hskip 0.3in}}{%s $\\text{fb}^{-1}$ uncertainty [\\%%]}' % (nsubcols, l))
     else:
-        hsections.append('\\multicolumn{%i}{c}{%s $\\text{fb}^{-1}$}' % (nsubcols, l))
+        hsections.append('\\multicolumn{%i}{c}{%s $\\text{fb}^{-1}$ uncertainty [\\%%]}' % (nsubcols, l))
 if args.convert_to_abs:
     output.append('  &  &  & ' + ' & '.join(hsections) + ' \\\\')
     output.append(('  & SM pred. [%s] &  & ' % scaler['units'][args.model]) + ' & '.join((['Total'] + breakdown) * nbigcols) + ' \\\\')
@@ -272,8 +280,14 @@ for l in lumis:
 
     N = len(POIs)
     ntop = 1
+    label_size = 0.028
+    label_offset = 0.50
+    label_b_offset = 0.29
     if N > 6:
         ntop = 2
+        label_size = 0.027
+        label_offset = 0.52
+        label_b_offset = 0.27
 
     xmin = float(args.x_range.split(',')[0])
     xmax = float(args.x_range.split(',')[1])
@@ -316,10 +330,10 @@ for l in lumis:
     pads[0].RedrawAxis()
 
     textline_box = ROOT.TLatex()
-    plot.Set(textline_box, TextFont=42, TextAlign=12, TextSize=0.025)
+    plot.Set(textline_box, TextFont=42, TextAlign=12, TextSize=label_size)
 
     for i, POI in enumerate(POIs):
-        textline_box.DrawLatex(0.55 * xmax, float(i) + 0.29, '; '.join(reversed(textline[POI])))
+        textline_box.DrawLatex(label_offset * xmax, float(i) + label_b_offset, '; '.join(reversed(textline[POI])))
 
 
     # title_box = ROOT.TPaveText(xmin + (xmax-xmin)*0.01, float(N+1)-0.6, xmin + (xmax-xmin)*0.65, float(N+1)-0.2, 'NB')
