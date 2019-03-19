@@ -23,6 +23,7 @@ parser.add_argument('--blind', action='store_true', help='Do not print best fit 
 parser.add_argument('--color-groups', default=None, help='Comma separated list of GROUP=COLOR')
 parser.add_argument("--pullDef",  default=None, help="Choose the definition of the pull, see HiggsAnalysis/CombinedLimit/python/calculate_pulls.py for options")
 parser.add_argument('--POI', default=None, help='Specify a POI to draw')
+parser.add_argument("--set-label-size", dest = "labelsize",default = 0.022, help = "Set size of labels on the left hand side (default = 0.022", type = float)
 args = parser.parse_args()
 
 if args.transparent:
@@ -219,7 +220,7 @@ for page in xrange(n):
     else:
         plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
 
-    plot.Set(h_pulls.GetYaxis(), LabelSize=0.021, TickLength=0.0)
+    plot.Set(h_pulls.GetYaxis(), LabelSize=args.labelsize, TickLength=0.0)
     h_pulls.GetYaxis().LabelsOption('v')
     h_pulls.Draw()
 
