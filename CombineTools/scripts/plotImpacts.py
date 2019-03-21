@@ -16,6 +16,10 @@ parser.add_argument('--output', '-o', help='name of the output file to create')
 parser.add_argument('--translate', '-t', help='JSON file for remapping of parameter names')
 parser.add_argument('--units', default=None, help='Add units to the best-fit parameter value')
 parser.add_argument('--per-page', type=int, default=30, help='Number of parameters to show per page')
+parser.add_argument('--max-pages', type=int, default=None, help='Maximum number of pages to write')
+parser.add_argument('--height', type=int, default=600, help='Canvas height, in pixels')
+parser.add_argument('--left-margin', type=float, default=0.4, help='Left margin, expressed as a fraction')
+parser.add_argument('--label-size', type=float, default=0.021, help='Parameter name label size')
 parser.add_argument('--cms-label', default='Internal', help='Label next to the CMS logo')
 parser.add_argument('--transparent', action='store_true', help='Draw areas as hatched lines instead of solid')
 parser.add_argument('--checkboxes', action='store_true', help='Draw an extra panel with filled checkboxes')
@@ -61,7 +65,7 @@ with open(args.input) as jsonfile:
     data = json.load(jsonfile)
 
 # Set the global plotting style
-plot.ModTDRStyle(l=0.4, b=0.10, width=(900 if args.checkboxes else 700))
+plot.ModTDRStyle(l=args.left_margin, b=0.10, width=(900 if args.checkboxes else 700), height=args.height)
 
 # We will assume the first POI is the one to plot
 POIs = [ele['name'] for ele in data['POIs']]
@@ -85,6 +89,8 @@ if args.checkboxes:
 # Set the number of parameters per page (show) and the number of pages (n)
 show = args.per_page
 n = int(math.ceil(float(len(data['params'])) / float(show)))
+if args.max_pages is not None and args.max_pages > 0:
+    n = args.max_pages
 
 colors = {
     'Gaussian': 1,
@@ -208,8 +214,11 @@ for page in xrange(n):
         max_impact = max(
             max_impact, abs(imp[1] - imp[0]), abs(imp[2] - imp[1]))
         col = colors.get(tp, 2)
-        if args.color_groups is not None and len(pdata[p]['groups']) == 1:
-            col = color_groups.get(pdata[p]['groups'][0], 1)
+        if args.color_groups is not None and len(pdata[p]['groups']) >= 1:
+            for p_grp in pdata[p]['groups']:
+                if p_grp in color_groups:
+                    col = color_groups[p_grp]
+                    break
         h_pulls.GetYaxis().SetBinLabel(
             i + 1, ('#color[%i]{%s}'% (col, Translate(pdata[p]['name'], translate))))
 
@@ -219,7 +228,7 @@ for page in xrange(n):
     else:
         plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
 
-    plot.Set(h_pulls.GetYaxis(), LabelSize=0.021, TickLength=0.0)
+    plot.Set(h_pulls.GetYaxis(), LabelSize=args.label_size, TickLength=0.0)
     h_pulls.GetYaxis().LabelsOption('v')
     h_pulls.Draw()
 
