@@ -17,6 +17,7 @@ var searchData=
   ['renameparameter',['RenameParameter',['../classch_1_1_combine_harvester.html#a2825b9eeec47f7b23f93520bf615b581',1,'ch::CombineHarvester']]],
   ['renamesystematic',['RenameSystematic',['../classch_1_1_combine_harvester.html#afb997f5e694eaec9b99aeabe474185d9',1,'ch::CombineHarvester']]],
   ['restorebinning',['RestoreBinning',['../namespacech.html#a23cd9444931a49de080638458f722501',1,'ch']]],
+  ['reversebins',['ReverseBins',['../_post_fit_shapes_from_workspace_8cpp.html#a48acb519f981bec18bc41e658431176d',1,'PostFitShapesFromWorkspace.cpp']]],
   ['rezerotgraph',['ReZeroTGraph',['../_plotting_8h.html#af2524f9f02ac66a16164c87bfc149628',1,'ReZeroTGraph():&#160;Plotting.h'],['../namespaceplotting.html#a273bab5cfe205a69a469a86828ab3f3b',1,'plotting.ReZeroTGraph()']]],
   ['roccurvefrom1dhists',['RocCurveFrom1DHists',['../namespaceplotting.html#a0d8bc74b28155809f534df954fe60355',1,'plotting']]],
   ['run',['Run',['../classch_1_1_c_m_s_hist_func_factory.html#a76a006851773756a05ca67e577b32c60',1,'ch::CMSHistFuncFactory']]]

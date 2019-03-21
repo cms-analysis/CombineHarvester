@@ -20,12 +20,15 @@ var classch_1_1_systematic =
     [ "shape_u", "classch_1_1_systematic.html#accf5f1c59b7c712d701d879452597e94", null ],
     [ "ClonedShapeU", "classch_1_1_systematic.html#ae0814d4e8b74020a7e8b8f37985aa882", null ],
     [ "ClonedShapeD", "classch_1_1_systematic.html#aa9b12a8b0ad6495226ab719f490dffc8", null ],
+    [ "ShapeUAsTH1F", "classch_1_1_systematic.html#a59c1539c5f493b9abc7d56faebe18356", null ],
+    [ "ShapeDAsTH1F", "classch_1_1_systematic.html#a5654a4a12eba2c44cef065a5ddb8727f", null ],
     [ "shape_d", "classch_1_1_systematic.html#a39ef082b25f09b1080c21d15a8a92187", null ],
     [ "data_u", "classch_1_1_systematic.html#a95a30941a8b10c59b54a2d7bedd5c80e", null ],
     [ "data_d", "classch_1_1_systematic.html#ab0fc94bc1ba9eed9c747a6c1c40abba9", null ],
     [ "set_data", "classch_1_1_systematic.html#a7488a889a863e7ae1395ff80320edbd8", null ],
     [ "set_shapes", "classch_1_1_systematic.html#a400bca9bdb905d91e094ebd30a4aac7d", null ],
     [ "set_shapes", "classch_1_1_systematic.html#a76e80983e8424d7326ea34eac9d2b661", null ],
+    [ "SwapUpAndDown", "classch_1_1_systematic.html#a838d5c14e2be2610010e7354eb706fae", null ],
     [ "operator<<", "classch_1_1_systematic.html#a02ece8cccb0b41cb2cb28145822875d8", null ],
     [ "swap", "classch_1_1_systematic.html#ae72c57591746155a32cd36adc350e92a", null ]
 ];
