@@ -14,6 +14,10 @@ args = sys.argv[1:]
 
 file = args[0]
 model = args[1]
+if len(args) >= 3:
+    split = args[2].split(',')
+else:
+    split = []
 
 with open(file) as jsonfile:
     js = json.load(jsonfile)
@@ -22,9 +26,17 @@ with open(file) as jsonfile:
         print [str(x) for x in js.keys()]
         sys.exit(0)
     js = js[model]
-    print '%-30s %7s %11s %11s' % ('POI', 'Val', '+1sig', '-1sig')
+    headerstr = '%-30s %7s %11s %11s %7s' % ('POI', 'Val', '+1sig', '-1sig', '1sig')
+    for x in split:
+        headerstr += ' %7s' % x
+    print headerstr
     for POI, res in sorted(js.iteritems()):
         if 'ErrorHi' in res and 'ErrorLo' in res:
-            print '%-30s %+7.3f %+7.3f (%i) %+7.3f (%i)' % (POI, res['Val'], res['ErrorHi'], res['ValidErrorHi'], res['ErrorLo'], res['ValidErrorLo'])
+            errSym = (res['ErrorHi'] - res['ErrorLo']) / 2.
+            line = '%-30s %+7.3f %+7.3f (%i) %+7.3f (%i) %+7.3f' % (POI, res['Val'], res['ErrorHi'], res['ValidErrorHi'], res['ErrorLo'], res['ValidErrorLo'], errSym)
+            for x in split:
+                xSym = (res['%sHi' % x] - res['%sLo' % x]) / 2.
+                line += ' %+7.3f' % xSym
+            print line
         else:
             print '%-30s %+7.3f' % (POI, res['Val'])

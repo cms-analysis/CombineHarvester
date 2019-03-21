@@ -116,7 +116,7 @@ def ProcessEnvelope(main, others, relax_safety=0):
     return gr
 
 
-def ProcessEnvelopeNew(main, others, relax_safety=0):
+def ProcessEnvelopeNew(main, others, relax_safety=0, chop=-1.):
     print '[ProcessEnvelope] Will create envelope from %i other scans' % len(others)
     min_x = min([oth['graph'].GetX()[0] for oth in others])
     max_x = max([oth['graph'].GetX()[oth['graph'].GetN() - 1] for oth in others])
@@ -158,9 +158,14 @@ def ProcessEnvelopeNew(main, others, relax_safety=0):
 
     for i in xrange(gr.GetN()):
         gr.GetY()[i] -= min_y
+    if chop > 0:
+        plot.RemoveGraphYAbove(gr, chop)
+
     for oth in others:
         for i in xrange(oth['graph'].GetN()):
             oth['graph'].GetY()[i] -= min_y
+        if chop > 0:
+            plot.RemoveGraphYAbove(oth['graph'], chop)
         # print 'OTHER'
         # oth['graph'].Print()
 
@@ -426,7 +431,7 @@ if args.envelope and args.breakdown:
         if args.old_envelope:
             new_gr = ProcessEnvelope(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)
         else:
-            new_gr = ProcessEnvelopeNew(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety)     
+            new_gr = ProcessEnvelopeNew(main_scan, other_scans[n_env*j:n_env*(j+1)], args.relax_safety, args.chop)     
         if j == 0:
             main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
@@ -448,7 +453,7 @@ elif args.envelope:
     if args.old_envelope:
         new_gr = ProcessEnvelope(main_scan, other_scans, args.relax_safety)
     else:
-        new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety)
+        new_gr = ProcessEnvelopeNew(main_scan, other_scans, args.relax_safety, args.chop)
     main_scan = BuildScan(args.output, args.POI, [
                           args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, pregraph=new_gr)
     for other in other_scans:
@@ -606,7 +611,7 @@ val_2sig = main_scan['val_2sig']
 textfit = '%s = %.3f{}^{#plus %.3f}_{#minus %.3f}' % (
     fixed_name, val_nom[0], val_nom[1], abs(val_nom[2]))
 if args.upper_cl:
-    textfit = '%s < %.2f (%i%% CL)' % (
+    textfit = '%s < %.3f (%i%% CL)' % (
         fixed_name, val_nom[0] + val_nom[1], int(args.upper_cl * 100))
 
 pt = ROOT.TPaveText(0.59, 0.82 - len(other_scans) * 0.08, 0.95, 0.91, 'NDCNB')
@@ -814,7 +819,7 @@ if args.json is not None:
                     js_extra['OtherLimit%sHi' % breakdown[oi+1]] = interval['hi']
                     js_extra['ValidOtherLimit%sLo' % breakdown[oi+1]] = interval['valid_lo']
                     js_extra['ValidOtherLimit%sHi' % breakdown[oi+1]] = interval['valid_hi']
-                if len(main_scan['other_2sig']) >= 1:
+                if len(other['other_2sig']) >= 1:
                     interval = other['other_2sig'][0]
                     js_extra['2sig_OtherLimit%sLo' % breakdown[oi+1]] = interval['lo']
                     js_extra['2sig_OtherLimit%sHi' % breakdown[oi+1]] = interval['hi']
@@ -860,7 +865,8 @@ if args.POI_line is not None:
         POI_line = '#scale[0.7]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
     if args.legend_pos == 8:
         POI_line = '#scale[1.0]{#splitline{['+ ', '.join(POIs[:5]) + ',}{' + ', '.join(POIs[5:]) + ']}}'
-
+    if args.legend_pos in [6, 10]:
+        POI_line = args.POI_line
 
 if not args.no_input_label:
     plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
@@ -882,7 +888,7 @@ if len(other_scans) > 0:
 if args.legend_pos in [1,6]:
     legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
     if args.POI_line is not None:
-        latex.DrawLatex(0.35, 0.875, POI_line)
+        latex.DrawLatex(0.17, 0.60, POI_line)
 
 elif args.legend_pos == 2:
     legend = ROOT.TLegend(0.56+args.legend_off, legend_l+0.075, 0.9+args.legend_off, 0.78+0.075, '', 'NBNDC')
@@ -914,6 +920,19 @@ elif args.legend_pos == 7:
 elif args.legend_pos == 9:
     legend = ROOT.TLegend(0.42, 0.74, 0.70, 0.92, '', 'NBNDC')
     # legend.SetNColumns(1)
+elif args.legend_pos == 10:
+    if len(other_scans) > 2:
+        y_sub = 0. if args.POI_line is None else 0.00
+        legend = ROOT.TLegend(0.52, 0.77 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
+        legend.SetNColumns(2)
+        if args.POI_line is not None:
+            latex.DrawLatex(0.37, 0.835, POI_line)
+    else: 
+        y_sub = 0. if args.POI_line is None else 0.00
+        legend = ROOT.TLegend(0.71, 0.77 - y_sub, 0.93, 0.92 - y_sub, '', 'NBNDC')
+        legend.SetNColumns(1)
+        if args.POI_line is not None:
+            latex.DrawLatex(0.57, 0.835, POI_line)
 
 if len(other_scans) >= 3 and args.legend_pos == 1:
     y_sub = 0. if args.POI_line is None else 0.07
@@ -927,6 +946,8 @@ if len(other_scans) >= 3 and args.legend_pos == 1:
         legend.SetNColumns(2)
 
 legend.AddEntry(main_scan['func'], args.main_label, 'L')
+if args.legend_pos == 10 and len(other_scans) > 2:
+    legend.AddEntry(main_scan['func'], ' ', '')
 if args.breakdown and args.envelope:
     for i in xrange(n_env):
         legend.AddEntry(new_others[i]['func'], other_scans_opts[i][1], 'L')
