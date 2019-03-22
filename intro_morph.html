@@ -243,32 +243,7 @@ Example usage for SM analysis </h1>
 <h1><a class="anchor" id="MSSMMorph"></a>
 Creating 1 or 3 Higgs bosons for an MSSM analysis </h1>
 <p>For an MSSM or 2HDM interpretation, datacards must be setup containing 3 neutral Higgs bosons. The extension of the previous description to create datacards with three Higgs bosons in and a signal PDF for each is simple:</p>
-<div class="fragment"><div class="line">  <span class="keywordtype">bool</span> do_morphing = <span class="keyword">true</span>;</div>
-<div class="line">  map&lt;string, RooAbsReal *&gt; mass_var = {</div>
-<div class="line">    {<span class="stringliteral">&quot;ggh_htautau&quot;</span>, &amp;mh}, {<span class="stringliteral">&quot;ggH_Htautau&quot;</span>, &amp;mH}, {<span class="stringliteral">&quot;ggA_Atautau&quot;</span>, &amp;mA},</div>
-<div class="line">    {<span class="stringliteral">&quot;bbh_htautau&quot;</span>, &amp;mh}, {<span class="stringliteral">&quot;bbH_Htautau&quot;</span>, &amp;mH}, {<span class="stringliteral">&quot;bbA_Atautau&quot;</span>, &amp;mA}</div>
-<div class="line">  };</div>
-<div class="line">  <span class="keywordflow">if</span>(mass==<span class="stringliteral">&quot;MH&quot;</span>){</div>
-<div class="line">    mass_var = {</div>
-<div class="line">      {<span class="stringliteral">&quot;ggH&quot;</span>, &amp;mA},</div>
-<div class="line">      {<span class="stringliteral">&quot;bbH&quot;</span>, &amp;mA}</div>
-<div class="line">    };</div>
-<div class="line">  }</div>
-<div class="line">  <span class="keywordflow">if</span> (do_morphing) {</div>
-<div class="line">    <span class="keyword">auto</span> bins = cb.bin_set();</div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keyword">auto</span> b : bins) {</div>
-<div class="line">      <span class="keyword">auto</span> procs = cb.cp().bin({b}).process(<a class="code" href="namespacech.html#abfd9e94a6fd4c33abe1bbd5fb03e7f28">ch::JoinStr</a>({signal_types[<span class="stringliteral">&quot;ggH&quot;</span>], signal_types[<span class="stringliteral">&quot;bbH&quot;</span>]})).process_set();</div>
-<div class="line">      <span class="keywordflow">for</span> (<span class="keyword">auto</span> p : procs) {</div>
-<div class="line">        <a class="code" href="namespacech.html#a97cbe520b49c247995a8d3e55b0f9563">ch::BuildRooMorphing</a>(ws, cb, b, p, *(mass_var[p]),<span class="stringliteral">&quot;norm&quot;</span>, <span class="keyword">true</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, &amp;demo);</div>
-<div class="line">      }</div>
-<div class="line">    }</div>
-<div class="line">  }</div>
-<div class="line">  demo.Close();</div>
-<div class="line">  cb.AddWorkspace(ws);</div>
-<div class="line">  cb.cp().process(<a class="code" href="namespacech.html#abfd9e94a6fd4c33abe1bbd5fb03e7f28">ch::JoinStr</a>({signal_types[<span class="stringliteral">&quot;ggH&quot;</span>], signal_types[<span class="stringliteral">&quot;bbH&quot;</span>]})).ExtractPdfs(cb, <span class="stringliteral">&quot;htt&quot;</span>, <span class="stringliteral">&quot;$BIN_$PROCESS_morph&quot;</span>);</div>
-<div class="line">  cb.PrintAll();</div>
-<div class="line">  cout &lt;&lt; <span class="stringliteral">&quot;done\n&quot;</span>;</div>
-</div><!-- fragment --><p> In this case the BuildRooMorphing function is passed the signal process corresponding to each of the three Higgs bosons, each controlled by their separate mass terms. Note the option "mass", which if set to "MH" will only build the datacards with one Higgs boson - this is reserved for the case of running the single resonance model independent limits and will instead place only one Higgs boson in the datacards.</p>
+<div class="fragment"></div><!-- fragment --><p> In this case the BuildRooMorphing function is passed the signal process corresponding to each of the three Higgs bosons, each controlled by their separate mass terms. Note the option "mass", which if set to "MH" will only build the datacards with one Higgs boson - this is reserved for the case of running the single resonance model independent limits and will instead place only one Higgs boson in the datacards.</p>
 <h1><a class="anchor" id="MSSMModel"></a>
 Applying a model at text2workspace step </h1>
 <p>Having produced datacards containing signal PDFs for the appropriate number of Higgs bosons, we can go one step further and make extra use of the normalisation term associated with the PDFs. One specific use of this, as discussed in the introduction, is in the model dependent exclusions provided for example in the MSSM H-&gt;tautau analysis. In this case, each point in mA-tanb phase space has a different signal model containing contributions from the three Higgs bosons. At each point the masses of the Higgs bosons and the cross-sections times branching ratios are different. The normal procedure in this case would be to produce a workspace for each model point with a specific signal template built and added by hand.</p>
