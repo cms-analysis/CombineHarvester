@@ -37,7 +37,7 @@ class EnhancedCombine(CombineToolBase):
         group.add_argument('--name', '-n', default='.Test',
                            help='Name used to label the combine output file, can be modified by other options')
         group.add_argument(
-            '--setPhysicsModelParameterRanges', help='Some other options will modify or add to the list of parameter ranges')
+            '--setParameterRanges', help='Some other options will modify or add to the list of parameter ranges')
 
 
     def attach_args(self, group):
@@ -149,7 +149,7 @@ class EnhancedCombine(CombineToolBase):
         # elif len(self.args.datacard) == 1:
         #     self.passthru.extend(['-d', self.args.datacard[0]])
 
-        current_ranges = self.args.setPhysicsModelParameterRanges
+        current_ranges = self.args.setParameterRanges
         put_back_ranges = current_ranges is not None
 
         if self.args.boundlist is not None:
@@ -200,11 +200,11 @@ class EnhancedCombine(CombineToolBase):
             # and replace it with the updated one
             del subbed_vars[dict_key]
             subbed_vars[new_key] = new_list
-            self.passthru.extend(['--setPhysicsModelParameterRanges',  '%(MODELBOUND)s'])
+            self.passthru.extend(['--setParameterRanges',  '%(MODELBOUND)s'])
 
-        # We might need to put the intercepted --setPhysicsModelParameterRanges arg back in
+        # We might need to put the intercepted --setParameterRanges arg back in
         if put_back_ranges:
-            self.put_back_arg('setPhysicsModelParameterRanges', '--setPhysicsModelParameterRanges')
+            self.put_back_arg('setParameterRanges', '--setParameterRanges')
 
         if self.args.points is not None:
             self.passthru.extend(['--points', self.args.points])

@@ -477,7 +477,7 @@ void CombineHarvester::LoadShapes(Process* entry,
     RooAbsData const* data_obj = FindMatchingData(entry);
     if (data_obj) {
       if (verbosity_ >= 2) LOGLINE(log(), "Matching RooAbsData has been found");
-      if (pdf) {
+      if (pdf&&!data) {
         RooArgSet argset = ParametersByName(pdf, data_obj->get());
         ImportParameters(&argset);
         if (!entry->observable()) {
@@ -886,4 +886,9 @@ std::set<std::string> CombineHarvester::GetAutoMCStatsBins() const {
   return result;
 }
 
+void CombineHarvester::AddExtArgValue(std::string const& name, double const& value) {
+  ch::Parameter* param = SetupRateParamVar(name, value, true);
+  param->set_err_u(0.);
+  param->set_err_d(0.);
+}
 }

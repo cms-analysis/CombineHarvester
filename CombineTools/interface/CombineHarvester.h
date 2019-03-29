@@ -274,6 +274,7 @@ class CombineHarvester {
   void ForEachSyst(Function func);
 
   void VariableRebin(std::vector<double> bins);
+  void ZeroBins(double min, double max);
   void SetPdfBins(unsigned nbins);
 
   /**
@@ -461,6 +462,8 @@ class CombineHarvester {
   void SetAutoMCStats(CombineHarvester &target, double thresh, bool sig=false, int mode=1);
   void RenameAutoMCStatsBin(std::string const& oldname, std::string const& newname);
   std::set<std::string> GetAutoMCStatsBins() const;
+
+  void AddExtArgValue(std::string const& name, double const& value);
  private:
   friend void swap(CombineHarvester& first, CombineHarvester& second);
 

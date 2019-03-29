@@ -10,8 +10,13 @@ import ROOT
 from array import array
 import numpy as np
 from pprint import pprint
+from functools import partial
 from CombineHarvester.CombineTools.combine.opts import OPTS
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+
+
+def Eval(obj, x, params):
+    return obj.Eval(x[0])
 
 
 def Permutations(indicies):
@@ -43,6 +48,16 @@ def GenerateStencils(d, h, s):
     # print dvec
     res = (1. / pow(h, d)) * np.dot(np.linalg.inv(smatrix), dvec)
     return res
+
+
+def GenerateDebugGraph(wsp, var_name, ingraph):
+    nll = wsp.function('nll')
+    var = wsp.var(var_name)
+    outgraph = ingraph.Clone()
+    for i in xrange(ingraph.GetN()):
+        var.setVal(ingraph.GetX()[i])
+        outgraph.GetY()[i] = nll.getVal() * 2.
+    return outgraph
 
 
 # Calculate partial derivatives using finite differences
@@ -141,6 +156,7 @@ class TaylorExpand(CombineToolBase):
                 continue
             res.append(getattr(evt, 'deltaNLL'))
         print res
+        if len(res) == 0: print file
         return res
 
     def attach_args(self, group):
@@ -157,6 +173,8 @@ class TaylorExpand(CombineToolBase):
                            help=('Actually do the fits'))
         group.add_argument('--test-mode', type=int, default=0,
                            help=('Test on the workspace'))
+        group.add_argument('--test-args', type=str, default='',
+                           help=('List of comma separated args to be interpreted by the test-mode'))
         group.add_argument('--save', default=None,
                            help=('Save results to a json file'))
         group.add_argument('--load', default=None,
@@ -171,6 +189,8 @@ class TaylorExpand(CombineToolBase):
                            help=('Run multiple fixed points in one combine job'))
         group.add_argument('--workspace-bestfit', action='store_true',
                            help=('Update the best-fit using the workspace snapshot'))
+        group.add_argument('--linear-workaround', default=None,
+                           help=('Comma separated list of POIs that require special treatment due to a linear NLL'))
 
     def load_workspace(self, file, POIs, data='data_obs', snapshot='MultiDimFit'):
         if self.nll is not None:
@@ -193,7 +213,7 @@ class TaylorExpand(CombineToolBase):
             self.wsp_vars[POI] = self.loaded_wsp.var(POI)
 
     def get_snpashot_pois(self, file, POIs, snapshot='MultiDimFit'):
-        infile = ROOT.TFile(file)
+        infile = ROOT.TFile.Open(file)
         loaded_wsp = infile.Get('w')
         loaded_wsp.loadSnapshot('MultiDimFit')
         fit_vals = {}
@@ -227,7 +247,7 @@ class TaylorExpand(CombineToolBase):
         if self.args.choose_POIs is None:
             POIs = sorted([str(x) for x in cfg.keys()])
         else:
-            POIs = self.args.choosePOIs.split(',')
+            POIs = self.args.choose_POIs.split(',')
 
         Nx = len(POIs)
         print '>> Taylor expansion in %i variables up to order %i:' % (Nx, self.args.order)
@@ -249,8 +269,16 @@ class TaylorExpand(CombineToolBase):
         ######################################################################
         # Step 2 - generate stencils
         ######################################################################
+
+        linear_POIs = []
+        if self.args.linear_workaround is not None:
+            linear_POIs = self.args.linear_workaround.split(',')
+
+
         stencils = {}
         validity = []
+
+        do_cheb = False
 
         for i, P in enumerate(POIs):
             stencils[i] = {}
@@ -260,6 +288,8 @@ class TaylorExpand(CombineToolBase):
             elif 'StencilSize' in cfg[P]:
                 s_min = -cfg[P]['StencilSize']
                 s_max = +cfg[P]['StencilSize']
+            s_min *= 1.0
+            s_max *= 1.0
             validity.append(cfg[P]['Validity'])
             for n in xrange(self.args.order + 1):
                 if n == 0:
@@ -269,7 +299,34 @@ class TaylorExpand(CombineToolBase):
                 stencil_spacing = (s_max - s_min) / (stencil_size - 1)
                 for s in range(stencil_size):
                     stencil.append(s_min + float(s) * stencil_spacing)
+
+                if do_cheb:
+                    cheb_list = []
+                    a = stencil[0]
+                    b = stencil[-1]
+                    chebN = len(stencil)
+                    for inode in xrange(1, chebN + 1):
+                        cheb_list.append(0.5 * (a + b) + 0.5 * (b - a) * math.cos((((2.*inode) - 1.) * math.pi) / (2. * chebN)))
+                    cheb_list.sort()
+                    stencil = cheb_list
                 coefficients = GenerateStencils(n, 1, stencil)
+
+                ## special case here for linear
+                if n == 2 and P in linear_POIs:
+                    ## First requirement is that s_min or s_max  == the best-fit
+                    if abs(s_min) < 1E-6:
+                        xprime = s_max
+                        print xprime
+                        stencil = [s_min, s_max]
+                        coefficients = [0., 2. / (xprime*xprime)]
+                    elif abs(s_max) < 1E-6:
+                        xprime = s_min
+                        stencil = [s_min, s_max]
+                        coefficients = [2. / (xprime*xprime), 0.]
+                    else:
+                        print 'Special treatment of %s not viable, one stencil range endpoint must correspond to the best fit' % P
+
+
                 stencils[i][n] = zip(stencil, coefficients)
 
         pprint(stencils)
@@ -282,11 +339,26 @@ class TaylorExpand(CombineToolBase):
         drop_thresh = self.args.drop_threshold
 
         stats = {}
-        # Should report:
-        #
-        #  Order  nTerms nEvals nNewEvals  nSmallTerms  nExpNegTerms  nActualEvals nNewActualEvals
-        #    2       X       Y         Z                         T
-        #
+
+
+        graph_func = None
+        test_mode_args = []
+        test_mode_ws = ROOT.RooWorkspace()
+        ## In this mode we are loading a TGraph from a scan
+        if self.args.test_mode == 2:
+            test_mode_args = self.args.test_args.split(',')
+            graph_filename = test_mode_args[0]
+            graph_name = test_mode_args[1]
+            graph_file = ROOT.TFile(graph_filename)
+            graph = graph_file.Get(graph_name)
+            spline = ROOT.TSpline3("spline3", graph)
+            graph_func = ROOT.TF1('splinefn', partial(Eval, spline),
+                graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
+
+        if self.args.test_mode == 3:
+            test_mode_args = [self.args.test_args]
+            print test_mode_args
+            test_mode_ws.factory('expr::func(%s)' % test_mode_args[0])
 
         ######################################################################
         # Step 3 - load pre-existing terms and evals
@@ -344,7 +416,7 @@ class TaylorExpand(CombineToolBase):
                             has_all_terms = False
                             break
                     if has_all_terms:
-                        # print 'Skipping %s containing %s' % (str(item), str(skip_item))
+                        # print 'Testing if term %s is skipable based on %s' % (str(item), str(skip_item))
                         perm_ratio = float(Permutations(item)) / float(Permutations(skip_item[0]))
                         fact_ratio = float(math.factorial(len(skip_item[0]))) / float(math.factorial(len(item)))
                         expected = cached_terms[skip_item[0]] * perm_ratio * fact_ratio
@@ -375,7 +447,8 @@ class TaylorExpand(CombineToolBase):
             actual_evallist = [x for x in unique_evallist if x not in cached_evals]
             stats[i]['nActualUniqueEvals'] = len(actual_evallist)
 
-            if len(actual_evallist) > 0 and self.args.test_mode > 0:
+            ## Prepare the inputs for the different test modes
+            if len(actual_evallist) > 0 and self.args.test_mode == 1:
                 self.load_workspace(dc, POIs)
 
             multicount = 0
@@ -385,7 +458,7 @@ class TaylorExpand(CombineToolBase):
                     set_vals = []
                     for POI, val in zip(POIs, vals):
                         set_vals.append('%s=%f' % (POI, val))
-                        if self.args.test_mode > 0:
+                        if self.args.test_mode == 1:
                             self.wsp_vars[POI].setVal(val)
                     set_vals_str = ','.join(set_vals)
                 else:
@@ -412,14 +485,20 @@ class TaylorExpand(CombineToolBase):
                     hash_id, ','.join(POIs))
                 arg_str += set_vals_str
 
-
                 if self.args.do_fits:
                     if self.args.test_mode == 0 and not os.path.isfile(filename):
                         self.job_queue.append('combine %s %s' % (arg_str, ' '.join(self.passthru)))
-                    if self.args.test_mode > 0:
+                    if self.args.test_mode == 1:
                         if idx % 10000 == 0:
                             print 'Done %i/%i NLL evaluations...' % (idx, len(actual_evallist))
                         cached_evals[vals] = self.nll.getVal() - self.nll0
+                    if self.args.test_mode == 2:
+                        # Divide by 2 here because the graph is already 2*deltaNLL
+                        cached_evals[vals] = graph_func.Eval(vals[0]) / 2.
+                    if self.args.test_mode == 3:
+                        # Divide by 2 here because the graph is already 2*deltaNLL
+                        test_mode_ws.var('x').setVal(vals[0])
+                        cached_evals[vals] = test_mode_ws.function('func').getVal()
                 else:
                     if self.args.test_mode == 0:
                         if self.args.multiple == 1:
@@ -445,6 +524,7 @@ class TaylorExpand(CombineToolBase):
                 item = tuple(term.derivatives)
                 term.Print()
                 cached_terms[item] = term.Eval(with_permutations=True, with_factorial=True)
+                print 'Raw term: %f' % term.Eval(with_permutations=False, with_factorial=False)
                 to_check_list.append((item, cached_terms[item]))
 
             for item, estimate in to_check_list:
@@ -483,7 +563,7 @@ class TaylorExpand(CombineToolBase):
         pos = 0
         te_tracker = ROOT.vector('std::vector<int>')()
 
-        save_cov_matrix = True
+        save_cov_matrix = False
         if save_cov_matrix:
             hessian = ROOT.TMatrixDSym(len(POIs))
             cov_matrix = ROOT.TMatrixDSym(len(POIs))
@@ -509,7 +589,7 @@ class TaylorExpand(CombineToolBase):
             cor_matrix = cov_matrix.Clone()
             for i in xrange(len(POIs)):
                 for j in xrange(len(POIs)):
-                    print cor_matrix[i][j], math.sqrt(cov_matrix[i][i]), math.sqrt(cov_matrix[j][j])
+                    print i, j, cor_matrix[i][j], (cov_matrix[i][i]), (cov_matrix[j][j])
                     cor_matrix[i][j] = cor_matrix[i][j] / (math.sqrt(cov_matrix[i][i]) * math.sqrt(cov_matrix[j][j]))
             # cor_matrix.Print()
             fout = ROOT.TFile('covariance.root', 'RECREATE')
@@ -547,6 +627,13 @@ class TaylorExpand(CombineToolBase):
         getattr(wsp, 'import')(nllfn, ROOT.RooCmdArg())
         wsp.Write()
         fout.Close()
+
+        if self.args.test_mode == 2:
+            testgraph = GenerateDebugGraph(wsp, POIs[0], graph)
+            fgout = ROOT.TFile('test_mode_%s.root' % (POIs[0]), 'RECREATE')
+            testgraph.SetName('main')
+            testgraph.Write()
+            fgout.Close()
 
         print '%-10s %-20s %-20s %-20s %-20s %-20s' % ('Order', 'nTerms', 'nCachedTerms', 'nSmallTerms', 'nAllNewTerms', 'nActualNewTerms')
         print '-' * 94

@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# stat_syst
-INPUT="Mar26/results"; OUTPUT="Mar26/plots"; for M in A1_mu; do mkdir -p ${OUTPUT}/${M}; for W in observed prefit_asimov postfit_asimov; do COL=1; case ${W} in prefit_asimov) COL=4; EXTRA='--main-label "SM Expected" --main-color 4';; postfit_asimov) COL=2; EXTRA='--main-label "SM Expected" --main-color 2';; *) EXTRA="";; esac; for P in $(./getPOIs_hmm.py ${M} -P); do eval python scripts/plot1DScan.py -o scan_full_split_${W}_${M}_${P} --POI ${P} --model ${M} --json ${OUTPUT}/${W}_full_split.json --translate pois.json --meta "Types:${W},Scans:full_split,POIs:${P}" -m ${INPUT}/scan.${M}.${W}.nominal.${P}.root --others \"${INPUT}/scan.${M}.${W}.fr.sigTheory.${P}.root:Freeze SigTh.:${COL}\" \"${INPUT}/scan.${M}.${W}.fr.all.${P}.root:Freeze Syst.:${COL}\"  --breakdown "SigTh,Expt,Stat" --remove-near-min 0.8 --y-max 10 --chop 9 ${EXTRA} --no-input-label --outdir ${OUTPUT}/${M}; done; done; done
-
-#INPUT="Mar26/results"; M=A1_mu; W=observed; P=mu; python scripts/plot1DScanNew.py -i nominal:${INPUT}/scan.${M}.${W}.nominal.${P}.root:MarkerColor=1:LineColor=1 fr_all:${INPUT}/scan.${M}.${W}.fr.all.${P}.root:MarkerSize=0.5,MarkerColor=1:LineColor=1,LineStyle=2 --var ${P} --values-box "0.65,0.75,0.95,0.93" --y-max 10 --chop 9
