@@ -34,7 +34,7 @@ To take the H->tautau BR as SM use:
     `--freezeNuisances mutautau`
 
 To scan alpha:
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1 --points 20 --redefineSignalPOIs alpha  -d output/test/cmb/125/ws.root --algo grid -t -1 --there -n .alpha --floatOtherPOIs 1`
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-90,90  --redefineSignalPOIs alpha  -d output/cp130219/cmb/125/ws.root --algo grid  --there -n .alpha --floatOtherPOIs 1 --points=37 --alignEdges 1 -t -1`
 
 To scan mu:
 We need to freeze tautau BR to 1 as the fit has no sensitivity to muggH it only has sensitivity to muggH*mutautau so by setting mutautau to 1 we effecitivly just get one rate parameter that scales the XS*BR
@@ -46,7 +46,7 @@ To run on lx batch use:
   `--job-mode lxbatch --sub-opts '-q 1nh --split-points 1'
 
 Run 2D liklihood scan of mu vs alpha using:
-    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muggH=1,alpha=0 --freezeNuisances mutautau --setPhysicsModelParameterRanges alpha=-1,1:muggH=0,2.5 --redefineSignalPOIs alpha,muggH -d output/cp261118_nobbb/cmb/125/ws.root --there -n ".2DScan" --points 2000 --algo grid -t -1 --parallel=8`
+    `combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters muggH=1,alpha=0 --freezeNuisances mutautau --setPhysicsModelParameterRanges alpha=-90,90:muggH=0,2.5 --redefineSignalPOIs alpha,muggH -d output/cp261118_nobbb/cmb/125/ws.root --there -n ".2DScan" --points 2000 --algo grid -t -1 --parallel=8 --alignEdges`
 
 # Plot scan
 
@@ -56,11 +56,11 @@ To plot alpha:
 
 Plot 1D scan of mu:
 
-  python scripts/plot1DScan.py --main=output/test/cmb/125/higgsCombine.mu.MultiDimFit.mH125.root --POI=muggH --output=muggH --no-numbers --no-box --x_title="#mu_{ggH}^{#tau#tau}" --y-max=6
+  python scripts/plot1DScan.py --main=output/test/cmb/125/higgsCombine.mu.MultiDimFit.mH125.root --POI=muggH --output=muggH --no-numbers --no-box --x_title="#mu_{ggH}^{#tau#tau}" --y-max=12
 
 2D scans can be plotted using scripts/plotMultiDimFit.py script:
 
-    `python scripts/plotMultiDimFit.py --title-right="35.9 fb^{-1} (13 TeV)" --cms-sub="Preliminary" --mass 125 -o muF_vs_alpha output/cp310118/cmb/125/higgsCombine.2DScan.MultiDimFit.mH125.root`
+    `python scripts/plotMultiDimFit.py --title-right="77.8 fb^{-1} (13 TeV)" --cms-sub="" --mass 125 -o mu_vs_alpha output/cp281118_nobbb/cmb/125/higgsCombine.2DScan.MultiDimFit.mH125.root --x-min=-90 --x-max=90`
 
 
 ## Impacts
@@ -70,11 +70,11 @@ cd into output directory:
 
 First do initial fit:
 
-  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --doInitialFit --robustFit 1 -t -1 --parallel 8 --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1`
+  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --doInitialFit --robustFit 1 -t -1 --parallel 8 --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-90,90 --freezeNuisances mutautau --floatOtherPOIs 1`
 
 Run the fits for all nuisance parameters:
 
-  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --robustFit 1 -t -1 --minimizerAlgoForMinos Minuit2,Migrad --doFits --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP  --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-1,1`
+  `combineTool.py -M Impacts -d cmb/125/ws.root -m 125 --robustFit 1 -t -1 --minimizerAlgoForMinos Minuit2,Migrad --doFits --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP  --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-90,90 --freezeNuisances mutautau`
 
 Run on lx batch system using `--job-mode lxbatch --sub-opts '-q 1nh' --merge 2`
 Run on ic batch using `--job-mode 'SGE'  --prefix-file ic --sub-opts "-q hep.q -l h_rt=0:180:0" --merge=2`
@@ -86,3 +86,23 @@ Collect results:
 Make impact plot:
 
   `plotImpacts.py -i impacts.json -o impacts`
+
+
+## Make post-fit plots
+
+Run fit:
+   combineTool.py -m 125 -M MultiDimFit --redefineSignalPOIs muggH  -d output/cp110219/htt_01jet/125/ws.root --algo none --there -n .muggH.plots --floatOtherPOIs 1  --saveFitResult
+
+Run postfitshapes:
+   PostFitShapesFromWorkspace -m 125 -d output/cp110219/htt_01jet/125/combined.txt.cmb -w output/cp110219/htt_01jet/125/ws.root -o shapes_unblinding_01jets.root --print --sampling --postfit -f output/cp110219/htt_01jet/125/multidimfit.muggH.plots.freeze.root:fit_mdf
+
+Run with (some) systematics frozen
+Do fit and store workspace
+  'combineTool.py -m 125 -M MultiDimFit  --redefineSignalPOIs alpha -d output/cp260219/cmb/125/ws.root --algo none  --there -n .saveWS  --saveWorkspace'
+
+Now run scans freezing all systematics with "--freezeNuisances all" - can also freeze individual systematics or groups
+  'combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-90,90  --redefineSignalPOIs alpha  -d output/cp260219/cmb/125/higgsCombine.saveWS.MultiDimFit.mH125.root --algo grid --there -n .alpha.nosyst2 --floatOtherPOIs 1 --points=37 --alignEdges 1 --freezeNuisances all --snapshot MultiDimFit'
+
+can also do the following to freeze theory uncertanties only:
+
+combineTool.py -m 125 -M MultiDimFit --setPhysicsModelParameters alpha=0 --setPhysicsModelParameterRanges alpha=-90,90  --redefineSignalPOIs alpha  -d output/cp260219/cmb/125/higgsCombine.saveWS.MultiDimFit.mH125.root --algo grid --there -n .alpha.notheory --floatOtherPOIs 1 --points=37 --alignEdges 1  --snapshot MultiDimFit --freezeNuisances CMS_scale_gg_13TeV,CMS_FiniteQuarkMass_13TeV,CMS_PS_ggH_13TeV,CMS_UE_ggH_13TeV,BR_htt_THU,BR_htt_PU_mq,BR_htt_PU_alphas,QCDScale_ggH,QCDScale_qqH,QCDScale_WH,QCDScale_ZH,pdf_Higgs_WH,pdf_Higgs_ZH,pdf_Higgs_gg,pdf_Higgs_qq,CMS_ggH_mig01,CMS_ggH_mig12 --job-mode 'SGE' --prefix-file ic --sub-opts "-q hep.q -l h_rt=0:180:0" --split-points 1 --task-name alpha.notheory

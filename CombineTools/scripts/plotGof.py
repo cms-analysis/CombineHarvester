@@ -11,7 +11,7 @@ parser.add_argument(
     '--output', '-o', default='', help="""Name of the output
     plot without file extension""")
 parser.add_argument(
-    '--mass', default='160.0', help="""Higgs Boson mass to be used""")
+    '--mass', default='125.0', help="""Higgs Boson mass to be used""")
 parser.add_argument(
     '--statistic', default='saturated', help="""Used Test Statistic""")
 parser.add_argument(
@@ -104,7 +104,7 @@ if args.statistic in ["AD","KS"]:
         # if key not in titles:
         #     continue
         toy_graph = plot.ToyTGraphFromJSON(js, [args.mass,key,'toy'])
-        toy_hist = plot.makeHist1D("toys", 100, toy_graph, 1.15)
+        toy_hist = plot.makeHist1D("toys", 100, toy_graph)
         for i in range(toy_graph.GetN()):
             toy_hist.Fill(toy_graph.GetX()[i])
         pValue = js[args.mass][key]["p"]

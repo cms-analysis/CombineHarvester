@@ -26,7 +26,7 @@ def read(scan, param, files, chop, remove_near_min, rezero, remove_delta = None,
     param_str = param
     # if we are scanning alpha then put back units of pi/2
     #if args.POI == 'alpha': param_str = param+'*%.5f' % (math.pi/2) for radians
-    if args.POI == 'alpha': param_str = param+'*90.'
+    if args.POI == 'alpha': param_str = param
 
     graph = plot.TGraphFromTree(limit, param_str, '2*deltaNLL', 'quantileExpected > -1.5')
     graph.SetName(scan)
@@ -94,7 +94,7 @@ def ProcessEnvelope(main, others, relax_safety = 0):
 
 
 
-def BuildScan(scan, param, files, color, yvals, chop, remove_near_min = None, rezero = False, envelope = False, pregraph = None, remove_delta = None, improve = False):
+def BuildScan(scan, param, files, color, yvals, chop, remove_near_min = None, rezero = False, envelope = False, pregraph = None, remove_delta = None, improve = False, expected = False):
     if pregraph is None:
         graph = read(scan, param, files, chop, remove_near_min, rezero, remove_delta, improve)
     else:
@@ -112,6 +112,10 @@ def BuildScan(scan, param, files, color, yvals, chop, remove_near_min = None, re
     NAMECOUNTER += 1
     func.SetLineColor(color)
     func.SetLineWidth(3)
+    if expected: 
+      func.SetLineStyle(2)
+      func.SetLineColor(ROOT.TColor.GetColor("#000099"))
+      graph.SetMarkerSize(0)
     assert(bestfit is not None)
     if not envelope: plot.ImproveMinimum(graph, func)
     crossings = {}
@@ -186,7 +190,7 @@ parser.add_argument('--others', nargs='*', help='add secondary scans processed a
 parser.add_argument('--breakdown', help='do quadratic error subtraction using --others')
 parser.add_argument('--meta', default='', help='Other metadata to save in format KEY:VAL,KEY:VAL')
 parser.add_argument('--logo', default='CMS')
-parser.add_argument('--logo-sub', default='')
+parser.add_argument('--logo-sub', default='Preliminary')
 parser.add_argument('--x_title', default=None)
 args = parser.parse_args()
 if args.pub: args.no_input_label = True
@@ -203,11 +207,15 @@ if args.translate is not None:
     if args.POI in name_translate:
         fixed_name = name_translate[args.POI]
 
-yvals = [1., 4.]
+#chan_compat_gr = ROOT.TGraphAsymmErrors()
+
+yvals = [1., 3.84]
 if args.upper_cl is not None:
     yvals = [ROOT.Math.chisquared_quantile(args.upper_cl, 1)]
 
 main_scan = BuildScan(args.output, args.POI, [args.main], args.main_color, yvals, args.chop, args.remove_near_min, args.rezero, remove_delta = args.remove_delta, improve = args.improve)
+#chan_compat_gr.SetPoint(chan_compat_gr.GeN(),main_scan[cross_1sig],1,)
+
 
 other_scans = [ ]
 other_scans_opts = [ ]
@@ -215,7 +223,7 @@ if args.others is not None:
     for oargs in args.others:
         splitargs = oargs.split(':')
         other_scans_opts.append(splitargs)
-        other_scans.append(BuildScan(args.output, args.POI, [splitargs[0]], int(splitargs[2]), yvals, args.chop, args.remove_near_min if args.envelope is False else None, args.rezero, args.envelope,  remove_delta = args.remove_delta, improve = args.improve))
+        other_scans.append(BuildScan(args.output, args.POI, [splitargs[0]], int(splitargs[2]), yvals, args.chop, args.remove_near_min if args.envelope is False else None, args.rezero, args.envelope,  remove_delta = args.remove_delta, improve = args.improve, expected=False))#True)) set last option to True to do expected style
 
 if args.envelope:
     new_gr = ProcessEnvelope(main_scan, other_scans, args.relax_safety)
@@ -287,14 +295,41 @@ for other in other_scans:
     other['graph'].Draw('PSAME')
 
 line = ROOT.TLine()
-line.SetLineColor(16)
+line.SetLineColor(14)
 # line.SetLineStyle(7)
+#lines for 1 sigma and 2 sigma
+
+latex = ROOT.TLatex()
+latex.SetNDC()
+latex.SetTextSize(0.03)
+latex.SetTextAlign(10)
+latex.SetTextColor(14)
+l = ROOT.gPad.GetLeftMargin()
+r = ROOT.gPad.GetRightMargin()
+ypos = (1-r-l)*(yvals[0]/(axishist.GetMaximum()-axishist.GetMinimum())) + l + 0.012
+latex.DrawLatex(0.88,ypos,"#bf{68% CL}")
+
+latex2 = ROOT.TLatex()
+latex2.SetNDC()
+latex2.SetTextSize(0.03)
+latex2.SetTextAlign(10)
+latex2.SetTextColor(14)
+
+l = ROOT.gPad.GetLeftMargin()
+r = ROOT.gPad.GetRightMargin()
+ypos = (1-r-l)*(yvals[1]/(axishist.GetMaximum()-axishist.GetMinimum())) + l + 0.01
+latex.DrawLatex(0.88,ypos,"#bf{95% CL}")
+
+
 for yval in yvals:
     plot.DrawHorizontalLine(pads[0], line, yval)
-    if (len(other_scans) == 0 or args.upper_cl is not None) and args.pub is False:
+
+    if (True or len(other_scans) == 0 or args.upper_cl is not None) and args.pub is False:
         for cr in main_scan['crossings'][yval]:
+            print cr['lo'], 0, cr['lo']
             if cr['valid_lo']: line.DrawLine(cr['lo'], 0, cr['lo'], yval)
             if cr['valid_hi']: line.DrawLine(cr['hi'], 0, cr['hi'], yval)
+
 
 main_scan['func'].SetLineColor(ROOT.TColor.GetColor("#000099"))
 main_scan['func'].Draw('same')
@@ -302,13 +337,16 @@ main_scan['graph'].Draw('PSAME')
 
 if args.POI == 'alpha':
   import scipy.stats
-  significance = math.sqrt(scipy.stats.chi2.ppf(scipy.stats.chi2.cdf(main_scan['func'].Eval(90.)-main_scan['func'].Eval(0.),1),1))
+  #significance = math.sqrt(scipy.stats.chi2.ppf(scipy.stats.chi2.cdf(main_scan['func'].Eval(90.)-main_scan['func'].Eval(0.),1),1))
+  significance = math.sqrt(scipy.stats.chi2.ppf(scipy.stats.chi2.cdf(main_scan['func'].Eval(0.),1),1))
+
+  significance2 = math.sqrt(scipy.stats.chi2.ppf(scipy.stats.chi2.cdf(main_scan['func'].Eval(90.)-main_scan['func'].Eval(0.),1),1))
   latex = ROOT.TLatex()
   latex.SetNDC()
   latex.SetTextSize(0.04)
   latex.SetTextAlign(12)
   #latex.DrawLatex(.7,.9,"0^{+} vs 0^{-} = %.2f#sigma" % significance)
-  print "0^{+} vs 0^{-} = %.2f#sigma" % significance
+  print "0^{+} vs 0^{-} = %.8f#sigma (%.8f#sigma)" % (significance,significance2)
 
 for other in other_scans:
     if args.breakdown is not None:
@@ -498,7 +536,7 @@ if 'cms_' in args.output: collab = 'CMS'
 if 'atlas_' in args.output: collab = 'ATLAS'
 
 plot.DrawCMSLogo(pads[0], args.logo, args.logo_sub, 11, 0.045, 0.035, 1.2,  cmsTextSize = 1.)
-# plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
+#plot.DrawCMSLogo(pads[0], '#it{ATLAS}#bf{ and }CMS', '#it{LHC Run 1 Preliminary}', 11, 0.025, 0.035, 1.1, cmsTextSize = 1.)
 
 #if not args.no_input_label: plot.DrawTitle(pads[0], '#bf{Input:} %s' % collab, 3)
 #plot.DrawTitle(pads[0], '35.9 fb^{-1} (13 TeV)', 3)
@@ -518,8 +556,10 @@ pads[0].SetTicks(1)
 # legend_l = 0.70 if len(args) >= 4 else 0.73
 legend_l = 0.69
 if len(other_scans) > 0:
-    legend_l = legend_l - len(other_scans) * 0.04
+    legend_l = legend_l - len(other_scans) * 0.06
 legend = ROOT.TLegend(0.15, legend_l, 0.55, 0.78, '', 'NBNDC')
+#legend.SetTextSize(0.030)
+legend.SetFillStyle(0)
 if len(other_scans) >= 3:
     if args.envelope:
         legend = ROOT.TLegend(0.58, 0.79, 0.95, 0.93, '', 'NBNDC')
@@ -528,10 +568,19 @@ if len(other_scans) >= 3:
         legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
         legend.SetNColumns(2)
 
-if args.POI == 'alpha': legend.AddEntry(main_scan['func'], args.main_label + ': #alpha_{hgg} = %.1f#circ{}^{#plus %.1f#circ}_{#minus %.1f#circ}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
+if args.POI == 'alpha': legend.AddEntry(main_scan['func'], args.main_label + ': #alpha_{hgg} = %.0f{}^{#plus %.0f#circ}_{#minus %.0f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
+elif args.POI == 'beta': legend.AddEntry(main_scan['func'], args.main_label + ': #alpha_{hvv} = %.0f{}^{#plus %.0f#circ}_{#minus %.0f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
+elif args.POI == 'muggH': legend.AddEntry(main_scan['func'], args.main_label + ': #mu_{ggh}^{#tau#tau} = %.2f{}^{#plus %.2f}_{#minus %.2f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
+elif args.POI == 'muV': legend.AddEntry(main_scan['func'], args.main_label + ': #mu_{V}^{#tau#tau} = %.2f{}^{#plus %.2f}_{#minus %.2f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
 else: legend.AddEntry(main_scan['func'], args.main_label + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
 for i, other in enumerate(other_scans):
-    legend.AddEntry(other['func'], other_scans_opts[i][1] + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
+    if args.POI == 'alpha': legend.AddEntry(other['func'], other_scans_opts[i][1] + ': #alpha_{hgg} = %.0f#circ{}^{#plus %.0f#circ}_{#minus %.0f#circ}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
+    elif args.POI == 'beta': legend.AddEntry(other['func'], other_scans_opts[i][1] + ': #alpha_{hvv} = %.0f#circ{}^{#plus %.0f#circ}_{#minus %.0f#circ}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
+
+    elif args.POI == 'muggH': legend.AddEntry(other['func'], other_scans_opts[i][1] + ': #mu_{ggh}^{#tau#tau} = %.2f{}^{#plus %.2f}_{#minus %.2f}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
+    elif args.POI == 'muV': legend.AddEntry(other['func'], other_scans_opts[i][1] + ': #mu_{V}^{#tau#tau} = %.2f{}^{#plus %.2f}_{#minus %.2f}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
+    else:
+      legend.AddEntry(other['func'], other_scans_opts[i][1] + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
 # if len(args) >= 4: legend.AddEntry(syst_scan['func'], 'Stat. Only', 'L')
 legend.Draw()
 

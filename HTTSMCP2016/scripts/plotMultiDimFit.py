@@ -4,6 +4,9 @@ import math
 import argparse
 from array import array
 
+import sys
+sys.setrecursionlimit(10000)
+
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs="+", help='Input files')
@@ -15,7 +18,7 @@ parser.add_argument(
 parser.add_argument(
     '--bg-exp', default=[], nargs="+", help="""Input files for the backgroud only expectation""")
 parser.add_argument(
-    '--cms-sub', default='Supplementary', help="""Text below the CMS logo""")
+    '--cms-sub', default='Preliminary', help="""Text below the CMS logo""")
 parser.add_argument(
     '--mass', default='', help="""Mass label on the plot""")
 parser.add_argument(
@@ -23,9 +26,17 @@ parser.add_argument(
 parser.add_argument(
     '--title-left', default='', help="""Left header text above the frame""")
 parser.add_argument(
-    '--x-title', default='#alpha (#frac{#pi}{2})', help="""Title for the x-axis""")
+    '--x-title', default='#alpha_{hgg} (#circ)', help="""Title for the x-axis""")
 parser.add_argument(
-    '--y-title', default='#mu_{F}', help="""Title for the y-axis""")
+    '--y-title', default='#mu_{ggH}^{#tau#tau}', help="""Title for the y-axis""")
+parser.add_argument(
+    '--x-min', default=None, help="minimum xaxis point")
+parser.add_argument(
+    '--x-max', default=None, help="maximum xaxis point")
+parser.add_argument(
+    '--y-min', default=None, help="minimum yaxis point")
+parser.add_argument(
+    '--y-max', default=None, help="maximum yaxis point")
 parser.add_argument(
     '--debug-output', '-d', help="""If specified, write the contour TH2s and
     TGraphs into this output ROOT file""")
@@ -46,30 +57,33 @@ else:
 
 limit = plot.MakeTChain(args.files, 'limit')
 if args.kappa:
-  args.x_title = '#kappa_{ggH}'
-  args.y_title = '#kappa_{ggA}'
+  args.x_title = '#kappa_{t}'
+  args.y_title = '#tilde{#kappa}_{t}'
   graph = plot.TGraph2DFromTree(
-      limit, "kappaH", "kappaA", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
+      limit, "kh", "ka", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
   best = plot.TGraphFromTree(
-      limit, "kappaH", "kappaA", 'deltaNLL == 0')
+      limit, "kh", "ka", 'deltaNLL == 0')
+ 
 else:
   graph = plot.TGraph2DFromTree(
-      limit, "alpha", "muF", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
+      limit, "alpha", "muggH", '2*deltaNLL', 'quantileExpected > -0.5 && deltaNLL > 0 && deltaNLL < 1000')
+
   best = plot.TGraphFromTree(
-      limit, "alpha", "muF", 'deltaNLL == 0')
+      limit, "alpha", "muggH", 'deltaNLL == 0')
 plot.RemoveGraphXDuplicates(best)
 hists = plot.TH2FromTGraph2D(graph, method='BinCenterAligned')
 plot.fastFillTH2(hists, graph,interpolateMissing=True)
 if args.bg_exp:
     limit_bg = plot.MakeTChain(args.bg_exp, 'limit')
     best_bg = plot.TGraphFromTree(
-        limit_bg, "alpha", "muF", 'deltaNLL == 0')
+        limit_bg, "alpha", "muggH", 'deltaNLL == 0')
     plot.RemoveGraphXDuplicates(best_bg)
 
 # If included just plot SM exp at 1,1
 if args.sm_exp:
     limit_sm = plot.MakeTChain(args.sm_exp, 'limit')
-    best_sm = ROOT.TGraph( 1, array('d', [1,]), array('d', [1,]))
+    if args.kappa: best_sm = ROOT.TGraph( 1, array('d', [1,]), array('d', [0,]))
+    else: best_sm = ROOT.TGraph( 1, array('d', [1,]), array('d', [1,]))
     plot.RemoveGraphXDuplicates(best_sm)
 hists.SetMaximum(6)
 hists.SetMinimum(0)
@@ -78,16 +92,34 @@ hists.SetContour(255)
 # hists.Draw("COLZ")
 # c2.SaveAs("heatmap.png")
 
-axis = ROOT.TH2D(hists.GetName(),hists.GetName(),hists.GetXaxis().GetNbins(),0,hists.GetXaxis().GetXmax(),hists.GetYaxis().GetNbins(),0,hists.GetYaxis().GetXmax())
+if args.x_min is not None:
+  x_min = float(args.x_min)
+else: x_min = hists.GetXaxis().GetXmin()
+if args.x_max is not None:
+  x_max = float(args.x_max)
+else: x_max = hists.GetXaxis().GetXmax()
+
+if args.y_min is not None:
+  y_min = float(args.y_min)
+else: y_min = hists.GetYaxis().GetXmin()
+if args.y_max is not None:
+  y_max = float(args.y_max)
+else: y_max = hists.GetYaxis().GetXmax()
+
+axis = ROOT.TH2D(hists.GetName(),hists.GetName(),hists.GetXaxis().GetNbins(),x_min,x_max,hists.GetYaxis().GetNbins(),y_min,y_max)
+
 axis.Reset()
 axis.GetXaxis().SetTitleOffset(0.9)
 axis.GetXaxis().SetTitle(args.x_title)
 axis.GetXaxis().SetLabelSize(0.025)
 axis.GetYaxis().SetLabelSize(0.025)
 axis.GetYaxis().SetTitle(args.y_title)
-
+cont_2sigma = None
 cont_1sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.68, 2), 10, frameValue=20)
 cont_2sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.95, 2), 10, frameValue=20)
+if args.kappa: cont_2sigma = plot.contourFromTH2(hists, ROOT.Math.chisquared_quantile_c(1 - 0.95, 2), 1, frameValue=20)
+#cont_1sigma = plot.contourFromTH2(hists, 1., 10, frameValue=20)
+#cont_2sigma = plot.contourFromTH2(hists, 3.8415, 10, frameValue=20)
 print cont_1sigma
 for item in cont_1sigma :
     print item
@@ -103,13 +135,14 @@ if debug is not None:
         debug.WriteTObject(cont, 'cont_2sigma_%i' % i)
 
 if args.sm_exp or args.bg_exp:
-    legend = plot.PositionedLegend(0.47, 0.20, 3, 0.015)
+    legend = plot.PositionedLegend(0.3, 0.20, 3, 0.015)
 else:
     legend = plot.PositionedLegend(0.3, 0.2, 3, 0.015)
 
 pads[0].cd()
 pads[0].SetTicks(1)
 axis.Draw()
+count1sigma=0
 for i, p in enumerate(cont_2sigma):
     p.SetLineStyle(1)
     p.SetLineWidth(2)
@@ -118,7 +151,9 @@ for i, p in enumerate(cont_2sigma):
     p.SetFillStyle(1001)
     p.Draw("F SAME")
     p.Draw("L SAME")
-    legend.AddEntry(cont_1sigma[0], "68% CL", "F")
+    if i ==0: legend.AddEntry(cont_1sigma[0], "68% CL", "F")
+    if args.kappa and i==1: p.SetFillColor(ROOT.kWhite)
+    #break
 
 for i, p in enumerate(cont_1sigma):
     p.SetLineStyle(1)
@@ -126,28 +161,46 @@ for i, p in enumerate(cont_1sigma):
     p.SetLineColor(ROOT.kBlack)
     p.SetFillColor(ROOT.kBlue-8)
     p.SetFillStyle(1001)
+    #print i
+    #if False or (args.kappa and i==1): 
+    #  p.SetFillStyle(0)
+    #  p.SetFillColor(ROOT.kWhite)
+    if args.kappa and i==1: p.SetFillColor(ROOT.kBlue-10)
     p.Draw("F SAME")
     p.Draw("L SAME")
-    legend.AddEntry(cont_2sigma[0], "95% CL", "F")
+    if i ==0: legend.AddEntry(cont_2sigma[0], "95% CL", "F")
+    #break
+
+if args.kappa:
+    cont_2sigma[len(cont_2sigma)-2].Draw("F SAME")
+    cont_2sigma[len(cont_2sigma)-2].Draw("L SAME")
+
+    latex = ROOT.TLatex()
+    latex.SetNDC()
+    latex.SetTextSize(0.04)
+    latex.SetTextAlign(12)
+    latex.DrawLatex(.75,.70,"#bf{#mu^{#tau#tau}=1}")
+
 
 if not args.kappa:
-  func = ROOT.TF1 ("func","cos(pi/2*x)*cos(pi/2*x) +sin(pi/2*x)*sin(pi/2*x)*2.25",0,1)
+  func = ROOT.TF1 ("func","cos(pi/2*x/90)*cos(pi/2*x/90) +sin(pi/2*x/90)*sin(pi/2*x/90)*2.25",-90,90)
   func.SetLineWidth(3)
   func.SetLineStyle(2)
-  func.Draw("same")
+#  func.Draw("same")
 
 best.SetMarkerStyle(34)
 best.SetMarkerSize(3)
 best.Draw("P SAME")
 legend.AddEntry(best, "Best fit", "P")
-if not args.kappa: legend.AddEntry(func, "Exp with XS constraint", "L")
+legend.SetFillStyle(0)
+#if not args.kappa: legend.AddEntry(func, "Exp with #mu^{#tau#tau}=1, y_{t}=#tilde{y_{t}}", "L")
 
 if args.sm_exp:
     best_sm.SetMarkerStyle(33)
     best_sm.SetMarkerColor(1)
     best_sm.SetMarkerSize(3.0)
     best_sm.Draw("P SAME")
-    legend.AddEntry(best_sm, "Expected for 125 GeV SM Higgs", "P")
+    legend.AddEntry(best_sm, "SM Expected", "P")
 if args.bg_exp:
     best_bg.SetMarkerStyle(33)
     best_bg.SetMarkerColor(46)
@@ -156,8 +209,8 @@ if args.bg_exp:
     legend.AddEntry(best_bg, "Expected for background only", "P")
 
 
-if args.mass:
-    legend.SetHeader("m_{#phi} = "+args.mass+" GeV")
+#if args.mass:
+#    legend.SetHeader("m_{#phi} = "+args.mass+" GeV")
 legend.Draw("SAME")
 if args.sm_exp:
     overlayLegend,overlayGraphs = plot.getOverlayMarkerAndLegend(legend, {legend.GetNRows()-1 : best_sm}, {legend.GetNRows()-1 : {"MarkerColor" : 2}}, markerStyle="P")

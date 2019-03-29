@@ -5,7 +5,6 @@ import math
 import argparse
 import json
 import numpy as np
-import yaml
 import sys
 import os
 import fnmatch
@@ -128,7 +127,7 @@ def parse_arguments():
     #Ingredients when output of PostFitShapes is already provided
     parser.add_argument('--file', '-f',
                     help='Input file if shape file has already been created')
-    parser.add_argument('--file_alt', '-f_alt',
+    parser.add_argument('--file_alt', '-f_alt',default="",
                     help='Alternate input file if shape file has already been created')
     parser.add_argument('--mA',default='700',
                     help='Signal m_A to plot for model dep')
@@ -185,9 +184,9 @@ def parse_arguments():
                     help='Fix x axis maximum')
     parser.add_argument('--custom_y_range', action='store_true', 
                     default=False, help='Fix y axis range')
-    parser.add_argument('--y_axis_min', default=0.001, 
+    parser.add_argument('--y_axis_min', action='store', default=0.001, 
                     help='Fix y axis minimum')
-    parser.add_argument('--y_axis_max', default=100.0,
+    parser.add_argument('--y_axis_max', action='store', default=100.0,
                     help='Fix y axis maximum')
     parser.add_argument('--log_y', action='store_true',
                     help='Use log for y axis')
@@ -219,15 +218,32 @@ def parse_arguments():
                     help='Lumi label')
     parser.add_argument('--use_asimov', default=False, 
                     action='store_true', help='')
+    parser.add_argument('--combined_yrs', default=False, 
+                    action='store_true', help='')
+    parser.add_argument('--proper_errors_uniform', default=False, 
+                    action='store_true', help='')
+    parser.add_argument('--proper_errors_asym', default=False, 
+                    action='store_true', help='')
 
     return parser.parse_args()
 
 def main(args):
 
-    plot.ModTDRStyle(width=1200, height=600, r=0.3, l=0.14, t=0.12,b=0.15)
+    lumi = args.lumi
+    era = args.file_dir.split("_")[2]
+    if args.combined_yrs:
+        lumi = "77.8 fb^{-1} (13 TeV)"
+    elif era == "2016":
+        lumi = "35.9 fb^{-1} (13 TeV)"
+    elif era == "2017":
+        lumi = "41.9 fb^{-1} (13 TeV)"
+    elif era == "all":
+        lumi = "77.8 fb^{-1} (13 TeV)"
+
+    plot.ModTDRStyle(width=1800, height=600, r=0.46, l=0.16, t=0.12,b=0.15)
     ROOT.TGaxis.SetExponentOffset(-0.06, 0.01, "y")
     # Channel & Category label
-    bin_number = args.file_dir.split("_")[2]
+    bin_number = args.file_dir.split("_")[3]
     args.ratio_range = "0,2"
     if bin_number == "1":
         bin_label = "0-jet"
@@ -258,32 +274,27 @@ def main(args):
         
     ## Add bin labels
     bin_labels = {}
-    with open("scripts/bin_labels.yaml", "r") as f:
-        try:
-            full_bin_labels = yaml.load(f)
-            for key, values in full_bin_labels.iteritems():
-                if key == args.channel:
-                    bin_labels = values[int(bin_number)]
-        except yaml.YAMLError as exc:
-            print exc
+    with open("scripts/bin_labels.json") as jsonfile:
+          full_bin_labels = json.load(jsonfile)
+          bin_labels = full_bin_labels[args.channel][bin_number]
 
     if bin_number not in ["1","2"]:
         args.x_title = "Bin number"
         Nxbins = 12 #always use 12 sjdphi bins
     elif bin_number in ["2"]:
         args.x_title = "Bin number"
-        x_bins = re.split("\[|\]",bin_labels[0])[3].split(",")
+        x_bins = re.split("\[|\]",bin_labels)[3].split(",")
         Nxbins = len(x_bins) - 1
     elif bin_number in ["1"]:
         # args.x_title = re.split(",|\[|\]", bin_labels[0])[0]
         args.x_title = "m_{#tau#tau} (GeV)" # use m_tautau for all channels now
-        x_bins = re.split("\[|\]",bin_labels[0])[1].split(",")
+        x_bins = re.split("\[|\]",bin_labels)[1].split(",")
         Nxbins = len(x_bins) - 1
 
     if int(bin_number) > 1:
         # print bin_labels
-        y_bin_var = re.split(",|\[|\]", bin_labels[0])[0]
-        y_bin_labels = re.split("\[|\]",bin_labels[0])[1].split(",")
+        y_bin_var = re.split(",|\[|\]", bin_labels)[0]
+        y_bin_labels = re.split("\[|\]",bin_labels)[1].split(",")
         # print y_bin_var
         # print y_bin_labels
     else:
@@ -349,8 +360,8 @@ def main(args):
     if manual_blind and auto_blind :
         print 'Pick only one option for blinding strategy out of --manual_blind and --auto_blind'
     #For now, force that one type of blinding is always included! When unblinding the below line will need to be removed
-    if not manual_blind and not auto_blind: 
-        manual_blind=True    
+    #if not manual_blind and not auto_blind: 
+    #    manual_blind=True    
     
     if (args.auto_blind or args.auto_blind_check_only) and args.model_dep:
         print 'Automated blinding only supported for model independent plots, please use manual blinding'
@@ -402,11 +413,13 @@ def main(args):
             print "Providing shape file: ", args.file, ", with specified subdir name: ", file_dir
             shape_file=args.file
             shape_file_name=args.file
-            shape_file_alt=args.file_alt
-            shape_file_alt_name=args.file_alt
+            if args.file_alt != "":
+                shape_file_alt=args.file_alt
+                shape_file_alt_name=args.file_alt
     
     histo_file = ROOT.TFile(shape_file)
-    histo_file_alt = ROOT.TFile(shape_file_alt)
+    if args.file_alt != "":
+        histo_file_alt = ROOT.TFile(shape_file_alt)
     
     #Store plotting information for different backgrounds 
     background_schemes = {
@@ -418,6 +431,7 @@ def main(args):
                 backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
                 ],
+
         'et':[
                 backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
                 backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),
@@ -426,39 +440,113 @@ def main(args):
                 backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
                 ],
+
         'tt':[
                 backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
-                backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),
-                backgroundComp("Electroweak",["VVT","ZL","EWKZ"],ROOT.TColor.GetColor(222,90,106)),
+                backgroundComp("l#rightarrow#tau_{h} fakes",["VVT","ZL","EWKZ","TTT"],ROOT.TColor.GetColor(100,192,232)),
                 backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
                 ],
+
         'em':[
                 backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
                 backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),
+                backgroundComp("Electroweak",["VV","W","ZLL","EWKZ"],ROOT.TColor.GetColor(222,90,106)),
                 backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),
-                backgroundComp("Electroweak",["VV","W"],ROOT.TColor.GetColor(222,90,106)),
-                backgroundComp("Z#rightarrowll",["ZLL"],ROOT.TColor.GetColor(100,192,232)),
                 backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
                 ]
         }
+
+    if args.log_y:
+      background_schemes_new = {}
+      for i in background_schemes:
+        background_schemes_new[i+'_unmod'] = background_schemes[i]
+      background_schemes = dict(background_schemes.items()+background_schemes_new.items())
+      background_schemes['tt'] = [
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
+                backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
+                backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
+                backgroundComp("l#rightarrow#tau_{h} fakes",["VVT","ZL","EWKZ","TTT"],ROOT.TColor.GetColor(100,192,232)),
+                ]
+      background_schemes['et'] = [
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
+                backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
+                backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
+                backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),
+                backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),
+                backgroundComp("Z#rightarrowee",["ZL","EWKZ"],ROOT.TColor.GetColor(100,192,232)),
+                ]
+      background_schemes['mt'] = [
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
+                backgroundComp("jet#rightarrow#tau_{h} fakes",["jetFakes"],ROOT.TColor.GetColor(192,232,100)),
+                backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
+                backgroundComp("t#bar{t}",["TTT"],ROOT.TColor.GetColor(155,152,204)),
+                backgroundComp("Electroweak",["VVT"],ROOT.TColor.GetColor(222,90,106)),
+                backgroundComp("Z#rightarrow#mu#mu",["ZL","EWKZ"],ROOT.TColor.GetColor(100,192,232)),
+                ]
+      background_schemes['em'] = [
+                backgroundComp("qqH#rightarrow#tau#tau + VH#rightarrow#tau#tau",["qqH_htt125","ZH_htt125","WH_htt125"],ROOT.TColor.GetColor(51,51,230)),
+                backgroundComp("t#bar{t}",["TT"],ROOT.TColor.GetColor(155,152,204)),
+                backgroundComp("#mu#rightarrow#tau embedding",["EmbedZTT"],ROOT.TColor.GetColor(248,206,104)),
+                backgroundComp("Electroweak",["VV","W","ZLL","EWKZ"],ROOT.TColor.GetColor(222,90,106)),
+                backgroundComp("QCD", ["QCD"], ROOT.TColor.GetColor(250,202,255)),
+                ]
+ 
     
     #Extract relevent histograms from shape file
     sighists = []
-    [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
-    [sighistPS,binnamePS] = getHistogram(histo_file_alt,'TotalSig', file_dir, mode, args.no_signal, log_x)
-    sighists.extend([sighistPS, sighist])
-    sbhist = getHistogram(histo_file,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
-    sbhist_PS = getHistogram(histo_file_alt,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
+    if int(bin_number) in [1,2]:
+        [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
+        if args.combined_yrs:
+            if era == "2016":
+                sighist.Add(getHistogram(histo_file,'TotalSig', file_dir.replace(era,"2017"), mode, args.no_signal, log_x)[0].Clone())
+    else:
+        [sighist,binname] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
+        if args.combined_yrs:
+            if era == "2016":
+                sighist.Add(getHistogram(histo_file,'TotalSig', file_dir.replace(era,"2017"), mode, args.no_signal, log_x)[0].Clone())
+    if args.file_alt != "": 
+      [sighistPS,binnamePS] = getHistogram(histo_file_alt,'TotalSig', file_dir, mode, args.no_signal, log_x)
+      if args.combined_yrs:
+            if era == "2016":
+                sighistPS.Add(getHistogram(histo_file_alt,'TotalSig', file_dir.replace(era,"2017"), mode, args.no_signal, log_x)[0].Clone()) 
+    if int(bin_number) in [1,2]:
+        [sighistPS,binnamePS] = getHistogram(histo_file,'TotalSig', file_dir, mode, args.no_signal, log_x)
+        if args.combined_yrs:
+            if era == "2016":
+                sighistPS.Add(getHistogram(histo_file_alt,'TotalSig', file_dir.replace(era,"2017"), mode, args.no_signal, log_x)[0].Clone()) 
+    elif args.file_alt != "":
+        [sighistPS,binnamePS] = getHistogram(histo_file_alt,'TotalSig', file_dir, mode, args.no_signal, log_x)
+        if args.combined_yrs:
+            if era == "2016":
+                sighistPS.Add(getHistogram(histo_file_alt,'TotalSig', file_dir.replace(era,"2017"), mode, args.no_signal, log_x)[0].Clone())
+    if int(bin_number) in [1,2]:
+        sighists.append(sighist)
+    elif args.file_alt != "":
+        sighists.extend([sighistPS, sighist])
+    else:
+        sighists.extend([sighist])
+    # sbhist = getHistogram(histo_file,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
+    # sbhist_PS = getHistogram(histo_file_alt,'TotalProcs',file_dir, mode, args.no_signal, log_x)[0]
     # bkg_sb_vs_b_ratio_hist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
     for shist in sighists:
         for i in range(0,shist.GetNbinsX()):
             if shist.GetBinContent(i) < y_axis_min: 
                 shist.SetBinContent(i,y_axis_min)
     bkghist = getHistogram(histo_file,'TotalBkg',file_dir, mode, logx=log_x)[0]
+    if args.combined_yrs:
+        if era == "2016":
+            bkghist.Add(getHistogram(histo_file,'TotalBkg', file_dir.replace(era,"2017"), mode, log_x)[0].Clone())
+    sbhist = bkghist.Clone()
+    sbhist.Add(sighist)
+    sbhist_PS = bkghist.Clone()
+    if args.file_alt != "": sbhist_PS.Add(sighistPS)
     
     if not args.use_asimov:
         total_datahist = getHistogram(histo_file,"data_obs",file_dir, mode, logx=log_x)[0]
+        if args.combined_yrs:
+            if era == "2016":
+                total_datahist.Add(getHistogram(histo_file,'data_obs', file_dir.replace(era,"2017"), mode, log_x)[0].Clone())
     else:
         total_datahist = getHistogram(histo_file,"TotalProcs",file_dir, mode, logx=log_x)[0].Clone()
         for bin_ in range(1,total_datahist.GetNbinsX()+1):
@@ -471,7 +559,8 @@ def main(args):
     total_datahist.SetMarkerStyle(20)
     blind_datahist.SetMarkerStyle(20)
     blind_datahist.SetLineColor(1)
-    
+
+
     #Blinding by hand using requested range, set to 100-150 by default
     # for 0jet category
     if int(bin_number) == 1 and manual_blind or auto_blind_check_only:
@@ -480,20 +569,20 @@ def main(args):
             high_edge = low_edge+total_datahist.GetBinWidth(i+1)
             if ((low_edge > float(x_blind_min) and low_edge < float(x_blind_max)) 
                     or (high_edge > float(x_blind_min) and high_edge<float(x_blind_max))):
-                blind_datahist.SetBinContent(i+1,-0.1)
+                blind_datahist.SetBinContent(i+1, -0.1)
                 blind_datahist.SetBinError(i+1,0)
     # for boosted category:
     if int(bin_number) == 2 and manual_blind or auto_blind_check_only:
         x_blind_ind = [ind for ind, x in enumerate(x_bins) if 145 >= int(x) >= 100]
         x_blind_ind1 = []
         dummy_list = [int(x) for x in np.linspace(10,100,10)]
-        print dummy_list
+        # print dummy_list
         for i in range(0,total_datahist.GetNbinsX()):
             if i in dummy_list:
                 x_blind_ind1 = [x+i for x in x_blind_ind]
-                print x_blind_ind1
+                # print x_blind_ind1
             if i in x_blind_ind or i in x_blind_ind1:
-                print i
+                # print i
                 blind_datahist.SetBinContent(i+1,-0.1)
                 blind_datahist.SetBinError(i+1,0)
     # for dijet categories:
@@ -503,46 +592,87 @@ def main(args):
             # always using 12 bins for sjdphi so blind 12 bins when i (x bin) is y_blind_ind times 12 
             x_blind_ind = [int(x) for x in np.arange(12*y_blind_ind[0],12*y_blind_ind[-1]+12,1)]
             if i in x_blind_ind:
-                blind_datahist.SetBinContent(i+1,-0.1)
+                blind_datahist.SetBinContent(i+1, -0.1)
                 blind_datahist.SetBinError(i+1,0)
 
-
-    
     #Set bin errors for empty bins if required:
     if empty_bin_error:
         for i in range (1,blind_datahist.GetNbinsX()+1):
             if blind_datahist.GetBinContent(i) == 0:
                 blind_datahist.SetBinError(i,1.8)
-    
-    if uniform:
-        blind_datahist2 = ROOT.TH1F(blind_datahist.GetName(),blind_datahist.GetName(),blind_datahist.GetNbinsX(),0,blind_datahist.GetNbinsX())
-        total_datahist2 = ROOT.TH1F(total_datahist.GetName(),total_datahist.GetName(),total_datahist.GetNbinsX(),0,total_datahist.GetNbinsX())
-        bkghist2 = ROOT.TH1F(bkghist.GetName(),bkghist.GetName(),bkghist.GetNbinsX(),0,bkghist.GetNbinsX())
-        for i in range(0,blind_datahist.GetNbinsX()):
-            blind_datahist2.SetBinContent(i,blind_datahist.GetBinContent(i))
-            blind_datahist2.SetBinError(i,blind_datahist.GetBinError(i))
-            total_datahist2.SetBinContent(i,total_datahist.GetBinContent(i))
-            total_datahist2.SetBinError(i,total_datahist.GetBinError(i))
-        blind_datahist = blind_datahist2
-        total_datahist = total_datahist2
-        for i in range(0,bkghist.GetNbinsX()):
-            bkghist2.SetBinContent(i,bkghist.GetBinContent(i))
-            bkghist2.SetBinError(i,bkghist.GetBinError(i))
-        bkghist = bkghist2
-    
+    #Set uniform bin errors properly for Content < 10 bins
+    if args.proper_errors_uniform:
+        proper_errs_dict = {
+                0: 1.29, 1: 2.38, 2: 3.51, 3: 4.20, 4: 4.44, 5: 5.06,
+                6: 5.46, 7: 6.05, 8: 6.02, 9: 6.46 
+                }
+        for i in range (1,blind_datahist.GetNbinsX()+1):
+            if blind_datahist.GetBinContent(i) < 10 and blind_datahist.GetBinContent(i) >= 0:
+                new_err = proper_errs_dict[round(blind_datahist.GetBinContent(i))]
+                blind_datahist.SetBinError(i, new_err)
+    #Set classical frequentist asymmetric errors
+    # if args.proper_errors_asym:
+    #     blind_datahist.Sumw2(False)
+    #     blind_datahist.SetBinErrorOption(ROOT.TH1.kPoisson)
+    #     for i in range (1,blind_datahist.GetNbinsX()+1):
+    #         print blind_datahist.GetBinContent(i)
+    #         print blind_datahist.GetBinErrorUp(i)
+
     #Normalise by bin width 
-    blind_datahist.Scale(1.0,"width")
-    total_datahist.Scale(1.0,"width")
+    # blind_datahist.Scale(1.0,"width")
+    # total_datahist.Scale(1.0,"width")
     for shist in sighists:
         shist.Scale(1.0,"width")
     if int(bin_number) == 1:
         for shist in sighists:
-            print shist
+            # print shist
             shist.Scale(100.)
-            print shist.GetBinContent(5)
+            # print shist.GetBinContent(5) 
         sbhist.Scale(1.0,"width")
         sbhist_PS.Scale(1.0,"width")
         bkghist.Scale(1.0,"width")
+    #if int(bin_number) >= 3:
+    #    for shist in sighists:
+    #        # print shist
+    #        shist.Scale(10.)
+
+
+    # created blinded graph here
+    proper_errs_dict = {
+            0: [0, 1.8410], 
+            1: [1-0.1728, 3.2995-1],
+            2: [2-0.7082, 4.6379-2],
+            3: [3-1.3673, 5.9182-3],
+            4: [4-2.0857, 7.1628-4],
+            5: [5-2.8403, 8.3825-5],
+            6: [6-3.6201, 9.5836-6],
+            7: [7-4.4185, 10.7703-7],
+            8: [8-5.2316, 11.9451-8],
+            9: [9-6.0565, 13.1102-9],
+            }
+    data_x = np.array([blind_datahist.GetBinCenter(x) for x in range(1,blind_datahist.GetNbinsX()+1)])
+    data_y_noscale = np.array([blind_datahist.GetBinContent(x) for x in range(1,blind_datahist.GetNbinsX()+1)])
+    print data_y_noscale
+    data_y = np.array([blind_datahist.GetBinContent(x)*1./blind_datahist.GetBinWidth(x) for x in range(1,blind_datahist.GetNbinsX()+1)])
+    err_y_lo = np.array(
+            [proper_errs_dict[round(x)][0]/blind_datahist.GetBinWidth(w) if x<10 and x>=0
+                else 0.0 if x<0
+                else np.sqrt(round(x))/blind_datahist.GetBinWidth(w) 
+                for x,w in zip(data_y_noscale, range(1,blind_datahist.GetNbinsX()+1))]
+            )
+    err_y_hi = np.array(
+            [proper_errs_dict[round(x)][1]/blind_datahist.GetBinWidth(w) if x<10 and x>=0
+                else 0.0 if x<0
+                else np.sqrt(round(x))/blind_datahist.GetBinWidth(w)
+                for x,w in zip(data_y_noscale, range(1,blind_datahist.GetNbinsX()+1))]
+            )
+    err_x_lo = np.zeros(len(err_y_lo))
+    err_x_hi = np.zeros(len(err_y_lo))
+    print data_x
+    print data_y
+    print err_y_lo
+    print err_y_hi
+    blind_datagraph = ROOT.TGraphAsymmErrors(len(data_x), data_x, data_y, err_x_lo, err_x_hi, err_y_lo, err_y_hi)
 
     channel = args.channel
     if channel == '':  channel=binname[4:6]
@@ -552,24 +682,31 @@ def main(args):
     bkg_histos_fractions = []
     for i,t in enumerate(background_schemes[channel]):
         plots = t['plot_list']
+        isHist = False
         h = ROOT.TH1F()
         for j,k in enumerate(plots):
-            if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode,logx=log_x) is not None:
+            if h.GetEntries()==0 and getHistogram(histo_file,k, file_dir,mode,False,logx=log_x) is not None:
+                isHist = True
                 if not uniform:
                     h = getHistogram(histo_file,k, file_dir,mode, logx=log_x)[0]
+                    if args.combined_yrs: h.Add(getHistogram(histo_file,k, file_dir.replace(era,"2017"),mode, logx=log_x)[0])
                 else :
                     htemp = getHistogram(histo_file,k,file_dir, mode,logx=log_x)[0]
+                    if args.combined_yrs: htemp.Add(getHistogram(histo_file,k,file_dir.replace(era,"2017"), mode,logx=log_x)[0])
                     h = ROOT.TH1F(k,k,htemp.GetNbinsX(),0,htemp.GetNbinsX())
                     for bp in range(0,htemp.GetNbinsX()):
                         h.SetBinContent(bp+1,htemp.GetBinContent(bp+1))
                         h.SetBinError(bp+1,htemp.GetBinError(bp+1))
                 h.SetName(k)
             else:
-                if getHistogram(histo_file,k, file_dir,mode, logx=log_x) is not None:
+                if getHistogram(histo_file,k, file_dir,mode, False, logx=log_x) is not None:
+                    isHist = True
                     if not uniform:
                         h.Add(getHistogram(histo_file,k, file_dir,mode,logx=log_x)[0])
+                        if args.combined_yrs: h.Add(getHistogram(histo_file,k, file_dir.replace(era,"2017"),mode,logx=log_x)[0])
                     else :
                         htemp = getHistogram(histo_file,k,file_dir, mode,logx=log_x)[0]
+                        if args.combined_yrs: htemp.Add(getHistogram(histo_file,k,file_dir.replace(era,"2017"), mode,logx=log_x)[0])
                         htemp2 = ROOT.TH1F(k,k,htemp.GetNbinsX(),0,htemp.GetNbinsX())
                         for bp in range(0,htemp.GetNbinsX()):
                             htemp2.SetBinContent(bp+1,htemp.GetBinContent(bp+1))
@@ -588,7 +725,8 @@ def main(args):
             for i in range(1, h_frac.GetNbinsX()+1):
                 h_frac.SetBinContent(i,h_frac.GetBinContent(i)/bkghist.GetBinContent(i))
             bkg_histos_fractions.append(h_frac)
-        bkg_histos.append(h)
+        if isHist:
+            bkg_histos.append(h)
     
     stack = ROOT.THStack("hs","")
     for hists in bkg_histos:
@@ -632,9 +770,9 @@ def main(args):
                 pads[1].SetLogx(1)
             axish = createAxisHists(2,bkghist,bkghist.GetXaxis().GetXmin(),bkghist.GetXaxis().GetXmax()-0.01)
             axish[1].GetXaxis().SetTitle(args.x_title)
-            if file_dir.split("_")[2] not in  ["1","2"]:
+            if bin_number not in  ["1"]:
                 axish[1].GetXaxis().SetLabelSize(0.03)
-                axish[1].GetXaxis().SetTitleSize(0.04)
+                #axish[1].GetXaxis().SetTitleSize(0.04)
             axish[1].GetYaxis().SetNdivisions(4)
             # if soverb_plot: 
             #     axish[1].GetYaxis().SetTitle("S/#sqrt(B)")
@@ -645,25 +783,27 @@ def main(args):
             #axish[1].GetYaxis().SetTitleSize(0.04)
             axish[1].GetYaxis().SetLabelSize(0.033)
             axish[1].GetXaxis().SetLabelSize(0.033)
-            print bkghist.GetNbinsX()
-            print bkghist.GetNbinsX()/Nxbins
+            # print bkghist.GetNbinsX()
+            # print bkghist.GetNbinsX()/Nxbins
             if int(bin_number) > 1:
                 axish[1].GetXaxis().SetNdivisions(bkghist.GetNbinsX()/Nxbins,Nxbins,0,False)
             # axish[1].GetYaxis().SetTitleOffset(1.3)
             axish[0].GetYaxis().SetTitleSize(0.048)
             axish[0].GetYaxis().SetLabelSize(0.033)
-            axish[0].GetYaxis().SetTitleOffset(0.6)
+            axish[0].GetYaxis().SetTitleOffset(0.5)
             axish[0].GetXaxis().SetTitleSize(0)
             axish[0].GetXaxis().SetLabelSize(0)
             if int(bin_number) > 1:
                 axish[0].GetXaxis().SetNdivisions(bkghist.GetNbinsX()/Nxbins,Nxbins,0,False)
+            axish[0].GetYaxis().SetTitleSize(axish[1].GetXaxis().GetTitleSize())
             axish[0].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
             axish[1].GetXaxis().SetRangeUser(x_axis_min,bkghist.GetXaxis().GetXmax()-0.01)
             axish[0].GetXaxis().SetMoreLogLabels()
             axish[0].GetXaxis().SetNoExponent()
             axish[1].GetXaxis().SetMoreLogLabels()
             axish[1].GetXaxis().SetNoExponent()
-    
+            if int(bin_number): axish[1].GetXaxis().SetTitleOffset(0.85)
+ 
             if custom_x_range:
                 axish[0].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
                 axish[1].GetXaxis().SetRangeUser(x_axis_min,x_axis_max-0.01)
@@ -721,7 +861,7 @@ def main(args):
         if custom_y_range and not fractions:
             axish[0].GetYaxis().SetRangeUser(y_axis_min,y_axis_max)
         elif fractions: axish[0].GetYaxis().SetRangeUser(0,1)
-    axish[0].GetYaxis().SetTitle("Events/bin")
+    axish[0].GetYaxis().SetTitle("Events / bin")
     if int(bin_number) == 1:
         axish[0].GetYaxis().SetTitle("dN/dm_{#tau#tau} (1/GeV)")
         axish[0].GetYaxis().SetTitleOffset(1.5)
@@ -733,7 +873,10 @@ def main(args):
         if(log_y): 
             axish[0].SetMinimum(0.1)
             if int(bin_number) > 1:
-                axish[0].SetMinimum(0.01)
+                ymin = 0.03
+                if '_et_' in file_dir and int(bin_number)==6: ymin = 0.1 
+                elif int(bin_number)==6 or args.combined_yrs: ymin = 0.07
+                axish[0].SetMinimum(ymin)
         else: 
             axish[0].SetMinimum(0)
     
@@ -750,17 +893,18 @@ def main(args):
     
         stack.Draw("histsame")
         #Don't draw total bkgs/signal if plotting bkg fractions
+        print sighists
         if not fractions and not uniform:
             bkghist.Draw("e2same")
             #Add signal, either model dependent or independent
             if not args.no_signal and ((split_y_scale and i == 2) or (not split_y_scale)):
                 sighist.SetLineColor(ROOT.kRed)
-                sighistPS.SetLineColor(ROOT.kGreen+2)
+                if args.file_alt != "": sighistPS.SetLineColor(ROOT.kGreen+2)
                 sighist.SetLineWidth(2)
-                sighistPS.SetLineWidth(2)
+                if args.file_alt != "": sighistPS.SetLineWidth(2)
                 if int(bin_number) == 1:
                     sighist.SetLineWidth(3)
-                    sighistPS.SetLineWidth(3)
+                    if args.file_alt != "": sighistPS.SetLineWidth(3)
                 # A trick to remove vertical lines for the signal histogram at the borders while preventing the lines to end in the middle of the plot.
                 for shist in sighists:
                     for j in range(1,shist.GetNbinsX()+1):
@@ -772,7 +916,13 @@ def main(args):
                             if entry < axish[0].GetMinimum():
                                 shist.SetBinContent(j,axish[0].GetMinimum()*1.00001)
                     shist.Draw("histsame][") # removing vertical lines at the borders of the pad; possible with the trick above
-        blind_datahist.DrawCopy("e0x0same")
+        # blind_datahist_copy = blind_datahist.Clone()
+        # blind_datahist_copy.Sumw2(False)
+        # blind_datahist_copy.SetBinErrorOption(ROOT.TH1.kPoisson)
+        blind_datagraph_extra = blind_datagraph.Clone()
+        blind_datagraph_extra.Draw("P Z 0 same")
+        blind_datagraph.SetMarkerSize(0.)
+        blind_datagraph.Draw("P Z 0 same")
         axish[i].Draw("axissame")
     
     pads[0].cd()
@@ -780,25 +930,33 @@ def main(args):
     #Setup legend
     if int(bin_number) == 1:
         legend = plot.PositionedLegend(0.35,0.30,3,0.03)
+        legend.SetTextSize(0.025)
     else:
-        legend = PositionedLegendUnrolled(0.13,0.45,7,0.02)
+        legend = PositionedLegendUnrolled(0.13,0.5,7,0.02)
+        legend.SetTextSize(0.035) 
     legend.SetTextFont(42)
-    legend.SetTextSize(0.025)
     legend.SetFillStyle(0)
     
-    if not soverb_plot and not fractions: legend.AddEntry(total_datahist,"Observation","PE")
+    if not soverb_plot and not fractions: legend.AddEntry(total_datahist,"Data","PE")
     #Drawn on legend in reverse order looks better
     bkg_histos.reverse()
-    background_schemes[channel].reverse()
+    if args.log_y: background_schemes[channel+'_unmod'].reverse()
+    else: background_schemes[channel].reverse()
+    leg_hists = [None]*len(bkg_histos)
     for legi,hists in enumerate(bkg_histos):
-        legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
+        if args.log_y:
+          leg_hists[legi] = hists.Clone() 
+          leg_hists[legi].SetFillColor(background_schemes[channel+'_unmod'][legi]['colour'])
+          legend.AddEntry(leg_hists[legi],background_schemes[channel+'_unmod'][legi]['leg_text'],"f")
+        else: legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
     legend.AddEntry(bkghist,"Background uncertainty","f")
-    if int(bin_number) > 1:
-        legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha_{hgg}=0)"%vars(),"l")
-        legend.AddEntry(sighistPS,"ggH#rightarrow#tau#tau (#alpha_{hgg}=1)"%vars(),"l")
+    if int(bin_number) > 2:
+        legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha_{hgg}=-59#circ)"%vars(),"l")
+        if args.file_alt != "": legend.AddEntry(sighistPS,"ggH#rightarrow#tau#tau (#alpha_{hgg}=0#circ)"%vars(),"l")
+    elif int(bin_number) == 1:
+        legend.AddEntry(sighist,"100#times ggH#rightarrow#tau#tau (#forall #alpha_{hgg})"%vars(),"l")
     else:
-        legend.AddEntry(sighist,"100#times ggH#rightarrow#tau#tau (#alpha_{hgg}=0)"%vars(),"l")
-        legend.AddEntry(sighistPS,"100#times ggH#rightarrow#tau#tau (#alpha_{hgg}=1)"%vars(),"l")
+        legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#forall #alpha_{hgg})"%vars(),"l")
     legend.Draw("same")
 
     latex2 = ROOT.TLatex()
@@ -811,17 +969,17 @@ def main(args):
         latex2.DrawLatex(0.19,0.955,"{} {}".format(channel_label, bin_label))
     else:
         latex2.SetTextAlign(23)
-        latex2.SetTextSize(0.033)
-        latex2.DrawLatex(0.46,0.927,"{} {}".format(channel_label, bin_label))
+        latex2.SetTextSize(0.05)
+        latex2.DrawLatex(0.46,0.94,"{} {}".format(channel_label, bin_label))
 
     #CMS and lumi labels
-    plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.30)
+    plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.15)
     if bin_number == "1":
-        plot.DrawCMSLogo(pads[0], 'CMS', '', 11, 0.045, 0.05, 1.0, '', 1.0)
-        plot.DrawTitle(pads[0], args.lumi, 3)
+        plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
+        plot.DrawTitle(pads[0], lumi, 3)
     else:
-        plot.DrawCMSLogo(pads[0], 'CMS', '', 0, 0.07, -0.1, 2.0, '', 0.4)
-        DrawTitleUnrolled(pads[0], args.lumi, 3, scale=0.5)
+        plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 0, 0.07, -0.1, 2.0, '', 0.6)
+        DrawTitleUnrolled(pads[0], lumi, 3, scale=0.7)
     
     #Add ratio plot if required
     if args.ratio and not soverb_plot and not fractions:
@@ -835,7 +993,13 @@ def main(args):
             sbhist_PS.SetLineWidth(3)
         ratio_sighist = plot.MakeRatioHist(sbhist,bkghist,True,False)
         ratio_sighist_PS = plot.MakeRatioHist(sbhist_PS,bkghist,True,False)
-        blind_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
+        # ratio_datahist = plot.MakeRatioHist(blind_datahist,bkghist,True,False)
+        bkg_x = np.array([bkghist.GetBinCenter(x) for x in range(1,bkghist.GetNbinsX()+1)])
+        bkg_y = np.array([bkghist.GetBinContent(x) for x in range(1,bkghist.GetNbinsX()+1)])
+        ratio_y = np.array([x/y for x,y in zip(data_y,bkg_y)])
+        err_ratio_y_lo = np.array([round(x)/y for x,y in zip(err_y_lo,bkg_y)])
+        err_ratio_y_hi = np.array([round(x)/y for x,y in zip(err_y_hi,bkg_y)])
+        ratio_datahist = ROOT.TGraphAsymmErrors(len(data_x), data_x, ratio_y, err_x_lo, err_x_hi, err_ratio_y_lo, err_ratio_y_hi)
         pads[1].cd()
         pads[1].SetGrid(0,1)
         axish[1].Draw("axis")
@@ -843,57 +1007,64 @@ def main(args):
         axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
         ratio_bkghist.SetMarkerSize(0)
         ratio_bkghist.Draw("e2same")
-        ratio_sighist_PS.Draw("histsame")
+        if int(bin_number) > 2:
+            ratio_sighist_PS.Draw("histsame")
         ratio_sighist.Draw("histsame")
-        blind_datahist.DrawCopy("e0x0same")
+        ratio_datahist.Draw("P Z 0 same")
         pads[1].RedrawAxis("G")
         # if split_y_scale or sb_vs_b_ratio:
             # Add a ratio legend for y-splitted plots or plots with sb vs b ratios
-        if int(bin_number) > 1:
+        if int(bin_number) > 2:
             rlegend = ROOT.TLegend(0.85, 0.27, 0.98, 0.16, '', 'NBNDC')
+            rlegend.SetTextFont(42)
+            rlegend.SetTextSize(0.035)
+            rlegend.SetFillStyle(0)
+            rlegend.AddEntry(ratio_datahist,"Data/Bkg","PE")
+            rlegend.AddEntry(""," ","")
+            #rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=0#circ)+Bkg)/Bkg","L")
+            rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=-59#circ)+Bkg)/Bkg","L")
+            rlegend.AddEntry(""," ","")
+            rlegend.AddEntry(ratio_sighist_PS,"(Sig(#alpha_{hgg}=0#circ)+Bkg)/Bkg","L")
+        elif int(bin_number) > 1:
+            rlegend = ROOT.TLegend(0.85, 0.27, 0.98, 0.16, '', 'NBNDC')
+            rlegend.SetTextFont(42)
+            rlegend.SetTextSize(0.035)
+            rlegend.SetFillStyle(0)
+            rlegend.AddEntry(ratio_datahist,"Data/Bkg","PE")
+            rlegend.AddEntry(ratio_sighist,"(Sig+Bkg)/Bkg","L")
+        else:
+            rlegend = ROOT.TLegend(0.02, 0.27, 0.1, 0.16, '', 'NBNDC')
             rlegend.SetTextFont(42)
             rlegend.SetTextSize(0.025)
             rlegend.SetFillStyle(0)
-            rlegend.AddEntry(blind_datahist,"Obs/Bkg","PE")
+            rlegend.AddEntry(ratio_datahist," #frac{Data}{Bkg}","PE")
             rlegend.AddEntry(""," ","")
-            rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=0)+Bkg)/Bkg","L")
-            rlegend.AddEntry(""," ","")
-            rlegend.AddEntry(ratio_sighist_PS,"(Sig(#alpha_{hgg}=1)+Bkg)/Bkg","L")
-        else:
-            rlegend = ROOT.TLegend(0.02, 0.25, 0.1, 0.15, '', 'NBNDC')
-            rlegend.SetTextFont(42)
-            rlegend.SetTextSize(0.015)
-            rlegend.SetFillStyle(0)
-            rlegend.AddEntry(blind_datahist," #frac{Obs}{Bkg}","PE")
-            rlegend.AddEntry(""," ","")
-            rlegend.AddEntry(ratio_sighist," #frac{Sig(#alpha_{hgg}=0)+Bkg}{Bkg}","L")
-            rlegend.AddEntry(""," ","")
-            rlegend.AddEntry(ratio_sighist_PS," #frac{Sig(#alpha_{hgg}=1)+Bkg}{Bkg}","L")
+            rlegend.AddEntry(ratio_sighist," #frac{Sig+Bkg}{Bkg}","L")
         rlegend.Draw("same")
         # Draw extra axis for explanation (use "N" for no optimisation)
         if int(bin_number) > 2:
             extra_axis = ROOT.TGaxis(0,-0.8,Nxbins,-0.8,-3.2,3.2,304,"NS")
-            extra_axis.SetLabelSize(0.025)
+            extra_axis.SetLabelSize(0.03)
             extra_axis.SetLabelFont(42)
             extra_axis.SetMaxDigits(2)
             extra_axis.SetTitle("#Delta#phi_{jj}")
             extra_axis.SetTitleFont(42)
-            extra_axis.SetTitleSize(0.033)
-            extra_axis.SetTitleOffset(1.1)
+            extra_axis.SetTitleSize(0.045)
+            extra_axis.SetTitleOffset(0.9)
             extra_axis.SetTickSize(0.08)
             extra_axis.Draw()
         elif int(bin_number) == 2: # for boosted create list of axes 
             extra_axes = []
             for i,bin_ in enumerate(x_bins):
-                print i,bin_
+                # print i,bin_
                 if i < Nxbins:
                     extra_axis = ROOT.TGaxis(i,-0.1,i+1,-0.1,float(x_bins[i]),float(x_bins[i+1]),1,"NS")
                     extra_axes.append(extra_axis)
             for axis in extra_axes:
-                axis.SetLabelSize(0.015)
+                axis.SetLabelSize(0.02)
                 axis.SetLabelFont(42)
-                axis.SetTitleSize(0.033)
-                axis.SetTitleOffset(1.1)
+                axis.SetTitleSize(0.045)
+                axis.SetTitleOffset(0.9)
                 axis.SetTickSize(0.7)
                 axis.Draw()
             # Draw an axis from 0 to maximum m_sv to make fonts look the same 
@@ -904,11 +1075,11 @@ def main(args):
             # extra_axis.SetTitle("{}".format(re.split(",|\[|\]", bin_labels[0])[1]))
             extra_axis.SetTitle("m_{#tau#tau} (GeV)") # use same svfit mass label for each channel now
             extra_axis.SetTickSize(0.08)
-            extra_axis.SetLabelSize(0.015)
+            extra_axis.SetLabelSize(0.02)
             extra_axis.SetLabelFont(42)
-            extra_axis.SetTitleSize(0.033)
+            extra_axis.SetTitleSize(0.045)
             extra_axis.SetTitleFont(42)
-            extra_axis.SetTitleOffset(1.1)
+            extra_axis.SetTitleOffset(0.9)
             extra_axis.Draw()
 
     pads[0].cd()
@@ -942,31 +1113,46 @@ def main(args):
     latex_bin.SetTextAngle(0)
     latex_bin.SetTextColor(ROOT.kBlack)
     latex_bin.SetTextFont(42)
-    latex_bin.SetTextSize(0.028)
+    latex_bin.SetTextSize(0.04)
     if len(y_bin_labels) > 5: 
-        latex_bin.SetTextSize(0.023)
-    print len(y_bin_labels)
-    
+        latex_bin.SetTextSize(0.035)
+
     for i in range(0, len(y_bin_labels)):
         if i < len(y_bin_labels)-1:
             y_bin_label = "{} #leq {} < {} {}".format(y_bin_labels[i],y_bin_var,y_bin_labels[i+1],"GeV")
-            xshift = 0.76/len(y_bin_labels)*i
-            latex_bin.DrawLatex(0.095+xshift,0.82,y_bin_label)
-        else:
-            y_bin_label = "        {} > {} {}".format(y_bin_var,y_bin_labels[i],"GeV")
-            xshift = 0.76/len(y_bin_labels)*i
-            latex_bin.DrawLatex(0.095+xshift,0.82,y_bin_label)
+            l = ROOT.gPad.GetLeftMargin()
+            r = ROOT.gPad.GetRightMargin()
+            xshift = ((1-r-l)/(axish[0].GetNbinsX()/Nxbins))*i + l
+            if int(bin_number) <= 2:
+                #xshift = 0.76/len(y_bin_labels)*i
+                latex_bin.DrawLatex(xshift+0.02,0.82,y_bin_label)
+            else: 
+                #xshift = 0.78/(len(y_bin_labels)-1)*i
+                latex_bin.DrawLatex(xshift+0.02,0.82,y_bin_label)
+        elif int(bin_number) <= 2:
+            xshift = ((1-r-l)/(axish[0].GetNbinsX()/Nxbins))*i + l
+            y_bin_label = "{} > {} {}".format(y_bin_var,y_bin_labels[i],"GeV")
+            #xshift = 0.76/len(y_bin_labels)*i
+            latex_bin.DrawLatex(xshift+0.02,0.82,y_bin_label)
     
     #Save as png and pdf with some semi sensible filename
     shape_file_name = shape_file_name.replace(".root","_%(mode)s"%vars())
     shape_file_name = shape_file_name.replace("_shapes","")
     outname += shape_file_name+"_"+file_dir.strip("htt").strip("_")
+    if args.combined_yrs:
+        outname = outname.replace("{}_".format(era),"")
     if(log_x): 
         outname+="_logx"
     c2.SaveAs("%(outname)s.png"%vars())
     c2.SaveAs("%(outname)s.pdf"%vars())
 
+    del c2
+    histo_file.Close()
+    if args.file_alt != "":
+        histo_file_alt.Close()
+
 if __name__ == "__main__":
     args = parse_arguments()
     main(args)
     
+

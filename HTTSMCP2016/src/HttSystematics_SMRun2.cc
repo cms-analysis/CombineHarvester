@@ -28,9 +28,9 @@ namespace ch {
         //
         
         
-        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt","qqH_htt125","qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125","WH_htt125","ZH_htt125","WHsm_htt125","ZHsm_htt125", "WHps_htt125","ZHps_htt125","WHmm_htt125","ZHmm_htt125","WHsm_htt","ZHsm_htt","WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt", "ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"};
-        std::vector<std::string> ggH_sig_procs = {"ggH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt"};
-        std::vector<std::string> qqH_sig_procs = {"qqH_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt", "qqH_htt125","qqHsm_htt125", "qqHps_htt125", "qqHmm_htt125"};
+        std::vector<std::string> sig_procs = {"ggH_htt","qqH_htt","WH_htt","ZH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt","qqH_htt125","qqHsm_htt125", "qqHps_htt", "qqHmm_htt","WH_htt125","ZH_htt125","WHsm_htt125","ZHsm_htt125", "WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt","WHsm_htt","ZHsm_htt","WHps_htt","ZHps_htt","WHmm_htt","ZHmm_htt", "ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt","ggH_ph_htt"};
+        std::vector<std::string> ggH_sig_procs = {"ggH_htt","ggHsm_htt", "ggHps_htt", "ggHmm_htt","ggHsm_jhu_htt","ggHps_jhu_htt","ggHmm_jhu_htt","ggH_ph_htt"};
+        std::vector<std::string> qqH_sig_procs = {"qqH_htt","qqHsm_htt", "qqHps_htt", "qqHmm_htt", "qqH_htt125","qqHsm_htt125", "qqHps_htt", "qqHmm_htt"};
         
         // N.B. when adding this list of backgrounds to a nuisance, only
         // the backgrounds that are included in the background process
@@ -86,25 +86,34 @@ namespace ch {
                                             "CMS_eff_trigger_tt_13TeV", "lnN", SystMap<>::init(1.10)); 
         cb.cp().process(embed).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,
                                             "CMS_eff_embedded_trigger_tt_13TeV", "lnN", SystMap<>::init(1.10));
+
+        // additional uncertainties due to tau SF on cross-triggers - decorrelated for embedded samples in Morphing code
+        cb.cp().process(JoinStr({sig_procs,all_mc_bkgs,embed})).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb,"CMS_eff_Xtrigger_mt_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process(JoinStr({sig_procs,all_mc_bkgs,embed})).channel({"et_2017"}).AddSyst(cb,"CMS_eff_Xtrigger_et_13TeV", "shape", SystMap<>::init(1.00));
         
         //##############################################################################
         //  Electron, muon and tau Id  efficiencies
         //##############################################################################
         cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-                        ({"mt","mt_2016","mt_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, JoinStr({sig_procs, all_mc_bkgs}),  1.02));
+                        ({"mt","mt_2016","mt_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, JoinStr({sig_procs, all_mc_bkgs,embed}),  1.014));
+        cb.cp().AddSyst(cb, "CMS_eff_mc_m", "lnN", SystMap<channel, process>::init
+                        ({"mt","mt_2016","mt_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, JoinStr({sig_procs, all_mc_bkgs}),  1.014));
         cb.cp().AddSyst(cb, "CMS_eff_embedded_m", "lnN", SystMap<channel, process>::init
-                        ({"mt","mt_2016","mt_2017""em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, embed,  1.02));
+                        ({"mt","mt_2016","mt_2017""em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, embed,  1.014));
         
         // embedded selection efficiency
         cb.cp().AddSyst(cb, "CMS_eff_m_embedsel", "lnN", SystMap<channel, process>::init
                         ({"em","em_2016","em_2017","et","et_2016","et_2017","tt","tt_2016","tt_2017","mt","mt_2016","mt_2017","ttbar","ttbar_2016","ttbar_2017"}, embed,  1.04)); 
         
         cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
-                        ({"et","et_2016","et_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, JoinStr({sig_procs, all_mc_bkgs}),       1.02));
+                        ({"et","et_2016","et_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, JoinStr({sig_procs, all_mc_bkgs,embed}),       1.014));
+
+        cb.cp().AddSyst(cb, "CMS_eff_mc_e", "lnN", SystMap<channel, process>::init
+                        ({"et","et_2016","et_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, JoinStr({sig_procs, all_mc_bkgs}), 1.014));
         
         cb.cp().AddSyst(cb, "CMS_eff_embedded_e", "lnN", SystMap<channel, process>::init
-                        ({"et","et_2016","et_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, embed,       1.02));
-        
+                        ({"et","et_2016","et_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}, embed,       1.014));
+
 
         // Tau Efficiency applied to all MC
         // in tautau channel the applied value depends on the number of taus which is determined by
@@ -112,81 +121,134 @@ namespace ch {
         // compared to ZTT which has 2 real taus.
         // We also have channel specific components and fully correlated components
         //
-        // for embedding there is a 2% uncertainty due to tracking that should be correlated between 2016/2017 and all channels and a 3% uncertainty for the tau ID which is split into a part correlated and a part uncorrelated accross channels
-        // The tracking uncertainty is increased from 2% to 4% as it is derived from MC so does not sover the uncertainty on the data/MC tracking differences
+        // taking same uncertainties for embedded and MC and treating as 50% correlated
         // ETau & MuTau
+        //
+
+        cb.cp().process(embed).channel({"et","et_2016","mt","mt_2016","et_2017","mt_2017"}).AddSyst(cb,
+                                             "CMS_track_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.02));
+        cb.cp().process(embed).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,
+                                             "CMS_track_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.04));
+
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","et_2016","mt","mt_2016"}).AddSyst(cb,
-                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.045));
+                                             "CMS_eff_mc_t_13TeV", "lnN", SystMap<>::init(1.032));
         cb.cp().process(embed).channel({"et","et_2016","mt","mt_2016"}).AddSyst(cb,
-                                             "CMS_track_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.04)); 
-        cb.cp().process(embed).channel({"et","et_2016","mt","mt_2016"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.027));
+                                             "CMS_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.032));
         
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt","mt_2016"}).AddSyst(cb,
-                                             "CMS_eff_t_mt_13TeV", "lnN", SystMap<>::init(1.02));
+                                             "CMS_eff_mc_t_mt_13TeV", "lnN", SystMap<>::init(1.014));
         cb.cp().process(embed).channel({"mt","mt_2016"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_mt_13TeV", "lnN", SystMap<>::init(1.012));
+                                             "CMS_eff_embedded_t_mt_13TeV", "lnN", SystMap<>::init(1.014));
 
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et","et_2016"}).AddSyst(cb,
-                                             "CMS_eff_t_et_13TeV", "lnN", SystMap<>::init(1.02));
+                                             "CMS_eff_mc_t_et_13TeV", "lnN", SystMap<>::init(1.014));
         cb.cp().process(embed).channel({"et","et_2016"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_et_13TeV", "lnN", SystMap<>::init(1.012));
+                                             "CMS_eff_embedded_t_et_13TeV", "lnN", SystMap<>::init(1.014));
 
         // TauTau - 2 real taus
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"}})).channel({"tt","tt_2016"}).AddSyst(cb,
-                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.09));
+                                             "CMS_eff_mc_t_13TeV", "lnN", SystMap<>::init(1.064));
         cb.cp().process(embed).channel({"tt","tt_2016"}).AddSyst(cb,
-                                             "CMS_track_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.08));
-        cb.cp().process(embed).channel({"tt","tt_2016"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.055));
+                                             "CMS_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.064));
         
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"}})).channel({"tt","tt_2016"}).AddSyst(cb,
-                                            "CMS_eff_t_tt_13TeV", "lnN", SystMap<>::init(1.04));
+                                            "CMS_eff_mc_t_tt_13TeV", "lnN", SystMap<>::init(1.028));
         cb.cp().process(embed).channel({"tt","tt_2016"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_tt_13TeV", "lnN", SystMap<>::init(1.024));
+                                             "CMS_eff_embedded_t_tt_13TeV", "lnN", SystMap<>::init(1.028));
 
         // TauTau - 1+ jet to tau fakes
         cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt","tt_2016"}).AddSyst(cb,
-                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.06));
+                                             "CMS_eff_mc_t_13TeV", "lnN", SystMap<>::init(1.032));
         
         cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt","tt_2016"}).AddSyst(cb,
-                                             "CMS_eff_t_tt_13TeV", "lnN", SystMap<>::init(1.02));
+                                             "CMS_eff_mc_t_tt_13TeV", "lnN", SystMap<>::init(1.014));
 
         
         // 2017 tau efficiency uncertainties
 
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et_2017","mt_2017"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.027));
+                                             "CMS_eff_mc_t_13TeV", "lnN", SystMap<>::init(1.019));
+        cb.cp().process(embed).channel({"et_2017","mt_2017"}).AddSyst(cb,
+                                             "CMS_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.019));
 
-        cb.cp().process(embed).channel({"et_2017","mt_2017"}).AddSyst(cb,
-                                             "CMS_track_eff_embedded_t_$ERA", "lnN", SystMap<>::init(1.04));
-        cb.cp().process(embed).channel({"et_2017","mt_2017"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_$ERA", "lnN", SystMap<>::init(1.018));
-
-        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et_2017","mt_2017"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.012));
-        cb.cp().process(embed).channel({"et_2017","mt_2017"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.01));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"mt_2017"}).AddSyst(cb,
+                                             "CMS_eff_mc_t_mt_13TeV", "lnN", SystMap<>::init(1.008));
+        cb.cp().process(embed).channel({"mt_2017"}).AddSyst(cb,
+                                             "CMS_eff_embedded_t_mt_13TeV", "lnN", SystMap<>::init(1.008));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs})).channel({"et_2017"}).AddSyst(cb,
+                                             "CMS_eff_mc_t_et_13TeV", "lnN", SystMap<>::init(1.008));
+        cb.cp().process(embed).channel({"et_2017"}).AddSyst(cb,
+                                             "CMS_eff_embedded_t_et_13TeV", "lnN", SystMap<>::init(1.008));
 
         // TauTau - 2 real taus
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"}})).channel({"tt_2017"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.055));
+                                             "CMS_eff_mc_t_13TeV", "lnN", SystMap<>::init(1.039));
         cb.cp().process(embed).channel({"tt_2017"}).AddSyst(cb,
-                                             "CMS_track_eff_embedded_t_$ERA", "lnN", SystMap<>::init(1.08));
-        cb.cp().process(embed).channel({"tt_2017"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_$ERA", "lnN", SystMap<>::init(1.036));
+                                             "CMS_eff_embedded_t_13TeV", "lnN", SystMap<>::init(1.039));
 
         cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"}})).channel({"tt_2017"}).AddSyst(cb,
-                                            "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.024));
+                                            "CMS_eff_mc_t_tt_13TeV", "lnN", SystMap<>::init(1.017));
         cb.cp().process(embed).channel({"tt_2017"}).AddSyst(cb,
-                                             "CMS_eff_embedded_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+                                             "CMS_eff_embedded_t_tt_13TeV", "lnN", SystMap<>::init(1.017));
 
         // TauTau - 1+ jet to tau fakes
         cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt_2017"}).AddSyst(cb,
-                                             "CMS_eff_t_$ERA", "lnN", SystMap<>::init(1.018));
+                                             "CMS_eff_mc_t_13TeV", "lnN", SystMap<>::init(1.019));
 
         cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt_2017"}).AddSyst(cb,
-                                             "CMS_eff_t_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.012));
+                                             "CMS_eff_mc_t_tt_13TeV", "lnN", SystMap<>::init(1.008));
+
+        // the part that is correlated between embedding and MC
+        
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs,embed})).channel({"et","et_2016","mt","mt_2016"}).AddSyst(cb,
+                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.032));
+        
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs,embed})).channel({"mt","mt_2016"}).AddSyst(cb,
+                                             "CMS_eff_t_mt_13TeV", "lnN", SystMap<>::init(1.014));
+
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs,embed})).channel({"et","et_2016"}).AddSyst(cb,
+                                             "CMS_eff_t_et_13TeV", "lnN", SystMap<>::init(1.014));
+
+        // TauTau - 2 real taus
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"},embed})).channel({"tt","tt_2016"}).AddSyst(cb,
+                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.064));
+        
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"},embed})).channel({"tt","tt_2016"}).AddSyst(cb,
+                                            "CMS_eff_t_tt_13TeV", "lnN", SystMap<>::init(1.028));
+
+        // TauTau - 1+ jet to tau fakes
+        cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt","tt_2016"}).AddSyst(cb,
+                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.032));
+        
+        cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt","tt_2016"}).AddSyst(cb,
+                                             "CMS_eff_t_tt_13TeV", "lnN", SystMap<>::init(1.014));
+
+        
+        // 2017 tau efficiency uncertainties
+
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs,embed})).channel({"et_2017","mt_2017"}).AddSyst(cb,
+                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.019));
+
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs,embed})).channel({"mt_2017"}).AddSyst(cb,
+                                             "CMS_eff_t_mt_13TeV", "lnN", SystMap<>::init(1.008));
+        cb.cp().process(JoinStr({sig_procs, all_mc_bkgs,embed})).channel({"et_2017"}).AddSyst(cb,
+                                             "CMS_eff_t_et_13TeV", "lnN", SystMap<>::init(1.008));
+
+
+        // TauTau - 2 real taus
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"},embed})).channel({"tt_2017"}).AddSyst(cb,
+                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.039));
+
+        cb.cp().process(JoinStr({sig_procs, {"ZTT","VVT","TTT","EWKZ"},embed})).channel({"tt_2017"}).AddSyst(cb,
+                                            "CMS_eff_t_tt_13TeV", "lnN", SystMap<>::init(1.017));
+
+        // TauTau - 1+ jet to tau fakes
+        cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt_2017"}).AddSyst(cb,
+                                             "CMS_eff_t_13TeV", "lnN", SystMap<>::init(1.019));
+
+        cb.cp().process({"TTJ","ZJ","VVJ","W"}).channel({"tt_2017"}).AddSyst(cb,
+                                             "CMS_eff_t_tt_13TeV", "lnN", SystMap<>::init(1.008));
+
 
         
         //##############################################################################
@@ -203,15 +265,19 @@ namespace ch {
           ({"et","et_2016"}, {4}, {"TTT"}, 1.008,0.969)
           ({"et","et_2016"}, {5}, {"TTT"}, 1.032,0.963)
           ({"et","et_2016"}, {6}, {"TTT"}, 1.015,0.942)
+          ({"et","et_2016"}, {1}, {"VVT"}, 1.001,1.0)
           ({"et","et_2016"}, {2}, {"VVT"}, 1.010,0.989)
           ({"et","et_2016"}, {3}, {"VVT"}, 1.024,0.987)
           ({"et","et_2016"}, {4}, {"VVT"}, 1.000,0.983)
+          //({"et","et_2016"}, {5}, {"VVT"}, 1.000,1.000)
+          //({"et","et_2016"}, {6}, {"VVT"}, 1.000,1.000)
           ({"mt","mt_2016"}, {1}, {"TTT"}, 1.024,0.975)
           ({"mt","mt_2016"}, {2}, {"TTT"}, 1.030,0.967)
           ({"mt","mt_2016"}, {3}, {"TTT"}, 1.069,0.967)
           ({"mt","mt_2016"}, {4}, {"TTT"}, 1.040,0.964)
           ({"mt","mt_2016"}, {5}, {"TTT"}, 1.028,0.968)
           ({"mt","mt_2016"}, {6}, {"TTT"}, 1.060,0.952)
+          ({"mt","mt_2016"}, {1}, {"VVT"}, 1.0001,0.999) 
           ({"mt","mt_2016"}, {2}, {"VVT"}, 1.010,0.994)
           ({"mt","mt_2016"}, {3}, {"VVT"}, 1.015,1.000)
           ({"mt","mt_2016"}, {4}, {"VVT"}, 1.014,0.987)
@@ -223,47 +289,86 @@ namespace ch {
           ({"em","em_2016"}, {4}, {"TT"}, 1.032,0.957)
           ({"em","em_2016"}, {5}, {"TT"}, 1.032,0.975)
           ({"em","em_2016"}, {6}, {"TT"}, 1.032,0.969)
+          ({"em","em_2016"}, {1}, {"VV"}, 1.001, 0.999)
           ({"em","em_2016"}, {2}, {"VV"}, 1.008,0.992)
           ({"em","em_2016"}, {3}, {"VV"}, 1.013,0.986)
           ({"em","em_2016"}, {4}, {"VV"}, 1.008,0.988)
           ({"em","em_2016"}, {5}, {"VV"}, 1.010,0.992)
           ({"em","em_2016"}, {6}, {"VV"}, 1.011,0.988)
-          ({"mt_2017"}, {1}, {"TTT"}, 1.026, 0.982)
-          ({"mt_2017"}, {1}, {"VVT"}, 1.002, 0.999)
-          ({"mt_2017"}, {4}, {"TTT"}, 1.021, 0.965)
-          ({"mt_2017"}, {4}, {"VVT"}, 1.039, 0.986)
-          ({"mt_2017"}, {3}, {"TTT"}, 1.072, 0.971)
-          ({"mt_2017"}, {3}, {"VVT"}, 1.022, 0.982)
-          ({"mt_2017"}, {6}, {"TTT"}, 1.072, 0.972)
-          ({"mt_2017"}, {6}, {"VVT"}, 1.028, 0.963)
-          ({"mt_2017"}, {5}, {"TTT"}, 1.047, 0.989)
-          ({"mt_2017"}, {5}, {"VVT"}, 1.023, 0.955)
-          ({"mt_2017"}, {2}, {"TTT"}, 1.052, 0.950)
-          ({"mt_2017"}, {2}, {"VVT"}, 1.012, 0.986)
-          ({"et_2017"}, {1}, {"TTT"}, 1.009, 0.976)
-          ({"et_2017"}, {1}, {"VVT"}, 1.001, 0.999)
-          ({"et_2017"}, {4}, {"TTT"}, 1.065, 0.968)
-          ({"et_2017"}, {4}, {"VVT"}, 1.019, 0.975)
-          ({"et_2017"}, {3}, {"TTT"}, 1.062, 0.906)
-          ({"et_2017"}, {3}, {"VVT"}, 1.043, 1.000)
-          ({"et_2017"}, {6}, {"TTT"}, 1.068, 0.947)
-          ({"et_2017"}, {6}, {"VVT"}, 1.024, 1.001)
-          ({"et_2017"}, {5}, {"TTT"}, 1.026, 0.988)
-          ({"et_2017"}, {5}, {"VVT"}, 1.000, 1.000)
-          ({"et_2017"}, {2}, {"TTT"}, 1.046, 0.950)
-          ({"et_2017"}, {2}, {"VVT"}, 1.016, 0.987)
-          ({"em_2017"}, {1}, {"TT"}, 1.029, 0.980)
-          ({"em_2017"}, {1}, {"VV"}, 1.002, 0.999)
-          ({"em_2017"}, {4}, {"TT"}, 1.055, 0.948)
-          ({"em_2017"}, {4}, {"VV"}, 1.021, 0.976)
-          ({"em_2017"}, {3}, {"TT"}, 1.047, 0.948)
-          ({"em_2017"}, {3}, {"VV"}, 1.020, 0.987)
-          ({"em_2017"}, {6}, {"TT"}, 1.050, 0.946)
-          ({"em_2017"}, {6}, {"VV"}, 1.022, 0.982)
-          ({"em_2017"}, {5}, {"TT"}, 1.050, 0.951)
-          ({"em_2017"}, {5}, {"VV"}, 1.017, 0.979)
-          ({"em_2017"}, {2}, {"TT"}, 1.044, 0.957)
-          ({"em_2017"}, {2}, {"VV"}, 1.010, 0.989)
+          ({"em_2017"}, {1}, {"TT"}, 1.032, 0.973)
+          ({"em_2017"}, {1}, {"VV"}, 1.002, 0.998)
+          ({"em_2017"}, {4}, {"TT"}, 1.042, 0.963)
+          ({"em_2017"}, {4}, {"VV"}, 1.018, 0.980)
+          ({"em_2017"}, {3}, {"TT"}, 1.036, 0.962)
+          ({"em_2017"}, {3}, {"VV"}, 1.014, 0.985)
+          ({"em_2017"}, {6}, {"TT"}, 1.041, 0.959)
+          ({"em_2017"}, {6}, {"VV"}, 1.017, 0.979)
+          ({"em_2017"}, {5}, {"TT"}, 1.050, 0.965)
+          ({"em_2017"}, {5}, {"VV"}, 1.007, 0.980)
+          ({"em_2017"}, {2}, {"TT"}, 1.036, 0.963)
+          ({"em_2017"}, {2}, {"VV"}, 1.011, 0.991)
+          ({"et_2017"}, {1}, {"TTT"}, 1.049, 0.981)
+          ({"et_2017"}, {1}, {"VVT"}, 1.001, 0.998)
+          ({"et_2017"}, {4}, {"TTT"}, 1.032, 0.975)
+          ({"et_2017"}, {4}, {"VVT"}, 1.000, 0.974)
+          ({"et_2017"}, {3}, {"TTT"}, 1.052, 0.954)
+          ({"et_2017"}, {3}, {"VVT"}, 1.037, 0.964)
+          ({"et_2017"}, {6}, {"TTT"}, 1.015, 0.925)
+          ({"et_2017"}, {6}, {"VVT"}, 1.026, 1.002)
+          ({"et_2017"}, {5}, {"TTT"}, 1.020, 0.977)
+          //({"et_2017"}, {5}, {"VVT"}, 1.000, 1.000)
+          ({"et_2017"}, {2}, {"TTT"}, 1.047, 0.957)
+          ({"et_2017"}, {2}, {"VVT"}, 1.010, 0.988)
+          ({"mt_2017"}, {1}, {"TTT"}, 1.005, 0.972)
+          ({"mt_2017"}, {1}, {"VVT"}, 1.002, 0.998)
+          ({"mt_2017"}, {4}, {"TTT"}, 1.047, 0.968)
+          ({"mt_2017"}, {4}, {"VVT"}, 1.040, 0.979)
+          ({"mt_2017"}, {3}, {"TTT"}, 1.042, 0.944)
+          ({"mt_2017"}, {3}, {"VVT"}, 1.008, 0.974)
+          ({"mt_2017"}, {6}, {"TTT"}, 1.074, 0.964)
+          ({"mt_2017"}, {6}, {"VVT"}, 1.058, 0.973)
+          ({"mt_2017"}, {5}, {"TTT"}, 1.057, 0.981)
+          ({"mt_2017"}, {5}, {"VVT"}, 1.003, 0.961)
+          ({"mt_2017"}, {2}, {"TTT"}, 1.038, 0.956)
+          ({"mt_2017"}, {2}, {"VVT"}, 1.009, 0.988)
+
+          // the commented numbers are for deepCSV (above numbers for CSVv2)
+          //({"mt_2017"}, {1}, {"TTT"}, 1.026, 0.982)
+          //({"mt_2017"}, {1}, {"VVT"}, 1.002, 0.999)
+          //({"mt_2017"}, {4}, {"TTT"}, 1.021, 0.965)
+          //({"mt_2017"}, {4}, {"VVT"}, 1.039, 0.986)
+          //({"mt_2017"}, {3}, {"TTT"}, 1.072, 0.971)
+          //({"mt_2017"}, {3}, {"VVT"}, 1.022, 0.982)
+          //({"mt_2017"}, {6}, {"TTT"}, 1.072, 0.972)
+          //({"mt_2017"}, {6}, {"VVT"}, 1.028, 0.963)
+          //({"mt_2017"}, {5}, {"TTT"}, 1.047, 0.989)
+          //({"mt_2017"}, {5}, {"VVT"}, 1.023, 0.955)
+          //({"mt_2017"}, {2}, {"TTT"}, 1.052, 0.950)
+          //({"mt_2017"}, {2}, {"VVT"}, 1.012, 0.986)
+          //({"et_2017"}, {1}, {"TTT"}, 1.009, 0.976)
+          //({"et_2017"}, {1}, {"VVT"}, 1.001, 0.999)
+          //({"et_2017"}, {4}, {"TTT"}, 1.065, 0.968)
+          //({"et_2017"}, {4}, {"VVT"}, 1.019, 0.975)
+          //({"et_2017"}, {3}, {"TTT"}, 1.062, 0.906)
+          //({"et_2017"}, {3}, {"VVT"}, 1.043, 1.000)
+          //({"et_2017"}, {6}, {"TTT"}, 1.068, 0.947)
+          //({"et_2017"}, {6}, {"VVT"}, 1.024, 1.001)
+          //({"et_2017"}, {5}, {"TTT"}, 1.026, 0.988)
+          //({"et_2017"}, {5}, {"VVT"}, 1.000, 1.000)
+          //({"et_2017"}, {2}, {"TTT"}, 1.046, 0.950)
+          //({"et_2017"}, {2}, {"VVT"}, 1.016, 0.987)
+          //({"em_2017"}, {1}, {"TT"}, 1.029, 0.980)
+          //({"em_2017"}, {1}, {"VV"}, 1.002, 0.999)
+          //({"em_2017"}, {4}, {"TT"}, 1.055, 0.948)
+          //({"em_2017"}, {4}, {"VV"}, 1.021, 0.976)
+          //({"em_2017"}, {3}, {"TT"}, 1.047, 0.948)
+          //({"em_2017"}, {3}, {"VV"}, 1.020, 0.987)
+          //({"em_2017"}, {6}, {"TT"}, 1.050, 0.946)
+          //({"em_2017"}, {6}, {"VV"}, 1.022, 0.982)
+          //({"em_2017"}, {5}, {"TT"}, 1.050, 0.951)
+          //({"em_2017"}, {5}, {"VV"}, 1.017, 0.979)
+          //({"em_2017"}, {2}, {"TT"}, 1.044, 0.957)
+          //({"em_2017"}, {2}, {"VV"}, 1.010, 0.989)
           
           ({"et","et_2016","et_2017","mt","mt_2016","mt_2017"}, {100,101,102,103,104,107,108}, {"TTT"}, 1.05, 0.95)
           ({"et","et_2016","et_2017","mt","mt_2016","mt_2017"}, {105,106}, {"TTT"}, 1.06, 0.91)
@@ -280,7 +385,11 @@ namespace ch {
         
         cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, embed, {"jetFakes", "QCD"}})).channel({"et","et_2016","et_2017","em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}).AddSyst(cb,
                                              "CMS_scale_e_13TeV", "shape", SystMap<>::init(1.00));
-        
+       
+        //cb.cp().process(JoinStr({sig_procs, all_mc_bkgs, embed, {"jetFakes", "QCD"}})).channel({"em","em_2016","em_2017","ttbar","ttbar_2016","ttbar_2017"}).AddSyst(cb,
+        //                                     "CMS_scale_e_13TeV", "shape", SystMap<>::init(1.00));
+
+ 
         // Decay Mode based TES Settings
         cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed, {"jetFakes"}})).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017"}).AddSyst(cb,
                                                 "CMS_scale_t_1prong_13TeV", "shape", SystMap<>::init(1.00));
@@ -288,7 +397,7 @@ namespace ch {
                                                 "CMS_scale_t_1prong1pizero_13TeV", "shape", SystMap<>::init(1.00));
         cb.cp().process(JoinStr({sig_procs, real_tau_mc_bkgs, embed, {"jetFakes"}})).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017"}).AddSyst(cb,
                                                 "CMS_scale_t_3prong_13TeV", "shape", SystMap<>::init(1.00));
-        
+
         //##############################################################################
         //  Embedded uncertainty on ttbar contamination (and VV contamination)
         //##############################################################################        
@@ -339,11 +448,11 @@ namespace ch {
         cb.cp().process({"EWKZ"}).AddSyst(cb,
                                         "CMS_htt_ewkzXsec_13TeV", "lnN", SystMap<>::init(1.04));
 
-        if (! ttbar_fit){
+        //if (! ttbar_fit){
         //   ttbar Normalisation - fully correlated
 	    cb.cp().process({"TT","TTT","TTJ"}).AddSyst(cb,
 					  "CMS_htt_tjXsec_13TeV", "lnN", SystMap<>::init(1.06));
-        }
+        //}
 
         // W norm, just for em, tt and the mm region where MC norm is from MC
         
@@ -357,7 +466,170 @@ namespace ch {
           cb.cp().process({"W"}).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017"}).AddSyst(cb,
                                                        "CMS_htt_wjXsec_13TeV", "lnN", SystMap<>::init(1.04));    
         }
-        
+
+// prefiring uncertainties, all values < 0.5% are neglected
+        cb.cp().AddSyst(cb,
+                  "CMS_PreFire_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
+                  ({"mt_2016"}, {6}, {"TTT"}, 1.005, 0.995)
+                  ({"mt_2016"}, {6}, {"qqH_htt125"}, 1.007, 0.993)
+                  ({"mt_2016"}, {6}, {"qqHmm_htt"}, 1.008, 0.992)
+                  ({"mt_2016"}, {6}, {"ggHsm_htt125"}, 1.006, 0.994)
+                  ({"mt_2016"}, {6}, {"qqHps_htt"}, 1.008, 0.992)
+                  ({"mt_2016"}, {6}, {"qqHsm_htt125"}, 1.007, 0.993)
+                  ({"mt_2016"}, {5}, {"qqHps_htt"}, 1.006, 0.994)
+                  ({"tt_2016"}, {6}, {"TTT"}, 1.010, 0.990)
+                  ({"tt_2016"}, {6}, {"qqH_htt125"}, 1.007, 0.993)
+                  ({"tt_2016"}, {6}, {"ggHps_htt125"}, 1.006, 0.994)
+                  ({"tt_2016"}, {6}, {"qqHmm_htt"}, 1.008, 0.992)
+                  ({"tt_2016"}, {6}, {"qqHps_htt"}, 1.008, 0.992)
+                  ({"tt_2016"}, {6}, {"qqHsm_htt125"}, 1.007, 0.993)
+                  ({"tt_2016"}, {6}, {"WH_htt125"}, 1.007, 0.993)
+                  ({"tt_2016"}, {5}, {"TTT"}, 1.010, 0.990)
+                  ({"tt_2016"}, {5}, {"VVT"}, 1.006, 0.994)
+                  ({"tt_2016"}, {5}, {"ZHsm_htt125"}, 1.006, 0.994)
+                  ({"tt_2016"}, {5}, {"qqHps_htt"}, 1.005, 0.995)
+                  ({"et_2016"}, {4}, {"WHsm_htt125"}, 1.007, 0.993)
+                  ({"et_2016"}, {6}, {"TTT"}, 1.010, 0.990)
+                  ({"et_2016"}, {6}, {"EWKZ"}, 1.007, 0.993)
+                  ({"et_2016"}, {6}, {"qqH_htt125"}, 1.007, 0.993)
+                  ({"et_2016"}, {6}, {"qqHmm_htt"}, 1.008, 0.992)
+                  ({"et_2016"}, {6}, {"qqHps_htt"}, 1.008, 0.992)
+                  ({"et_2016"}, {6}, {"ggHmm_htt125"}, 1.005, 0.995)
+                  ({"et_2016"}, {6}, {"qqHsm_htt125"}, 1.007, 0.993)
+                  ({"et_2016"}, {5}, {"EWKZ"}, 1.006, 0.994)
+                  ({"et_2016"}, {5}, {"ZHps_htt"}, 1.006, 0.994)       
+                  ({"ttbar_2016"}, {1}, {"qqHmm_htt"}, 1.005, 0.995)
+                  ({"ttbar_2016"}, {1}, {"qqHps_htt"}, 1.005, 0.995)
+                  ({"em_2016"}, {4}, {"WHsm_htt125"}, 1.006, 0.994)
+                  ({"em_2016"}, {4}, {"ZH_htt125"}, 1.006, 0.994)
+                  ({"em_2016"}, {6}, {"qqH_hww125"}, 1.006, 0.994)
+                  ({"em_2016"}, {6}, {"qqH_htt125"}, 1.006, 0.994)
+                  ({"em_2016"}, {6}, {"ggHps_htt125"}, 1.005, 0.995)
+                  ({"em_2016"}, {6}, {"qqHmm_htt"}, 1.007, 0.993)
+                  ({"em_2016"}, {6}, {"qqHps_htt"}, 1.008, 0.992)
+                  ({"em_2016"}, {6}, {"ggHmm_htt125"}, 1.005, 0.994)
+                  ({"em_2016"}, {6}, {"qqHsm_htt125"}, 1.006, 0.994)
+                  ({"em_2016"}, {6}, {"ZH_htt125"}, 1.006, 0.994)
+                  ({"em_2016"}, {6}, {"TT"}, 1.006, 0.993)
+                  ({"em_2016"}, {5}, {"qqHps_htt"}, 1.006, 0.994)
+                  
+                  ({"mt_2017"}, {4}, {"ZL"}, 1.009, 0.991)
+                  ({"mt_2017"}, {4}, {"qqH_htt125"}, 1.005, 0.994)
+                  ({"mt_2017"}, {4}, {"qqHmm_htt"}, 1.006, 0.994)
+                  ({"mt_2017"}, {4}, {"ggHsm_htt125"}, 1.007, 0.993)
+                  ({"mt_2017"}, {4}, {"qqHps_htt"}, 1.005, 0.995)
+                  ({"mt_2017"}, {3}, {"EWKZ"}, 1.073, 0.928)
+                  ({"mt_2017"}, {6}, {"ZL"}, 1.006, 0.994)
+                  ({"mt_2017"}, {6}, {"TTT"}, 1.016, 0.984)
+                  ({"mt_2017"}, {6}, {"VVT"}, 1.015, 0.985)
+                  ({"mt_2017"}, {6}, {"qqH_htt125"}, 1.012, 0.988)
+                  ({"mt_2017"}, {6}, {"ggHps_htt125"}, 1.009, 0.991)
+                  ({"mt_2017"}, {6}, {"qqHmm_htt"}, 1.015, 0.985)
+                  ({"mt_2017"}, {6}, {"ggHsm_htt125"}, 1.010, 0.990)
+                  ({"mt_2017"}, {6}, {"qqHps_htt"}, 1.015, 0.985)
+                  ({"mt_2017"}, {6}, {"WHmm_htt"}, 1.006, 0.994)
+                  ({"mt_2017"}, {6}, {"ZHmm_htt"}, 1.008, 0.992)
+                  ({"mt_2017"}, {6}, {"ggHmm_htt125"}, 1.009, 0.991)
+                  ({"mt_2017"}, {6}, {"qqHsm_htt125"}, 1.012, 0.988)
+                  ({"mt_2017"}, {6}, {"ZHps_htt"}, 1.007, 0.993)
+                  ({"mt_2017"}, {6}, {"ZH_htt125"}, 1.007, 0.993)
+                  ({"mt_2017"}, {6}, {"WH_htt125"}, 1.006, 0.994)
+                  ({"mt_2017"}, {5}, {"EWKZ"}, 1.010, 0.990)
+                  ({"mt_2017"}, {5}, {"qqHmm_htt"}, 1.005, 0.995)
+                  ({"mt_2017"}, {5}, {"WHps_htt"}, 1.008, 0.992)
+                  ({"mt_2017"}, {5}, {"qqHps_htt"}, 1.011, 0.989)
+                  ({"mt_2017"}, {5}, {"qqHsm_htt125"}, 1.005, 0.995)
+                  ({"tt_2017"}, {4}, {"VVT"}, 1.006, 0.994)
+                  ({"tt_2017"}, {4}, {"EWKZ"}, 1.154, 0.846)
+                  ({"tt_2017"}, {4}, {"qqHsm_htt125"}, 1.005, 0.995)
+                  ({"tt_2017"}, {3}, {"ZL"}, 1.005, 0.995)
+                  ({"tt_2017"}, {3}, {"qqHmm_htt"}, 1.007, 0.993)
+                  ({"tt_2017"}, {3}, {"ZHmm_htt"}, 1.006, 0.994)
+                  ({"tt_2017"}, {3}, {"ZHps_htt"}, 1.007, 0.993)
+                  ({"tt_2017"}, {6}, {"ZL"}, 1.044, 0.956)
+                  ({"tt_2017"}, {6}, {"TTT"}, 1.004, 0.994)
+                  ({"tt_2017"}, {6}, {"EWKZ"}, 1.034, 0.966)
+                  ({"tt_2017"}, {6}, {"qqH_htt125"}, 1.013, 0.987)
+                  ({"tt_2017"}, {6}, {"ggHps_htt125"}, 1.009, 0.991)
+                  ({"tt_2017"}, {6}, {"qqHmm_htt"}, 1.014, 0.986)
+                  ({"tt_2017"}, {6}, {"ggHsm_htt125"}, 1.010, 0.990)
+                  ({"tt_2017"}, {6}, {"qqHps_htt"}, 1.015, 0.985)
+                  ({"tt_2017"}, {6}, {"ggHmm_htt125"}, 1.010, 0.990)
+                  ({"tt_2017"}, {6}, {"qqHsm_htt125"}, 1.013, 0.987)
+                  ({"tt_2017"}, {6}, {"ZH_htt125"}, 1.005, 0.994)
+                  ({"tt_2017"}, {6}, {"WH_htt125"}, 1.007, 0.993)
+                  ({"tt_2017"}, {5}, {"qqH_htt125"}, 1.006, 0.994)
+                  ({"tt_2017"}, {5}, {"qqHmm_htt"}, 1.008, 0.992)
+                  ({"tt_2017"}, {5}, {"WHps_htt"}, 1.011, 0.989)
+                  ({"tt_2017"}, {5}, {"qqHps_htt"}, 1.009, 0.991)
+                  ({"tt_2017"}, {5}, {"qqHsm_htt125"}, 1.006, 0.994)
+                  ({"tt_2017"}, {5}, {"ZH_htt125"}, 1.007, 0.993)
+                  ({"tt_2017"}, {5}, {"WH_htt125"}, 1.007, 0.993)
+                  ({"et_2017"}, {4}, {"TTT"}, 1.007, 0.993)
+                  ({"et_2017"}, {4}, {"VVT"}, 1.008, 0.992)
+                  ({"et_2017"}, {4}, {"qqH_htt125"}, 1.006, 0.994)
+                  ({"et_2017"}, {4}, {"qqHmm_htt"}, 1.005, 0.995)
+                  ({"et_2017"}, {4}, {"ggHsm_htt125"}, 1.005, 0.995)
+                  ({"et_2017"}, {4}, {"WHps_htt"}, 1.005, 0.995)
+                  ({"et_2017"}, {4}, {"ZHmm_htt"}, 1.005, 0.995)
+                  ({"et_2017"}, {6}, {"ZL"}, 1.019, 0.981)
+                  ({"et_2017"}, {6}, {"VVT"}, 1.007, 0.993)
+                  ({"et_2017"}, {6}, {"EWKZ"}, 1.032, 0.968)
+                  ({"et_2017"}, {6}, {"qqH_htt125"}, 1.013, 0.987)
+                  ({"et_2017"}, {6}, {"ggHps_htt125"}, 1.007, 0.993)
+                  ({"et_2017"}, {6}, {"qqHmm_htt"}, 1.013, 0.987)
+                  ({"et_2017"}, {6}, {"ggHsm_htt125"}, 1.009, 0.991)
+                  ({"et_2017"}, {6}, {"WHsm_htt125"}, 1.005, 0.995)
+                  ({"et_2017"}, {6}, {"qqHps_htt"}, 1.014, 0.986)
+                  ({"et_2017"}, {6}, {"WHmm_htt"}, 1.007, 0.993)
+                  ({"et_2017"}, {6}, {"ggHmm_htt125"}, 1.010, 0.990)
+                  ({"et_2017"}, {6}, {"qqHsm_htt125"}, 1.011, 0.989)
+                  ({"et_2017"}, {6}, {"ZH_htt125"}, 1.006, 0.994)
+                  ({"et_2017"}, {6}, {"WH_htt125"}, 1.005, 0.995)
+                  ({"et_2017"}, {5}, {"TTT"}, 1.007, 0.993)
+                  ({"et_2017"}, {5}, {"VVT"}, 1.008, 0.992)
+                  ({"et_2017"}, {5}, {"EWKZ"}, 1.006, 0.994)
+                  ({"et_2017"}, {5}, {"qqHmm_htt"}, 1.006, 0.994)
+                  ({"et_2017"}, {5}, {"WHps_htt"}, 1.008, 0.992)
+                  ({"et_2017"}, {5}, {"qqHps_htt"}, 1.009, 0.991)
+                  ({"et_2017"}, {5}, {"ZHps_htt"}, 1.007, 0.993)
+                  ({"et_2017"}, {5}, {"ZH_htt125"}, 1.006, 0.994)
+                  ({"em_2017"}, {7}, {"qqHmm_htt"}, 1.009, 0.991)
+                  ({"em_2017"}, {7}, {"qqHps_htt"}, 1.009, 0.991)
+                  ({"em_2017"}, {4}, {"TTJ"}, 1.005, 0.995)
+                  ({"em_2017"}, {4}, {"W"}, 1.013, 0.985)
+                  ({"em_2017"}, {4}, {"qqH_htt125"}, 1.005, 0.995)
+                  ({"em_2017"}, {4}, {"ggHsm_htt125"}, 1.006, 0.994)
+                  ({"em_2017"}, {4}, {"ZHsm_htt125"}, 1.008, 0.992)
+                  ({"em_2017"}, {4}, {"ggHmm_htt125"}, 1.005, 0.995)
+                  ({"em_2017"}, {4}, {"qqHsm_htt125"}, 1.006, 0.994)
+                  ({"em_2017"}, {4}, {"TT"}, 1.005, 0.995)
+                  ({"em_2017"}, {3}, {"qqHps_htt"}, 1.005, 0.995)
+                  ({"em_2017"}, {3}, {"ZHmm_htt"}, 1.007, 0.993)
+                  ({"em_2017"}, {6}, {"ZLL"}, 1.012, 0.987)
+                  ({"em_2017"}, {6}, {"EWKZ"}, 1.074, 0.926)
+                  ({"em_2017"}, {6}, {"qqH_htt125"}, 1.012, 0.988)
+                  ({"em_2017"}, {6}, {"ggHps_htt125"}, 1.010, 0.990)
+                  ({"em_2017"}, {6}, {"qqHmm_htt"}, 1.013, 0.987)
+                  ({"em_2017"}, {6}, {"ggHsm_htt125"}, 1.010, 0.990)
+                  ({"em_2017"}, {6}, {"WHsm_htt125"}, 1.007, 0.993)
+                  ({"em_2017"}, {6}, {"qqHps_htt"}, 1.013, 0.987)
+                  ({"em_2017"}, {6}, {"ggHmm_htt125"}, 1.010, 0.989)
+                  ({"em_2017"}, {6}, {"qqHsm_htt125"}, 1.012, 0.988)
+                  ({"em_2017"}, {6}, {"ZH_htt125"}, 1.006, 0.993)
+                  ({"em_2017"}, {6}, {"TT"}, 1.010, 0.990)
+                  ({"em_2017"}, {6}, {"VV"}, 1.008, 0.992)
+                  ({"em_2017"}, {6}, {"WH_htt125"}, 1.006, 0.994)
+                  ({"em_2017"}, {5}, {"EWKZ"}, 1.021, 0.979)
+                  ({"em_2017"}, {5}, {"qqHmm_htt"}, 1.007, 0.993)
+                  ({"em_2017"}, {5}, {"qqHps_htt"}, 1.008, 0.992)
+                  ({"em_2017"}, {5}, {"WHmm_htt"}, 1.009, 0.991)
+                  ({"em_2017"}, {5}, {"qqHsm_htt125"}, 1.005, 0.995)
+                  ({"em_2017"}, {5}, {"ZHps_htt"}, 1.007, 0.993)
+                  ({"em_2017"}, {5}, {"TT"}, 1.006, 0.994)
+                  ({"em_2017"}, {5}, {"WH_htt125"}, 1.006, 0.993)
+        );
+
         // QCD uncerts for em
         
         cb.cp().AddSyst(cb,
@@ -429,9 +701,35 @@ namespace ch {
         cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,47,48,49,100,101,102,103,104,105,106,107,108}).AddSyst(cb,
                                              "CMS_em_QCD_IsoExtrap_13TeV", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).AddSyst(cb,
-                                             "CMS_em_QCD_BackgroundSubtraction_13TeV", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"QCD"}).channel({"em","em_2016","em_2017"}).bin_id({2,3,4,5,6}, false).AddSyst(cb,
+                                             "CMS_em_QCD_BackgroundSubtraction_13TeV", "shape", SystMap<>::init(1.00)); // this uncertanty is only included as a shape uncertainty for he 0jet category no bin label in the name since it applied only to this category (the others will have bin labels in the name so that they are added as seperate uncertainties)
 
+
+        cb.cp().AddSyst(cb,
+          "CMS_em_QCD_BackgroundSubtraction_ttbar_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"ttbar_2016"}, {1}, {"QCD"}, 1.902, 0.098)
+          ({"ttbar_2017"}, {1}, {"QCD"}, 1.359, 0.641)
+        );
+
+        cb.cp().AddSyst(cb,
+          "CMS_em_QCD_BackgroundSubtraction_boosted_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"em_2016"}, {2}, {"QCD"}, 1.094, 0.906)
+          ({"em_2017"}, {2}, {"QCD"}, 1.055, 0.944)
+        );       
+
+        // for dijet categories all uncertainties are treated as correlated (subtracted background fractions are ~ the same for all). For the boosted di-jet categories the stats are too low to get a good estimate of the uncertainty so take the same values as for the low boost categories
+        cb.cp().AddSyst(cb,
+          "CMS_em_QCD_BackgroundSubtraction_dijet_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
+          ({"em_2016"}, {3}, {"QCD"}, 1.203, 0.797)
+          ({"em_2016"}, {4}, {"QCD"}, 1.203, 0.797)
+          ({"em_2016"}, {6}, {"QCD"}, 1.144, 0.856)
+          ({"em_2016"}, {5}, {"QCD"}, 1.144, 0.856)
+ 
+          ({"em_2017"}, {3}, {"QCD"}, 1.091, 0.909)
+          ({"em_2017"}, {4}, {"QCD"}, 1.091, 0.909)
+          ({"em_2017"}, {6}, {"QCD"}, 1.076, 0.924)
+          ({"em_2017"}, {5}, {"QCD"}, 1.076, 0.924)
+        );
         
         // QCD norm, just for tt 
         cb.cp().process({"QCD"}).channel({"tt","tt_2016","tt_2017"}).bin_id({1,31,32,33,34,35,36,37}).AddSyst(cb,
@@ -505,18 +803,20 @@ namespace ch {
         // FF ststistical uncertainties are uncorrelated between 2016 and 2017
 
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_qcd_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016"}).bin_id({1},false).AddSyst(cb, "ff_qcd_dm0_njet1_et_stat", "shape", SystMap<>::init(2.00));
+        cb.cp().process({"jetFakes"}).channel({"et","et_2016"}).bin_id({1},false).AddSyst(cb, "ff_qcd_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00)); //2.00
         cb.cp().process({"jetFakes"}).channel({"et_2017"}).bin_id({1},false).AddSyst(cb, "ff_qcd_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_w_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016"}).bin_id({1},false).AddSyst(cb, "ff_w_dm0_njet1_et_stat", "shape", SystMap<>::init(2.00));
+        cb.cp().process({"jetFakes"}).channel({"et","et_2016"}).bin_id({1},false).AddSyst(cb, "ff_w_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00)); //2.00
         cb.cp().process({"jetFakes"}).channel({"et_2017"}).bin_id({1},false).AddSyst(cb, "ff_w_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_tt_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({1,2,3,4,5,6}).AddSyst(cb, "ff_tt_dm0_njet0_et_stat", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).bin_id({1,2,3,4,5,6}).AddSyst(cb, "ff_tt_dm0_njet1_et_stat", "shape", SystMap<>::init(1.00));
 
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_qcd_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({1},false).AddSyst(cb, "ff_qcd_dm0_njet1_mt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_w_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({1},false).AddSyst(cb, "ff_w_dm0_njet1_mt_stat", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({2,3,4,5,6},false).AddSyst(cb, "ff_tt_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));
+        cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({1,2,3,4,5,6}).AddSyst(cb, "ff_tt_dm0_njet0_mt_stat", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).bin_id({1,2,3,4,5,6}).AddSyst(cb, "ff_tt_dm0_njet1_mt_stat", "shape", SystMap<>::init(1.00));
 
         // tt statistical uncertainties
 
@@ -535,8 +835,8 @@ namespace ch {
         cb.cp().process({"jetFakes"}).channel({"mt","mt_2016","mt_2017"}).AddSyst(cb, "ff_qcd_mt_syst", "shape", SystMap<>::init(1.00));
         cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb, "ff_qcd_tt_syst", "shape", SystMap<>::init(1.00));
 
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_w_frac_tt_syst", "shape", SystMap<>::init(1.00));
-        cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_tt_frac_tt_syst", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_w_frac_tt_syst", "shape", SystMap<>::init(1.00));
+        //cb.cp().process({"jetFakes"}).channel({"tt","tt_2016","tt_2017"}).AddSyst(cb,"ff_tt_frac_tt_syst", "shape", SystMap<>::init(1.00));
 
         // et subtraction uncertainties
         cb.cp().process({"jetFakes"}).channel({"et","et_2016","et_2017"}).AddSyst(cb, "ff_sub_syst_et", "shape", SystMap<>::init(1.00));
@@ -552,7 +852,7 @@ namespace ch {
         //##############################################################################
         
         cb.cp().process( {"ZTT","ZJ","ZL","ZLL"}).AddSyst(cb,
-                                             "CMS_htt_dyShape_13TeV", "shape", SystMap<>::init(1.00));
+                                             "CMS_htt_dyShape_13TeV", "shape", SystMap<>::init(0.1));
         
         
         //##############################################################################
@@ -579,17 +879,17 @@ namespace ch {
        
         // weighted avarages of recommended tau POG uncertainties provided in bins of eta
         cb.cp().process({"ZL","EWKZ"}).channel({"mt","mt_2016"}).AddSyst(cb,
-                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.07));
+                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.27));
         cb.cp().process({"ZL","EWKZ"}).channel({"mt_2017"}).AddSyst(cb,
-                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.12));
+                                                        "CMS_htt_mFakeTau_13TeV", "lnN", SystMap<>::init(1.27));
         cb.cp().process({"ZL","EWKZ"}).channel({"et","et_2016"}).AddSyst(cb,
-                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.10));
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.11));
         cb.cp().process({"ZL","EWKZ"}).channel({"tt","tt_2016"}).AddSyst(cb,
-                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.21));
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.11));
         cb.cp().process({"ZL","EWKZ"}).channel({"et_2017"}).AddSyst(cb,
-                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.16));
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.11));
         cb.cp().process({"ZL","EWKZ"}).channel({"tt_2017"}).AddSyst(cb,
-                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.35));
+                                                        "CMS_htt_eFakeTau_13TeV", "lnN", SystMap<>::init(1.23));
         
         //##############################################################################
         // jet  to tau fake only in tt, mt and et channels
@@ -616,221 +916,221 @@ namespace ch {
         // Removed PDF acceptance uncertainties for ggH as these are verysmall compared to PDF uncertainty on XS and scale uncertainty on acceptance/shape
         
         //scale_gg on signal
-        cb.cp().process(ggH_sig_procs).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47,48,49}).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).AddSyst(cb,
+        cb.cp().process(ggH_sig_procs).process({"ggH_ph_htt"},false).bin_id({2,3,4,5,6,31,32,33,34,35,36,37,41,42,43,44,45,46,47,48,49}).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).AddSyst(cb,
                                              "CMS_scale_gg_13TeV", "shape", SystMap<>::init(1.00));
        
         cb.cp().AddSyst(cb,
           "CMS_scale_gg_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"tt","tt_2016"}, {1}, {"ggHps_htt125"}, 0.937, 1.063)
-          ({"tt","tt_2016"}, {1}, {"ggHsm_htt125"}, 0.928, 1.069)
-          ({"tt","tt_2016"}, {1}, {"ggHmm_htt125"}, 0.942, 1.059)
-          ({"mt","mt_2016"}, {1}, {"ggHps_htt125"}, 0.948, 1.054)
-          ({"mt","mt_2016"}, {1}, {"ggHsm_htt125"}, 0.939, 1.061)
-          ({"mt","mt_2016"}, {1}, {"ggHmm_htt125"}, 0.946, 1.056)
-          ({"et","et_2016"}, {1}, {"ggHps_htt125"}, 0.946, 1.056)
-          ({"et","et_2016"}, {1}, {"ggHsm_htt125"}, 0.966, 1.042)
-          ({"et","et_2016"}, {1}, {"ggHmm_htt125"}, 0.929, 1.069)
-          ({"em","em_2016"}, {1}, {"ggHps_htt125"}, 0.947, 1.056)
-          ({"em","em_2016"}, {1}, {"ggHsm_htt125"}, 0.942, 1.058)
-          ({"em","em_2016"}, {1}, {"ggHmm_htt125"}, 0.950, 1.053)
-          ({"em_2017"}, {1}, {"ggHps_htt125"}, 0.975, 1.027)
-          ({"em_2017"}, {1}, {"ggHmm_htt125"}, 0.963, 1.037)
-          ({"em_2017"}, {1}, {"ggHsm_htt125"}, 0.954, 1.044)
-          ({"et_2017"}, {1}, {"ggHps_htt125"}, 0.963, 1.036)
-          ({"et_2017"}, {1}, {"ggHmm_htt125"}, 0.973, 1.031)
-          ({"et_2017"}, {1}, {"ggHsm_htt125"}, 0.946, 1.050)
-          ({"mt_2017"}, {1}, {"ggHps_htt125"}, 0.987, 1.019)
-          ({"mt_2017"}, {1}, {"ggHmm_htt125"}, 0.966, 1.035)
-          ({"mt_2017"}, {1}, {"ggHsm_htt125"}, 0.952, 1.047)
-          ({"tt_2017"}, {1}, {"ggHps_htt125"}, 0.975, 1.029)
-          ({"tt_2017"}, {1}, {"ggHmm_htt125"}, 0.966, 1.035)
-          ({"tt_2017"}, {1}, {"ggHsm_htt125"}, 0.956, 1.043)
+          ({"tt","tt_2016"}, {1}, {"ggHps_htt"}, 0.937, 1.063)
+          ({"tt","tt_2016"}, {1}, {"ggHsm_htt"}, 0.928, 1.069)
+          ({"tt","tt_2016"}, {1}, {"ggHmm_htt"}, 0.942, 1.059)
+          ({"mt","mt_2016"}, {1}, {"ggHps_htt"}, 0.948, 1.054)
+          ({"mt","mt_2016"}, {1}, {"ggHsm_htt"}, 0.939, 1.061)
+          ({"mt","mt_2016"}, {1}, {"ggHmm_htt"}, 0.946, 1.056)
+          ({"et","et_2016"}, {1}, {"ggHps_htt"}, 0.946, 1.056)
+          ({"et","et_2016"}, {1}, {"ggHsm_htt"}, 0.966, 1.042)
+          ({"et","et_2016"}, {1}, {"ggHmm_htt"}, 0.929, 1.069)
+          ({"em","em_2016"}, {1}, {"ggHps_htt"}, 0.947, 1.056)
+          ({"em","em_2016"}, {1}, {"ggHsm_htt"}, 0.942, 1.058)
+          ({"em","em_2016"}, {1}, {"ggHmm_htt"}, 0.950, 1.053)
+          ({"em_2017"}, {1}, {"ggHps_htt"}, 0.975, 1.027)
+          ({"em_2017"}, {1}, {"ggHmm_htt"}, 0.963, 1.037)
+          ({"em_2017"}, {1}, {"ggHsm_htt"}, 0.954, 1.044)
+          ({"et_2017"}, {1}, {"ggHps_htt"}, 0.963, 1.036)
+          ({"et_2017"}, {1}, {"ggHmm_htt"}, 0.973, 1.031)
+          ({"et_2017"}, {1}, {"ggHsm_htt"}, 0.946, 1.050)
+          ({"mt_2017"}, {1}, {"ggHps_htt"}, 0.987, 1.019)
+          ({"mt_2017"}, {1}, {"ggHmm_htt"}, 0.966, 1.035)
+          ({"mt_2017"}, {1}, {"ggHsm_htt"}, 0.952, 1.047)
+          ({"tt_2017"}, {1}, {"ggHps_htt"}, 0.975, 1.029)
+          ({"tt_2017"}, {1}, {"ggHmm_htt"}, 0.966, 1.035)
+          ({"tt_2017"}, {1}, {"ggHsm_htt"}, 0.956, 1.043)
  
         ); 
        
-        cb.cp().process(ggH_sig_procs).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).bin_id({2,3,4,5,6}).AddSyst(cb,
+        cb.cp().process(ggH_sig_procs).process({"ggH_ph_htt"},false).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).bin_id({2,3,4,5,6}).AddSyst(cb,
                                              "CMS_FiniteQuarkMass_13TeV", "shape", SystMap<>::init(1.00)); // this uncertainty takes the difference between the finite top-mass dependence and the EFT
 
 
         cb.cp().AddSyst(cb,
           "CMS_FiniteQuarkMass_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"mt","mt_2016"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"mt","mt_2016"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)
-          ({"mt","mt_2016"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"et","et_2016"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"et","et_2016"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)
-          ({"et","et_2016"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"tt","tt_2016"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"tt","tt_2016"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)
-          ({"tt","tt_2016"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"em","em_2016"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"em","em_2016"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)
-          ({"em","em_2016"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"mt_2017"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"mt_2017"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"mt_2017"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)
-          ({"et_2017"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"et_2017"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"et_2017"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)
-          ({"tt_2017"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"tt_2017"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"tt_2017"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)
-          ({"em_2017"}, {1}, {"ggHps_htt125"}, 1.001, 0.988)
-          ({"em_2017"}, {1}, {"ggHmm_htt125"}, 1.001, 0.988)
-          ({"em_2017"}, {1}, {"ggHsm_htt125"}, 1.001, 0.988)         
+          ({"mt","mt_2016"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"mt","mt_2016"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)
+          ({"mt","mt_2016"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"et","et_2016"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"et","et_2016"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)
+          ({"et","et_2016"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"tt","tt_2016"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"tt","tt_2016"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)
+          ({"tt","tt_2016"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"em","em_2016"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"em","em_2016"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)
+          ({"em","em_2016"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"mt_2017"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"mt_2017"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"mt_2017"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)
+          ({"et_2017"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"et_2017"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"et_2017"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)
+          ({"tt_2017"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"tt_2017"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"tt_2017"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)
+          ({"em_2017"}, {1}, {"ggHps_htt"}, 1.001, 0.988)
+          ({"em_2017"}, {1}, {"ggHmm_htt"}, 1.001, 0.988)
+          ({"em_2017"}, {1}, {"ggHsm_htt"}, 1.001, 0.988)         
         ); 
 
         // PS uncertainty affects njets and pT distribution so is included as a shape uncertainty for the boosted category where pT is fitted
-        cb.cp().process(ggH_sig_procs).bin_id({2,31,32,33,34,35,36,37,41,42,43,44,45,46,47,48,49}).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).AddSyst(cb,
+        cb.cp().process(ggH_sig_procs).process({"ggH_ph_htt"},false).bin_id({2,31,32,33,34,35,36,37,41,42,43,44,45,46,47,48,49}).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).AddSyst(cb,
                                              "CMS_PS_ggH_13TeV", "shape", SystMap<>::init(1.00));
 
         cb.cp().AddSyst(cb,
           "CMS_PS_ggH_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"tt","tt_2016"}, {1}, {"ggHps_htt125"}, 0.981, 1.016)
-          ({"tt","tt_2016"}, {1}, {"ggHsm_htt125"}, 0.984, 1.012)
-          ({"tt","tt_2016"}, {1}, {"ggHmm_htt125"}, 0.977, 1.019)
-          //({"tt","tt_2016"}, {2}, {"ggHps_htt125"}, 0.984, 1.016)
-          //({"tt","tt_2016"}, {2}, {"ggHsm_htt125"}, 0.982, 1.016)
-          //({"tt","tt_2016"}, {2}, {"ggHmm_htt125"}, 0.983, 1.016)
-          ({"tt","tt_2016"}, {3}, {"ggHps_htt125"}, 1.002, 1.003)
-          ({"tt","tt_2016"}, {3}, {"ggHsm_htt125"}, 0.993, 1.010)
-          ({"tt","tt_2016"}, {3}, {"ggHmm_htt125"}, 0.997, 1.007)
-          ({"tt","tt_2016"}, {4}, {"ggHps_htt125"}, 1.018, 0.991)
-          ({"tt","tt_2016"}, {4}, {"ggHsm_htt125"}, 1.016, 0.992)
-          ({"tt","tt_2016"}, {4}, {"ggHmm_htt125"}, 1.017, 0.992)
-          ({"tt","tt_2016"}, {5}, {"ggHps_htt125"}, 0.993, 1.010)
-          ({"tt","tt_2016"}, {5}, {"ggHsm_htt125"}, 0.999, 1.004)
-          ({"tt","tt_2016"}, {5}, {"ggHmm_htt125"}, 0.997, 1.006)
-          ({"tt","tt_2016"}, {6}, {"ggHps_htt125"}, 1.018, 0.991)
-          ({"tt","tt_2016"}, {6}, {"ggHsm_htt125"}, 1.020, 0.990)
-          ({"tt","tt_2016"}, {6}, {"ggHmm_htt125"}, 1.019, 0.991)
-          ({"mt","mt_2016"}, {1}, {"ggHps_htt125"}, 0.990, 1.007)
-          ({"mt","mt_2016"}, {1}, {"ggHsm_htt125"}, 0.993, 1.005)
-          ({"mt","mt_2016"}, {1}, {"ggHmm_htt125"}, 0.989, 1.008)
-          //({"mt","mt_2016"}, {2}, {"ggHps_htt125"}, 0.986, 1.014)
-          //({"mt","mt_2016"}, {2}, {"ggHsm_htt125"}, 0.988, 1.012)
-          //({"mt","mt_2016"}, {2}, {"ggHmm_htt125"}, 0.987, 1.013)
-          ({"mt","mt_2016"}, {3}, {"ggHps_htt125"}, 0.986, 1.014)
-          ({"mt","mt_2016"}, {3}, {"ggHsm_htt125"}, 0.983, 1.017)
-          ({"mt","mt_2016"}, {3}, {"ggHmm_htt125"}, 0.983, 1.017)
-          ({"mt","mt_2016"}, {4}, {"ggHps_htt125"}, 1.011, 0.996)
-          ({"mt","mt_2016"}, {4}, {"ggHsm_htt125"}, 1.012, 0.995)
-          ({"mt","mt_2016"}, {4}, {"ggHmm_htt125"}, 1.012, 0.995)
-          ({"mt","mt_2016"}, {5}, {"ggHps_htt125"}, 0.984, 1.017)
-          ({"mt","mt_2016"}, {5}, {"ggHsm_htt125"}, 0.988, 1.012)
-          ({"mt","mt_2016"}, {5}, {"ggHmm_htt125"}, 0.980, 1.020)
-          ({"mt","mt_2016"}, {6}, {"ggHps_htt125"}, 1.013, 0.994)
-          ({"mt","mt_2016"}, {6}, {"ggHsm_htt125"}, 1.011, 0.996)
-          ({"mt","mt_2016"}, {6}, {"ggHmm_htt125"}, 1.011, 0.996)
-          ({"et","et_2016"}, {1}, {"ggHps_htt125"}, 0.985, 1.012)
-          ({"et","et_2016"}, {1}, {"ggHsm_htt125"}, 0.985, 1.012)
-          ({"et","et_2016"}, {1}, {"ggHmm_htt125"}, 0.984, 1.013)
-          //({"et","et_2016"}, {2}, {"ggHps_htt125"}, 0.983, 1.016)
-          //({"et","et_2016"}, {2}, {"ggHsm_htt125"}, 0.982, 1.017)
-          //({"et","et_2016"}, {2}, {"ggHmm_htt125"}, 0.980, 1.018)
-          ({"et","et_2016"}, {3}, {"ggHps_htt125"}, 0.989, 1.011)
-          ({"et","et_2016"}, {3}, {"ggHsm_htt125"}, 0.993, 1.009)
-          ({"et","et_2016"}, {3}, {"ggHmm_htt125"}, 0.990, 1.011)
-          ({"et","et_2016"}, {4}, {"ggHps_htt125"}, 1.016, 0.993)
-          ({"et","et_2016"}, {4}, {"ggHsm_htt125"}, 1.015, 0.993)
-          ({"et","et_2016"}, {4}, {"ggHmm_htt125"}, 1.010, 0.996)
-          ({"et","et_2016"}, {5}, {"ggHps_htt125"}, 0.986, 1.014)
-          ({"et","et_2016"}, {5}, {"ggHsm_htt125"}, 0.984, 1.015)
-          ({"et","et_2016"}, {5}, {"ggHmm_htt125"}, 0.984, 1.018)
-          ({"et","et_2016"}, {6}, {"ggHps_htt125"}, 1.016, 0.993)
-          ({"et","et_2016"}, {6}, {"ggHsm_htt125"}, 1.012, 0.995)
-          ({"et","et_2016"}, {6}, {"ggHmm_htt125"}, 1.015, 0.993)
-          ({"em","em_2016"}, {1}, {"ggHps_htt125"}, 1.006, 0.993)
-          ({"em","em_2016"}, {1}, {"ggHsm_htt125"}, 1.005, 0.993)
-          ({"em","em_2016"}, {1}, {"ggHmm_htt125"}, 1.003, 0.996)
-          //({"em","em_2016"}, {2}, {"ggHps_htt125"}, 0.995, 1.007)
-          //({"em","em_2016"}, {2}, {"ggHsm_htt125"}, 1.000, 1.003)
-          //({"em","em_2016"}, {2}, {"ggHmm_htt125"}, 0.996, 1.006)
-          ({"em","em_2016"}, {3}, {"ggHps_htt125"}, 0.984, 1.015)
-          ({"em","em_2016"}, {3}, {"ggHsm_htt125"}, 0.982, 1.017)
-          ({"em","em_2016"}, {3}, {"ggHmm_htt125"}, 0.984, 1.015)
-          ({"em","em_2016"}, {4}, {"ggHps_htt125"}, 1.004, 1.001)
-          ({"em","em_2016"}, {4}, {"ggHsm_htt125"}, 1.008, 0.999)
-          ({"em","em_2016"}, {4}, {"ggHmm_htt125"}, 1.006, 1.000)
-          ({"em","em_2016"}, {5}, {"ggHps_htt125"}, 0.992, 1.009)
-          ({"em","em_2016"}, {5}, {"ggHsm_htt125"}, 0.995, 1.012)
-          ({"em","em_2016"}, {5}, {"ggHmm_htt125"}, 0.985, 1.015)
-          ({"em","em_2016"}, {6}, {"ggHps_htt125"}, 1.008, 0.998)
-          ({"em","em_2016"}, {6}, {"ggHsm_htt125"}, 1.008, 0.998)
-          ({"em","em_2016"}, {6}, {"ggHmm_htt125"}, 1.007, 0.999)
+          ({"tt","tt_2016"}, {1}, {"ggHps_htt"}, 0.981, 1.016)
+          ({"tt","tt_2016"}, {1}, {"ggHsm_htt"}, 0.984, 1.012)
+          ({"tt","tt_2016"}, {1}, {"ggHmm_htt"}, 0.977, 1.019)
+          //({"tt","tt_2016"}, {2}, {"ggHps_htt"}, 0.984, 1.016)
+          //({"tt","tt_2016"}, {2}, {"ggHsm_htt"}, 0.982, 1.016)
+          //({"tt","tt_2016"}, {2}, {"ggHmm_htt"}, 0.983, 1.016)
+          ({"tt","tt_2016"}, {3}, {"ggHps_htt"}, 1.002, 1.003)
+          ({"tt","tt_2016"}, {3}, {"ggHsm_htt"}, 0.993, 1.010)
+          ({"tt","tt_2016"}, {3}, {"ggHmm_htt"}, 0.997, 1.007)
+          ({"tt","tt_2016"}, {4}, {"ggHps_htt"}, 1.018, 0.991)
+          ({"tt","tt_2016"}, {4}, {"ggHsm_htt"}, 1.016, 0.992)
+          ({"tt","tt_2016"}, {4}, {"ggHmm_htt"}, 1.017, 0.992)
+          ({"tt","tt_2016"}, {5}, {"ggHps_htt"}, 0.993, 1.010)
+          ({"tt","tt_2016"}, {5}, {"ggHsm_htt"}, 0.999, 1.004)
+          ({"tt","tt_2016"}, {5}, {"ggHmm_htt"}, 0.997, 1.006)
+          ({"tt","tt_2016"}, {6}, {"ggHps_htt"}, 1.018, 0.991)
+          ({"tt","tt_2016"}, {6}, {"ggHsm_htt"}, 1.020, 0.990)
+          ({"tt","tt_2016"}, {6}, {"ggHmm_htt"}, 1.019, 0.991)
+          ({"mt","mt_2016"}, {1}, {"ggHps_htt"}, 0.990, 1.007)
+          ({"mt","mt_2016"}, {1}, {"ggHsm_htt"}, 0.993, 1.005)
+          ({"mt","mt_2016"}, {1}, {"ggHmm_htt"}, 0.989, 1.008)
+          //({"mt","mt_2016"}, {2}, {"ggHps_htt"}, 0.986, 1.014)
+          //({"mt","mt_2016"}, {2}, {"ggHsm_htt"}, 0.988, 1.012)
+          //({"mt","mt_2016"}, {2}, {"ggHmm_htt"}, 0.987, 1.013)
+          ({"mt","mt_2016"}, {3}, {"ggHps_htt"}, 0.986, 1.014)
+          ({"mt","mt_2016"}, {3}, {"ggHsm_htt"}, 0.983, 1.017)
+          ({"mt","mt_2016"}, {3}, {"ggHmm_htt"}, 0.983, 1.017)
+          ({"mt","mt_2016"}, {4}, {"ggHps_htt"}, 1.011, 0.996)
+          ({"mt","mt_2016"}, {4}, {"ggHsm_htt"}, 1.012, 0.995)
+          ({"mt","mt_2016"}, {4}, {"ggHmm_htt"}, 1.012, 0.995)
+          ({"mt","mt_2016"}, {5}, {"ggHps_htt"}, 0.984, 1.017)
+          ({"mt","mt_2016"}, {5}, {"ggHsm_htt"}, 0.988, 1.012)
+          ({"mt","mt_2016"}, {5}, {"ggHmm_htt"}, 0.980, 1.020)
+          ({"mt","mt_2016"}, {6}, {"ggHps_htt"}, 1.013, 0.994)
+          ({"mt","mt_2016"}, {6}, {"ggHsm_htt"}, 1.011, 0.996)
+          ({"mt","mt_2016"}, {6}, {"ggHmm_htt"}, 1.011, 0.996)
+          ({"et","et_2016"}, {1}, {"ggHps_htt"}, 0.985, 1.012)
+          ({"et","et_2016"}, {1}, {"ggHsm_htt"}, 0.985, 1.012)
+          ({"et","et_2016"}, {1}, {"ggHmm_htt"}, 0.984, 1.013)
+          //({"et","et_2016"}, {2}, {"ggHps_htt"}, 0.983, 1.016)
+          //({"et","et_2016"}, {2}, {"ggHsm_htt"}, 0.982, 1.017)
+          //({"et","et_2016"}, {2}, {"ggHmm_htt"}, 0.980, 1.018)
+          ({"et","et_2016"}, {3}, {"ggHps_htt"}, 0.989, 1.011)
+          ({"et","et_2016"}, {3}, {"ggHsm_htt"}, 0.993, 1.009)
+          ({"et","et_2016"}, {3}, {"ggHmm_htt"}, 0.990, 1.011)
+          ({"et","et_2016"}, {4}, {"ggHps_htt"}, 1.016, 0.993)
+          ({"et","et_2016"}, {4}, {"ggHsm_htt"}, 1.015, 0.993)
+          ({"et","et_2016"}, {4}, {"ggHmm_htt"}, 1.010, 0.996)
+          ({"et","et_2016"}, {5}, {"ggHps_htt"}, 0.986, 1.014)
+          ({"et","et_2016"}, {5}, {"ggHsm_htt"}, 0.984, 1.015)
+          ({"et","et_2016"}, {5}, {"ggHmm_htt"}, 0.984, 1.018)
+          ({"et","et_2016"}, {6}, {"ggHps_htt"}, 1.016, 0.993)
+          ({"et","et_2016"}, {6}, {"ggHsm_htt"}, 1.012, 0.995)
+          ({"et","et_2016"}, {6}, {"ggHmm_htt"}, 1.015, 0.993)
+          ({"em","em_2016"}, {1}, {"ggHps_htt"}, 1.006, 0.993)
+          ({"em","em_2016"}, {1}, {"ggHsm_htt"}, 1.005, 0.993)
+          ({"em","em_2016"}, {1}, {"ggHmm_htt"}, 1.003, 0.996)
+          //({"em","em_2016"}, {2}, {"ggHps_htt"}, 0.995, 1.007)
+          //({"em","em_2016"}, {2}, {"ggHsm_htt"}, 1.000, 1.003)
+          //({"em","em_2016"}, {2}, {"ggHmm_htt"}, 0.996, 1.006)
+          ({"em","em_2016"}, {3}, {"ggHps_htt"}, 0.984, 1.015)
+          ({"em","em_2016"}, {3}, {"ggHsm_htt"}, 0.982, 1.017)
+          ({"em","em_2016"}, {3}, {"ggHmm_htt"}, 0.984, 1.015)
+          ({"em","em_2016"}, {4}, {"ggHps_htt"}, 1.004, 1.001)
+          ({"em","em_2016"}, {4}, {"ggHsm_htt"}, 1.008, 0.999)
+          ({"em","em_2016"}, {4}, {"ggHmm_htt"}, 1.006, 1.000)
+          ({"em","em_2016"}, {5}, {"ggHps_htt"}, 0.992, 1.009)
+          ({"em","em_2016"}, {5}, {"ggHsm_htt"}, 0.995, 1.012)
+          ({"em","em_2016"}, {5}, {"ggHmm_htt"}, 0.985, 1.015)
+          ({"em","em_2016"}, {6}, {"ggHps_htt"}, 1.008, 0.998)
+          ({"em","em_2016"}, {6}, {"ggHsm_htt"}, 1.008, 0.998)
+          ({"em","em_2016"}, {6}, {"ggHmm_htt"}, 1.007, 0.999)
 
-          ({"em_2017"}, {1}, {"ggHps_htt125"}, 0.989, 0.990)
-          ({"em_2017"}, {1}, {"ggHmm_htt125"}, 0.990, 0.989)
-          ({"em_2017"}, {1}, {"ggHsm_htt125"}, 0.991, 0.989)
-          ({"em_2017"}, {4}, {"ggHps_htt125"}, 1.006, 1.011)
-          ({"em_2017"}, {4}, {"ggHmm_htt125"}, 1.006, 1.012)
-          ({"em_2017"}, {4}, {"ggHsm_htt125"}, 1.007, 1.010)
-          ({"em_2017"}, {3}, {"ggHps_htt125"}, 0.997, 1.025)
-          ({"em_2017"}, {3}, {"ggHmm_htt125"}, 0.995, 1.025)
-          ({"em_2017"}, {3}, {"ggHsm_htt125"}, 0.996, 1.023)
-          ({"em_2017"}, {6}, {"ggHps_htt125"}, 1.007, 1.011)
-          ({"em_2017"}, {6}, {"ggHmm_htt125"}, 1.007, 1.008)
-          ({"em_2017"}, {6}, {"ggHsm_htt125"}, 1.007, 1.009)
-          ({"em_2017"}, {5}, {"ggHps_htt125"}, 0.993, 1.025)
-          ({"em_2017"}, {5}, {"ggHmm_htt125"}, 0.995, 1.024)
-          ({"em_2017"}, {5}, {"ggHsm_htt125"}, 0.997, 1.021)
-          //({"em_2017"}, {2}, {"ggHps_htt125"}, 1.006, 1.019)
-          //({"em_2017"}, {2}, {"ggHmm_htt125"}, 1.007, 1.018)
-          //({"em_2017"}, {2}, {"ggHsm_htt125"}, 1.007, 1.017)          
-          ({"et_2017"}, {1}, {"ggHps_htt125"}, 0.975, 1.000)
-          ({"et_2017"}, {1}, {"ggHmm_htt125"}, 0.973, 1.002)
-          ({"et_2017"}, {1}, {"ggHsm_htt125"}, 0.976, 1.001)
-          ({"et_2017"}, {4}, {"ggHps_htt125"}, 1.009, 0.998)
-          ({"et_2017"}, {4}, {"ggHmm_htt125"}, 1.010, 0.998)
-          ({"et_2017"}, {4}, {"ggHsm_htt125"}, 1.009, 1.000)
-          ({"et_2017"}, {3}, {"ggHps_htt125"}, 0.995, 1.016)
-          ({"et_2017"}, {3}, {"ggHmm_htt125"}, 0.995, 1.019)
-          ({"et_2017"}, {3}, {"ggHsm_htt125"}, 0.993, 1.020)
-          ({"et_2017"}, {6}, {"ggHps_htt125"}, 1.011, 0.994)
-          ({"et_2017"}, {6}, {"ggHmm_htt125"}, 1.010, 0.997)
-          ({"et_2017"}, {6}, {"ggHsm_htt125"}, 1.010, 0.998)
-          ({"et_2017"}, {5}, {"ggHps_htt125"}, 0.997, 1.019)
-          ({"et_2017"}, {5}, {"ggHmm_htt125"}, 0.992, 1.019)
-          ({"et_2017"}, {5}, {"ggHsm_htt125"}, 0.992, 1.021)
-          ({"et_2017"}, {2}, {"ggHps_htt125"}, 0.994, 1.025)
-          ({"et_2017"}, {2}, {"ggHmm_htt125"}, 0.994, 1.025)
-          ({"et_2017"}, {2}, {"ggHsm_htt125"}, 0.994, 1.026)
-          ({"mt_2017"}, {1}, {"ggHps_htt125"}, 0.977, 0.999)
-          ({"mt_2017"}, {1}, {"ggHmm_htt125"}, 0.980, 0.996)
-          ({"mt_2017"}, {1}, {"ggHsm_htt125"}, 0.982, 0.996)
-          ({"mt_2017"}, {4}, {"ggHps_htt125"}, 1.008, 1.003)
-          ({"mt_2017"}, {4}, {"ggHmm_htt125"}, 1.008, 1.003)
-          ({"mt_2017"}, {4}, {"ggHsm_htt125"}, 1.009, 1.001)
-          ({"mt_2017"}, {3}, {"ggHps_htt125"}, 0.998, 1.018)
-          ({"mt_2017"}, {3}, {"ggHmm_htt125"}, 0.991, 1.023)
-          ({"mt_2017"}, {3}, {"ggHsm_htt125"}, 0.992, 1.022)
-          ({"mt_2017"}, {6}, {"ggHps_htt125"}, 1.010, 0.997)
-          ({"mt_2017"}, {6}, {"ggHmm_htt125"}, 1.009, 1.003)
-          ({"mt_2017"}, {6}, {"ggHsm_htt125"}, 1.009, 1.002)
-          ({"mt_2017"}, {5}, {"ggHps_htt125"}, 1.000, 1.018)
-          ({"mt_2017"}, {5}, {"ggHmm_htt125"}, 0.992, 1.023)
-          ({"mt_2017"}, {5}, {"ggHsm_htt125"}, 0.996, 1.017)
-          //({"mt_2017"}, {2}, {"ggHps_htt125"}, 0.997, 1.023)
-          //({"mt_2017"}, {2}, {"ggHmm_htt125"}, 0.998, 1.023)
-          //({"mt_2017"}, {2}, {"ggHsm_htt125"}, 0.998, 1.022)
-          ({"tt_2017"}, {1}, {"ggHps_htt125"}, 0.974, 1.001)
-          ({"tt_2017"}, {1}, {"ggHmm_htt125"}, 0.972, 1.006)
-          ({"tt_2017"}, {1}, {"ggHsm_htt125"}, 0.972, 1.004)
-          ({"tt_2017"}, {4}, {"ggHps_htt125"}, 1.011, 0.992)
-          ({"tt_2017"}, {4}, {"ggHmm_htt125"}, 1.011, 0.993)
-          ({"tt_2017"}, {4}, {"ggHsm_htt125"}, 1.011, 0.994)
-          ({"tt_2017"}, {3}, {"ggHps_htt125"}, 1.002, 1.006)
-          ({"tt_2017"}, {3}, {"ggHmm_htt125"}, 0.996, 1.012)
-          ({"tt_2017"}, {3}, {"ggHsm_htt125"}, 0.999, 1.011)
-          ({"tt_2017"}, {6}, {"ggHps_htt125"}, 1.011, 0.992)
-          ({"tt_2017"}, {6}, {"ggHmm_htt125"}, 1.010, 0.998)
-          ({"tt_2017"}, {6}, {"ggHsm_htt125"}, 1.011, 0.994)
-          ({"tt_2017"}, {5}, {"ggHps_htt125"}, 1.001, 1.010)
-          ({"tt_2017"}, {5}, {"ggHmm_htt125"}, 1.000, 1.011)
-          ({"tt_2017"}, {5}, {"ggHsm_htt125"}, 0.999, 1.012)
-          //({"tt_2017"}, {2}, {"ggHps_htt125"}, 0.996, 1.023)
-          //({"tt_2017"}, {2}, {"ggHmm_htt125"}, 0.995, 1.025)
-          //({"tt_2017"}, {2}, {"ggHsm_htt125"}, 0.994, 1.026)
+          ({"em_2017"}, {1}, {"ggHps_htt"}, 0.989, 0.990)
+          ({"em_2017"}, {1}, {"ggHmm_htt"}, 0.990, 0.989)
+          ({"em_2017"}, {1}, {"ggHsm_htt"}, 0.991, 0.989)
+          ({"em_2017"}, {4}, {"ggHps_htt"}, 1.006, 1.011)
+          ({"em_2017"}, {4}, {"ggHmm_htt"}, 1.006, 1.012)
+          ({"em_2017"}, {4}, {"ggHsm_htt"}, 1.007, 1.010)
+          ({"em_2017"}, {3}, {"ggHps_htt"}, 0.997, 1.025)
+          ({"em_2017"}, {3}, {"ggHmm_htt"}, 0.995, 1.025)
+          ({"em_2017"}, {3}, {"ggHsm_htt"}, 0.996, 1.023)
+          ({"em_2017"}, {6}, {"ggHps_htt"}, 1.007, 1.011)
+          ({"em_2017"}, {6}, {"ggHmm_htt"}, 1.007, 1.008)
+          ({"em_2017"}, {6}, {"ggHsm_htt"}, 1.007, 1.009)
+          ({"em_2017"}, {5}, {"ggHps_htt"}, 0.993, 1.025)
+          ({"em_2017"}, {5}, {"ggHmm_htt"}, 0.995, 1.024)
+          ({"em_2017"}, {5}, {"ggHsm_htt"}, 0.997, 1.021)
+          //({"em_2017"}, {2}, {"ggHps_htt"}, 1.006, 1.019)
+          //({"em_2017"}, {2}, {"ggHmm_htt"}, 1.007, 1.018)
+          //({"em_2017"}, {2}, {"ggHsm_htt"}, 1.007, 1.017)          
+          ({"et_2017"}, {1}, {"ggHps_htt"}, 0.975, 1.000)
+          ({"et_2017"}, {1}, {"ggHmm_htt"}, 0.973, 1.002)
+          ({"et_2017"}, {1}, {"ggHsm_htt"}, 0.976, 1.001)
+          ({"et_2017"}, {4}, {"ggHps_htt"}, 1.009, 0.998)
+          ({"et_2017"}, {4}, {"ggHmm_htt"}, 1.010, 0.998)
+          ({"et_2017"}, {4}, {"ggHsm_htt"}, 1.009, 1.000)
+          ({"et_2017"}, {3}, {"ggHps_htt"}, 0.995, 1.016)
+          ({"et_2017"}, {3}, {"ggHmm_htt"}, 0.995, 1.019)
+          ({"et_2017"}, {3}, {"ggHsm_htt"}, 0.993, 1.020)
+          ({"et_2017"}, {6}, {"ggHps_htt"}, 1.011, 0.994)
+          ({"et_2017"}, {6}, {"ggHmm_htt"}, 1.010, 0.997)
+          ({"et_2017"}, {6}, {"ggHsm_htt"}, 1.010, 0.998)
+          ({"et_2017"}, {5}, {"ggHps_htt"}, 0.997, 1.019)
+          ({"et_2017"}, {5}, {"ggHmm_htt"}, 0.992, 1.019)
+          ({"et_2017"}, {5}, {"ggHsm_htt"}, 0.992, 1.021)
+          ({"et_2017"}, {2}, {"ggHps_htt"}, 0.994, 1.025)
+          ({"et_2017"}, {2}, {"ggHmm_htt"}, 0.994, 1.025)
+          ({"et_2017"}, {2}, {"ggHsm_htt"}, 0.994, 1.026)
+          ({"mt_2017"}, {1}, {"ggHps_htt"}, 0.977, 0.999)
+          ({"mt_2017"}, {1}, {"ggHmm_htt"}, 0.980, 0.996)
+          ({"mt_2017"}, {1}, {"ggHsm_htt"}, 0.982, 0.996)
+          ({"mt_2017"}, {4}, {"ggHps_htt"}, 1.008, 1.003)
+          ({"mt_2017"}, {4}, {"ggHmm_htt"}, 1.008, 1.003)
+          ({"mt_2017"}, {4}, {"ggHsm_htt"}, 1.009, 1.001)
+          ({"mt_2017"}, {3}, {"ggHps_htt"}, 0.998, 1.018)
+          ({"mt_2017"}, {3}, {"ggHmm_htt"}, 0.991, 1.023)
+          ({"mt_2017"}, {3}, {"ggHsm_htt"}, 0.992, 1.022)
+          ({"mt_2017"}, {6}, {"ggHps_htt"}, 1.010, 0.997)
+          ({"mt_2017"}, {6}, {"ggHmm_htt"}, 1.009, 1.003)
+          ({"mt_2017"}, {6}, {"ggHsm_htt"}, 1.009, 1.002)
+          ({"mt_2017"}, {5}, {"ggHps_htt"}, 1.000, 1.018)
+          ({"mt_2017"}, {5}, {"ggHmm_htt"}, 0.992, 1.023)
+          ({"mt_2017"}, {5}, {"ggHsm_htt"}, 0.996, 1.017)
+          //({"mt_2017"}, {2}, {"ggHps_htt"}, 0.997, 1.023)
+          //({"mt_2017"}, {2}, {"ggHmm_htt"}, 0.998, 1.023)
+          //({"mt_2017"}, {2}, {"ggHsm_htt"}, 0.998, 1.022)
+          ({"tt_2017"}, {1}, {"ggHps_htt"}, 0.974, 1.001)
+          ({"tt_2017"}, {1}, {"ggHmm_htt"}, 0.972, 1.006)
+          ({"tt_2017"}, {1}, {"ggHsm_htt"}, 0.972, 1.004)
+          ({"tt_2017"}, {4}, {"ggHps_htt"}, 1.011, 0.992)
+          ({"tt_2017"}, {4}, {"ggHmm_htt"}, 1.011, 0.993)
+          ({"tt_2017"}, {4}, {"ggHsm_htt"}, 1.011, 0.994)
+          ({"tt_2017"}, {3}, {"ggHps_htt"}, 1.002, 1.006)
+          ({"tt_2017"}, {3}, {"ggHmm_htt"}, 0.996, 1.012)
+          ({"tt_2017"}, {3}, {"ggHsm_htt"}, 0.999, 1.011)
+          ({"tt_2017"}, {6}, {"ggHps_htt"}, 1.011, 0.992)
+          ({"tt_2017"}, {6}, {"ggHmm_htt"}, 1.010, 0.998)
+          ({"tt_2017"}, {6}, {"ggHsm_htt"}, 1.011, 0.994)
+          ({"tt_2017"}, {5}, {"ggHps_htt"}, 1.001, 1.010)
+          ({"tt_2017"}, {5}, {"ggHmm_htt"}, 1.000, 1.011)
+          ({"tt_2017"}, {5}, {"ggHsm_htt"}, 0.999, 1.012)
+          //({"tt_2017"}, {2}, {"ggHps_htt"}, 0.996, 1.023)
+          //({"tt_2017"}, {2}, {"ggHmm_htt"}, 0.995, 1.025)
+          //({"tt_2017"}, {2}, {"ggHsm_htt"}, 0.994, 1.026)
         );
 
         cb.cp().process(ggH_sig_procs).bin_id({31,32,33,34,35,36,37,41,42,43,44,45,46,47,48,49}).channel({"et","et_2016","et_2017","mt","mt_2016","mt_2017","tt","tt_2016","tt_2017","em","em_2016","em_2017"}).AddSyst(cb,
@@ -839,151 +1139,151 @@ namespace ch {
         // UE uncertainty affects njets distributions so included as lnN for cut based approach.
         cb.cp().AddSyst(cb,
           "CMS_UE_ggH_13TeV", "lnN", SystMapAsymm<channel,bin_id,process>::init
-          ({"tt","tt_2016"}, {1}, {"ggHps_htt125"}, 0.997, 1.009)
-          ({"tt","tt_2016"}, {1}, {"ggHsm_htt125"}, 0.997, 1.010)
-          ({"tt","tt_2016"}, {1}, {"ggHmm_htt125"}, 0.997, 1.010)
-          ({"tt","tt_2016"}, {2}, {"ggHps_htt125"}, 0.993, 1.026)
-          ({"tt","tt_2016"}, {2}, {"ggHsm_htt125"}, 0.993, 1.025)
-          ({"tt","tt_2016"}, {2}, {"ggHmm_htt125"}, 0.993, 1.025)
-          ({"tt","tt_2016"}, {3}, {"ggHps_htt125"}, 0.992, 1.036)
-          ({"tt","tt_2016"}, {3}, {"ggHsm_htt125"}, 0.992, 1.033)
-          ({"tt","tt_2016"}, {3}, {"ggHmm_htt125"}, 0.992, 1.034)
-          ({"tt","tt_2016"}, {4}, {"ggHps_htt125"}, 0.990, 1.037)
-          ({"tt","tt_2016"}, {4}, {"ggHsm_htt125"}, 0.990, 1.037)
-          ({"tt","tt_2016"}, {4}, {"ggHmm_htt125"}, 0.990, 1.037)
-          ({"tt","tt_2016"}, {5}, {"ggHps_htt125"}, 0.992, 1.034)
-          ({"tt","tt_2016"}, {5}, {"ggHsm_htt125"}, 0.992, 1.032)
-          ({"tt","tt_2016"}, {5}, {"ggHmm_htt125"}, 0.991, 1.034)
-          ({"tt","tt_2016"}, {6}, {"ggHps_htt125"}, 0.989, 1.037)
-          ({"tt","tt_2016"}, {6}, {"ggHsm_htt125"}, 0.989, 1.038)
-          ({"tt","tt_2016"}, {6}, {"ggHmm_htt125"}, 0.989, 1.037)
-          ({"mt","mt_2016"}, {1}, {"ggHps_htt125"}, 1.000, 0.999)
-          ({"mt","mt_2016"}, {1}, {"ggHsm_htt125"}, 1.000, 0.998)
-          ({"mt","mt_2016"}, {1}, {"ggHmm_htt125"}, 1.000, 0.998)
-          ({"mt","mt_2016"}, {2}, {"ggHps_htt125"}, 0.995, 1.017)
-          ({"mt","mt_2016"}, {2}, {"ggHsm_htt125"}, 0.995, 1.017)
-          ({"mt","mt_2016"}, {2}, {"ggHmm_htt125"}, 0.995, 1.017)
-          ({"mt","mt_2016"}, {3}, {"ggHps_htt125"}, 0.993, 1.028)
-          ({"mt","mt_2016"}, {3}, {"ggHsm_htt125"}, 0.993, 1.027)
-          ({"mt","mt_2016"}, {3}, {"ggHmm_htt125"}, 0.993, 1.028)
-          ({"mt","mt_2016"}, {4}, {"ggHps_htt125"}, 0.990, 1.035)
-          ({"mt","mt_2016"}, {4}, {"ggHsm_htt125"}, 0.990, 1.036)
-          ({"mt","mt_2016"}, {4}, {"ggHmm_htt125"}, 0.991, 1.036)
-          ({"mt","mt_2016"}, {5}, {"ggHps_htt125"}, 0.994, 1.026)
-          ({"mt","mt_2016"}, {5}, {"ggHsm_htt125"}, 0.993, 1.024)
-          ({"mt","mt_2016"}, {5}, {"ggHmm_htt125"}, 0.993, 1.026)
-          ({"mt","mt_2016"}, {6}, {"ggHps_htt125"}, 0.990, 1.036)
-          ({"mt","mt_2016"}, {6}, {"ggHsm_htt125"}, 0.990, 1.035)
-          ({"mt","mt_2016"}, {6}, {"ggHmm_htt125"}, 0.990, 1.035)
-          ({"et","et_2016"}, {1}, {"ggHps_htt125"}, 0.998, 1.005)
-          ({"et","et_2016"}, {1}, {"ggHsm_htt125"}, 0.998, 1.006)
-          ({"et","et_2016"}, {1}, {"ggHmm_htt125"}, 0.998, 1.005)
-          ({"et","et_2016"}, {2}, {"ggHps_htt125"}, 0.994, 1.020)
-          ({"et","et_2016"}, {2}, {"ggHsm_htt125"}, 0.994, 1.020)
-          ({"et","et_2016"}, {2}, {"ggHmm_htt125"}, 0.994, 1.021)
-          ({"et","et_2016"}, {3}, {"ggHps_htt125"}, 0.993, 1.030)
-          ({"et","et_2016"}, {3}, {"ggHsm_htt125"}, 0.992, 1.032)
-          ({"et","et_2016"}, {3}, {"ggHmm_htt125"}, 0.993, 1.030)
-          ({"et","et_2016"}, {4}, {"ggHps_htt125"}, 0.990, 1.037)
-          ({"et","et_2016"}, {4}, {"ggHsm_htt125"}, 0.990, 1.036)
-          ({"et","et_2016"}, {4}, {"ggHmm_htt125"}, 0.990, 1.035)
-          ({"et","et_2016"}, {5}, {"ggHps_htt125"}, 0.993, 1.029)
-          ({"et","et_2016"}, {5}, {"ggHsm_htt125"}, 0.992, 1.032)
-          ({"et","et_2016"}, {5}, {"ggHmm_htt125"}, 0.992, 1.029)
-          ({"et","et_2016"}, {6}, {"ggHps_htt125"}, 0.990, 1.036)
-          ({"et","et_2016"}, {6}, {"ggHsm_htt125"}, 0.990, 1.036)
-          ({"et","et_2016"}, {6}, {"ggHmm_htt125"}, 0.990, 1.036)
-          ({"em","em_2016"}, {1}, {"ggHps_htt125"}, 1.003, 0.989)
-          ({"em","em_2016"}, {1}, {"ggHsm_htt125"}, 1.003, 0.989)
-          ({"em","em_2016"}, {1}, {"ggHmm_htt125"}, 1.003, 0.989)
-          ({"em","em_2016"}, {2}, {"ggHps_htt125"}, 0.996, 1.013)
-          ({"em","em_2016"}, {2}, {"ggHsm_htt125"}, 0.996, 1.012)
-          ({"em","em_2016"}, {2}, {"ggHmm_htt125"}, 0.996, 1.013)
-          ({"em","em_2016"}, {3}, {"ggHps_htt125"}, 0.994, 1.025)
-          ({"em","em_2016"}, {3}, {"ggHsm_htt125"}, 0.994, 1.024)
-          ({"em","em_2016"}, {3}, {"ggHmm_htt125"}, 0.993, 1.024)
-          ({"em","em_2016"}, {4}, {"ggHps_htt125"}, 0.991, 1.032)
-          ({"em","em_2016"}, {4}, {"ggHsm_htt125"}, 0.991, 1.033)
-          ({"em","em_2016"}, {4}, {"ggHmm_htt125"}, 0.991, 1.033)
-          ({"em","em_2016"}, {5}, {"ggHps_htt125"}, 0.993, 1.025)
-          ({"em","em_2016"}, {5}, {"ggHsm_htt125"}, 0.993, 1.025)
-          ({"em","em_2016"}, {5}, {"ggHmm_htt125"}, 0.994, 1.022)
-          ({"em","em_2016"}, {6}, {"ggHps_htt125"}, 0.991, 1.033)
-          ({"em","em_2016"}, {6}, {"ggHsm_htt125"}, 0.991, 1.034)
-          ({"em","em_2016"}, {6}, {"ggHmm_htt125"}, 0.991, 1.033)
+          ({"tt","tt_2016"}, {1}, {"ggHps_htt"}, 0.997, 1.009)
+          ({"tt","tt_2016"}, {1}, {"ggHsm_htt"}, 0.997, 1.010)
+          ({"tt","tt_2016"}, {1}, {"ggHmm_htt"}, 0.997, 1.010)
+          ({"tt","tt_2016"}, {2}, {"ggHps_htt"}, 0.993, 1.026)
+          ({"tt","tt_2016"}, {2}, {"ggHsm_htt"}, 0.993, 1.025)
+          ({"tt","tt_2016"}, {2}, {"ggHmm_htt"}, 0.993, 1.025)
+          ({"tt","tt_2016"}, {3}, {"ggHps_htt"}, 0.992, 1.036)
+          ({"tt","tt_2016"}, {3}, {"ggHsm_htt"}, 0.992, 1.033)
+          ({"tt","tt_2016"}, {3}, {"ggHmm_htt"}, 0.992, 1.034)
+          ({"tt","tt_2016"}, {4}, {"ggHps_htt"}, 0.990, 1.037)
+          ({"tt","tt_2016"}, {4}, {"ggHsm_htt"}, 0.990, 1.037)
+          ({"tt","tt_2016"}, {4}, {"ggHmm_htt"}, 0.990, 1.037)
+          ({"tt","tt_2016"}, {5}, {"ggHps_htt"}, 0.992, 1.034)
+          ({"tt","tt_2016"}, {5}, {"ggHsm_htt"}, 0.992, 1.032)
+          ({"tt","tt_2016"}, {5}, {"ggHmm_htt"}, 0.991, 1.034)
+          ({"tt","tt_2016"}, {6}, {"ggHps_htt"}, 0.989, 1.037)
+          ({"tt","tt_2016"}, {6}, {"ggHsm_htt"}, 0.989, 1.038)
+          ({"tt","tt_2016"}, {6}, {"ggHmm_htt"}, 0.989, 1.037)
+          ({"mt","mt_2016"}, {1}, {"ggHps_htt"}, 1.000, 0.999)
+          ({"mt","mt_2016"}, {1}, {"ggHsm_htt"}, 1.000, 0.998)
+          ({"mt","mt_2016"}, {1}, {"ggHmm_htt"}, 1.000, 0.998)
+          ({"mt","mt_2016"}, {2}, {"ggHps_htt"}, 0.995, 1.017)
+          ({"mt","mt_2016"}, {2}, {"ggHsm_htt"}, 0.995, 1.017)
+          ({"mt","mt_2016"}, {2}, {"ggHmm_htt"}, 0.995, 1.017)
+          ({"mt","mt_2016"}, {3}, {"ggHps_htt"}, 0.993, 1.028)
+          ({"mt","mt_2016"}, {3}, {"ggHsm_htt"}, 0.993, 1.027)
+          ({"mt","mt_2016"}, {3}, {"ggHmm_htt"}, 0.993, 1.028)
+          ({"mt","mt_2016"}, {4}, {"ggHps_htt"}, 0.990, 1.035)
+          ({"mt","mt_2016"}, {4}, {"ggHsm_htt"}, 0.990, 1.036)
+          ({"mt","mt_2016"}, {4}, {"ggHmm_htt"}, 0.991, 1.036)
+          ({"mt","mt_2016"}, {5}, {"ggHps_htt"}, 0.994, 1.026)
+          ({"mt","mt_2016"}, {5}, {"ggHsm_htt"}, 0.993, 1.024)
+          ({"mt","mt_2016"}, {5}, {"ggHmm_htt"}, 0.993, 1.026)
+          ({"mt","mt_2016"}, {6}, {"ggHps_htt"}, 0.990, 1.036)
+          ({"mt","mt_2016"}, {6}, {"ggHsm_htt"}, 0.990, 1.035)
+          ({"mt","mt_2016"}, {6}, {"ggHmm_htt"}, 0.990, 1.035)
+          ({"et","et_2016"}, {1}, {"ggHps_htt"}, 0.998, 1.005)
+          ({"et","et_2016"}, {1}, {"ggHsm_htt"}, 0.998, 1.006)
+          ({"et","et_2016"}, {1}, {"ggHmm_htt"}, 0.998, 1.005)
+          ({"et","et_2016"}, {2}, {"ggHps_htt"}, 0.994, 1.020)
+          ({"et","et_2016"}, {2}, {"ggHsm_htt"}, 0.994, 1.020)
+          ({"et","et_2016"}, {2}, {"ggHmm_htt"}, 0.994, 1.021)
+          ({"et","et_2016"}, {3}, {"ggHps_htt"}, 0.993, 1.030)
+          ({"et","et_2016"}, {3}, {"ggHsm_htt"}, 0.992, 1.032)
+          ({"et","et_2016"}, {3}, {"ggHmm_htt"}, 0.993, 1.030)
+          ({"et","et_2016"}, {4}, {"ggHps_htt"}, 0.990, 1.037)
+          ({"et","et_2016"}, {4}, {"ggHsm_htt"}, 0.990, 1.036)
+          ({"et","et_2016"}, {4}, {"ggHmm_htt"}, 0.990, 1.035)
+          ({"et","et_2016"}, {5}, {"ggHps_htt"}, 0.993, 1.029)
+          ({"et","et_2016"}, {5}, {"ggHsm_htt"}, 0.992, 1.032)
+          ({"et","et_2016"}, {5}, {"ggHmm_htt"}, 0.992, 1.029)
+          ({"et","et_2016"}, {6}, {"ggHps_htt"}, 0.990, 1.036)
+          ({"et","et_2016"}, {6}, {"ggHsm_htt"}, 0.990, 1.036)
+          ({"et","et_2016"}, {6}, {"ggHmm_htt"}, 0.990, 1.036)
+          ({"em","em_2016"}, {1}, {"ggHps_htt"}, 1.003, 0.989)
+          ({"em","em_2016"}, {1}, {"ggHsm_htt"}, 1.003, 0.989)
+          ({"em","em_2016"}, {1}, {"ggHmm_htt"}, 1.003, 0.989)
+          ({"em","em_2016"}, {2}, {"ggHps_htt"}, 0.996, 1.013)
+          ({"em","em_2016"}, {2}, {"ggHsm_htt"}, 0.996, 1.012)
+          ({"em","em_2016"}, {2}, {"ggHmm_htt"}, 0.996, 1.013)
+          ({"em","em_2016"}, {3}, {"ggHps_htt"}, 0.994, 1.025)
+          ({"em","em_2016"}, {3}, {"ggHsm_htt"}, 0.994, 1.024)
+          ({"em","em_2016"}, {3}, {"ggHmm_htt"}, 0.993, 1.024)
+          ({"em","em_2016"}, {4}, {"ggHps_htt"}, 0.991, 1.032)
+          ({"em","em_2016"}, {4}, {"ggHsm_htt"}, 0.991, 1.033)
+          ({"em","em_2016"}, {4}, {"ggHmm_htt"}, 0.991, 1.033)
+          ({"em","em_2016"}, {5}, {"ggHps_htt"}, 0.993, 1.025)
+          ({"em","em_2016"}, {5}, {"ggHsm_htt"}, 0.993, 1.025)
+          ({"em","em_2016"}, {5}, {"ggHmm_htt"}, 0.994, 1.022)
+          ({"em","em_2016"}, {6}, {"ggHps_htt"}, 0.991, 1.033)
+          ({"em","em_2016"}, {6}, {"ggHsm_htt"}, 0.991, 1.034)
+          ({"em","em_2016"}, {6}, {"ggHmm_htt"}, 0.991, 1.033)
 
-          ({"tt_2017"}, {1}, {"ggHps_htt125"}, 1.001, 1.002)
-          ({"tt_2017"}, {1}, {"ggHmm_htt125"}, 1.001, 1.002)
-          ({"tt_2017"}, {1}, {"ggHsm_htt125"}, 1.001, 1.002)
-          ({"tt_2017"}, {4}, {"ggHps_htt125"}, 0.990, 0.997)
-          ({"tt_2017"}, {4}, {"ggHmm_htt125"}, 0.990, 0.997)
-          ({"tt_2017"}, {4}, {"ggHsm_htt125"}, 0.991, 0.998)
-          ({"tt_2017"}, {3}, {"ggHps_htt125"}, 0.993, 1.000)
-          ({"tt_2017"}, {3}, {"ggHmm_htt125"}, 0.994, 1.001)
-          ({"tt_2017"}, {3}, {"ggHsm_htt125"}, 0.994, 1.001)
-          ({"tt_2017"}, {6}, {"ggHps_htt125"}, 0.990, 0.997)
-          ({"tt_2017"}, {6}, {"ggHmm_htt125"}, 0.991, 0.998)
-          ({"tt_2017"}, {6}, {"ggHsm_htt125"}, 0.990, 0.997)
-          ({"tt_2017"}, {5}, {"ggHps_htt125"}, 0.994, 1.000)
-          ({"tt_2017"}, {5}, {"ggHmm_htt125"}, 0.994, 1.000)
-          ({"tt_2017"}, {5}, {"ggHsm_htt125"}, 0.994, 1.000)
-          ({"tt_2017"}, {2}, {"ggHps_htt125"}, 0.998, 1.003)
-          ({"tt_2017"}, {2}, {"ggHmm_htt125"}, 0.999, 1.004)
-          ({"tt_2017"}, {2}, {"ggHsm_htt125"}, 0.999, 1.004)          
-          ({"mt_2017"}, {1}, {"ggHps_htt125"}, 1.000, 1.000)
-          ({"mt_2017"}, {1}, {"ggHmm_htt125"}, 1.000, 1.000)
-          ({"mt_2017"}, {1}, {"ggHsm_htt125"}, 1.000, 1.000)
-          ({"mt_2017"}, {4}, {"ggHps_htt125"}, 0.993, 0.999)
-          ({"mt_2017"}, {4}, {"ggHmm_htt125"}, 0.993, 0.999)
-          ({"mt_2017"}, {4}, {"ggHsm_htt125"}, 0.993, 1.000)
-          ({"mt_2017"}, {3}, {"ggHps_htt125"}, 0.997, 1.002)
-          ({"mt_2017"}, {3}, {"ggHmm_htt125"}, 0.998, 1.003)
-          ({"mt_2017"}, {3}, {"ggHsm_htt125"}, 0.997, 1.003)
-          ({"mt_2017"}, {6}, {"ggHps_htt125"}, 0.991, 0.998)
-          ({"mt_2017"}, {6}, {"ggHmm_htt125"}, 0.992, 0.999)
-          ({"mt_2017"}, {6}, {"ggHsm_htt125"}, 0.993, 0.999)
-          ({"mt_2017"}, {5}, {"ggHps_htt125"}, 0.997, 1.002)
-          ({"mt_2017"}, {5}, {"ggHmm_htt125"}, 0.997, 1.002)
-          ({"mt_2017"}, {5}, {"ggHsm_htt125"}, 0.997, 1.002)
-          ({"mt_2017"}, {2}, {"ggHps_htt125"}, 1.000, 1.003)
-          ({"mt_2017"}, {2}, {"ggHmm_htt125"}, 1.000, 1.003)
-          ({"mt_2017"}, {2}, {"ggHsm_htt125"}, 1.001, 1.003)
-          ({"et_2017"}, {1}, {"ggHps_htt125"}, 1.000, 1.002)
-          ({"et_2017"}, {1}, {"ggHmm_htt125"}, 1.000, 1.001)
-          ({"et_2017"}, {1}, {"ggHsm_htt125"}, 1.000, 1.002)
-          ({"et_2017"}, {4}, {"ggHps_htt125"}, 0.992, 0.999)
-          ({"et_2017"}, {4}, {"ggHmm_htt125"}, 0.992, 0.999)
-          ({"et_2017"}, {4}, {"ggHsm_htt125"}, 0.992, 0.999)
-          ({"et_2017"}, {3}, {"ggHps_htt125"}, 0.995, 1.002)
-          ({"et_2017"}, {3}, {"ggHmm_htt125"}, 0.997, 1.002)
-          ({"et_2017"}, {3}, {"ggHsm_htt125"}, 0.996, 1.002)
-          ({"et_2017"}, {6}, {"ggHps_htt125"}, 0.991, 0.998)
-          ({"et_2017"}, {6}, {"ggHmm_htt125"}, 0.991, 0.998)
-          ({"et_2017"}, {6}, {"ggHsm_htt125"}, 0.991, 0.998)
-          ({"et_2017"}, {5}, {"ggHps_htt125"}, 0.997, 1.002)
-          ({"et_2017"}, {5}, {"ggHmm_htt125"}, 0.996, 1.002)
-          ({"et_2017"}, {5}, {"ggHsm_htt125"}, 0.996, 1.002)
-          ({"et_2017"}, {2}, {"ggHps_htt125"}, 1.000, 1.004)
-          ({"et_2017"}, {2}, {"ggHmm_htt125"}, 1.000, 1.004)
-          ({"et_2017"}, {2}, {"ggHsm_htt125"}, 1.000, 1.004)
-          ({"em_2017"}, {1}, {"ggHps_htt125"}, 1.000, 0.998)
-          ({"em_2017"}, {1}, {"ggHmm_htt125"}, 1.000, 0.998)
-          ({"em_2017"}, {1}, {"ggHsm_htt125"}, 1.000, 0.998)
-          ({"em_2017"}, {4}, {"ggHps_htt125"}, 0.994, 1.001)
-          ({"em_2017"}, {4}, {"ggHmm_htt125"}, 0.995, 1.001)
-          ({"em_2017"}, {4}, {"ggHsm_htt125"}, 0.994, 1.000)
-          ({"em_2017"}, {3}, {"ggHps_htt125"}, 0.999, 1.003)
-          ({"em_2017"}, {3}, {"ggHmm_htt125"}, 0.999, 1.003)
-          ({"em_2017"}, {3}, {"ggHsm_htt125"}, 0.999, 1.003)
-          ({"em_2017"}, {6}, {"ggHps_htt125"}, 0.995, 1.001)
-          ({"em_2017"}, {6}, {"ggHmm_htt125"}, 0.994, 1.000)
-          ({"em_2017"}, {6}, {"ggHsm_htt125"}, 0.994, 1.000)
-          ({"em_2017"}, {5}, {"ggHps_htt125"}, 0.999, 1.003)
-          ({"em_2017"}, {5}, {"ggHmm_htt125"}, 0.999, 1.003)
-          ({"em_2017"}, {5}, {"ggHsm_htt125"}, 0.998, 1.002)
-          ({"em_2017"}, {2}, {"ggHps_htt125"}, 1.000, 1.003)
-          ({"em_2017"}, {2}, {"ggHmm_htt125"}, 1.000, 1.003)
-          ({"em_2017"}, {2}, {"ggHsm_htt125"}, 1.001, 1.003)
+          ({"tt_2017"}, {1}, {"ggHps_htt"}, 1.001, 1.002)
+          ({"tt_2017"}, {1}, {"ggHmm_htt"}, 1.001, 1.002)
+          ({"tt_2017"}, {1}, {"ggHsm_htt"}, 1.001, 1.002)
+          ({"tt_2017"}, {4}, {"ggHps_htt"}, 0.990, 0.997)
+          ({"tt_2017"}, {4}, {"ggHmm_htt"}, 0.990, 0.997)
+          ({"tt_2017"}, {4}, {"ggHsm_htt"}, 0.991, 0.998)
+          ({"tt_2017"}, {3}, {"ggHps_htt"}, 0.993, 1.000)
+          ({"tt_2017"}, {3}, {"ggHmm_htt"}, 0.994, 1.001)
+          ({"tt_2017"}, {3}, {"ggHsm_htt"}, 0.994, 1.001)
+          ({"tt_2017"}, {6}, {"ggHps_htt"}, 0.990, 0.997)
+          ({"tt_2017"}, {6}, {"ggHmm_htt"}, 0.991, 0.998)
+          ({"tt_2017"}, {6}, {"ggHsm_htt"}, 0.990, 0.997)
+          ({"tt_2017"}, {5}, {"ggHps_htt"}, 0.994, 1.000)
+          ({"tt_2017"}, {5}, {"ggHmm_htt"}, 0.994, 1.000)
+          ({"tt_2017"}, {5}, {"ggHsm_htt"}, 0.994, 1.000)
+          ({"tt_2017"}, {2}, {"ggHps_htt"}, 0.998, 1.003)
+          ({"tt_2017"}, {2}, {"ggHmm_htt"}, 0.999, 1.004)
+          ({"tt_2017"}, {2}, {"ggHsm_htt"}, 0.999, 1.004)          
+          ({"mt_2017"}, {1}, {"ggHps_htt"}, 1.000, 1.000)
+          ({"mt_2017"}, {1}, {"ggHmm_htt"}, 1.000, 1.000)
+          ({"mt_2017"}, {1}, {"ggHsm_htt"}, 1.000, 1.000)
+          ({"mt_2017"}, {4}, {"ggHps_htt"}, 0.993, 0.999)
+          ({"mt_2017"}, {4}, {"ggHmm_htt"}, 0.993, 0.999)
+          ({"mt_2017"}, {4}, {"ggHsm_htt"}, 0.993, 1.000)
+          ({"mt_2017"}, {3}, {"ggHps_htt"}, 0.997, 1.002)
+          ({"mt_2017"}, {3}, {"ggHmm_htt"}, 0.998, 1.003)
+          ({"mt_2017"}, {3}, {"ggHsm_htt"}, 0.997, 1.003)
+          ({"mt_2017"}, {6}, {"ggHps_htt"}, 0.991, 0.998)
+          ({"mt_2017"}, {6}, {"ggHmm_htt"}, 0.992, 0.999)
+          ({"mt_2017"}, {6}, {"ggHsm_htt"}, 0.993, 0.999)
+          ({"mt_2017"}, {5}, {"ggHps_htt"}, 0.997, 1.002)
+          ({"mt_2017"}, {5}, {"ggHmm_htt"}, 0.997, 1.002)
+          ({"mt_2017"}, {5}, {"ggHsm_htt"}, 0.997, 1.002)
+          ({"mt_2017"}, {2}, {"ggHps_htt"}, 1.000, 1.003)
+          ({"mt_2017"}, {2}, {"ggHmm_htt"}, 1.000, 1.003)
+          ({"mt_2017"}, {2}, {"ggHsm_htt"}, 1.001, 1.003)
+          ({"et_2017"}, {1}, {"ggHps_htt"}, 1.000, 1.002)
+          ({"et_2017"}, {1}, {"ggHmm_htt"}, 1.000, 1.001)
+          ({"et_2017"}, {1}, {"ggHsm_htt"}, 1.000, 1.002)
+          ({"et_2017"}, {4}, {"ggHps_htt"}, 0.992, 0.999)
+          ({"et_2017"}, {4}, {"ggHmm_htt"}, 0.992, 0.999)
+          ({"et_2017"}, {4}, {"ggHsm_htt"}, 0.992, 0.999)
+          ({"et_2017"}, {3}, {"ggHps_htt"}, 0.995, 1.002)
+          ({"et_2017"}, {3}, {"ggHmm_htt"}, 0.997, 1.002)
+          ({"et_2017"}, {3}, {"ggHsm_htt"}, 0.996, 1.002)
+          ({"et_2017"}, {6}, {"ggHps_htt"}, 0.991, 0.998)
+          ({"et_2017"}, {6}, {"ggHmm_htt"}, 0.991, 0.998)
+          ({"et_2017"}, {6}, {"ggHsm_htt"}, 0.991, 0.998)
+          ({"et_2017"}, {5}, {"ggHps_htt"}, 0.997, 1.002)
+          ({"et_2017"}, {5}, {"ggHmm_htt"}, 0.996, 1.002)
+          ({"et_2017"}, {5}, {"ggHsm_htt"}, 0.996, 1.002)
+          ({"et_2017"}, {2}, {"ggHps_htt"}, 1.000, 1.004)
+          ({"et_2017"}, {2}, {"ggHmm_htt"}, 1.000, 1.004)
+          ({"et_2017"}, {2}, {"ggHsm_htt"}, 1.000, 1.004)
+          ({"em_2017"}, {1}, {"ggHps_htt"}, 1.000, 0.998)
+          ({"em_2017"}, {1}, {"ggHmm_htt"}, 1.000, 0.998)
+          ({"em_2017"}, {1}, {"ggHsm_htt"}, 1.000, 0.998)
+          ({"em_2017"}, {4}, {"ggHps_htt"}, 0.994, 1.001)
+          ({"em_2017"}, {4}, {"ggHmm_htt"}, 0.995, 1.001)
+          ({"em_2017"}, {4}, {"ggHsm_htt"}, 0.994, 1.000)
+          ({"em_2017"}, {3}, {"ggHps_htt"}, 0.999, 1.003)
+          ({"em_2017"}, {3}, {"ggHmm_htt"}, 0.999, 1.003)
+          ({"em_2017"}, {3}, {"ggHsm_htt"}, 0.999, 1.003)
+          ({"em_2017"}, {6}, {"ggHps_htt"}, 0.995, 1.001)
+          ({"em_2017"}, {6}, {"ggHmm_htt"}, 0.994, 1.000)
+          ({"em_2017"}, {6}, {"ggHsm_htt"}, 0.994, 1.000)
+          ({"em_2017"}, {5}, {"ggHps_htt"}, 0.999, 1.003)
+          ({"em_2017"}, {5}, {"ggHmm_htt"}, 0.999, 1.003)
+          ({"em_2017"}, {5}, {"ggHsm_htt"}, 0.998, 1.002)
+          ({"em_2017"}, {2}, {"ggHps_htt"}, 1.000, 1.003)
+          ({"em_2017"}, {2}, {"ggHmm_htt"}, 1.000, 1.003)
+          ({"em_2017"}, {2}, {"ggHsm_htt"}, 1.001, 1.003)
         );
         
         //    Uncertainty on BR for HTT @ 125 GeV
@@ -999,13 +1299,13 @@ namespace ch {
         
         cb.cp().process(JoinStr({ggH_sig_procs, {"ggH_hww125"}})).AddSyst(cb,"QCDScale_ggH", "lnN", SystMap<>::init(1.039));
         cb.cp().process(JoinStr({qqH_sig_procs, {"qqH_hww125"}})).AddSyst(cb,"QCDScale_qqH", "lnN", SystMap<>::init(1.004));
-        cb.cp().process({"WH_htt","WHsm_htt125","WHps_htt125","WHmm_htt125","WHsm_htt","WHps_htt","WHmm_htt"}).AddSyst(cb,"QCDScale_WH", "lnN", SystMap<>::init(1.007));
-        cb.cp().process({"ZH_htt","ZHsm_htt125","ZHps_htt125","ZHmm_htt125","ZHsm_htt","ZHps_htt","ZHmm_htt"}).AddSyst(cb,"QCDScale_ZH", "lnN", SystMap<>::init(1.038));
+        cb.cp().process({"WH_htt125","WH_htt","WHsm_htt125","WHps_htt","WHmm_htt","WHsm_htt","WHps_htt","WHmm_htt"}).AddSyst(cb,"QCDScale_WH", "lnN", SystMap<>::init(1.007));
+        cb.cp().process({"WH_htt125","ZH_htt","ZHsm_htt125","ZHps_htt","ZHmm_htt","ZHsm_htt","ZHps_htt","ZHmm_htt"}).AddSyst(cb,"QCDScale_ZH", "lnN", SystMap<>::init(1.038));
         
         cb.cp().process(JoinStr({ggH_sig_procs, {"ggH_hww125"}})).AddSyst(cb,"pdf_Higgs_gg", "lnN", SystMap<>::init(1.032));
         cb.cp().process(JoinStr({qqH_sig_procs, {"qqH_hww125"}})).AddSyst(cb,"pdf_Higgs_qq", "lnN", SystMap<>::init(1.021));
-        cb.cp().process({"WH_htt","WHsm_htt125","WHps_htt125","WHmm_htt125","WHsm_htt","WHps_htt","WHmm_htt"}).AddSyst(cb,"pdf_Higgs_WH", "lnN", SystMap<>::init(1.019));
-        cb.cp().process({"ZH_htt""ZHsm_htt125","ZHps_htt125","ZHmm_htt125","ZHsm_htt","ZHps_htt","ZHmm_htt"}).AddSyst(cb,"pdf_Higgs_ZH", "lnN", SystMap<>::init(1.016));
+        cb.cp().process({"WH_htt125","WH_htt","WHsm_htt125","WHps_htt","WHmm_htt","WHsm_htt","WHps_htt","WHmm_htt"}).AddSyst(cb,"pdf_Higgs_WH", "lnN", SystMap<>::init(1.019));
+        cb.cp().process({"ZH_htt125","ZH_htt""ZHsm_htt125","ZHps_htt","ZHmm_htt","ZHsm_htt","ZHps_htt","ZHmm_htt"}).AddSyst(cb,"pdf_Higgs_ZH", "lnN", SystMap<>::init(1.016));
         
         // jet bin migration uncertainties from: https://arxiv.org/pdf/1610.07922.pdf#subsection.1.4.2.5 (Table 20)
         // For boosted category this is not exclusivly 1 jet events since events with > 1 jets and mjj<300 enter also. So take weighted average of Njets=1 and Njets>=1 uncertainties i.e sigma(boosted) = sigma(njets=1)*(# Njets=1 && boosted)/(# boosted) + sigma(njets>=1)*(#Njets>1 && boosted)/(# boosted)
@@ -1040,6 +1340,7 @@ namespace ch {
                         ({"mt","mt_2016","mt_2017"},{3,4,5,6,41,42,43,44,45,46,47,48,49},ggH_sig_procs, 1.145)
                         ({"tt","tt_2016","tt_2017"},{3,4,5,6,41,42,43,44,45,46,47,48,49},ggH_sig_procs, 1.145)
                         );
+
         
 
         if (control_region > 0) {
@@ -1096,13 +1397,13 @@ namespace ch {
         }
 
         
-        if (ttbar_fit) {
-            //cb.cp().channel({"ttbar","em","et","mt","tt","ttbar_2016","em_2016","et_2016","mt_2016","tt_2016"}).process({"TT","TTT","TTJ"}).AddSyst(cb, "rate_ttbar_2016", "rateParam", SystMap<>::init(1.0));
-            //cb.cp().channel({"ttbar_2017","em_2017","et_2017","mt_2017","tt_2017"}).process({"TT","TTT","TTJ"}).AddSyst(cb, "rate_ttbar_2017", "rateParam", SystMap<>::init(1.0));
-            
-            //cb.GetParameter("rate_ttbar_2016")->set_range(0.80, 1.20);
-            //cb.GetParameter("rate_ttbar_2017")->set_range(0.80, 1.20);
-        }
+        //if (ttbar_fit) {
+        //    cb.cp().channel({"ttbar_2016","em_2016","et_2016","mt_2016","tt_2016"}).process({"TT","TTT","TTJ"}).AddSyst(cb, "rate_ttbar_2016", "rateParam", SystMap<>::init(1.0));
+        //    cb.cp().channel({"ttbar_2017","em_2017","et_2017","mt_2017","tt_2017"}).process({"TT","TTT","TTJ"}).AddSyst(cb, "rate_ttbar_2017", "rateParam", SystMap<>::init(1.0));
+        //    for (auto sys : cb.cp().syst_type({"rateParam"}).syst_name_set()) {
+        //        if(sys.find("rate_ttbar") != std::string::npos) cb.GetParameter(sys)->set_range(0.8, 1.2); 
+        //    }
+        //}
         
     }
 }

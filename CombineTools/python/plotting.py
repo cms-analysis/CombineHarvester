@@ -1076,13 +1076,14 @@ def FindCrossingsWithSpline(graph, func, yval):
     # return crossings
 
 
-def ReZeroTGraph(gr, doIt=False):
+def ReZeroTGraph(gr, doIt=False, removeZero=True):
     fit_x = 0.
     fit_y = 0.
     for i in xrange(gr.GetN()):
         if gr.GetY()[i] == 0.:
             fit_x = gr.GetX()[i]
             fit_y = gr.GetY()[i]
+            if removeZero: gr.RemovePoint(i)
             break
     min_x = 0.
     min_y = 0.
