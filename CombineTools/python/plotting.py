@@ -1346,7 +1346,7 @@ def FixBoxPadding(pad, box, frac):
 
     # Convert this to a normalised frame value
     f_max_h = (a_max_h - ymin) / (ymax - ymin);
-    if R.gPad.GetLogy():
+    if R.gPad.GetLogy() and f_max_h > 0.:
         f_max_h = (math.log10(a_max_h) - math.log10(ymin)) / (math.log10(ymax) - math.log10(ymin))
 
     if f_y1 - f_max_h < frac:
