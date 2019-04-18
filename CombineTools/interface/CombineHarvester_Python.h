@@ -27,6 +27,8 @@ void CloneSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
 void CloneProcsAndSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
                         boost::python::object func);
 
+void Overload3_WriteDatacard(ch::CombineHarvester & cb, std::string const& name, bp::object& file);
+
 /**
  * Covert a C++ ROOT type to a PyROOT type
  */
