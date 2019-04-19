@@ -13,7 +13,6 @@
 <bin file="PlotMassScan.cpp" name="PlotMassScan"></bin>
 <bin file="PlotTest.cpp" name="PlotTest"></bin>
 <bin file="PostFitPlot2.cpp" name="PostFitPlot2"></bin>
-<bin file="PostFitShapes.cpp" name="PostFitShapes"></bin>
 <bin file="PostFitShapesFromWorkspace.cpp" name="PostFitShapesFromWorkspace"></bin>
 <bin file="PrePost.cpp" name="PrePost"></bin>
 <bin file="PrintPulls.cpp" name="PrintPulls"></bin>

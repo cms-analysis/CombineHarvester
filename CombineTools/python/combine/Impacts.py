@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import re
 import json
 import ROOT
 import CombineHarvester.CombineTools.combine.utils as utils
@@ -30,7 +31,7 @@ class Impacts(CombineToolBase):
             default the list of nuisance parameters will be loaded from the
             input workspace. Use this option to specify a different list""")
         group.add_argument('--exclude', metavar='PARAM1,PARAM2,...', help=""" Skip
-            these nuisances""")
+            these nuisances. Also accepts regexp with syntax 'rgx{<my regexp>}'""")
         group.add_argument('--doInitialFit', action='store_true', help="""Find
             the crossings of all the POIs. Must have the output from this
             before running with --doFits""")
@@ -156,8 +157,18 @@ class Impacts(CombineToolBase):
 
         # Exclude some parameters
         if self.args.exclude is not None:
-            exclude = self.args.exclude.split(',')
-            paramList = [x for x in paramList if x not in exclude]
+            exclude = self.args.exclude.split(',')            
+            expExclude = []
+            for exParam in exclude:
+                if 'rgx{' in exParam:
+                    pattern = exParam.replace("'rgx{","").replace("}'","")
+                    pattern = pattern.replace("rgx{","").replace("}","")
+                    for param in paramList:
+                        if re.search(pattern, param):
+                            expExclude.append(param)
+                else:
+                    expExclude.append(exParam)
+            paramList = [x for x in paramList if x not in expExclude]
 
         print 'Have parameters: ' + str(len(paramList))
 

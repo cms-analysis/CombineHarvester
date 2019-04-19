@@ -7,6 +7,7 @@
 #include "CombineHarvester/CombineTools/interface/AutoRebin.h"
 #include "CombineHarvester/CombineTools/interface/CopyTools.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
+#include "CombineHarvester/CombineTools/interface/ValidationTools.h"
 #include "CombineHarvester/CombineTools/interface/ParseCombineWorkspace.h"
 #include "boost/python.hpp"
 #include "TFile.h"
@@ -158,6 +159,18 @@ void (Process::*Overload_Proc_set_shape)(
 void (Systematic::*Overload_Syst_set_shapes)(
     TH1 const&, TH1 const&, TH1 const&) = &Systematic::set_shapes;
 
+void (*Overload1_ValidateShapeUncertaintyDirection)(
+    CombineHarvester&) = ch::ValidateShapeUncertaintyDirection;
+
+void (*Overload1_CheckEmptyShapes)(
+    CombineHarvester&) = ch::CheckEmptyShapes;
+
+void (*Overload1_CheckNormEff)(
+    CombineHarvester&, double) = ch::CheckNormEff;
+
+void (*Overload1_CheckSizeOfShapeEffect)(
+    CombineHarvester&) = ch::CheckSizeOfShapeEffect;
+
 // Use some macros for methods with default values
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin, bin, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin_id, bin_id, 1, 2)
@@ -300,6 +313,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("ForEachProc", ForEachProcPy)
       .def("ForEachSyst", ForEachSystPy)
       .def("VariableRebin", &CombineHarvester::VariableRebin)
+      .def("ZeroBins", &CombineHarvester::ZeroBins)
       .def("SetPdfBins", &CombineHarvester::SetPdfBins)
       .def("SetGroup", &CombineHarvester::SetGroup)
       .def("RemoveGroup", &CombineHarvester::RemoveGroup)
@@ -331,6 +345,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("SetAutoMCStats", &CombineHarvester::SetAutoMCStats, defaults_SetAutoMCStats())
       .def("RenameAutoMCStatsBin", &CombineHarvester::RenameAutoMCStatsBin)
       .def("GetAutoMCStatsBins", &CombineHarvester::GetAutoMCStatsBins)
+      .def("AddExtArgValue", &CombineHarvester::AddExtArgValue)
       ;
 
     py::class_<Object>("Object")
@@ -361,6 +376,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("rate", &Observation::rate)
       .def("set_shape", Overload_Obs_set_shape)
       .def("ShapeAsTH1F", &Observation::ShapeAsTH1F)
+      .def("ClonedShape",&Observation::ClonedShape)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
@@ -372,6 +388,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("set_signal", &Process::set_signal)
       .def("signal", &Process::signal)
       .def("ShapeAsTH1F", &Process::ShapeAsTH1F)
+      .def("ClonedShape", &Process::ClonedShape)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
@@ -393,6 +410,9 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("set_asymm", &Systematic::set_asymm)
       .def("asymm", &Systematic::asymm)
       .def("set_shapes", Overload_Syst_set_shapes)
+      .def("ShapeUAsTH1F", &Systematic::ShapeUAsTH1F)
+      .def("ShapeDAsTH1F", &Systematic::ShapeDAsTH1F)
+      .def("SwapUpAndDown", &Systematic::SwapUpAndDown)
       .def(py::self_ns::str(py::self_ns::self))
     ;
 
@@ -468,4 +488,11 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
     py::def("ValsFromRange", ch::ValsFromRange, defaults_ValsFromRange());
     py::def("SetStandardBinNames", ch::SetStandardBinNames, defaults_SetStandardBinNames());
     py::def("ParseCombineWorkspace", ch::ParseCombineWorkspacePy);
+    py::def("PrintSystematic", ch::PrintSystematic);
+    py::def("ValidateShapeUncertaintyDirection", Overload1_ValidateShapeUncertaintyDirection);
+    py::def("CheckEmptyShapes", Overload1_CheckEmptyShapes);
+    py::def("CheckNormEff", Overload1_CheckNormEff);
+    py::def("CheckSizeOfShapeEffect", Overload1_CheckSizeOfShapeEffect);
+    py::def("ValidateCards", ch::ValidateCards);
+
 }
