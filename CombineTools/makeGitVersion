@@ -1,4 +1,32 @@
-${CMSSW_BASE}/src/CombineHarvester/CombineTools/interface/GitVersion.h: ${CMSSW_BASE}/src/CombineHarvester/.git/logs/HEAD
+#this if statement makes it work whether CombineHarvester is
+#a normal repository or a submodule.  For normal repositories
+#.git is a directory.  For submodules, .git is a file that
+#looks like:
+#
+#gitdir: ../../../.git/modules/CMSSW_8_1_0/src/CombineHarvester
+#
+#git commands know how to follow the gitdir to the right place.
+#But make doesn't.
+#So we have to do it manually.
+
+gitdir=$(shell \
+  gitdir=${CMSSW_BASE}/src/CombineHarvester/.git; \
+  if [ -d $$gitdir ]; then \
+    echo $$gitdir; \
+  elif [ -f $$gitdir ] && grep -q "gitdir:" $$gitdir; then \
+    echo $$gitdir | sed -r "s|(.*/).*|\1$$(cat $$gitdir | sed 's/gitdir: //')|"; \
+  else \
+    echo error; \
+  fi \
+)
+
+ifeq ($(gitdir), error)
+  @(error your CombineHarvester doesn't seem to be a git repository)
+endif
+
+
+${CMSSW_BASE}/src/CombineHarvester/CombineTools/interface/GitVersion.h: $(gitdir)/logs/HEAD
+	@echo $(gitdir)
 	@echo -e "Updating $@"
 	@echo -e "namespace ch { inline std::string GitVersion() { return \""$(shell git --git-dir=${CMSSW_BASE}/src/CombineHarvester/.git describe --dirty --always)"\"; } }\n" > $@
 all : clean_$(d)/interface/GitVersion.h
