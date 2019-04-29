@@ -129,6 +129,13 @@ void (CombineHarvester::*Overload1_WriteDatacard)(
 void (CombineHarvester::*Overload2_WriteDatacard)(
     std::string const&) = &CombineHarvester::WriteDatacard;
 
+void Overload3_WriteDatacard(ch::CombineHarvester& cb, std::string const& name, bp::object& file){
+  TFile *file_ = nullptr;
+  if (!file.is_none())
+    file_ = (TFile*)(TPython::ObjectProxy_AsVoidPtr(file.ptr()));
+  cb.WriteDatacard(name,*file_);
+}
+
 double (CombineHarvester::*Overload1_GetUncertainty)(
     void) = &CombineHarvester::GetUncertainty;
 
@@ -151,7 +158,7 @@ void (CombineHarvester::*Overload_AddBinByBin)(
     double, bool, CombineHarvester &) = &CombineHarvester::AddBinByBin;
 
 void (Observation::*Overload_Obs_set_shape)(
-    TH1 const& ,bool) = &Observation::set_shape;
+    TH1 const&, bool) = &Observation::set_shape;
 
 void (Process::*Overload_Proc_set_shape)(
     TH1 const&, bool) = &Process::set_shape;
@@ -214,7 +221,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
 
   py::to_python_converter<RooWorkspace,
                           convert_cpp_root_to_py_root<RooWorkspace>>();
-
+  
   // Define converters from python --> C++
   convert_py_seq_to_cpp_vector<std::string>();
   convert_py_tup_to_cpp_pair<int, std::string>();
@@ -253,6 +260,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("QuickParseDatacard", Overload2_ParseDatacard)
       .def("WriteDatacard", Overload1_WriteDatacard)
       .def("WriteDatacard", Overload2_WriteDatacard)
+      .def("WriteDatacard", Overload3_WriteDatacard)
       // Filters
       .def("bin", &CombineHarvester::bin,
           defaults_bin()[py::return_internal_reference<>()])
