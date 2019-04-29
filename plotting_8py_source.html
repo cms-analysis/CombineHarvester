@@ -1448,7 +1448,7 @@ $(document).ready(function(){initNavTree('plotting_8py_source.html','');});
 <div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;</div>
 <div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;    <span class="comment"># Convert this to a normalised frame value</span></div>
 <div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;    f_max_h = (a_max_h - ymin) / (ymax - ymin);</div>
-<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;    <span class="keywordflow">if</span> R.gPad.GetLogy():</div>
+<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;    <span class="keywordflow">if</span> R.gPad.GetLogy() <span class="keywordflow">and</span> f_max_h &gt; 0.:</div>
 <div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;        f_max_h = (math.log10(a_max_h) - math.log10(ymin)) / (math.log10(ymax) - math.log10(ymin))</div>
 <div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;</div>
 <div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;    <span class="keywordflow">if</span> f_y1 - f_max_h &lt; frac:</div>

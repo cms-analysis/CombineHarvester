@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"_plotting_8h.html#a434781fa740199ba94f267d8263cc1a2":[17,0,1,1,16,15],
+"_plotting_8h.html#a526842799b4de3a542d8114989dba48d":[17,0,1,1,16,7],
 "_plotting_8h.html#a5f529c55b51440415c95a200a9e0708f":[17,0,1,1,16,23],
 "_plotting_8h.html#a658a1da4505b61eb5a0f0db01c01e161":[17,0,1,1,16,16],
 "_plotting_8h.html#a6c102d23f1264e7b30aed6f76ce6c740":[17,0,1,1,16,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX1 =
 "classch_1_1_combine_harvester.html#a7a0c6913b055e11798269034ae324298":[16,0,0,6,52],
 "classch_1_1_combine_harvester.html#a83dd50569a1f1a4b5a46f2ad2b5c1cdb":[16,0,0,6,21],
 "classch_1_1_combine_harvester.html#a8598c8d734f7461228d6e4d4a20ba33b":[16,0,0,6,101],
-"classch_1_1_combine_harvester.html#a85ec2d316143e79cf690da7ff217eadb":[16,0,0,6,56],
-"classch_1_1_combine_harvester.html#a86674bf95164c39facfd5f9583aae613":[16,0,0,6,47],
-"classch_1_1_combine_harvester.html#a869c951c635b86fba33b2c550c9c39c9":[16,0,0,6,41]
+"classch_1_1_combine_harvester.html#a85ec2d316143e79cf690da7ff217eadb":[16,0,0,6,56]
 };

@@ -15,7 +15,7 @@ var searchData=
   ['overload2_5fparsedatacard',['Overload2_ParseDatacard',['../_combine_harvester___python_8cc.html#af145cd6cbf535eadad123b9d40e3310d',1,'CombineHarvester_Python.cc']]],
   ['overload2_5fwritedatacard',['Overload2_WriteDatacard',['../_combine_harvester___python_8cc.html#adcfd69678225a7e536d42aba70542ac1',1,'CombineHarvester_Python.cc']]],
   ['overload_5faddbinbybin',['Overload_AddBinByBin',['../_combine_harvester___python_8cc.html#aa2f8905924850bfc4854a97020c11bda',1,'CombineHarvester_Python.cc']]],
-  ['overload_5fobs_5fset_5fshape',['Overload_Obs_set_shape',['../_combine_harvester___python_8cc.html#a50a42ab1acdb345846900e61aa878b94',1,'CombineHarvester_Python.cc']]],
+  ['overload_5fobs_5fset_5fshape',['Overload_Obs_set_shape',['../_combine_harvester___python_8cc.html#a4d7e8e1574ae2dd64197d84b1807cb65',1,'CombineHarvester_Python.cc']]],
   ['overload_5fproc_5fset_5fshape',['Overload_Proc_set_shape',['../_combine_harvester___python_8cc.html#a133b8f1f3f1955a3c611973b3d8fe278',1,'CombineHarvester_Python.cc']]],
   ['overload_5fsyst_5fset_5fshapes',['Overload_Syst_set_shapes',['../_combine_harvester___python_8cc.html#a86e2aea602ce977b36f660b2aea3f830',1,'CombineHarvester_Python.cc']]]
 ];

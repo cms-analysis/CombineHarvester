@@ -18,5 +18,6 @@ var _combine_harvester___python_8h =
     [ "CloneObsPy", "_combine_harvester___python_8h.html#a1aa3b34554c9e1aac42d7b59b72e4fcb", null ],
     [ "CloneProcsPy", "_combine_harvester___python_8h.html#ae21a869ed5a48874e8e7583cee9b536e", null ],
     [ "CloneSystsPy", "_combine_harvester___python_8h.html#ad5bc5632695a0d86c427ff2dbebbf092", null ],
-    [ "CloneProcsAndSystsPy", "_combine_harvester___python_8h.html#a4afad0ffa012dd7249318809b599a44c", null ]
+    [ "CloneProcsAndSystsPy", "_combine_harvester___python_8h.html#a4afad0ffa012dd7249318809b599a44c", null ],
+    [ "Overload3_WriteDatacard", "_combine_harvester___python_8h.html#a10f20b0a1512371f9d4424afba4edce7", null ]
 ];

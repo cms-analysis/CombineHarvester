@@ -149,6 +149,8 @@ Functions</h2></td></tr>
 <tr class="separator:ad5bc5632695a0d86c427ff2dbebbf092"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4afad0ffa012dd7249318809b599a44c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#a4afad0ffa012dd7249318809b599a44c">CloneProcsAndSystsPy</a> (<a class="el" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a> &amp;src, <a class="el" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a> &amp;dest, boost::python::object func)</td></tr>
 <tr class="separator:a4afad0ffa012dd7249318809b599a44c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10f20b0a1512371f9d4424afba4edce7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#a10f20b0a1512371f9d4424afba4edce7">Overload3_WriteDatacard</a> (<a class="el" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a> &amp;cb, std::string const &amp;name, bp::object &amp;file)</td></tr>
+<tr class="separator:a10f20b0a1512371f9d4424afba4edce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad143df8635f271b58faa7864c2e1b423"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#ad143df8635f271b58faa7864c2e1b423">BOOST_PYTHON_MODULE</a> (libCombineHarvesterCombineTools)</td></tr>
 <tr class="separator:ad143df8635f271b58faa7864c2e1b423"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -176,8 +178,8 @@ Variables</h2></td></tr>
 <tr class="separator:a8e3067a95e092715a51b2364ce3e4057"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2f8905924850bfc4854a97020c11bda"><td class="memItemLeft" align="right" valign="top">void(CombineHarvester::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#aa2f8905924850bfc4854a97020c11bda">Overload_AddBinByBin</a> )(double, bool, <a class="el" href="classch_1_1_combine_harvester.html">CombineHarvester</a> &amp;) = &amp;CombineHarvester::AddBinByBin</td></tr>
 <tr class="separator:aa2f8905924850bfc4854a97020c11bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50a42ab1acdb345846900e61aa878b94"><td class="memItemLeft" align="right" valign="top">void(Observation::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#a50a42ab1acdb345846900e61aa878b94">Overload_Obs_set_shape</a> )(TH1 const &amp;, bool) = &amp;Observation::set_shape</td></tr>
-<tr class="separator:a50a42ab1acdb345846900e61aa878b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d7e8e1574ae2dd64197d84b1807cb65"><td class="memItemLeft" align="right" valign="top">void(Observation::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#a4d7e8e1574ae2dd64197d84b1807cb65">Overload_Obs_set_shape</a> )(TH1 const &amp;, bool) = &amp;Observation::set_shape</td></tr>
+<tr class="separator:a4d7e8e1574ae2dd64197d84b1807cb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a133b8f1f3f1955a3c611973b3d8fe278"><td class="memItemLeft" align="right" valign="top">void(Process::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#a133b8f1f3f1955a3c611973b3d8fe278">Overload_Proc_set_shape</a> )(TH1 const &amp;, bool) = &amp;Process::set_shape</td></tr>
 <tr class="separator:a133b8f1f3f1955a3c611973b3d8fe278"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86e2aea602ce977b36f660b2aea3f830"><td class="memItemLeft" align="right" valign="top">void(Systematic::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_combine_harvester___python_8cc.html#a86e2aea602ce977b36f660b2aea3f830">Overload_Syst_set_shapes</a> )(TH1 const &amp;, TH1 const &amp;, TH1 const &amp;) = &amp;Systematic::set_shapes</td></tr>
@@ -552,6 +554,40 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a10f20b0a1512371f9d4424afba4edce7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Overload3_WriteDatacard </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classch_1_1_combine_harvester.html">ch::CombineHarvester</a> &amp;&#160;</td>
+          <td class="paramname"><em>cb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bp::object &amp;&#160;</td>
+          <td class="paramname"><em>file</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00132">132</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ad143df8635f271b58faa7864c2e1b423"></a>
 <div class="memitem">
 <div class="memproto">
@@ -566,7 +602,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00191">191</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00198">198</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -637,7 +673,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00132">132</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00139">139</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -651,7 +687,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00135">135</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00142">142</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -665,7 +701,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00138">138</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00145">145</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -679,7 +715,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00141">141</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00148">148</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -693,7 +729,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00144">144</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00151">151</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -707,7 +743,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00147">147</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00154">154</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -721,21 +757,21 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00150">150</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00157">157</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a50a42ab1acdb345846900e61aa878b94"></a>
+<a class="anchor" id="a4d7e8e1574ae2dd64197d84b1807cb65"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(Observation::* Overload_Obs_set_shape) (TH1 const &amp;,bool) = &amp;Observation::set_shape</td>
+          <td class="memname">void(Observation::* Overload_Obs_set_shape) (TH1 const &amp;, bool) = &amp;Observation::set_shape</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00153">153</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00160">160</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -749,7 +785,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00156">156</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00163">163</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -763,7 +799,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00159">159</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00166">166</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -777,7 +813,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00162">162</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00169">169</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -791,7 +827,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00165">165</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00172">172</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -805,7 +841,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00168">168</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00175">175</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
@@ -819,7 +855,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00171">171</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
+<p>Definition at line <a class="el" href="_combine_harvester___python_8cc_source.html#l00178">178</a> of file <a class="el" href="_combine_harvester___python_8cc_source.html">CombineHarvester_Python.cc</a>.</p>
 
 </div>
 </div>
