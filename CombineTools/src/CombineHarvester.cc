@@ -482,10 +482,22 @@ void CombineHarvester::LoadShapes(Process* entry,
         ImportParameters(&argset);
         if (!entry->observable()) {
           std::string var_name;
-          if (data_obj) var_name = data_obj->get()->first()->GetName();
+          // Custom code start - LC 5/14/19
+          std::string var_name_y;
+          if (data_obj) {
+            var_name = data_obj->get()->first()->GetName();
+            RooArgSet* temp_vars = (RooArgSet*)data_obj->get()->Clone();
+            RooAbsArg* temp_xvar = data_obj->get()->first();
+            temp_vars->remove(*temp_xvar,true,true);
+            var_name_y = temp_vars->first()->GetName();
+            std::cout << "Found var " + var_name_y + " LoadShapes"<< std::endl;
+          }
+          // if (data_obj) var_name = data_obj->get()->first()->GetName();
           entry->set_observable(
               (RooRealVar*)entry->pdf()->findServer(var_name.c_str()));
-        }
+          entry->set_observable_y(
+              (RooRealVar*)entry->pdf()->findServer(var_name_y.c_str()));
+        } // Custom code end
       }
       if (norm) {
         RooArgSet argset = ParametersByName(norm, data_obj->get());
