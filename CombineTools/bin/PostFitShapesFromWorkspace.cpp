@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
   bool skip_prefit  = false;
   bool skip_proc_errs = false;
   bool total_shapes = false;
+  bool combine_years = false;
   std::vector<std::string> reverse_bins_;
 
   po::options_description help_config("Help");
@@ -99,6 +100,9 @@ int main(int argc, char* argv[]) {
     ("total-shapes",
       po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
       "Save signal- and background shapes added for all channels/categories")
+    ("combine-years",
+      po::value<bool>(&combine_years)->default_value(combine_years)->implicit_value(true),
+      "Save signal- and background shapes added together for each year (2016+2017)")
     ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for");
 
   if (sampling && !postfit) {
@@ -224,6 +228,51 @@ int main(int argc, char* argv[]) {
         ch::WriteToTFile(&(iter.second), &outfile, "prefit/" + iter.first);
       }
     }
+    if(combine_years){
+      for (auto bin : bins) {
+        if (bin.find("2016") == bin.npos) continue; // only need to combined bins once so do this only for 2016
+        string bin_2017 = bin;
+        string bin_cmb = bin;
+        bin_2017 = bin_2017.replace(bin_2017.find("2016"),4,"2017"); 
+        bin_cmb = bin_cmb.replace(bin_cmb.find("2016"),4,"cmb");
+        ch::CombineHarvester cmb_bin = cmb.cp().bin({bin,bin_2017});
+        pre_shapes[bin_cmb]["data_obs"] = cmb_bin.GetObservedShape();
+        for (auto proc : cmb_bin.process_set()) {
+          std::cout << ">> Doing prefit: " << bin_cmb << "," << proc << std::endl;
+          if (skip_proc_errs) {
+            pre_shapes[bin_cmb][proc] =
+                cmb_bin.cp().process({proc}).GetShape();
+          } else {
+            pre_shapes[bin_cmb][proc] =
+                cmb_bin.cp().process({proc}).GetShapeWithUncertainty();
+          }
+        }
+      
+        // Then fill total signal and total bkg hists
+        std::cout << ">> Doing prefit: TotalBkg" << std::endl;
+        pre_shapes[bin_cmb]["TotalBkg"] =
+            cmb_bin.cp().backgrounds().GetShapeWithUncertainty();
+        std::cout << ">> Doing prefit: TotalSig" << std::endl;
+        pre_shapes[bin_cmb]["TotalSig"] =
+            cmb_bin.cp().signals().GetShapeWithUncertainty();
+        std::cout << ">> Doing prefit: TotalProcs" << std::endl;
+        pre_shapes[bin_cmb]["TotalProcs"] =
+            cmb_bin.cp().GetShapeWithUncertainty();
+
+        if (datacard != "") {
+          TH1F ref = cmb_card.cp().bin({bin, bin_2017}).GetObservedShape();
+          for (auto & it : pre_shapes[bin_cmb]) {
+            it.second = ch::RestoreBinning(it.second, ref);
+          }
+        }
+
+        // Can write these straight into the output file
+        outfile.cd();
+        for (auto& iter : pre_shapes[bin_cmb]) {
+          ch::WriteToTFile(&(iter.second), &outfile, bin_cmb+"_prefit/" + iter.first);
+        }
+      }
+    }
     for (auto bin : bins) {
       ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
       // This next line is a temporary fix for models with parameteric RooFit pdfs
@@ -340,6 +389,61 @@ int main(int argc, char* argv[]) {
       }
     }
 
+    if(combine_years){
+      for (auto bin : bins) {
+        if (bin.find("2016") == bin.npos) continue; // only need to combined bins once so do this only for 2016
+        string bin_2017 = bin;
+        string bin_cmb = bin;
+        bin_2017 = bin_2017.replace(bin_2017.find("2016"),4,"2017");
+        bin_cmb = bin_cmb.replace(bin_cmb.find("2016"),4,"cmb");
+        ch::CombineHarvester cmb_bin = cmb.cp().bin({bin,bin_2017});
+
+        post_shapes[bin_cmb]["data_obs"] = cmb_bin.GetObservedShape();
+        for (auto proc : cmb_bin.process_set()) {
+          auto cmb_proc = cmb_bin.cp().process({proc});
+          // Method to get the shape uncertainty depends on whether we are using
+          // the sampling method or the "wrong" method (assumes no correlations)
+          std::cout << ">> Doing postfit: " << bin_cmb << "," << proc << std::endl;
+          if (skip_proc_errs) {
+            post_shapes[bin_cmb][proc] = cmb_proc.GetShape();
+          } else {
+            post_shapes[bin_cmb][proc] =
+                sampling ? cmb_proc.GetShapeWithUncertainty(res, samples)
+                         : cmb_proc.GetShapeWithUncertainty();
+          }
+        }
+        // Fill the total sig. and total bkg. hists
+        auto cmb_bkgs = cmb_bin.cp().backgrounds();
+        auto cmb_sigs = cmb_bin.cp().signals();
+        std::cout << ">> Doing postfit: " << bin_cmb << "," << "TotalBkg" << std::endl;
+        post_shapes[bin_cmb]["TotalBkg"] =
+            sampling ? cmb_bkgs.GetShapeWithUncertainty(res, samples)
+                     : cmb_bkgs.GetShapeWithUncertainty();
+        std::cout << ">> Doing postfit: " << bin_cmb << "," << "TotalSig" << std::endl;
+        post_shapes[bin_cmb]["TotalSig"] =
+            sampling ? cmb_sigs.GetShapeWithUncertainty(res, samples)
+                     : cmb_sigs.GetShapeWithUncertainty();
+        std::cout << ">> Doing postfit: " << bin_cmb << "," << "TotalProcs" << std::endl;
+        post_shapes[bin_cmb]["TotalProcs"] =
+            sampling ? cmb_bin.cp().GetShapeWithUncertainty(res, samples)
+                     : cmb_bin.cp().GetShapeWithUncertainty();
+  
+        if (datacard != "") {
+          TH1F ref = cmb_card.cp().bin({bin,bin_2017}).GetObservedShape();
+          for (auto & it : post_shapes[bin_cmb]) {
+            it.second = ch::RestoreBinning(it.second, ref);
+          }
+        }
+  
+        outfile.cd();
+        // Write the post-fit histograms
+
+        for (auto & iter : post_shapes[bin_cmb]) {
+          ch::WriteToTFile(&(iter.second), &outfile,
+                           bin_cmb + "_postfit/" + iter.first);
+        }
+      }
+    }
 
     for (auto bin : bins) {
       ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});

@@ -586,12 +586,16 @@ def main(args):
                 blind_datahist.SetBinContent(i+1,-0.1)
                 blind_datahist.SetBinError(i+1,0)
     # for dijet categories:
+    print "!!!!!!!!!!!!!!!!!!!!"
+    print int(bin_number) > 2, manual_blind, auto_blind_check_only
+    print int(bin_number) > 2 and manual_blind or auto_blind_check_only
     if int(bin_number) > 2 and manual_blind or auto_blind_check_only:
         for i in range(0,total_datahist.GetNbinsX()):
             y_blind_ind = [ind for ind, x in enumerate(y_bin_labels) if 145 > int(x) >= 100]
             # always using 12 bins for sjdphi so blind 12 bins when i (x bin) is y_blind_ind times 12 
             x_blind_ind = [int(x) for x in np.arange(12*y_blind_ind[0],12*y_blind_ind[-1]+12,1)]
             if i in x_blind_ind:
+                print "test"
                 blind_datahist.SetBinContent(i+1, -0.1)
                 blind_datahist.SetBinError(i+1,0)
 
@@ -951,8 +955,13 @@ def main(args):
         else: legend.AddEntry(hists,background_schemes[channel][legi]['leg_text'],"f")
     legend.AddEntry(bkghist,"Background uncertainty","f")
     if int(bin_number) > 2:
-        legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha_{hgg}=-59#circ)"%vars(),"l")
-        if args.file_alt != "": legend.AddEntry(sighistPS,"ggH#rightarrow#tau#tau (#alpha_{hgg}=0#circ)"%vars(),"l")
+        if not mode == 'prefit':
+          legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha_{hgg}=-59#circ)"%vars(),"l")
+          if args.file_alt != "": legend.AddEntry(sighistPS,"ggH#rightarrow#tau#tau (#alpha_{hgg}=0#circ)"%vars(),"l")
+        else:
+          legend.AddEntry(sighist,"ggH#rightarrow#tau#tau (#alpha_{hgg}=0#circ)"%vars(),"l")
+          if args.file_alt != "": legend.AddEntry(sighistPS,"ggH#rightarrow#tau#tau (#alpha_{hgg}=90#circ)"%vars(),"l")
+
     elif int(bin_number) == 1:
         legend.AddEntry(sighist,"100#times ggH#rightarrow#tau#tau (#forall #alpha_{hgg})"%vars(),"l")
     else:
@@ -975,10 +984,10 @@ def main(args):
     #CMS and lumi labels
     plot.FixTopRange(pads[0], plot.GetPadYMax(pads[0]), extra_pad if extra_pad>0 else 0.15)
     if bin_number == "1":
-        plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
+        #plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
         plot.DrawTitle(pads[0], lumi, 3)
     else:
-        plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 0, 0.07, -0.1, 2.0, '', 0.6)
+        #plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 0, 0.07, -0.1, 2.0, '', 0.6)
         DrawTitleUnrolled(pads[0], lumi, 3, scale=0.7)
     
     #Add ratio plot if required
@@ -1003,9 +1012,28 @@ def main(args):
         pads[1].cd()
         pads[1].SetGrid(0,1)
         axish[1].Draw("axis")
+        #args.ratio_range="-2,4"
         axish[1].SetMinimum(float(args.ratio_range.split(',')[0]))
         axish[1].SetMaximum(float(args.ratio_range.split(',')[1]))
         ratio_bkghist.SetMarkerSize(0)
+
+        if False:
+          for i in range(1,ratio_bkghist.GetNbinsX()+1):
+            bkg = ratio_bkghist.GetBinContent(i)
+            bkg_err = ratio_bkghist.GetBinError(i)
+            data_x = ROOT.Double()
+            data = ROOT.Double()
+            ratio_datahist.GetPoint(i-1,data_x,data) 
+            print data_x, ratio_bkghist.GetBinLowEdge(i), ratio_bkghist.GetBinLowEdge(i+1)
+            data_err_hi = ratio_datahist.GetErrorYhigh(i-1)
+            data_err_lo = ratio_datahist.GetErrorYlow(i-1)
+            ratio_datahist.SetPoint(i-1,data_x,(data-bkg)/bkg_err)
+            ratio_datahist.SetPointEYhigh(i-1, (data_err_hi-bkg)/bkg_err)
+            ratio_datahist.SetPointEYlow(i-1, (data_err_lo-bkg)/bkg_err)
+            ratio_bkghist.SetBinContent(i, 0.0 )
+            ratio_bkghist.SetBinError(i,bkg_err/bkg)
+            ratio_sighist.SetBinContent(i, (ratio_sighist.GetBinContent(i)-bkg)/bkg_err)
+
         ratio_bkghist.Draw("e2same")
         if int(bin_number) > 2:
             ratio_sighist_PS.Draw("histsame")
@@ -1022,9 +1050,11 @@ def main(args):
             rlegend.AddEntry(ratio_datahist,"Data/Bkg","PE")
             rlegend.AddEntry(""," ","")
             #rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=0#circ)+Bkg)/Bkg","L")
-            rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=-59#circ)+Bkg)/Bkg","L")
+            if not mode == 'prefit': rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=-59#circ)+Bkg)/Bkg","L")
+            else: rlegend.AddEntry(ratio_sighist,"(Sig(#alpha_{hgg}=0#circ)+Bkg)/Bkg","L")
             rlegend.AddEntry(""," ","")
-            rlegend.AddEntry(ratio_sighist_PS,"(Sig(#alpha_{hgg}=0#circ)+Bkg)/Bkg","L")
+            if not mode == 'prefit': rlegend.AddEntry(ratio_sighist_PS,"(Sig(#alpha_{hgg}=0#circ)+Bkg)/Bkg","L")
+            else: rlegend.AddEntry(ratio_sighist_PS,"(Sig(#alpha_{hgg}=90#circ)+Bkg)/Bkg","L")
         elif int(bin_number) > 1:
             rlegend = ROOT.TLegend(0.85, 0.27, 0.98, 0.16, '', 'NBNDC')
             rlegend.SetTextFont(42)

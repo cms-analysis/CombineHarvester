@@ -51,7 +51,7 @@ class CPMixture(PhysicsModel):
                 'sm_evt_2016': 1612810.,
                 'mm_evt_2016': 1728080.,
                 'ps_evt_2016': 1751196.,
-                'sm_evt_2017': 7833676.,
+                'sm_evt_2017': 11638999.,
                 'mm_evt_2017': 1803052.,
                 'ps_evt_2017': 1879685.,
                 'sigma1_hzz': 1.010599e-2,
