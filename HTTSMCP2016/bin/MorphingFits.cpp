@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
         cb.AddProcesses(   {"*"},   {"htt"}, {"13TeV"}, {chn}, sig_procs, cats[chn], true);
     }
 
-    std::vector<std::string> embed = {"EmbedZTTpass","EmbedZTTfail"};
+    std::vector<std::string> embed = {"EmbedZTT_pass","EmbedZTT_fail"};
     std::vector<std::string> real_tau = {"TTT","VVT","TTTpass","TTTfail","VVTpass","VVTfail","ZTT", "EWKZ"};
     std::vector<std::string> jetfake = {"W","VVJ","TTJ","ZJ"};
     std::vector<std::string> jetfake_noW = {"VVJ","TTJ","ZJ"};
@@ -203,7 +203,8 @@ int main(int argc, char** argv) {
                         ({"et"}, JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed}),  1.02));   
     cb.cp().AddSyst(cb, "CMS_embed_norm_13TeV", "lnN", SystMap<channel, process>::init
                         ({"mt"}, embed,  1.04));
-    
+   
+ 
     //##############################################################################
     //  trigger   
     //##############################################################################
