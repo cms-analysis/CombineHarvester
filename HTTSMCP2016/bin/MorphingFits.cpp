@@ -19,6 +19,8 @@
 #include "CombineHarvester/CombineTools/interface/Algorithm.h"
 #include "CombineHarvester/CombineTools/interface/AutoRebin.h"
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
+#include "CombineHarvester/CombineTools/interface/CopyTools.h"
+#include "CombineHarvester/CombineTools/interface/JsonTools.h"
 #include "RooWorkspace.h"
 #include "RooRealVar.h"
 #include "TH2.h"
@@ -198,7 +200,9 @@ int main(int argc, char** argv) {
 
     
     cb.cp().AddSyst(cb, "CMS_eff_m", "lnN", SystMap<channel, process>::init
-                        ({"mt"}, JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed}),  1.02));
+                        ({"mt"}, JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}}),  1.02));
+    cb.cp().AddSyst(cb, "CMS_eff_embedded_m", "lnN", SystMap<channel, process>::init
+                        ({"mt"}, embed,  1.02));
     cb.cp().AddSyst(cb, "CMS_eff_e", "lnN", SystMap<channel, process>::init
                         ({"et"}, JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed}),  1.02));   
     cb.cp().AddSyst(cb, "CMS_embed_norm_13TeV", "lnN", SystMap<channel, process>::init
@@ -209,8 +213,10 @@ int main(int argc, char** argv) {
     //  trigger   
     //##############################################################################
     
-    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed})).channel({"mt"}).AddSyst(cb,
+    cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"}})).channel({"mt"}).AddSyst(cb,
                                          "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
+    cb.cp().process(embed).channel({"mt"}).AddSyst(cb,
+                                         "CMS_eff_embedded_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
     
     cb.cp().process(JoinStr({real_tau,jetfake_noW,zl,{"ZTT","ZTTpass","ZTTfail"},embed})).channel({"et"}).AddSyst(cb,
                                          "CMS_eff_trigger_$CHANNEL_$ERA", "lnN", SystMap<>::init(1.02));
@@ -269,12 +275,13 @@ int main(int argc, char** argv) {
     }
     
     cb.cp().process(JoinStr({real_tau,embed,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
-                                            "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.00));
+                                            "CMS_scale_t_1prong_$ERA", "shape", SystMap<>::init(1.0));
     cb.cp().process(JoinStr({real_tau,embed,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
-                                            "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.00));
+                                            "CMS_scale_t_1prong1pizero_$ERA", "shape", SystMap<>::init(1.0));
     cb.cp().process(JoinStr({real_tau,embed,{"ZTT","ZTTpass","ZTTfail"}})).AddSyst(cb,
-                                            "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.00));
+                                            "CMS_scale_t_3prong_$ERA", "shape", SystMap<>::init(1.0));
     
+
     //cb.cp().process(embed).channel({"mt"}).AddSyst(cb,
     //                                             "CMS_scale_m_$ERA", "shape", SystMap<>::init(1.00));
     //
@@ -422,6 +429,36 @@ int main(int argc, char** argv) {
 
     }
     
+
+    vector<string> es_uncerts = {
+      "t_1prong_13TeV",
+      "t_1prong1pizero_13TeV",
+      "t_3prong_13TeV",
+    };
+    for (auto name : es_uncerts) {
+      auto cb_syst = cb.cp().syst_name({"CMS_scale_"+name});
+      ch::CloneSysts(cb.cp().process({"EmbedZTT"}).syst_name({"CMS_scale_"+name}), cb, [&](ch::Systematic *s) {
+        s->set_name("CMS_scale_embedded_"+name);
+        if (s->type().find("shape") != std::string::npos) {
+          s->set_scale(s->scale() * 0.707);
+        }
+      });
+
+      ch::CloneSysts(cb.cp().process({"EmbedZTT"},false).syst_name({"CMS_scale_"+name}), cb, [&](ch::Systematic *s) {
+        s->set_name("CMS_scale_mc_"+name);
+        if (s->type().find("shape") != std::string::npos) {
+          s->set_scale(s->scale() * 0.707);
+        }
+      });
+
+      cb_syst.ForEachSyst([](ch::Systematic *syst) {
+        if (syst->type().find("shape") != std::string::npos) {
+          syst->set_scale(syst->scale() * 0.707);
+        }
+      });
+
+    }
+
 
     
     //Now delete processes with 0 yield
