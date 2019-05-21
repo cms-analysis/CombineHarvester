@@ -531,6 +531,8 @@ int main(int argc, char** argv) {
     .SetFixNorm(false);
     bbb_sig.AddBinByBin(cb.cp().signals(), cb); 
 
+    //cb.AddDatacardLineAtEnd("* autoMCStats 10 1");
+
     ch::SetStandardBinNames(cb);
     
     string output_prefix = "output/";

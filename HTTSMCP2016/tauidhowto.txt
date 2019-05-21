@@ -1,0 +1,3 @@
+MorphingFits --output_folder="tau_id" --postfix="-2D"
+combineTool.py -M T2W -P CombineHarvester.CombinePdfs.TauID:TauID -i output/tau_id/mt_combined/* -o ws.root --parallel 8
+combineTool.py -m 125 -M MultiDimFit  --redefineSignalPOIs SF --setPhysicsModelParameters SF=1 -d output/tau_id/mt_combined/125/ws.root --algo grid --there -n .SF --setPhysicsModelParameterRanges SF=0.8,1.2 --points 50
