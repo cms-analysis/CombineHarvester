@@ -1,0 +1,8 @@
+image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+
+stages:
+    - deploy
+
+ci:
+    stage: deploy
+    trigger: cms-hcg/performances/ci
