@@ -596,7 +596,9 @@ TH2F CombineHarvester::Get2DShapeInternal(ProcSystMap const& lookup,
         procs_[i]->set_observable_y((RooRealVar *)procs_[i]->pdf()->findServer(var_name_y.c_str()));
       }
       TH1::AddDirectory(false);
-      TH2F* tmp = (TH2F*)procs_[i]->observable()->createHistogram("",*(RooAbsRealLValue*)procs_[i]->observable_y());
+      TH2F* tmp = (TH2F*)procs_[i]->observable()->createHistogram("",RooFit::Binning(procs_[i]->observable()->getBinning()),
+                                                                    RooFit::YVar(*(RooAbsRealLValue*)procs_[i]->observable_y(),RooFit::Binning(procs_[i]->observable_y()->getBinning()))
+                                                                  );
       for (int bx = 1; bx <= tmp->GetNbinsX(); ++bx) {
         for (int by = 1; by <= tmp->GetNbinsY(); ++by) {
           procs_[i]->observable()->setVal(tmp->GetXaxis()->GetBinCenter(bx));
