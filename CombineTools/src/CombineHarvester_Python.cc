@@ -260,7 +260,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("QuickParseDatacard", Overload2_ParseDatacard)
       .def("WriteDatacard", Overload1_WriteDatacard)
       .def("WriteDatacard", Overload2_WriteDatacard)
-      .def("WriteDatacard", Overload3_WriteDatacard)
+      .def("WriteDatacardX", Overload3_WriteDatacard)
       // Filters
       .def("bin", &CombineHarvester::bin,
           defaults_bin()[py::return_internal_reference<>()])
