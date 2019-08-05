@@ -114,6 +114,18 @@ void CloneProcsAndSystsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
   ch::CloneProcsAndSysts(src, dest, lambda);
 }
 
+TH1 const& shapePy(ch::Process & proc) {
+  return *(proc.shape());
+}
+
+TH1 const& shape_uPy(ch::Systematic & syst) {
+  return *(syst.shape_u());
+}
+
+TH1 const& shape_dPy(ch::Systematic & syst) {
+  return *(syst.shape_d());
+}
+
 // To resolve overloaded methods we first define some pointers
 int (CombineHarvester::*Overload1_ParseDatacard)(
     std::string const&, std::string const&, std::string const&,
@@ -212,6 +224,9 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
 
   py::to_python_converter<TH1F,
                           convert_cpp_root_to_py_root<TH1F>>();
+
+  py::to_python_converter<TH1,
+                          convert_cpp_TH1_to_py_root>();
 
   py::to_python_converter<TH2F,
                           convert_cpp_root_to_py_root<TH2F>>();
@@ -395,6 +410,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("set_shape", Overload_Proc_set_shape)
       .def("set_signal", &Process::set_signal)
       .def("signal", &Process::signal)
+      .def("shape", shapePy, py::return_value_policy<py::return_by_value>())
       .def("ShapeAsTH1F", &Process::ShapeAsTH1F)
       .def("ClonedShape", &Process::ClonedShape)
       .def(py::self_ns::str(py::self_ns::self))
@@ -418,6 +434,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("set_asymm", &Systematic::set_asymm)
       .def("asymm", &Systematic::asymm)
       .def("set_shapes", Overload_Syst_set_shapes)
+      .def("shape_u", shape_uPy, py::return_value_policy<py::return_by_value>())
+      .def("shape_d", shape_dPy, py::return_value_policy<py::return_by_value>())
       .def("ShapeUAsTH1F", &Systematic::ShapeUAsTH1F)
       .def("ShapeDAsTH1F", &Systematic::ShapeDAsTH1F)
       .def("SwapUpAndDown", &Systematic::SwapUpAndDown)
