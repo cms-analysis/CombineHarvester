@@ -120,8 +120,9 @@ var NAVTREEINDEX =
 [
 "_a_zh_systematics_8cc.html",
 "_plotting_8h.html#a434781fa740199ba94f267d8263cc1a2",
-"classch_1_1_combine_harvester.html#a86674bf95164c39facfd5f9583aae613",
-"functions_func_s.html"
+"classch_1_1_combine_harvester.html#a6db7fd938efd2ce05454a72c4b6cbc78",
+"functions_func_g.html",
+"structconvert__py__tup__to__cpp__pair.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

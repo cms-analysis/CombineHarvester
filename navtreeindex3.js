@@ -1,5 +1,13 @@
 var NAVTREEINDEX3 =
 {
+"functions_func_g.html":[16,2,1,6],
+"functions_func_h.html":[16,2,1,7],
+"functions_func_i.html":[16,2,1,8],
+"functions_func_m.html":[16,2,1,9],
+"functions_func_n.html":[16,2,1,10],
+"functions_func_o.html":[16,2,1,11],
+"functions_func_p.html":[16,2,1,12],
+"functions_func_r.html":[16,2,1,13],
 "functions_func_s.html":[16,2,1,14],
 "functions_func_t.html":[16,2,1,15],
 "functions_func_u.html":[16,2,1,16],
@@ -32,8 +40,8 @@ var NAVTREEINDEX3 =
 "globals_func.html":[17,1,1],
 "globals_vars.html":[17,1,2],
 "hierarchy.html":[16,1],
-"index.html":[],
 "index.html":[0],
+"index.html":[],
 "index.html#getting-started":[0,0],
 "index.html#high-level-tools":[0,1],
 "index.html#note":[0,2],
@@ -73,11 +81,11 @@ var NAVTREEINDEX3 =
 "md_docs__hybrid_new_grid.html":[13],
 "namespacech.html":[15,0,0],
 "namespacech.html":[16,0,0],
-"namespacech_1_1syst.html":[16,0,0,0],
 "namespacech_1_1syst.html":[15,0,0,0],
+"namespacech_1_1syst.html":[16,0,0,0],
 "namespacech_1_1syst_1_1detail.html":[15,0,0,0,0],
-"namespacech_1_1tupleprint.html":[16,0,0,1],
 "namespacech_1_1tupleprint.html":[15,0,0,1],
+"namespacech_1_1tupleprint.html":[16,0,0,1],
 "namespacemembers.html":[15,1,0],
 "namespacemembers_func.html":[15,1,1],
 "namespacemembers_type.html":[15,1,3],
@@ -241,7 +249,5 @@ var NAVTREEINDEX3 =
 "structconvert__py__root__to__cpp__root.html":[16,0,7],
 "structconvert__py__root__to__cpp__root.html#a01813ec162ebac8188880f744e104344":[16,0,7,0],
 "structconvert__py__seq__to__cpp__vector.html":[16,0,8],
-"structconvert__py__seq__to__cpp__vector.html#ac26fb16741bf09072b64744bf5014f35":[16,0,8,0],
-"structconvert__py__tup__to__cpp__pair.html":[16,0,9],
-"structconvert__py__tup__to__cpp__pair.html#aef4ced4bc05159dcec219208f269ace8":[16,0,9,0]
+"structconvert__py__seq__to__cpp__vector.html#ac26fb16741bf09072b64744bf5014f35":[16,0,8,0]
 };
