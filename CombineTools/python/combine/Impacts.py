@@ -7,6 +7,7 @@ import ROOT
 import CombineHarvester.CombineTools.combine.utils as utils
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+from HiggsAnalysis.CombinedLimit.RooAddPdfFixer import FixAll
 
 
 class Impacts(CombineToolBase):
@@ -226,7 +227,9 @@ class Impacts(CombineToolBase):
     def all_free_parameters(self, file, wsp, mc, pois):
         res = []
         wsFile = ROOT.TFile.Open(file)
-        config = wsFile.Get(wsp).genobj(mc)
+        w = wsFile.Get(wsp)
+        FixAll(w)
+        config = w.genobj(mc)
         pdfvars = config.GetPdf().getParameters(config.GetObservables())
         it = pdfvars.createIterator()
         var = it.Next()
