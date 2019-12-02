@@ -178,6 +178,10 @@ void (*Overload1_CheckNormEff)(
 void (*Overload1_CheckSizeOfShapeEffect)(
     CombineHarvester&) = ch::CheckSizeOfShapeEffect;
 
+void (*Overload1_CheckSmallSignals)(
+    CombineHarvester&) = ch::CheckSmallSignals;
+
+
 // Use some macros for methods with default values
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin, bin, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin_id, bin_id, 1, 2)
@@ -501,6 +505,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
     py::def("CheckEmptyShapes", Overload1_CheckEmptyShapes);
     py::def("CheckNormEff", Overload1_CheckNormEff);
     py::def("CheckSizeOfShapeEffect", Overload1_CheckSizeOfShapeEffect);
+    py::def("CheckSmallSignals", Overload1_CheckSmallSignals);
     py::def("ValidateCards", ch::ValidateCards);
 
 }
