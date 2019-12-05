@@ -10,6 +10,7 @@ ulimit -s unlimited
 set -e
 cd %(CMSSW_BASE)s/src
 export SCRAM_ARCH=%(SCRAM_ARCH)s
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 eval `scramv1 runtime -sh`
 cd %(PWD)s
 """ % ({
@@ -263,6 +264,8 @@ class CombineToolBase:
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
             outscript.close()
+            st = os.stat(outscriptname)
+            os.chmod(outscriptname, st.st_mode | stat.S_IEXEC)
             subfile = open(subfilename, "w")
             condor_settings = CONDOR_TEMPLATE % {
               'EXE': outscriptname,
