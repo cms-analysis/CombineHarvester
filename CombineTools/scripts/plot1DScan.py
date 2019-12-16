@@ -32,11 +32,11 @@ def Eval(obj, x, params):
     return obj.Eval(x[0])
 
 
-def BuildScan(scan, param, files, color, yvals, ycut):
+def BuildScan(scan, param, files, color, yvals, ycut, debug=False):
     graph = read(scan, param, files, ycut)
     bestfit = None
     for i in xrange(graph.GetN()):
-        if graph.GetY()[i] == 0.:
+        if abs(graph.GetY()[i]) < 0.00001:
             bestfit = graph.GetX()[i]
     graph.SetMarkerColor(color)
     spline = ROOT.TSpline3("spline3", graph)
@@ -93,6 +93,7 @@ parser.add_argument('--y-cut', type=float, default=7., help='Remove points with 
 parser.add_argument('--y-max', type=float, default=8., help='y-axis maximum')
 parser.add_argument('--output', '-o', help='output name without file extension', default='scan')
 parser.add_argument('--POI', help='use this parameter of interest', default='r')
+parser.add_argument('--x-label', help='x label', default=None)
 parser.add_argument('--translate', default=None, help='json file with POI name translation')
 parser.add_argument('--main-label', default='Observed', type=str, help='legend label for the main scan')
 parser.add_argument('--main-color', default=1, type=int, help='line and marker color for main scan')
@@ -100,6 +101,8 @@ parser.add_argument('--others', nargs='*', help='add secondary scans processed a
 parser.add_argument('--breakdown', help='do quadratic error subtraction using --others')
 parser.add_argument('--logo', default='CMS')
 parser.add_argument('--logo-sub', default='Internal')
+parser.add_argument('--debug', action='store_true', default=False,
+                    help='debug')
 args = parser.parse_args()
 
 print '--------------------------------------'
@@ -116,17 +119,23 @@ if args.translate is not None:
 yvals = [1., 4.]
 
 
-main_scan = BuildScan(args.output, args.POI, [args.main], args.main_color, yvals, args.y_cut)
+if args.debug:
+    print 'BuildScan:', args.main
+main_scan = BuildScan(args.output, args.POI, [args.main], args.main_color, yvals, args.y_cut, args.debug)
 
-other_scans = [ ]
-other_scans_opts = [ ]
+
+print 'BuildScan others'
+other_scans = []
+other_scans_opts = []
 if args.others is not None:
     for oargs in args.others:
         splitargs = oargs.split(':')
         other_scans_opts.append(splitargs)
-        other_scans.append(BuildScan(args.output, args.POI, [splitargs[0]], int(splitargs[2]), yvals, args.y_cut))
+        print '\t BuildScan:', splitargs
+        other_scans.append(BuildScan(args.output, args.POI, [splitargs[0]], int(splitargs[2]), yvals, args.y_cut, args.debug))
 
-
+if args.debug:
+    print 'Plotting..'
 canv = ROOT.TCanvas(args.output, args.output)
 pads = plot.OnePad()
 main_scan['graph'].SetMarkerColor(1)
@@ -136,7 +145,10 @@ axishist = plot.GetAxisHist(pads[0])
 
 axishist.SetMaximum(args.y_max)
 axishist.GetYaxis().SetTitle("- 2 #Delta ln L")
-axishist.GetXaxis().SetTitle("%s" % fixed_name)
+if args.x_label is None:
+    axishist.GetXaxis().SetTitle("%s" % fixed_name)
+else:
+    axishist.GetXaxis().SetTitle("%s" % args.x_label)
 
 new_min = axishist.GetXaxis().GetXmin()
 new_max = axishist.GetXaxis().GetXmax()
@@ -214,6 +226,7 @@ if args.breakdown is not None:
     assert(len(v_hi) == len(breakdown))
     textfit = '%s = %.3f' % (fixed_name, val_nom[0])
     for i, br in enumerate(breakdown):
+        if br.startswith("noplot"): continue
         if i < (len(breakdown) - 1):
             if (abs(v_hi[i+1]) > abs(v_hi[i])):
                 print 'ERROR SUBTRACTION IS NEGATIVE FOR %s HI' % br
