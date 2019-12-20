@@ -20,5 +20,5 @@ var searchData=
   ['reversebins',['ReverseBins',['../_post_fit_shapes_from_workspace_8cpp.html#a48acb519f981bec18bc41e658431176d',1,'PostFitShapesFromWorkspace.cpp']]],
   ['rezerotgraph',['ReZeroTGraph',['../_plotting_8h.html#af2524f9f02ac66a16164c87bfc149628',1,'ReZeroTGraph():&#160;Plotting.h'],['../namespaceplotting.html#a273bab5cfe205a69a469a86828ab3f3b',1,'plotting.ReZeroTGraph()']]],
   ['roccurvefrom1dhists',['RocCurveFrom1DHists',['../namespaceplotting.html#a0d8bc74b28155809f534df954fe60355',1,'plotting']]],
-  ['run',['Run',['../classch_1_1_c_m_s_hist_func_factory.html#a4e057f77b7fcdde3e98967bb5632717e',1,'ch::CMSHistFuncFactory::Run(CombineHarvester &amp;cb, RooWorkspace &amp;ws, std::map&lt; std::string, std::string &gt; process_vs_norm_postfix_map)'],['../classch_1_1_c_m_s_hist_func_factory.html#a76a006851773756a05ca67e577b32c60',1,'ch::CMSHistFuncFactory::Run(CombineHarvester &amp;cb, RooWorkspace &amp;ws)']]]
+  ['run',['Run',['../classch_1_1_c_m_s_hist_func_factory.html#a76a006851773756a05ca67e577b32c60',1,'ch::CMSHistFuncFactory']]]
 ];
