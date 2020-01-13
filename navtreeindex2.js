@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"classch_1_1_combine_harvester.html#a6c60a401231bfded23a56abe3f6dbf77":[16,0,0,6,53],
 "classch_1_1_combine_harvester.html#a6db7fd938efd2ce05454a72c4b6cbc78":[16,0,0,6,49],
 "classch_1_1_combine_harvester.html#a71a57cb6de8ede0b1e8ac51d73571a2a":[16,0,0,6,1],
 "classch_1_1_combine_harvester.html#a749af47fa05e1e11b1488bfdb49efce5":[16,0,0,6,79],
@@ -236,8 +237,8 @@ var NAVTREEINDEX2 =
 "dir_b40e54ab5ece44508715b2777a1a95eb.html":[17,0,1,0],
 "dir_bd86b6048931602d3e119f261829765b.html":[17,0,1,2],
 "files.html":[17,0],
-"functions.html":[16,2,0],
 "functions.html":[16,2,0,0],
+"functions.html":[16,2,0],
 "functions_b.html":[16,2,0,1],
 "functions_c.html":[16,2,0,2],
 "functions_d.html":[16,2,0,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "functions_func_b.html":[16,2,1,1],
 "functions_func_c.html":[16,2,1,2],
 "functions_func_d.html":[16,2,1,3],
-"functions_func_e.html":[16,2,1,4],
-"functions_func_f.html":[16,2,1,5]
+"functions_func_e.html":[16,2,1,4]
 };
