@@ -4,7 +4,7 @@ Full documentation: http://cms-analysis.github.io/CombineHarvester
 
 ## Quick start
 
-This pacakge requires HiggsAnalysis/CombinedLimit to be in your local CMSSW area. We follow the release recommendations of the combine developers which can be found [here](https://cms-hcomb.gitbooks.io/combine/content/part1/#for-end-users-that-dont-need-to-commit-or-do-any-development). The CombineHarvester framework is  compatible with the CMSSW 7_4_X and 8_1_X series releases.
+This pacakge requires HiggsAnalysis/CombinedLimit to be in your local CMSSW area. We follow the release recommendations of the combine developers which can be found [here](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation). The CombineHarvester framework is compatible with the CMSSW 8_1_X and 10_2_X series releases.
 
 If you just need the core CombineHarvester/CombineTools subpackge, then the following scripts can be used to clone the repository with a sparse checkout for this one only:
 
@@ -15,9 +15,9 @@ If you just need the core CombineHarvester/CombineTools subpackge, then the foll
 
 A new full release area can be set up and compiled in the following steps:
 
-    export SCRAM_ARCH=slc6_amd64_gcc530
-    scram project CMSSW CMSSW_8_1_0
-    cd CMSSW_8_1_0/src
+    export SCRAM_ARCH=slc7_amd64_gcc700
+    scram project CMSSW CMSSW_10_2_13
+    cd CMSSW_10_2_13/src
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
     # IMPORTANT: Checkout the recommended tag on the link above
