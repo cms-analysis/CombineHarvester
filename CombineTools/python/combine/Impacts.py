@@ -30,6 +30,7 @@ class Impacts(CombineToolBase):
         group.add_argument('--setPhysicsModelParameters')
         group.add_argument('--setParameters')
         group.add_argument('--name', '-n', default='Test')
+        group.add_argument('--LoadLibrary', '-L',action='append', default=[])
 
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
@@ -72,6 +73,10 @@ class Impacts(CombineToolBase):
         if self.args.setParameters is not None:
             passthru.extend(['--setParameters', self.args.setParameters])
             self.args.setPhysicsModelParameters = self.args.setParameters
+        for l in self.args.LoadLibrary: 
+            passthru.extend(["-L",l])
+            print "* loading library",l
+            ROOT.gSystem.Load(l)
         pass_str = ' '.join(passthru)
 
         paramList = []
