@@ -86,7 +86,7 @@ void BinByBinFactory::MergeBinErrors(CombineHarvester &cb) {
         }
       }
 
-      double expand = std::sqrt(1. / (1. - (removed / tot_bbb_added + tot_bbb_c)));
+      double expand = std::sqrt(1. / (1. - (removed / (tot_bbb_added + tot_bbb_c))));
       for (unsigned r = 0; r < result.size(); ++r) {
         if (!std::get<2>(result[r])) continue;
         std::get<1>(result[r])->SetBinError(
