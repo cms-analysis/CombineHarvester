@@ -49,6 +49,7 @@ void BinByBinFactory::MergeBinErrors(CombineHarvester &cb) {
 
     for (int i = 1; i <= h_copies[0]->GetNbinsX(); ++i) {
       double tot_bbb_added = 0.0;
+      double tot_bbb_c = 0.0;
       std::vector<std::tuple<double, TH1 *, bool>> result;
       for (unsigned j = 0; j < h_copies.size(); ++j) {
         double val = h_copies[j]->GetBinContent(i);
@@ -80,10 +81,12 @@ void BinByBinFactory::MergeBinErrors(CombineHarvester &cb) {
             r < (result.size() - 1)) {
           bbb_removed += 1;
           removed += std::get<0>(result[r]);
+          if (!std::get<2>(result[r])) {tot_bbb_c += std::get<0>(result[r]);}
           std::get<1>(result[r])->SetBinError(i, 0.0);
         }
       }
-      double expand = std::sqrt(1. / (1. - (removed / tot_bbb_added)));
+
+      double expand = std::sqrt(1. / (1. - (removed / tot_bbb_added + tot_bbb_c)));
       for (unsigned r = 0; r < result.size(); ++r) {
         if (!std::get<2>(result[r])) continue;
         std::get<1>(result[r])->SetBinError(
