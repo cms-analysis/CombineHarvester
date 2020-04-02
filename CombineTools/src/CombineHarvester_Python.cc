@@ -169,14 +169,24 @@ void (Systematic::*Overload_Syst_set_shapes)(
 void (*Overload1_ValidateShapeUncertaintyDirection)(
     CombineHarvester&) = ch::ValidateShapeUncertaintyDirection;
 
+void (*Overload1_ValidateShapeTemplates)(
+    CombineHarvester&) = ch::ValidateShapeTemplates;
+
 void (*Overload1_CheckEmptyShapes)(
     CombineHarvester&) = ch::CheckEmptyShapes;
+
+void (*Overload1_CheckEmptyBins)(
+    CombineHarvester&) = ch::CheckEmptyBins;
 
 void (*Overload1_CheckNormEff)(
     CombineHarvester&, double) = ch::CheckNormEff;
 
 void (*Overload1_CheckSizeOfShapeEffect)(
     CombineHarvester&) = ch::CheckSizeOfShapeEffect;
+
+void (*Overload1_CheckSmallSignals)(
+    CombineHarvester&, double) = ch::CheckSmallSignals;
+
 
 // Use some macros for methods with default values
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(defaults_bin, bin, 1, 2)
@@ -498,9 +508,12 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
     py::def("ParseCombineWorkspace", ch::ParseCombineWorkspacePy);
     py::def("PrintSystematic", ch::PrintSystematic);
     py::def("ValidateShapeUncertaintyDirection", Overload1_ValidateShapeUncertaintyDirection);
+    py::def("ValidateShapeTemplates", Overload1_ValidateShapeTemplates);
     py::def("CheckEmptyShapes", Overload1_CheckEmptyShapes);
+    py::def("CheckEmptyBins", Overload1_CheckEmptyBins);
     py::def("CheckNormEff", Overload1_CheckNormEff);
     py::def("CheckSizeOfShapeEffect", Overload1_CheckSizeOfShapeEffect);
+    py::def("CheckSmallSignals", Overload1_CheckSmallSignals);
     py::def("ValidateCards", ch::ValidateCards);
 
 }
