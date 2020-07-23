@@ -20,7 +20,7 @@
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/HistMapping.h"
-
+#include "HiggsAnalysis/CombinedLimit/interface/VerticalInterpPdf.h"
 
 namespace ch {
 

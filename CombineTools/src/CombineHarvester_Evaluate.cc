@@ -527,7 +527,6 @@ TH2F CombineHarvester::Get2DShapeInternal(ProcSystMap const& lookup,
         return sys->name() == single_sys;
       })) continue;
     }
-
     double p_rate = procs_[i]->rate();
     if (procs_[i]->shape() || procs_[i]->data()) {
       TH2F proc_shape = procs_[i]->ShapeAsTH2F();
@@ -592,9 +591,18 @@ TH2F CombineHarvester::Get2DShapeInternal(ProcSystMap const& lookup,
           var_name_y = temp_vars->first()->GetName();
           std::cout << "Found var " + var_name_y + " Get2DShapeInternal"<< std::endl;
         }
-        procs_[i]->set_observable((RooRealVar *)procs_[i]->pdf()->findServer(var_name.c_str()));
-        procs_[i]->set_observable_y((RooRealVar *)procs_[i]->pdf()->findServer(var_name_y.c_str()));
+        if (procs_[i]->pdf()->findServer(var_name.c_str())) {
+            procs_[i]->set_observable((RooRealVar *)procs_[i]->pdf()->findServer(var_name.c_str()));
+            procs_[i]->set_observable_y((RooRealVar *)procs_[i]->pdf()->findServer(var_name_y.c_str()));
+        }
+        else {
+            VerticalInterpPdf* proc_pdf = (VerticalInterpPdf*)procs_[i]->pdf();
+            auto nom_template = proc_pdf->funcList().at(0);
+            procs_[i]->set_observable((RooRealVar *)nom_template->findServer(var_name.c_str()));
+            procs_[i]->set_observable_y((RooRealVar *)nom_template->findServer(var_name_y.c_str()));
+        }
       }
+
       TH1::AddDirectory(false);
       TH2F* tmp = (TH2F*)procs_[i]->observable()->createHistogram("",RooFit::Binning(procs_[i]->observable()->getBinning()),
                                                                     RooFit::YVar(*(RooAbsRealLValue*)procs_[i]->observable_y(),RooFit::Binning(procs_[i]->observable_y()->getBinning()))
