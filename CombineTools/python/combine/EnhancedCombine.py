@@ -43,7 +43,6 @@ class EnhancedCombine(CombineToolBase):
         group.add_argument(
             '--setParameterRanges', help='Some other options will modify or add to the list of parameter ranges')
 
-
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
         group.add_argument(

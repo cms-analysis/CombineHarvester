@@ -194,6 +194,7 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> input_merge_procs_;
   std::map<std::string, std::string> merged_procs;
 
+  std::vector<std::string> merged_bins_;
 
   po::options_description help_config("Help");
   help_config.add_options()
@@ -261,7 +262,8 @@ int main(int argc, char* argv[]) {
     ("merge-procs,p", po::value<vector<string>>(&input_merge_procs_)->multitoken(), 
       "Merge these processes. Regex expression allowed. Format: NEWPROCESSNAME='expression'")
     ("skip-procs,s", po::value<vector<string>>(&skip_procs_)->multitoken(), 
-      "Skip these processes. Regex expression allowed. Format: 'expression'. Can be called multiple times");
+      "Skip these processes. Regex expression allowed. Format: 'expression'. Can be called multiple times")
+    ("merged-bins", po::value<vector<string>>(&merged_bins_)->multitoken(), "List of [label]=[regex] for merged bins");
 
   // if (!no_sampling && !postfit) {
   //   throw logic_error(
@@ -387,8 +389,7 @@ int main(int argc, char* argv[]) {
   vector<string> bins;
   if (bins_.size() == 0)
   {
-    auto bin_set = cmb.cp().bin_set();
-    std::copy(bin_set.begin(), bin_set.end(), std::back_inserter(bins));
+    bins = ch::Set2Vec(cmb.cp().bin_set());
   }
   else{
     bins = bins_;
@@ -399,6 +400,16 @@ int main(int argc, char* argv[]) {
   for(auto& expr: skip_procs_){
     process_set = cmb.cp().process({expr}).process_set();
     skip_procs.insert(process_set.begin(), process_set.end());
+  }
+
+  auto bin_patterns = bins;
+  for (unsigned i = 0; i < merged_bins_.size(); ++i) {
+    vector<string> parts;
+    boost::split(parts, merged_bins_[i], boost::is_any_of("="));
+    if (parts.size() == 2) {
+      bins.push_back(parts[0]);
+      bin_patterns.push_back(parts[1]);
+    }
   }
 
   TFile outfile(output.c_str(), "RECREATE");
@@ -413,16 +424,21 @@ int main(int argc, char* argv[]) {
       pre_shapes["total"] = map<string, TH1F>();
       do_complete_set(cmb, outfile, "total_prefit", pre_shapes["total"], merged_procs, skip_procs, cmb_card, save_yields, datacard, skip_proc_errs, factors);
     }
-    for (auto bin : bins) {
+       
+    
+  for (unsigned ib = 0; ib < bins.size(); ++ib) {
+      std::string bin = bins[ib];
+      std::string bin_pattern = bin_patterns[ib];
       pre_shapes[bin] = map<string, TH1F>();
+
       do_complete_set(
-        cmb.cp().bin({bin}), 
+        cmb.cp().bin({bin_pattern}), 
         outfile, 
         bin+"_prefit", 
         pre_shapes[bin], 
         merged_procs,
         skip_procs,
-        cmb_card.cp().bin({bin}),
+        cmb_card.cp().bin({bin_pattern}),
         save_yields,
         datacard, 
         skip_proc_errs,
@@ -471,8 +487,11 @@ int main(int argc, char* argv[]) {
 
 
     for (auto bin : bins) {
+      for (unsigned ib = 0; ib < bins.size(); ++ib) {
+      std::string bin = bins[ib];
+      std::string bin_pattern = bin_patterns[ib];
       post_shapes[bin] = map<string, TH1F>();
-      auto cmb_bin = cmb.cp().bin({bin});
+      auto cmb_bin = cmb.cp().bin({bin_pattern});
       do_complete_set(
         cmb_bin,
         outfile, 
@@ -480,7 +499,7 @@ int main(int argc, char* argv[]) {
         post_shapes[bin], 
         merged_procs,
         skip_procs,
-        cmb_card.cp().bin({bin}), 
+        cmb_card.cp().bin({bin_pattern}), 
         save_yields,
         datacard, 
         skip_proc_errs, 
