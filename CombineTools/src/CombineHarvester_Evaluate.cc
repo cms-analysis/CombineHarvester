@@ -446,7 +446,9 @@ TH1F CombineHarvester::GetObservedShape() {
       tmp->SetBinErrorOption(TH1::kPoisson);
       proc_shape = *tmp;
       delete tmp;
-      proc_shape.Scale(1. / proc_shape.Integral());
+      if (proc_shape.Integral() > 0.) {
+        proc_shape.Scale(1. / proc_shape.Integral());
+      }
     }
     proc_shape.Scale(p_rate);
     if (!shape_init) {

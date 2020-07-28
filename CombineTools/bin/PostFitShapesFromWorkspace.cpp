@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
   bool skip_proc_errs = false;
   bool total_shapes = false;
   std::vector<std::string> reverse_bins_;
+  std::vector<std::string> merged_bins_;
 
   po::options_description help_config("Help");
   help_config.add_options()
@@ -99,7 +100,8 @@ int main(int argc, char* argv[]) {
     ("total-shapes",
       po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
       "Save signal- and background shapes added for all channels/categories")
-    ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for");
+    ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for")
+    ("merged-bins", po::value<vector<string>>(&merged_bins_)->multitoken(), "List of [label]=[regex] for merged bins");
 
   if (sampling && !postfit) {
     throw logic_error(
@@ -136,6 +138,8 @@ int main(int argc, char* argv[]) {
   // Create CH instance and parse the workspace
   ch::CombineHarvester cmb;
   cmb.SetFlag("workspaces-use-clone", true);
+  cmb.SetFlag("filters-use-regex", true);
+
   ch::ParseCombineWorkspace(cmb, *ws, "ModelConfig", data, false);
 
   // Only evaluate in case parameters to freeze are provided
@@ -181,7 +185,16 @@ int main(int argc, char* argv[]) {
     return no_shape;
   });
 
-  auto bins = cmb.cp().bin_set();
+  auto bins = ch::Set2Vec(cmb.cp().bin_set());
+  auto bin_patterns = bins;
+  for (unsigned i = 0; i < merged_bins_.size(); ++i) {
+    vector<string> parts;
+    boost::split(parts, merged_bins_[i], boost::is_any_of("="));
+    if (parts.size() == 2) {
+      bins.push_back(parts[0]);
+      bin_patterns.push_back(parts[1]);
+    }
+  }
 
   TFile outfile(output.c_str(), "RECREATE");
   TH1::AddDirectory(false);
@@ -224,8 +237,10 @@ int main(int argc, char* argv[]) {
         ch::WriteToTFile(&(iter.second), &outfile, "prefit/" + iter.first);
       }
     }
-    for (auto bin : bins) {
-      ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
+    for (unsigned ib = 0; ib < bins.size(); ++ib) {
+      std::string bin = bins[ib];
+      std::string bin_pattern = bin_patterns[ib];
+      ch::CombineHarvester cmb_bin = cmb.cp().bin({bin_pattern});
       // This next line is a temporary fix for models with parameteric RooFit pdfs
       // - we try and set the number of bins to evaluate the pdf to be the same as
       // the number of bins in data
@@ -341,8 +356,10 @@ int main(int argc, char* argv[]) {
     }
 
 
-    for (auto bin : bins) {
-      ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
+    for (unsigned ib = 0; ib < bins.size(); ++ib) {
+      std::string bin = bins[ib];
+      std::string bin_pattern = bin_patterns[ib];
+      ch::CombineHarvester cmb_bin = cmb.cp().bin({bin_pattern});
       post_shapes[bin]["data_obs"] = cmb_bin.GetObservedShape();
       for (auto proc : cmb_bin.process_set()) {
         auto cmb_proc = cmb_bin.cp().process({proc});
