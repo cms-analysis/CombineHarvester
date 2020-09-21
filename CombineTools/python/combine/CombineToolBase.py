@@ -259,7 +259,7 @@ class CombineToolBase:
         if self.job_mode == 'slurm':
             for script in script_list:
                 full_script = os.path.abspath(script)
-                logname = full_script.replace('.sh', '_%x.log')
+                logname = full_script.replace('.sh', '_%A.log')
                 run_command(self.dry_run, 'sbatch -o %s %s %s' % (logname, self.bopts, full_script))
         if self.job_mode == 'condor':
             outscriptname = 'condor_%s.sh' % self.task_name
