@@ -34,6 +34,9 @@ def Eval(obj, x, params):
 
 def BuildScan(scan, param, files, color, yvals, ycut):
     graph = read(scan, param, files, ycut)
+    if graph.GetN() <= 1:
+        graph.Print()
+        raise RuntimeError('Attempting to build %s scan from TGraph with zero or one point (see above)' % files)
     bestfit = None
     for i in xrange(graph.GetN()):
         if graph.GetY()[i] == 0.:
