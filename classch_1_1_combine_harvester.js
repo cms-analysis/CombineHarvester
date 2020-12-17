@@ -68,6 +68,8 @@ var classch_1_1_combine_harvester =
     [ "VariableRebin", "classch_1_1_combine_harvester.html#a9ec4406a5a327d11af6257be20865b2a", null ],
     [ "ZeroBins", "classch_1_1_combine_harvester.html#a04ff1eb7d52a251110bef09b3f7be2c4", null ],
     [ "SetPdfBins", "classch_1_1_combine_harvester.html#ad61cdbfaea0ed88c09651c2a92c934e2", null ],
+    [ "getParFromWs", "classch_1_1_combine_harvester.html#ad45a973f5947f9a1a09c8d588f778954", null ],
+    [ "setParInWs", "classch_1_1_combine_harvester.html#af6906e10545d3958d0dd82472272e31e", null ],
     [ "SetGroup", "classch_1_1_combine_harvester.html#a5d75e03de3d628f7281a2e6914722bc5", null ],
     [ "RemoveGroup", "classch_1_1_combine_harvester.html#ac3e906d415a6d68713f08a0c3f885810", null ],
     [ "RenameGroup", "classch_1_1_combine_harvester.html#a750a78b28b4ae6ca2d27a34b4ac32cc9", null ],

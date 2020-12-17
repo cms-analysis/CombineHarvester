@@ -1,16 +1,18 @@
 var NAVTREEINDEX3 =
 {
+"dir_a11d860a120a6ee231a0ac3c6fec920f.html":[17,0,0,1],
+"dir_b40e54ab5ece44508715b2777a1a95eb.html":[17,0,1,0],
 "dir_bd86b6048931602d3e119f261829765b.html":[17,0,1,2],
 "files.html":[17,0],
-"functions.html":[16,2,0,0],
 "functions.html":[16,2,0],
+"functions.html":[16,2,0,0],
 "functions_b.html":[16,2,0,1],
 "functions_c.html":[16,2,0,2],
 "functions_d.html":[16,2,0,3],
 "functions_e.html":[16,2,0,4],
 "functions_f.html":[16,2,0,5],
-"functions_func.html":[16,2,1,0],
 "functions_func.html":[16,2,1],
+"functions_func.html":[16,2,1,0],
 "functions_func_b.html":[16,2,1,1],
 "functions_func_c.html":[16,2,1,2],
 "functions_func_d.html":[16,2,1,3],
@@ -56,8 +58,8 @@ var NAVTREEINDEX3 =
 "globals_func.html":[17,1,1],
 "globals_vars.html":[17,1,2],
 "hierarchy.html":[16,1],
-"index.html":[0],
 "index.html":[],
+"index.html":[0],
 "index.html#getting-started":[0,0],
 "index.html#high-level-tools":[0,1],
 "index.html#note":[0,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX3 =
 "structch_1_1syst_1_1analysis.html#a11b01686f41ab63649080f7bc4aa9aaa":[16,0,0,0,0,0],
 "structch_1_1syst_1_1bin.html":[16,0,0,0,1],
 "structch_1_1syst_1_1bin.html#a49d56f888416be832718d0ca180c0f5e":[16,0,0,0,1,0],
-"structch_1_1syst_1_1channel.html":[16,0,0,0,3],
-"structch_1_1syst_1_1channel.html#a7d239a5cff7e76f49e2b64b31346d094":[16,0,0,0,3,0],
-"structch_1_1syst_1_1era.html":[16,0,0,0,4]
+"structch_1_1syst_1_1channel.html":[16,0,0,0,3]
 };

@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"structch_1_1syst_1_1channel.html#a7d239a5cff7e76f49e2b64b31346d094":[16,0,0,0,3,0],
+"structch_1_1syst_1_1era.html":[16,0,0,0,4],
 "structch_1_1syst_1_1era.html#a3efbe3d6162bf81819ebc883e6c6ffda":[16,0,0,0,4,0],
 "structch_1_1syst_1_1mass.html":[16,0,0,0,5],
 "structch_1_1syst_1_1mass.html#a0938bfa4855dfc837563804b4027de58":[16,0,0,0,5,0],

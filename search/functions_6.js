@@ -20,6 +20,7 @@ var searchData=
   ['getpadymin',['GetPadYMin',['../namespaceplotting.html#a2859ac07831f692838afd628bf9abb21',1,'plotting']]],
   ['getparameter',['GetParameter',['../classch_1_1_combine_harvester.html#ac293d0d0ac5fff3bab85f86d1a9dcb01',1,'ch::CombineHarvester::GetParameter(std::string const &amp;name) const '],['../classch_1_1_combine_harvester.html#ab994bb3d7ccc19475a28f5864831841e',1,'ch::CombineHarvester::GetParameter(std::string const &amp;name)']]],
   ['getparameters',['GetParameters',['../classch_1_1_combine_harvester.html#abc51018136713ef4bec670b85eda7584',1,'ch::CombineHarvester']]],
+  ['getparfromws',['getParFromWs',['../classch_1_1_combine_harvester.html#ad45a973f5947f9a1a09c8d588f778954',1,'ch::CombineHarvester']]],
   ['getpattern',['GetPattern',['../classch_1_1_bin_by_bin_factory.html#a6807dbf5552c3dbdf96204c506e44143',1,'ch::BinByBinFactory']]],
   ['getpoissonerrors',['GetPoissonErrors',['../classch_1_1_bin_by_bin_factory.html#a3039403328320d2f2b44fed582da6445',1,'ch::BinByBinFactory']]],
   ['getqualififedname',['GetQualififedName',['../namespacech.html#a082a87dbfd5b9d61198f7fd4b68e70f9',1,'ch']]],

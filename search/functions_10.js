@@ -53,6 +53,7 @@ var searchData=
   ['setmergethreshold',['SetMergeThreshold',['../classch_1_1_bin_by_bin_factory.html#aa983d4e391adbf5a7af40458a3ffc062',1,'ch::BinByBinFactory']]],
   ['setmergezerobins',['SetMergeZeroBins',['../classch_1_1_bin_by_bin_factory.html#a57a7a111d2b683912cb70e5e9786432c',1,'ch::BinByBinFactory']]],
   ['setmintozero',['SetMinToZero',['../namespaceplotting.html#ad4f500ac00a36bc051db4a4a3869b107',1,'plotting']]],
+  ['setparinws',['setParInWs',['../classch_1_1_combine_harvester.html#af6906e10545d3958d0dd82472272e31e',1,'ch::CombineHarvester']]],
   ['setpattern',['SetPattern',['../classch_1_1_bin_by_bin_factory.html#a4f8c2b763538030dcab6cd3566b27568',1,'ch::BinByBinFactory']]],
   ['setpdfbins',['SetPdfBins',['../classch_1_1_combine_harvester.html#ad61cdbfaea0ed88c09651c2a92c934e2',1,'ch::CombineHarvester']]],
   ['setperformrebin',['SetPerformRebin',['../classch_1_1_auto_rebin.html#a88bd0408dd758d31fe3f60815bbec5d3',1,'ch::AutoRebin']]],
