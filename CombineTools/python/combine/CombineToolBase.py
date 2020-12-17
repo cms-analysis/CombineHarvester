@@ -97,6 +97,7 @@ class CombineToolBase:
         self.args = None
         self.passthru = []
         self.job_mode = 'interactive'
+        self.job_dir = ""
         self.prefix_file = ''
         self.parallel = 1
         self.merge = 1
@@ -110,7 +111,9 @@ class CombineToolBase:
 
     def attach_job_args(self, group):
         group.add_argument('--job-mode', default=self.job_mode, choices=[
-                           'interactive', 'script', 'lxbatch', 'SGE', 'condor', 'crab3'], help='Task execution mode')
+                           'interactive', 'script', 'lxbatch', 'SGE', 'slurm', 'condor', 'crab3'], help='Task execution mode')
+        group.add_argument('--job-dir', default=self.job_dir,
+                           help='Path to directory containing job scripts and logs')
         group.add_argument('--prefix-file', default=self.prefix_file,
                            help='Path to file containing job prefix')
         group.add_argument('--task-name', default=self.task_name,
@@ -145,6 +148,7 @@ class CombineToolBase:
     def set_args(self, known, unknown):
         self.args = known
         self.job_mode = self.args.job_mode
+        self.job_dir = self.args.job_dir
         self.prefix_file = self.args.prefix_file
         self.task_name = self.args.task_name
         self.parallel = self.args.parallel
@@ -217,7 +221,7 @@ class CombineToolBase:
             result = pool.map(
                 partial(run_command, self.dry_run, pre_cmd=self.pre_cmd), self.job_queue)
         script_list = []
-        if self.job_mode in ['script', 'lxbatch', 'SGE']:
+        if self.job_mode in ['script', 'lxbatch', 'SGE', 'slurm']:
             if self.prefix_file != '':
                 if self.prefix_file.endswith('.txt'):
                   job_prefix_file = open(self.prefix_file,'r')
@@ -235,6 +239,10 @@ class CombineToolBase:
                 # each job is given a slice from the list of combine commands of length 'merge'
                 # we also keep track of the files that were created in case submission to a
                 # batch system was also requested
+                if self.job_dir:
+                  if not os.path.exists(self.job_dir):
+                    os.makedirs(self.job_dir)
+                  script_name = os.path.join(self.job_dir,script_name)
                 self.create_job_script(
                     self.job_queue[j:j + self.merge], script_name, self.job_mode == 'script')
                 script_list.append(script_name)
@@ -248,6 +256,11 @@ class CombineToolBase:
                 full_script = os.path.abspath(script)
                 logname = full_script.replace('.sh', '_%J.log')
                 run_command(self.dry_run, 'qsub -o %s %s %s' % (logname, self.bopts, full_script))
+        if self.job_mode == 'slurm':
+            for script in script_list:
+                full_script = os.path.abspath(script)
+                logname = full_script.replace('.sh', '_%A.log')
+                run_command(self.dry_run, 'sbatch -o %s %s %s' % (logname, self.bopts, full_script))
         if self.job_mode == 'condor':
             outscriptname = 'condor_%s.sh' % self.task_name
             subfilename = 'condor_%s.sub' % self.task_name
