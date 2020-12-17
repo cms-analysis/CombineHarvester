@@ -56,9 +56,17 @@ def prefit_from_workspace(file, workspace, params, setPars=None):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.WARNING)
     if setPars is not None:
       parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]
+      allParams = ws.allVars()
+      allParams.add(ws.allCats())
       for par, val in parsToSet:
-        print 'Setting paramter %s to %g' % (par, float(val))
-        ws.var(par).setVal(float(val))
+        tmp = allParams.find(par)
+        isrvar = tmp.IsA().InheritsFrom(ROOT.RooRealVar.Class())
+        if isrvar:
+          print 'Setting parameter %s to %g' % (par, float(val))
+          tmp.setVal(float(val))
+        else:
+          print 'Setting index %s to %g' % (par, float(val))
+          tmp.setIndex(int(val))
 
     for p in params:
         res[p] = {}
