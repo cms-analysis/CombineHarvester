@@ -337,6 +337,8 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("RemoveGroup", &CombineHarvester::RemoveGroup)
       .def("AddDatacardLineAtEnd", &CombineHarvester::AddDatacardLineAtEnd)
       .def("ClearDatacardLinesAtEnd", &CombineHarvester::ClearDatacardLinesAtEnd)
+      .def("getParFromWs",&CombineHarvester::getParFromWs)
+      .def("setParInWs",&CombineHarvester::setParInWs)
       // Evaluation
       .def("GetRate", &CombineHarvester::GetRate)
       .def("GetObservedRate", &CombineHarvester::GetObservedRate)
