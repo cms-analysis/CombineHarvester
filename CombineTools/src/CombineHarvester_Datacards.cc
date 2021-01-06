@@ -17,6 +17,7 @@
 #include "TH1.h"
 #include "RooRealVar.h"
 #include "RooCategory.h"
+#include <exception>
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Process.h"
 #include "CombineHarvester/CombineTools/interface/Systematic.h"
@@ -396,6 +397,14 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
         systs_.push_back(sys);
       }
       continue;
+    }
+
+    if (start_nuisance_scan and words[i].size() >3 and 
+            boost::iequals(words[i][0],"nuisance") and
+            boost::iequals(words[i][1],"edit") and
+            boost::iequals(words[i][2],"freeze") 
+            ){ // are parameter created? -> will crash if parameter does not exist.
+        GetParameter(words[i][3])->set_frozen(true);
     }
 
     if (start_nuisance_scan && words[i].size() >= 4 &&
