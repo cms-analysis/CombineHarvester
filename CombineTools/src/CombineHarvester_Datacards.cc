@@ -40,15 +40,38 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
   boost::replace_all(parse_rules, "$MASS",      "(?<MASS>[\\w\\.]+)");
   boost::regex rgx(parse_rules);
   boost::smatch matches;
-  boost::regex_search(filename, matches, rgx);
+  if(boost::regex_search(filename, matches, rgx)){
   this->ParseDatacard(filename,
-    matches.str("ANALYSIS"),
-    matches.str("ERA"),
-    matches.str("CHANNEL"),
-    matches.str("BINID").length() ?
-      boost::lexical_cast<int>(matches.str("BINID")) : 0,
-    matches.str("MASS"));
+       matches.str("ANALYSIS"),
+      matches.str("ERA"),
+      matches.str("CHANNEL"),
+      matches.str("BINID").length() ?
+        boost::lexical_cast<int>(matches.str("BINID")) : 0,
+      matches.str("MASS"));
+    }
+    else{
+      std::cerr << "Error when matching regular expressions!\n";
+    }
   return 0;
+}
+
+void EscapeRegex(std::string &regex)
+{
+    boost::replace_all(regex, "\\", "\\\\");
+    boost::replace_all(regex, "^", "\\^");
+    boost::replace_all(regex, ".", "\\.");
+    boost::replace_all(regex, "$", "\\$");
+    boost::replace_all(regex, "|", "\\|");
+    boost::replace_all(regex, "(", "\\(");
+    boost::replace_all(regex, ")", "\\)");
+    boost::replace_all(regex, "{", "\\{");
+    boost::replace_all(regex, "{", "\\}");
+    boost::replace_all(regex, "[", "\\[");
+    boost::replace_all(regex, "]", "\\]");
+    boost::replace_all(regex, "*", "\\*");
+    boost::replace_all(regex, "+", "\\+");
+    boost::replace_all(regex, "?", "\\?");
+    boost::replace_all(regex, "/", "\\/");
 }
 
 int CombineHarvester::ParseDatacard(std::string const& filename,
@@ -66,6 +89,7 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
   // or which starts with a "#" or "-" character.
   std::vector<std::vector<std::string>> words;
   for (unsigned i = 0; i < lines.size(); ++i) {
+
     boost::trim(lines[i]);
     if (lines[i].size() == 0) continue;
     if (lines[i].at(0) == '#' || lines[i].at(0) == '-') continue;
@@ -288,7 +312,6 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
         start_nuisance_scan = true;
       }
     }
-
     if (start_nuisance_scan && words[i].size() >= 4) {
       if (boost::iequals(words[i][1], "param")) {
         std::string param_name = words[i][0];
@@ -353,7 +376,7 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
           if (tokens.size() == 4) {
             param->set_range_d(boost::lexical_cast<double>(tokens[1]));
             param->set_range_u(boost::lexical_cast<double>(tokens[2]));
-            FNLOGC(log(), verbosity_ > 1) << "Setting parameter range to " << words[i][5];
+            FNLOGC(log(), verbosity_ > 1) << "Setting parameter range to " << words[i][5]<< std::endl;
           }
         }
       } else if (words[i].size() == 6 && !has_range) {
@@ -375,12 +398,31 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
           process_id = boost::lexical_cast<int>(words[r-1][p]);
           process = words[r-2][p];
         }
-        if (words[i][2] == "*" || words[i][2] == bin) {
+
+        // prepare input expression for bins as regex input
+        auto current_exp = words[i][2];
+        EscapeRegex(current_exp);
+        boost::replace_all(current_exp, "\\*",      ".*");
+        boost::replace_all(current_exp, "\\?",      ".");
+        FNLOGC(log(), verbosity_ > 1) << "Parsing as regex (bin): " << current_exp << std::endl;
+        boost::regex rgx_bin(current_exp);
+        boost::smatch bin_matches;
+        if(boost::regex_search(bin, bin_matches, rgx_bin)){
           matches_bin = true;
         }
-        if (words[i][3] == "*" || words[i][3] == process) {
+
+        // prepare input expression for processes as regex input
+        current_exp = words[i][3];
+        EscapeRegex(current_exp);
+        boost::replace_all(current_exp, "\\*",      ".*");
+        boost::replace_all(current_exp, "\\?",      ".");
+        FNLOGC(log(), verbosity_ > 1) << "Parsing as regex (process): " << current_exp<< std::endl;
+        boost::regex rgx_proc(current_exp);
+        boost::smatch proc_matches;
+        if(boost::regex_search(process, proc_matches, rgx_proc)){
           matches_proc = true;
         }
+
         if (!matches_bin || !matches_proc) continue;
         auto sys = std::make_shared<Systematic>();
         sys->set_bin(bin);
