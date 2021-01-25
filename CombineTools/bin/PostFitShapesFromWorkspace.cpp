@@ -12,6 +12,20 @@ namespace po = boost::program_options;
 
 using namespace std;
 
+void ReverseBins(TH1F & h) {
+  std::vector<float> contents(h.GetNbinsX());
+  std::vector<float> errors(h.GetNbinsX());
+  for (int i = 0; i < h.GetNbinsX(); ++i) {
+    contents[i] = h.GetBinContent(i + 1);
+    errors[i] = h.GetBinError(i + 1);
+  }
+  for (int i = 0; i < h.GetNbinsX(); ++i) {
+    h.SetBinContent(h.GetNbinsX() - i, contents[i]);
+    h.SetBinError(h.GetNbinsX() - i, errors[i]);
+  }
+  // return h;
+}
+
 int main(int argc, char* argv[]) {
   // Need this to read combine workspaces
   gSystem->Load("libHiggsAnalysisCombinedLimit");
@@ -30,6 +44,8 @@ int main(int argc, char* argv[]) {
   string data       = "data_obs";
   bool skip_prefit  = false;
   bool skip_proc_errs = false;
+  bool total_shapes = false;
+  std::vector<std::string> reverse_bins_;
 
   po::options_description help_config("Help");
   help_config.add_options()
@@ -79,7 +95,11 @@ int main(int argc, char* argv[]) {
       "Skip the pre-fit evaluation")
     ("skip-proc-errs",
       po::value<bool>(&skip_proc_errs)->default_value(skip_proc_errs)->implicit_value(true),
-      "Skip evaluation of errors on individual processes");
+      "Skip evaluation of errors on individual processes")
+    ("total-shapes",
+      po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
+      "Save signal- and background shapes added for all channels/categories")
+    ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for");
 
   if (sampling && !postfit) {
     throw logic_error(
@@ -147,6 +167,7 @@ int main(int argc, char* argv[]) {
   // cmb.GetParameter("r")->set_frozen(true);
 
   ch::CombineHarvester cmb_card;
+  cmb_card.SetFlag("workspaces-use-clone",true);
   if (datacard != "") {
     cmb_card.ParseDatacard(datacard, "", "", "", 0, mass);
   }
@@ -169,9 +190,41 @@ int main(int argc, char* argv[]) {
   // Create a map of maps for storing histograms in the form:
   //   pre_shapes[<bin>][<process>]
   map<string, map<string, TH1F>> pre_shapes;
+
+  // Also create a simple map for storing total histograms, summed 
+  // over all bins, in the form:
+  //   pre_shapes_tot[<process>]
+  map<string, TH1F> pre_shapes_tot;
+
   // We can always do the prefit version,
   // Loop through the bins writing the shapes to the output file
   if (!skip_prefit) {
+    if(total_shapes){
+      pre_shapes_tot["data_obs"] = cmb.GetObservedShape();
+      // Then fill total signal and total bkg hists
+      std::cout << ">> Doing prefit: TotalBkg" << std::endl;
+      pre_shapes_tot["TotalBkg"] =
+          cmb.cp().backgrounds().GetShapeWithUncertainty();
+      std::cout << ">> Doing prefit: TotalSig" << std::endl;
+      pre_shapes_tot["TotalSig"] =
+          cmb.cp().signals().GetShapeWithUncertainty();
+      std::cout << ">> Doing prefit: TotalProcs" << std::endl;
+      pre_shapes_tot["TotalProcs"] =
+          cmb.cp().GetShapeWithUncertainty();
+
+      if (datacard != "") {
+        TH1F ref = cmb_card.cp().GetObservedShape();
+        for (auto & it : pre_shapes_tot) {
+          it.second = ch::RestoreBinning(it.second, ref);
+        }
+      }
+
+      // Can write these straight into the output file
+      outfile.cd();
+      for (auto& iter : pre_shapes_tot) {
+        ch::WriteToTFile(&(iter.second), &outfile, "prefit/" + iter.first);
+      }
+    }
     for (auto bin : bins) {
       ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
       // This next line is a temporary fix for models with parameteric RooFit pdfs
@@ -203,6 +256,7 @@ int main(int argc, char* argv[]) {
       pre_shapes[bin]["TotalProcs"] =
           cmb_bin.cp().GetShapeWithUncertainty();
 
+
       if (datacard != "") {
         TH1F ref = cmb_card.cp().bin({bin}).GetObservedShape();
         for (auto & it : pre_shapes[bin]) {
@@ -210,6 +264,13 @@ int main(int argc, char* argv[]) {
         }
       }
 
+      for (auto const& rbin : reverse_bins_) {
+        if (rbin != bin) continue;
+        auto & hists = pre_shapes[bin];
+        for (auto it = hists.begin(); it != hists.end(); ++it) {
+          ReverseBins(it->second);
+        }
+      }
       // Can write these straight into the output file
       outfile.cd();
       for (auto& iter : pre_shapes[bin]) {
@@ -244,6 +305,42 @@ int main(int argc, char* argv[]) {
     map<string, map<string, TH1F>> post_shapes;
     map<string, TH2F> post_yield_cov;
     map<string, TH2F> post_yield_cor;
+
+    map<string, TH1F> post_shapes_tot;
+
+    if(total_shapes){
+      post_shapes_tot["data_obs"] = cmb.GetObservedShape();
+      // Fill the total sig. and total bkg. hists
+      auto cmb_bkgs = cmb.cp().backgrounds();
+      auto cmb_sigs = cmb.cp().signals();
+      std::cout << ">> Doing postfit: TotalBkg" << std::endl;
+      post_shapes_tot["TotalBkg"] =
+          sampling ? cmb_bkgs.GetShapeWithUncertainty(res, samples)
+                   : cmb_bkgs.GetShapeWithUncertainty();
+      std::cout << ">> Doing postfit: TotalSig" << std::endl;
+      post_shapes_tot["TotalSig"] =
+          sampling ? cmb_sigs.GetShapeWithUncertainty(res, samples)
+                   : cmb_sigs.GetShapeWithUncertainty();
+      std::cout << ">> Doing postfit: TotalProcs" << std::endl;
+      post_shapes_tot["TotalProcs"] =
+          sampling ? cmb.cp().GetShapeWithUncertainty(res, samples)
+                   : cmb.cp().GetShapeWithUncertainty();
+
+      if (datacard != "") {
+        TH1F ref = cmb_card.cp().GetObservedShape();
+        for (auto & it : post_shapes_tot) {
+          it.second = ch::RestoreBinning(it.second, ref);
+        }
+      }
+
+      outfile.cd();
+      // Write the post-fit histograms
+      for (auto & iter : post_shapes_tot) {
+        ch::WriteToTFile(&(iter.second), &outfile,
+                         "postfit/" + iter.first);
+      }
+    }
+
 
     for (auto bin : bins) {
       ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
@@ -290,6 +387,16 @@ int main(int argc, char* argv[]) {
 
       outfile.cd();
       // Write the post-fit histograms
+
+      for (auto const& rbin : reverse_bins_) {
+        if (rbin != bin) continue;
+        std::cout << ">> reversing hists in bin " << bin << "\n";
+        auto & hists = post_shapes[bin];
+        for (auto it = hists.begin(); it != hists.end(); ++it) {
+          ReverseBins(it->second);
+        }
+      }
+
       for (auto & iter : post_shapes[bin]) {
         ch::WriteToTFile(&(iter.second), &outfile,
                          bin + "_postfit/" + iter.first);

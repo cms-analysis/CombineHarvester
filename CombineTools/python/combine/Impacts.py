@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 
 import sys
+import re
 import json
 import ROOT
 import CombineHarvester.CombineTools.combine.utils as utils
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+try:
+    from HiggsAnalysis.CombinedLimit.RooAddPdfFixer import FixAll
+except ImportError:
+    #compatibility for combine version earlier than https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/tree/2d172ef50fccdfbbc2a499ac8e47bba2d667b95a
+    #can delete in a few months
+    def FixAll(workspace): pass
 
 
 class Impacts(CombineToolBase):
@@ -30,7 +37,7 @@ class Impacts(CombineToolBase):
             default the list of nuisance parameters will be loaded from the
             input workspace. Use this option to specify a different list""")
         group.add_argument('--exclude', metavar='PARAM1,PARAM2,...', help=""" Skip
-            these nuisances""")
+            these nuisances. Also accepts regexp with syntax 'rgx{<my regexp>}'""")
         group.add_argument('--doInitialFit', action='store_true', help="""Find
             the crossings of all the POIs. Must have the output from this
             before running with --doFits""")
@@ -156,8 +163,18 @@ class Impacts(CombineToolBase):
 
         # Exclude some parameters
         if self.args.exclude is not None:
-            exclude = self.args.exclude.split(',')
-            paramList = [x for x in paramList if x not in exclude]
+            exclude = self.args.exclude.split(',')            
+            expExclude = []
+            for exParam in exclude:
+                if 'rgx{' in exParam:
+                    pattern = exParam.replace("'rgx{","").replace("}'","")
+                    pattern = pattern.replace("rgx{","").replace("}","")
+                    for param in paramList:
+                        if re.search(pattern, param):
+                            expExclude.append(param)
+                else:
+                    expExclude.append(exParam)
+            paramList = [x for x in paramList if x not in expExclude]
 
         print 'Have parameters: ' + str(len(paramList))
 
@@ -215,7 +232,9 @@ class Impacts(CombineToolBase):
     def all_free_parameters(self, file, wsp, mc, pois):
         res = []
         wsFile = ROOT.TFile.Open(file)
-        config = wsFile.Get(wsp).genobj(mc)
+        w = wsFile.Get(wsp)
+        FixAll(w)
+        config = w.genobj(mc)
         pdfvars = config.GetPdf().getParameters(config.GetObservables())
         it = pdfvars.createIterator()
         var = it.Next()

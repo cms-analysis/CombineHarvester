@@ -42,7 +42,7 @@ TGraph ExtractExpected(TTree *limit) {
   return gr;
 }
 
-struct Info {
+struct Infos {
   std::string file;
   std::string label;
   int color;
@@ -51,7 +51,7 @@ struct Info {
 int main(int /*argc*/, char* argv[]) {
 
   std::string ch = argv[1];
-  vector<Info> input;
+  vector<Infos> input;
   input.push_back({"parametric/higgsCombineExpected"+ch+".Asymptotic.All.root", "Parametric", 2});
   input.push_back({"parametric-binned/higgsCombineExpected"+ch+".Asymptotic.All.root", "Binned", 4});
   // input.push_back({"parametric-asimov/higgsCombineExpected"+ch+".Asymptotic.All.root", "Parametric (asimov)", 5});

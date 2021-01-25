@@ -477,7 +477,7 @@ void CombineHarvester::LoadShapes(Process* entry,
     RooAbsData const* data_obj = FindMatchingData(entry);
     if (data_obj) {
       if (verbosity_ >= 2) LOGLINE(log(), "Matching RooAbsData has been found");
-      if (pdf) {
+      if (pdf&&!data) {
         RooArgSet argset = ParametersByName(pdf, data_obj->get());
         ImportParameters(&argset);
         if (!entry->observable()) {
@@ -891,4 +891,27 @@ void CombineHarvester::AddExtArgValue(std::string const& name, double const& val
   param->set_err_u(0.);
   param->set_err_d(0.);
 }
+
+double CombineHarvester::getParFromWs(const std::string name){
+    double r=0.; bool found=false;
+      for (auto & item : wspaces_) { 
+          if (item.second.get()->var(name.c_str())) {
+              if (found) std::cout<<"WARNING-DUPLICATE: ALREADY FOUND "<<name<<"in an other ws"<<r<<std::endl;
+              r=item.second.get()->var(name.c_str())->getVal();
+              found=true;
+          }
+      }
+      return r; 
+  }
+
+void CombineHarvester::setParInWs(const std::string name,double value) {
+    for (auto & item : wspaces_) { 
+        if (item.second.get()->var(name.c_str())){
+            if ( item.second.get()->var(name.c_str())->getMin() >value) item.second.get()->var(name.c_str())->setMin(value-0.001);
+            if ( item.second.get()->var(name.c_str())->getMax() <value) item.second.get()->var(name.c_str())->setMax(value+0.001);
+            item.second.get()->var(name.c_str())->setVal(value); 
+        }
+    }
+  }
+
 }

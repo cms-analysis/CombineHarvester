@@ -1,2 +1,0 @@
-SBWeighted_HTT --datacards=cmb/125/htt_tt_1_13TeV.txt --datacards=cmb/125/htt_mt_1_13TeV.txt --datacards=cmb/125/htt_et_1_13TeV.txt   --datacards=cmb/125/htt_em_1_13TeV.txt --datacards=cmb/125/htt_tt_2_13TeV.txt --datacards=cmb/125/htt_mt_2_13TeV.txt --datacards=cmb/125/htt_et_2_13TeV.txt   --datacards=cmb/125/htt_em_2_13TeV.txt  --datacards=cmb/125/htt_tt_3_13TeV.txt --datacards=cmb/125/htt_mt_3_13TeV.txt --datacards=cmb/125/htt_et_3_13TeV.txt   --datacards=cmb/125/htt_em_3_13TeV.txt  --output=sbWeighted --blinded=true --postfit=false
-
