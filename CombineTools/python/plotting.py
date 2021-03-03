@@ -941,7 +941,7 @@ def RemoveGraphXDuplicates(graph):
     i = 0
     while i < graph.GetN() - 1:
         if graph.GetX()[i + 1] == graph.GetX()[i]:
-            # print 'Removing duplicate point (%f, %f)' % (graph.GetX()[i+1], graph.GetY()[i+1])                                                                                                                                             
+            # print 'Removing duplicate point (%f, %f)' % (graph.GetX()[i+1], graph.GetY()[i+1])
             graph.RemovePoint(i + 1)
         else:
             i += 1
