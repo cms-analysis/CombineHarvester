@@ -132,7 +132,7 @@ void (CombineHarvester::*Overload2_WriteDatacard)(
 void Overload3_WriteDatacard(ch::CombineHarvester& cb, std::string const& name, bp::object& file){
   TFile *file_ = nullptr;
   if (!file.is_none())
-    file_ = (TFile*)(TPython::ObjectProxy_AsVoidPtr(file.ptr()));
+    file_ = (TFile*)(TPython::CPPInstance_AsVoidPtr(file.ptr()));
   cb.WriteDatacard(name,*file_);
 }
 
