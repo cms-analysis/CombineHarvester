@@ -2,6 +2,7 @@
 #include "CombineHarvester/CombinePdfs/interface/MorphFunctions.h"
 #include "boost/python.hpp"
 #include "TFile.h"
+#include "CPyCppyy/API.h"
 namespace py = boost::python;
 
 
@@ -9,11 +10,11 @@ void BuildRooMorphingPy(bp::object & ws, ch::CombineHarvester& cb,
                       std::string const& bin, std::string const& process,
                       bp::object & mass_var, std::string norm_postfix,
                       bool allow_morph, bool verbose, bool force_template_limit, bp::object & file) {
-  RooWorkspace *ws_ = (RooWorkspace*)(TPython::CPPInstance_AsVoidPtr(ws.ptr()));
-  RooAbsReal *mass_var_ = (RooAbsReal*)(TPython::CPPInstance_AsVoidPtr(mass_var.ptr()));
+  RooWorkspace *ws_ = (RooWorkspace*)(CPyCppyy::Instance_AsVoidPtr(ws.ptr()));
+  RooAbsReal *mass_var_ = (RooAbsReal*)(CPyCppyy::Instance_AsVoidPtr(mass_var.ptr()));
   TFile *file_ = nullptr;
   if (!file.is_none()) {
-    file_ = (TFile*)(TPython::CPPInstance_AsVoidPtr(file.ptr()));
+    file_ = (TFile*)(CPyCppyy::Instance_AsVoidPtr(file.ptr()));
   }
   BuildRooMorphing(*ws_, cb, bin, process, *mass_var_, norm_postfix, allow_morph, verbose, force_template_limit, file_);
 }
