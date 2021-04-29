@@ -4,7 +4,7 @@
 #include "TH1.h"
 #include "boost/python.hpp"
 #include "boost/python/type_id.hpp"
-#include "TPython.h"
+#include "CPyCppyy/API.h"
 namespace bp = boost::python;
 
 namespace ch { class CombineHarvester; }
@@ -39,7 +39,7 @@ struct convert_cpp_root_to_py_root {
     // Make a copy of the input object and give control of it to python
     // (implied by the "true" in the conversion function)
     T* out = new T(in);
-    return TPython::CPPInstance_FromVoidPtr(out, out->ClassName(), true);
+    return CPyCppyy::Instance_FromVoidPtr(out, out->ClassName(), true);
   }
 };
 
@@ -99,7 +99,7 @@ struct convert_py_root_to_cpp_root {
 
   static void construct(PyObject* obj_ptr,
                         bp::converter::rvalue_from_python_stage1_data* data) {
-    T* TObj = (T*)(TPython::CPPInstance_AsVoidPtr(obj_ptr));
+    T* TObj = (T*)(CPyCppyy::Instance_AsVoidPtr(obj_ptr));
 
     // Grab pointer to memory into which to construct the new QString
     // void* storage =
