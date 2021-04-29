@@ -49,7 +49,7 @@ struct convert_cpp_TH1_to_py_root {
     // Make a copy of the input object and give control of it to python
     // (implied by the "true" in the conversion function)
     TH1* out = (TH1*)in.Clone();
-    return TPython::ObjectProxy_FromVoidPtr(out, out->ClassName(), true);
+    return CPyCppyy::Instance_FromVoidPtr(out, out->ClassName(), true);
   }
 };
 
