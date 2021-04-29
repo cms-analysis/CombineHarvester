@@ -1,6 +1,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include "TH1.h"
 #include "boost/python.hpp"
 #include "boost/python/type_id.hpp"
 #include "CPyCppyy/API.h"
@@ -39,6 +40,16 @@ struct convert_cpp_root_to_py_root {
     // (implied by the "true" in the conversion function)
     T* out = new T(in);
     return CPyCppyy::Instance_FromVoidPtr(out, out->ClassName(), true);
+  }
+};
+
+// Special converter for functions returning a reference to a TH1
+struct convert_cpp_TH1_to_py_root {
+  static PyObject* convert(TH1 const& in) {
+    // Make a copy of the input object and give control of it to python
+    // (implied by the "true" in the conversion function)
+    TH1* out = (TH1*)in.Clone();
+    return TPython::ObjectProxy_FromVoidPtr(out, out->ClassName(), true);
   }
 };
 

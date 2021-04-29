@@ -582,7 +582,11 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_hi.c_str()));
     RooDataHist* h_d =
         dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_lo.c_str()));
-    if (!h || !h_u || !h_d) {
+    RooAbsReal* pdf = mapping.sys_ws->function(mapping.WorkspaceObj().c_str());
+    RooAbsReal* pdf_u = mapping.sys_ws->function(p_s_hi.c_str());
+    RooAbsReal* pdf_d = mapping.sys_ws->function(p_s_lo.c_str());
+
+    if ((!h || !h_u || !h_d) && (!pdf || !pdf_u || !pdf_d)) {
       if (flags_.at("allow-missing-shapes")) {
         LOGLINE(log(), "Warning, shape missing:");
         log() << Systematic::PrintHeader << *entry << "\n";
@@ -590,8 +594,10 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         throw std::runtime_error(
             FNERROR("All shapes must be of type RooDataHist"));
       }
-    } else {
+    } else if (h && h_u && h_d){
       entry->set_data(h_u, h_d, h);
+    } else if (pdf && pdf_u &&pdf_d){
+      entry->set_pdf(pdf_u,pdf_d,pdf);
     }
   } else {
     throw std::runtime_error(
