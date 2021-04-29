@@ -4,7 +4,7 @@ Full documentation: http://cms-analysis.github.io/CombineHarvester
 
 ## Quick start
 
-This pacakge requires HiggsAnalysis/CombinedLimit to be in your local CMSSW area. We follow the release recommendations of the combine developers which can be found [here](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation). The CombineHarvester framework is compatible with the CMSSW 8_1_X and 10_2_X series releases.
+This pacakge requires HiggsAnalysis/CombinedLimit to be in your local CMSSW area. We follow the release recommendations of the combine developers which can be found [here](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation). The CombineHarvester framework is compatible with the CMSSW 8_1_X and 10_2_X series releases. For the 11_2_X series we require a number of changes to the python interface code, and a special branch `112x` has been prepared, but note that this has not been tested or validated yet.
 
 If you just need the core CombineHarvester/CombineTools subpackge, then the following scripts can be used to clone the repository with a sparse checkout for this one only:
 
