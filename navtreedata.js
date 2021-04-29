@@ -119,10 +119,10 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_a_zh_systematics_8cc.html",
-"_plotting_8h.html#a293279a5520769bf993d81e4dc070709",
-"classch_1_1_combine_harvester.html#a463bab1fa1cc7098f35d82c78a10fb9d",
-"dir_a11d860a120a6ee231a0ac3c6fec920f.html",
-"structch_1_1syst_1_1channel.html#a7d239a5cff7e76f49e2b64b31346d094"
+"_parse_combine_workspace_8h_source.html",
+"classch_1_1_combine_harvester.html#a44d791bc4812feb68729e7660fd3e5b3",
+"deprecated.html",
+"structch_1_1_s_over_b_info.html#ae94fc8af21cd3927f289993407ce417a"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

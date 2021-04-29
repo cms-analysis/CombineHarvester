@@ -117,23 +117,27 @@ $(document).ready(function(){initNavTree('_t_file_i_o_8cc_source.html','');});
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  }</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  TDirectory* backup_dir = gDirectory;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  file-&gt;cd();</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordflow">if</span> (!gDirectory-&gt;Get(path.c_str())) {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    gDirectory = backup_dir;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;TH1 &quot;</span> + path + <span class="stringliteral">&quot; not found in &quot;</span> + file-&gt;GetName()));</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  }</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  std::unique_ptr&lt;TH1&gt; res(</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      dynamic_cast&lt;TH1*&gt;(gDirectory-&gt;Get(path.c_str())-&gt;Clone()));</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (!res) {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    gDirectory = backup_dir;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Object &quot;</span> + path + <span class="stringliteral">&quot; in &quot;</span> +</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                                     file-&gt;GetName() + <span class="stringliteral">&quot; is not of type TH1&quot;</span>));</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  }</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  res-&gt;SetDirectory(0);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  gDirectory = backup_dir;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordtype">bool</span> cur_status = TH1::AddDirectoryStatus();</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  TH1::AddDirectory(kFALSE);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  TObject *obj = gDirectory-&gt;Get(path.c_str());</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keywordflow">if</span> (!obj) {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    gDirectory = backup_dir;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;TH1 &quot;</span> + path + <span class="stringliteral">&quot; not found in &quot;</span> + file-&gt;GetName()));</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  }</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  std::unique_ptr&lt;TH1&gt; res(</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      dynamic_cast&lt;TH1*&gt;(obj));</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  TH1::AddDirectory(cur_status);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordflow">if</span> (!res) {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    gDirectory = backup_dir;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">throw</span> std::runtime_error(<a class="code" href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a>(<span class="stringliteral">&quot;Object &quot;</span> + path + <span class="stringliteral">&quot; in &quot;</span> +</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                                     file-&gt;GetName() + <span class="stringliteral">&quot; is not of type TH1&quot;</span>));</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  }</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="comment">// res-&gt;SetDirectory(0);</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  gDirectory = backup_dir;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
 <div class="ttc" id="_logging_8h_html_ab140ae8826e1f99c5aa0e920a9c13112"><div class="ttname"><a href="_logging_8h.html#ab140ae8826e1f99c5aa0e920a9c13112">FNERROR</a></div><div class="ttdeci">#define FNERROR(x)</div><div class="ttdef"><b>Definition:</b> <a href="_logging_8h_source.html#l00009">Logging.h:9</a></div></div>
 <div class="ttc" id="namespacech_html_a9db822b84dd7cf9f1d3bc76a6a741498"><div class="ttname"><a href="namespacech.html#a9db822b84dd7cf9f1d3bc76a6a741498">ch::GetClonedTH1</a></div><div class="ttdeci">std::unique_ptr&lt; TH1 &gt; GetClonedTH1(TFile *file, std::string const &amp;path)</div><div class="ttdef"><b>Definition:</b> <a href="_t_file_i_o_8cc_source.html#l00012">TFileIO.cc:12</a></div></div>
 <div class="ttc" id="namespacech_html"><div class="ttname"><a href="namespacech.html">ch</a></div><div class="ttdef"><b>Definition:</b> <a href="_algorithm_8h_source.html#l00010">Algorithm.h:10</a></div></div>

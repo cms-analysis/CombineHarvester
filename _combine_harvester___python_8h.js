@@ -1,6 +1,7 @@
 var _combine_harvester___python_8h =
 [
     [ "convert_cpp_root_to_py_root", "structconvert__cpp__root__to__py__root.html", null ],
+    [ "convert_cpp_TH1_to_py_root", "structconvert__cpp___t_h1__to__py__root.html", null ],
     [ "convert_cpp_vector_to_py_list", "structconvert__cpp__vector__to__py__list.html", null ],
     [ "convert_cpp_set_to_py_list", "structconvert__cpp__set__to__py__list.html", null ],
     [ "convert_cpp_map_to_py_dict", "structconvert__cpp__map__to__py__dict.html", null ],
