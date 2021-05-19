@@ -593,7 +593,11 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_hi.c_str()));
     RooDataHist* h_d =
         dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_lo.c_str()));
-    if (!h || !h_u || !h_d) {
+    RooAbsReal* pdf = mapping.sys_ws->function(mapping.WorkspaceObj().c_str());
+    RooAbsReal* pdf_u = mapping.sys_ws->function(p_s_hi.c_str());
+    RooAbsReal* pdf_d = mapping.sys_ws->function(p_s_lo.c_str());
+
+    if ((!h || !h_u || !h_d) && (!pdf || !pdf_u || !pdf_d)) {
       if (flags_.at("allow-missing-shapes")) {
         LOGLINE(log(), "Warning, shape missing:");
         log() << Systematic::PrintHeader << *entry << "\n";
@@ -601,8 +605,10 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         throw std::runtime_error(
             FNERROR("All shapes must be of type RooDataHist"));
       }
-    } else {
+    } else if (h && h_u && h_d){
       entry->set_data(h_u, h_d, h);
+    } else if (pdf && pdf_u &&pdf_d){
+      entry->set_pdf(pdf_u,pdf_d,pdf);
     }
   } else {
     throw std::runtime_error(
@@ -903,4 +909,27 @@ void CombineHarvester::AddExtArgValue(std::string const& name, double const& val
   param->set_err_u(0.);
   param->set_err_d(0.);
 }
+
+double CombineHarvester::getParFromWs(const std::string name){
+    double r=0.; bool found=false;
+      for (auto & item : wspaces_) { 
+          if (item.second.get()->var(name.c_str())) {
+              if (found) std::cout<<"WARNING-DUPLICATE: ALREADY FOUND "<<name<<"in an other ws"<<r<<std::endl;
+              r=item.second.get()->var(name.c_str())->getVal();
+              found=true;
+          }
+      }
+      return r; 
+  }
+
+void CombineHarvester::setParInWs(const std::string name,double value) {
+    for (auto & item : wspaces_) { 
+        if (item.second.get()->var(name.c_str())){
+            if ( item.second.get()->var(name.c_str())->getMin() >value) item.second.get()->var(name.c_str())->setMin(value-0.001);
+            if ( item.second.get()->var(name.c_str())->getMax() <value) item.second.get()->var(name.c_str())->setMax(value+0.001);
+            item.second.get()->var(name.c_str())->setVal(value); 
+        }
+    }
+  }
+
 }
