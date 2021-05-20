@@ -128,9 +128,7 @@ int main(int argc, char* argv[]) {
   po::notify(vm);
 
   if (sampling) {
-    std::cout<<"WARNING: the default behaviour of PostFitShapesFromWorkspace is to use the covariance matrix sampling
-    method for the post-fit uncertainty. The option --sampling is deprecated and will be removed in future versions of
-    CombineHarvester"<<std::endl;
+    std::cout<<"WARNING: the default behaviour of PostFitShapesFromWorkspace is to use the covariance matrix sampling method for the post-fit uncertainty. The option --sampling is deprecated and will be removed in future versions of CombineHarvester"<<std::endl;
   }
 
   TFile infile(workspace.c_str());
