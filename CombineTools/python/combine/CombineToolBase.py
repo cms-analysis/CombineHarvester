@@ -272,7 +272,7 @@ class CombineToolBase:
                         ]+["  %s\n" % ln for ln in self.job_queue[j:j + self.merge]]+["fi\n"]
             self.create_job_script(commands, script_name, self.job_mode == "script")
             full_script = os.path.abspath(script_name)
-            logname = full_script.replace('.sh', '_%A.log')
+            logname = full_script.replace('.sh', '_%A_%a.log')
             run_command(self.dry_run, 'sbatch --array=1-%i -o %s %s %s' % (jobs, logname, self.bopts, full_script))
         if self.job_mode == 'condor':
             outscriptname = 'condor_%s.sh' % self.task_name
