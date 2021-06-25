@@ -234,6 +234,7 @@ class CombineToolBase:
                   'PWD': os.environ['PWD']
                 })
                 job_prefix_file.close()
+        if self.job_mode in ['script', 'lxbatch', 'SGE']:
             for i, j in enumerate(range(0, len(self.job_queue), self.merge)):
                 script_name = 'job_%s_%i.sh' % (self.task_name, i)
                 # each job is given a slice from the list of combine commands of length 'merge'
@@ -257,10 +258,22 @@ class CombineToolBase:
                 logname = full_script.replace('.sh', '_%J.log')
                 run_command(self.dry_run, 'qsub -o %s %s %s' % (logname, self.bopts, full_script))
         if self.job_mode == 'slurm':
-            for script in script_list:
-                full_script = os.path.abspath(script)
-                logname = full_script.replace('.sh', '_%A.log')
-                run_command(self.dry_run, 'sbatch -o %s %s %s' % (logname, self.bopts, full_script))
+            script_name = 'slurm_%s.sh' % self.task_name
+            if self.job_dir:
+                if not os.path.exists(self.job_dir):
+                    os.makedirs(self.job_dir)
+                script_name = os.path.join(self.job_dir,script_name)
+            commands = []
+            jobs = 0
+            # each job is given a slice from the list of combine commands of length 'merge'
+            for j in range(0, len(self.job_queue), self.merge):
+                jobs += 1
+                commands += ["if [ ${SLURM_ARRAY_TASK_ID} -eq %i ]; then\n" % jobs,
+                        ]+["  %s\n" % ln for ln in self.job_queue[j:j + self.merge]]+["fi\n"]
+            self.create_job_script(commands, script_name, self.job_mode == "script")
+            full_script = os.path.abspath(script_name)
+            logname = full_script.replace('.sh', '_%A.log')
+            run_command(self.dry_run, 'sbatch --array=1-%i -o %s %s %s' % (jobs, logname, self.bopts, full_script))
         if self.job_mode == 'condor':
             outscriptname = 'condor_%s.sh' % self.task_name
             subfilename = 'condor_%s.sub' % self.task_name
