@@ -53,6 +53,8 @@ class Impacts(CombineToolBase):
             file""")
         group.add_argument('--approx', default=None, choices=['hesse', 'robust'],
             help="""Calculate impacts using the covariance matrix instead""")
+        group.add_argument('--noInitialFit', action='store_true', default=False, help="""Do not look for results from the initial Fit""")
+        
 
     def run_method(self):
         if self.args.allPars:
@@ -128,27 +130,28 @@ class Impacts(CombineToolBase):
             sys.exit(0)
 
         # Read the initial fit results
-        initialRes = {}
-        if self.args.approx is not None:
-            if self.args.approx == 'hesse':
-                fResult = ROOT.TFile('multidimfit_approxFit_%(name)s.root' % {'name': name})
-                rfr = fResult.Get('fit_mdf')
-                fResult.Close()
-                initialRes = utils.get_roofitresult(rfr, poiList, poiList)
-            elif self.args.approx == 'robust':
-                fResult = ROOT.TFile('robustHesse_approxFit_%(name)s.root' % {'name': name})
-                floatParams = fResult.Get('floatParsFinal')
-                rfr = fResult.Get('h_correlation')
-                rfr.SetDirectory(0)
-                fResult.Close()
-                initialRes = utils.get_robusthesse(floatParams, rfr, poiList, poiList)
-        elif self.args.splitInitial:
-            for poi in poiList:
-                initialRes.update(utils.get_singles_results(
-                'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
-        else:
-            initialRes = utils.get_singles_results(
-                'higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
+        if not self.args.noInitialFit:
+            initialRes = {}
+            if self.args.approx is not None:
+                if self.args.approx == 'hesse':
+                    fResult = ROOT.TFile('multidimfit_approxFit_%(name)s.root' % {'name': name})
+                    rfr = fResult.Get('fit_mdf')
+                    fResult.Close()
+                    initialRes = utils.get_roofitresult(rfr, poiList, poiList)
+                elif self.args.approx == 'robust':
+                    fResult = ROOT.TFile('robustHesse_approxFit_%(name)s.root' % {'name': name})
+                    floatParams = fResult.Get('floatParsFinal')
+                    rfr = fResult.Get('h_correlation')
+                    rfr.SetDirectory(0)
+                    fResult.Close()
+                    initialRes = utils.get_robusthesse(floatParams, rfr, poiList, poiList)
+            elif self.args.splitInitial:
+                for poi in poiList:
+                    initialRes.update(utils.get_singles_results(
+                    'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
+            else:
+                initialRes = utils.get_singles_results(
+                    'higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
 
         ################################################
         # Build the parameter list
@@ -180,10 +183,12 @@ class Impacts(CombineToolBase):
 
         prefit = utils.prefit_from_workspace(ws, 'w', paramList, self.args.setPhysicsModelParameters)
         res = {}
-        res["POIs"] = []
+        if not self.args.noInitialFit:
+            res["POIs"] = []
         res["params"] = []
-        for poi in poiList:
-            res["POIs"].append({"name": poi, "fit": initialRes[poi][poi]})
+        if not self.args.noInitialFit:
+            for poi in poiList:
+                res["POIs"].append({"name": poi, "fit": initialRes[poi][poi]})
 
         missing = []
         for param in paramList:
