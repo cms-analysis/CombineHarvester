@@ -146,7 +146,7 @@ class CombineToolBase:
                            help='Extra files that should be shipped to crab')
         group.add_argument('--pre-cmd', default=self.pre_cmd,
                            help='Prefix the call to combine with this string')
-        group.add_argument('--post-job-cmd', default=''
+        group.add_argument('--post-job-cmd', default='',
                            help='Postfix cmd for combine jobs [condor]')
         group.add_argument('--custom-crab-post', default=self.custom_crab_post,
                            help='txt file containing command lines that can be used in the crab job script instead of the defaults.')
