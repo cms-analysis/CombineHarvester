@@ -298,6 +298,7 @@ class CombineToolBase:
                     newline = self.pre_cmd + line
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
+            outscript.write(self.post_job_cmd)
             outscript.close()
             st = os.stat(outscriptname)
             os.chmod(outscriptname, st.st_mode | stat.S_IEXEC)
