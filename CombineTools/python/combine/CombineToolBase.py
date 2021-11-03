@@ -208,7 +208,7 @@ class CombineToolBase:
                         self.pre_cmd + 'eval ' + command + log_part)
                 else:
                     text_file.write(command)
-            text_file.write(self.post_job_cmd)
+            text_file.write('\n'+self.post_job_cmd+'\n')
         st = os.stat(fname)
         os.chmod(fname, st.st_mode | stat.S_IEXEC)
         # print JOB_PREFIX + command
@@ -298,7 +298,7 @@ class CombineToolBase:
                     newline = self.pre_cmd + line
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
-            outscript.write(self.post_job_cmd)
+            outscript.write('\n' + self.post_job_cmd+'\n')
             outscript.close()
             st = os.stat(outscriptname)
             os.chmod(outscriptname, st.st_mode | stat.S_IEXEC)
