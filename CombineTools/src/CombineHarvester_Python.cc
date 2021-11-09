@@ -458,6 +458,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       // .def("set_name", &Systematic::set_name)
       .def("name", &Parameter::name,
           py::return_value_policy<py::copy_const_reference>())
+      .def("set_name", &Parameter::set_name)
       .def("set_val", &Parameter::set_val)
       .def("val", &Parameter::val)
       .def("set_err_u", &Parameter::set_err_u)
