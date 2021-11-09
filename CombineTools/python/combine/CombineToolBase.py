@@ -146,6 +146,8 @@ class CombineToolBase:
                            help='Extra files that should be shipped to crab')
         group.add_argument('--pre-cmd', default=self.pre_cmd,
                            help='Prefix the call to combine with this string')
+        group.add_argument('--post-job-cmd', default='',
+                           help='Postfix cmd for combine jobs [condor]')
         group.add_argument('--custom-crab-post', default=self.custom_crab_post,
                            help='txt file containing command lines that can be used in the crab job script instead of the defaults.')
 
@@ -173,6 +175,7 @@ class CombineToolBase:
         self.crab_files = self.args.crab_extra_files
         self.pre_cmd = self.args.pre_cmd
         self.custom_crab_post = self.args.custom_crab_post
+        self.post_job_cmd= self.args.post_job_cmd
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -205,6 +208,7 @@ class CombineToolBase:
                         self.pre_cmd + 'eval ' + command + log_part)
                 else:
                     text_file.write(command)
+            text_file.write('\n'+self.post_job_cmd+'\n')
         st = os.stat(fname)
         os.chmod(fname, st.st_mode | stat.S_IEXEC)
         # print JOB_PREFIX + command
@@ -294,6 +298,7 @@ class CombineToolBase:
                     newline = self.pre_cmd + line
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
+            outscript.write('\n' + self.post_job_cmd+'\n')
             outscript.close()
             st = os.stat(outscriptname)
             os.chmod(outscriptname, st.st_mode | stat.S_IEXEC)
