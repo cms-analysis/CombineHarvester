@@ -490,7 +490,6 @@ void CombineHarvester::LoadShapes(Process* entry,
             RooAbsArg* temp_xvar = data_obj->get()->first();
             temp_vars->remove(*temp_xvar,true,true);
             var_name_y = temp_vars->first()->GetName();
-            std::cout << "Found var " + var_name_y + " LoadShapes"<< std::endl;
           }
           // if (data_obj) var_name = data_obj->get()->first()->GetName();
           entry->set_observable(

@@ -589,7 +589,6 @@ TH2F CombineHarvester::Get2DShapeInternal(ProcSystMap const& lookup,
           RooAbsArg* temp_xvar = data_obj->get()->first();
           temp_vars->remove(*temp_xvar,true,true);
           var_name_y = temp_vars->first()->GetName();
-          std::cout << "Found var " + var_name_y + " Get2DShapeInternal"<< std::endl;
         }
         if (procs_[i]->pdf()->findServer(var_name.c_str())) {
             procs_[i]->set_observable((RooRealVar *)procs_[i]->pdf()->findServer(var_name.c_str()));
