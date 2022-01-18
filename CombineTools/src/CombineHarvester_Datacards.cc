@@ -40,7 +40,9 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
   boost::replace_all(parse_rules, "$MASS",      "(?<MASS>[\\w\\.]+)");
   boost::regex rgx(parse_rules);
   boost::smatch matches;
-  if(boost::regex_search(filename, matches, rgx)){
+  if(!boost::regex_search(filename, matches, rgx)){
+    std::cerr << "WARNING: Error when matching regular expressions!\n";
+    }
   this->ParseDatacard(filename,
        matches.str("ANALYSIS"),
       matches.str("ERA"),
@@ -48,10 +50,6 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
       matches.str("BINID").length() ?
         boost::lexical_cast<int>(matches.str("BINID")) : 0,
       matches.str("MASS"));
-    }
-    else{
-      std::cerr << "Error when matching regular expressions!\n";
-    }
   return 0;
 }
 
