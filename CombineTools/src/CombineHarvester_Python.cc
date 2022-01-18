@@ -158,7 +158,7 @@ TH1F (CombineHarvester::*Overload1_GetShapeWithUncertainty)(
     void) = &CombineHarvester::GetShapeWithUncertainty;
 
 TH1F (CombineHarvester::*Overload2_GetShapeWithUncertainty)(
-    RooFitResult const&, unsigned) = &CombineHarvester::GetShapeWithUncertainty;
+    RooFitResult const&, unsigned, bool const&) = &CombineHarvester::GetShapeWithUncertainty;
 
 void (CombineHarvester::*Overload1_UpdateParameters)(
   RooFitResult const&) = &CombineHarvester::UpdateParameters;
