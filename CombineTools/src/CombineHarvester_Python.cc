@@ -232,6 +232,9 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
   py::to_python_converter<std::map<std::string, CombineHarvester>,
                           convert_cpp_map_to_py_dict<std::string, CombineHarvester>>();
 
+  py::to_python_converter<std::map<std::string, double>,
+                          convert_cpp_map_to_py_dict<std::string, double>>();
+
   py::to_python_converter<TH1F,
                           convert_cpp_root_to_py_root<TH1F>>();
 
@@ -338,6 +341,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       // Modification
       .def("GetParameter", Overload1_GetParameter,
         py::return_value_policy<py::reference_existing_object>())
+      .def("RateEvolution", &CombineHarvester::RateEvolution)
       .def("UpdateParameters", Overload1_UpdateParameters)
       .def("RenameParameter", &CombineHarvester::RenameParameter)
       .def("RenameSystematic", &CombineHarvester::RenameSystematic)

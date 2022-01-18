@@ -580,6 +580,36 @@ void CombineHarvester::UpdateParameters(RooFitResult const* fit) {
   UpdateParameters(*fit);
 }
 
+std::map<std::string, double> CombineHarvester::RateEvolution(RooFitResult const& fit) {
+  auto lookup = GenerateProcSystMap();
+  std::map<std::string, double> rates;
+  auto backup = GetParameters();
+  rates["prefit"] = GetRateInternal(lookup);
+  for (int i = 0; i < fit.floatParsFinal().getSize(); ++i) {
+    RooRealVar const* var =
+        dynamic_cast<RooRealVar const*>(fit.floatParsFinal().at(i));
+    // check for failed cast here
+    auto it = params_.find(std::string(var->GetName()));
+    if (it != params_.end()) {
+      it->second->set_val(var->getVal());
+      it->second->set_err_d(var->getErrorLo());
+      it->second->set_err_u(var->getErrorHi());
+    } else {
+      if (verbosity_ >= 1) {
+        LOGLINE(log(),
+                "Parameter " + std::string(var->GetName()) + " is not defined");
+      }
+      continue;
+    }
+    double rate = GetRateInternal(lookup);
+    // std::cout << "\t" << it->first << "\t" << rate << std::endl;
+    rates[it->first] = rate;
+    // reset parameters to prefit conditions
+    this->UpdateParameters(backup);
+  }
+  return rates;
+}
+
 std::vector<ch::Parameter> CombineHarvester::GetParameters() const {
   std::vector<ch::Parameter> params;
   for (auto const& it : params_) {
