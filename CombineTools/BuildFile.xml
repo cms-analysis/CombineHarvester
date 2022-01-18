@@ -1,4 +1,3 @@
-<flags SKIP_FILES="$$(shell make -f ${CMSSW_BASE}/src/CombineHarvester/CombineTools/makeGitVersion)"/>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
