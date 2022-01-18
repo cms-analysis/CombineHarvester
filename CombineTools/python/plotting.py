@@ -938,12 +938,13 @@ def MakeRatioHist(num, den, num_err, den_err):
 #  corresponding to likelihood scans.
 ##@{
 def RemoveGraphXDuplicates(graph):
-    for i in xrange(graph.GetN() - 1):
+    i = 0
+    while i < graph.GetN() - 1:
         if graph.GetX()[i + 1] == graph.GetX()[i]:
             # print 'Removing duplicate point (%f, %f)' % (graph.GetX()[i+1], graph.GetY()[i+1])
             graph.RemovePoint(i + 1)
-            RemoveGraphXDuplicates(graph)
-            break
+        else:
+            i += 1
 
 
 def ApplyGraphYOffset(graph, y_off):

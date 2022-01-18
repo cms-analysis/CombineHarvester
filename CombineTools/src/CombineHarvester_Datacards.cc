@@ -8,6 +8,7 @@
 #include <set>
 #include <fstream>
 #include <sstream>
+#include <fnmatch.h>
 #include "boost/lexical_cast.hpp"
 #include "boost/algorithm/string.hpp"
 #include "boost/format.hpp"
@@ -17,6 +18,7 @@
 #include "TH1.h"
 #include "RooRealVar.h"
 #include "RooCategory.h"
+
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Process.h"
 #include "CombineHarvester/CombineTools/interface/Systematic.h"
@@ -25,8 +27,7 @@
 #include "CombineHarvester/CombineTools/interface/Utilities.h"
 #include "CombineHarvester/CombineTools/interface/TFileIO.h"
 #include "CombineHarvester/CombineTools/interface/Algorithm.h"
-#include "CombineHarvester/CombineTools/interface/GitVersion.h"
-
+#include "CombineHarvester/CombineTools/interface/zstr.hpp"
 namespace ch {
 
 // Extract info from filename using parse rule like:
@@ -375,10 +376,12 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
           process_id = boost::lexical_cast<int>(words[r-1][p]);
           process = words[r-2][p];
         }
-        if (words[i][2] == "*" || words[i][2] == bin) {
+        // if (words[i][2] == "*" || words[i][2] == bin) {
+        if (words[i][2] == "*" || fnmatch(words[i][2].c_str(), bin.c_str(), 0) == 0) {
           matches_bin = true;
         }
-        if (words[i][3] == "*" || words[i][3] == process) {
+        // if (words[i][3] == "*" || words[i][3] == process) {
+        if (words[i][3] == "*" || fnmatch(words[i][3].c_str(), process.c_str(), 0) == 0) {
           matches_proc = true;
         }
         if (!matches_bin || !matches_proc) continue;
@@ -659,6 +662,14 @@ void CombineHarvester::FillHistMappings(std::vector<HistMapping> & mappings) {
                          ":" + obj_sys_name;
           break;
         }
+        if (sys->pdf_u()) {
+          obj_sys_name = std::string(sys->pdf_u()->GetName());
+          boost::replace_all(obj_sys_name, sys->name() + "Up", "$SYSTEMATIC");
+          boost::replace_all(obj_sys_name, sys->process(), "$PROCESS");
+          obj_sys_name = std::string(pdf_ws_map[sys->pdf_u()]->GetName()) +
+                         ":" + obj_sys_name;
+          break;
+        }
       }
 
       // If the prototype pattern is already filled, but doesn't equal this
@@ -725,14 +736,26 @@ void CombineHarvester::WriteDatacard(std::string const& name,
     throw std::runtime_error(FNERROR(
         std::string("Output ROOT file is not open: ") + root_file.GetName()));
   }
-  std::ofstream txt_file;
-  txt_file.open(name);
-  if (!txt_file.is_open()) {
+
+  std::unique_ptr<std::ostream> txt_file_ptr = nullptr;
+
+  // Figure out if the datacard name ends with ".gz"
+  std::string zip_ext = ".gz";
+  bool has_zip_ext = (name.length() >= zip_ext.length() && name.compare(name.length() - zip_ext.length(), zip_ext.length(), zip_ext) == 0);
+
+  if (has_zip_ext) {
+    txt_file_ptr = std::make_unique<zstr::ofstream>(name);
+  } else {
+    txt_file_ptr = std::make_unique<std::ofstream>(name);
+  }
+  if (txt_file_ptr->fail()) {
     throw std::runtime_error(FNERROR("Unable to create file: " + name));
   }
 
-  txt_file << "# Datacard produced by CombineHarvester with git status: "
-           << ch::GitVersion() << "\n";
+  std::ostream & txt_file = *txt_file_ptr;
+
+  //txt_file << "# Datacard produced by CombineHarvester with git status: "
+  //         << ch::GitVersion() << "\n";
 
   std::string dashes(80, '-');
 
@@ -906,6 +929,13 @@ void CombineHarvester::WriteDatacard(std::string const& name,
   std::string sys_str_short = boost::lexical_cast<std::string>(sys_str_len);
   std::string sys_str_long = boost::lexical_cast<std::string>(sys_str_len+9);
 
+  auto getProcLen = [](auto const& proc) -> std::string {
+    std::size_t proc_len = 15;
+    proc_len = std::max(proc_len, proc->process().size());
+    std::string proc_len_str = boost::lexical_cast<std::string>(proc_len);
+    return proc_len_str;
+  };
+
   txt_file << format("%-"+sys_str_long+"s") % "bin";
   for (auto const& proc : procs_) {
     if (proc->shape()) {
@@ -916,14 +946,14 @@ void CombineHarvester::WriteDatacard(std::string const& name,
                       proc->process(), proc->mass(), "", 0);
       TH1::AddDirectory(add_dir);
     }
-    txt_file << format("%-15s ") % proc->bin();
+    txt_file << format("%-"+getProcLen(proc)+"s ") % proc->bin();
   }
   txt_file << "\n";
 
   txt_file << format("%-"+sys_str_long+"s") % "process";
 
   for (auto const& proc : procs_) {
-    txt_file << format("%-15s ") % proc->process();
+    txt_file << format("%-"+getProcLen(proc)+"s ") % proc->process();
   }
   txt_file << "\n";
 
@@ -957,14 +987,14 @@ void CombineHarvester::WriteDatacard(std::string const& name,
     }
   }
   for (auto const& proc : procs_) {
-    txt_file << format("%-15s ") % p_ids[proc->process()];
+    txt_file << format("%-"+getProcLen(proc)+"s ") % p_ids[proc->process()];
   }
   txt_file << "\n";
 
 
   txt_file << format("%-"+sys_str_long+"s") % "rate";
   for (auto const& proc : procs_) {
-    txt_file << format("%-15.6g ") % proc->no_norm_rate();
+    txt_file << format("%-"+getProcLen(proc)+".6g ") % proc->no_norm_rate();
   }
   txt_file << "\n";
   txt_file << dashes << "\n";
@@ -1027,7 +1057,7 @@ void CombineHarvester::WriteDatacard(std::string const& name,
                             ptr->process(), ptr->mass(), ptr->name(), 2);
             TH1::AddDirectory(add_dir);
             break;
-          } else if (ptr->data_u() && ptr->data_d()) {
+          } else if ( (ptr->data_u() && ptr->data_d()) || (ptr->pdf_u() && ptr->pdf_d()) ) {
           } else {
             if (!flags_.at("allow-missing-shapes")) {
               std::stringstream err;
@@ -1057,7 +1087,7 @@ void CombineHarvester::WriteDatacard(std::string const& name,
     }
     txt_file << format("%-" + sys_str_short + "s %-7s ") % line[0] % line[1];
     for (unsigned p = 0; p < procs_.size(); ++p) {
-      txt_file << format("%-15s ") % line[p + 2];
+      txt_file << format("%-"+getProcLen(procs_[p])+"s ") % line[p + 2];
     }
     txt_file << "\n";
   }
@@ -1259,8 +1289,6 @@ void CombineHarvester::WriteDatacard(std::string const& name,
   for (auto const& postl : post_lines_) {
     txt_file << postl << "\n";
   }
-
-  txt_file.close();
 }
 
 void CombineHarvester::WriteHistToFile(
