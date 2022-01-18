@@ -53,25 +53,6 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
   return 0;
 }
 
-// void EscapeRegex(std::string &regex)
-// {
-//     boost::replace_all(regex, "\\", "\\\\");
-//     boost::replace_all(regex, "^", "\\^");
-//     boost::replace_all(regex, ".", "\\.");
-//     boost::replace_all(regex, "$", "\\$");
-//     boost::replace_all(regex, "|", "\\|");
-//     boost::replace_all(regex, "(", "\\(");
-//     boost::replace_all(regex, ")", "\\)");
-//     boost::replace_all(regex, "{", "\\{");
-//     boost::replace_all(regex, "{", "\\}");
-//     boost::replace_all(regex, "[", "\\[");
-//     boost::replace_all(regex, "]", "\\]");
-//     boost::replace_all(regex, "*", "\\*");
-//     boost::replace_all(regex, "+", "\\+");
-//     boost::replace_all(regex, "?", "\\?");
-//     boost::replace_all(regex, "/", "\\/");
-// }
-
 int CombineHarvester::ParseDatacard(std::string const& filename,
     std::string const& analysis,
     std::string const& era,
@@ -399,29 +380,13 @@ int CombineHarvester::ParseDatacard(std::string const& filename,
 
         // prepare input expression for bins as regex input
         auto current_exp = words[i][2];
-        // EscapeRegex(current_exp);
-        // boost::replace_all(current_exp, "\\*",      ".*");
-        // boost::replace_all(current_exp, "\\?",      ".");
         FNLOGC(log(), verbosity_ > 1) << "Parsing as regex (bin): " << current_exp << std::endl;
-        // boost::regex rgx_bin(current_exp);
-        // boost::smatch bin_matches;
-        // if(boost::regex_search(bin, bin_matches, rgx_bin)){
-        //   matches_bin = true;
-        // }
-        matches_bin = fnmatch(current_exp, bin, FNM_EXTMATCH);
+        matches_bin = (fnmatch(current_exp.c_str(), bin.c_str(), FNM_EXTMATCH) == 0);
 
         // prepare input expression for processes as regex input
         current_exp = words[i][3];
-        // EscapeRegex(current_exp);
-        // boost::replace_all(current_exp, "\\*",      ".*");
-        // boost::replace_all(current_exp, "\\?",      ".");
         FNLOGC(log(), verbosity_ > 1) << "Parsing as regex (process): " << current_exp<< std::endl;
-        // boost::regex rgx_proc(current_exp);
-        // boost::smatch proc_matches;
-        // if(boost::regex_search(process, proc_matches, rgx_proc)){
-        //   matches_proc = true;
-        // }
-        matches_proc = fnmatch(current_exp, process, FNM_EXTMATCH);
+        matches_proc = (fnmatch(current_exp.c_str(), process.c_str(), FNM_EXTMATCH) == 0);
 
         if (!matches_bin || !matches_proc) continue;
         auto sys = std::make_shared<Systematic>();
