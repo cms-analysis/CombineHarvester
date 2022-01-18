@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
   bool skip_prefit  = false;
   bool skip_proc_errs = false;
   bool total_shapes = false;
+  bool verbose = false;
   std::vector<std::string> reverse_bins_;
   // Containers to parse processes that are to be merged at runtime
   std::vector<std::string> input_merge_procs_;
@@ -106,6 +107,9 @@ int main(int argc, char* argv[]) {
     ("total-shapes",
       po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
       "Save signal- and background shapes added for all channels/categories")
+    ("verbose,v",
+      po::value<bool>(&verbose)->default_value(verbose)->implicit_value(true),
+      "Genererate additional output if uncertainties in a given bin are large")
     ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for")
     ("merge-procs,p", po::value<vector<string>>(&input_merge_procs_)->multitoken(), 
       "Merge these processes. Regex expression allowed. Format: NEWPROCESSNAME='expression'");
@@ -356,15 +360,15 @@ int main(int argc, char* argv[]) {
       std::cout << ">> Doing postfit: TotalBkg" << std::endl;
       post_shapes_tot["TotalBkg"] =
           no_sampling ? cmb_bkgs.GetShapeWithUncertainty()
-                   : cmb_bkgs.GetShapeWithUncertainty(res, samples);
+                   : cmb_bkgs.GetShapeWithUncertainty(res, samples, verbose);
       std::cout << ">> Doing postfit: TotalSig" << std::endl;
       post_shapes_tot["TotalSig"] =
           no_sampling ? cmb_sigs.GetShapeWithUncertainty()
-                   : cmb_sigs.GetShapeWithUncertainty(res, samples);
+                   : cmb_sigs.GetShapeWithUncertainty(res, samples, verbose);
       std::cout << ">> Doing postfit: TotalProcs" << std::endl;
       post_shapes_tot["TotalProcs"] =
           no_sampling ? cmb.cp().GetShapeWithUncertainty()
-                   : cmb.cp().GetShapeWithUncertainty(res, samples);
+                   : cmb.cp().GetShapeWithUncertainty(res, samples, verbose);
 
       if (datacard != "") {
         TH1F ref = cmb_card.cp().GetObservedShape();
@@ -395,7 +399,7 @@ int main(int argc, char* argv[]) {
         } else {
           post_shapes[bin][proc] =
               no_sampling ? cmb_proc.GetShapeWithUncertainty()
-                       : cmb_proc.GetShapeWithUncertainty(res, samples);
+                       : cmb_proc.GetShapeWithUncertainty(res, samples, verbose);
         }
       }
 
@@ -413,7 +417,7 @@ int main(int argc, char* argv[]) {
           post_shapes[bin][proc] = cmb_proc.GetShape();
         } else {
           post_shapes[bin][proc] =
-              sampling ? cmb_proc.GetShapeWithUncertainty(res, samples)
+              sampling ? cmb_proc.GetShapeWithUncertainty(res, samples, verbose)
                        : cmb_proc.GetShapeWithUncertainty();
         }
       }
@@ -428,15 +432,15 @@ int main(int argc, char* argv[]) {
       std::cout << ">> Doing postfit: " << bin << "," << "TotalBkg" << std::endl;
       post_shapes[bin]["TotalBkg"] =
           no_sampling ? cmb_bkgs.GetShapeWithUncertainty()
-                   : cmb_bkgs.GetShapeWithUncertainty(res, samples);
+                   : cmb_bkgs.GetShapeWithUncertainty(res, samples, verbose);
       std::cout << ">> Doing postfit: " << bin << "," << "TotalSig" << std::endl;
       post_shapes[bin]["TotalSig"] =
           no_sampling ? cmb_sigs.GetShapeWithUncertainty()
-                   : cmb_sigs.GetShapeWithUncertainty(res, samples);
+                   : cmb_sigs.GetShapeWithUncertainty(res, samples, verbose);
       std::cout << ">> Doing postfit: " << bin << "," << "TotalProcs" << std::endl;
       post_shapes[bin]["TotalProcs"] =
           no_sampling ? cmb_bin.cp().GetShapeWithUncertainty()
-                   : cmb_bin.cp().GetShapeWithUncertainty(res, samples);
+                   : cmb_bin.cp().GetShapeWithUncertainty(res, samples, verbose);
 
       if (datacard != "") {
         TH1F ref = cmb_card.cp().bin({bin}).GetObservedShape();
