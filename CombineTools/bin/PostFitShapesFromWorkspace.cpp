@@ -47,6 +47,9 @@ int main(int argc, char* argv[]) {
   bool skip_proc_errs = false;
   bool total_shapes = false;
   std::vector<std::string> reverse_bins_;
+  // Containers to parse processes that are to be merged at runtime
+  std::vector<std::string> input_merge_procs_;
+  std::map<std::string, std::string> merged_procs;
 
   po::options_description help_config("Help");
   help_config.add_options()
@@ -103,7 +106,9 @@ int main(int argc, char* argv[]) {
     ("total-shapes",
       po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
       "Save signal- and background shapes added for all channels/categories")
-    ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for");
+    ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for")
+    ("merge-procs,p", po::value<vector<string>>(&input_merge_procs_)->multitoken(), 
+      "Merge these processes. Regex expression allowed. Format: NEWPROCESSNAME='expression'");
 
 
   po::variables_map vm;
@@ -140,6 +145,8 @@ int main(int argc, char* argv[]) {
   // Create CH instance and parse the workspace
   ch::CombineHarvester cmb;
   cmb.SetFlag("workspaces-use-clone", true);
+  // Allow regex expressions to combine processes on the fly
+  cmb.SetFlag("filters-use-regex", true);
   ch::ParseCombineWorkspace(cmb, *ws, "ModelConfig", data, false);
 
   // Only evaluate in case parameters to freeze are provided
@@ -169,6 +176,13 @@ int main(int argc, char* argv[]) {
     }
   }
   // cmb.GetParameter("r")->set_frozen(true);
+
+  // parse processes that are to be merged
+  for (auto& in: input_merge_procs_){
+    vector<string> parts;
+    boost::split(parts, in, boost::is_any_of("="));
+    merged_procs[parts[0]] = parts[1];
+  }
 
   ch::CombineHarvester cmb_card;
   cmb_card.SetFlag("workspaces-use-clone",true);
@@ -246,6 +260,28 @@ int main(int argc, char* argv[]) {
         } else {
           pre_shapes[bin][proc] =
               cmb_bin.cp().process({proc}).GetShapeWithUncertainty();
+        }
+      }
+      // Create prefit shapes for merged processes
+      for (auto iter: merged_procs){
+        // First element of the iterator is the name of the merged process
+        auto proc=iter.first;
+        std::cout << ">> Doing prefit: " << bin << "," << proc << std::endl;
+        // Second element is the regex expression for the processes
+        // that are to be merged
+        auto proc_regex = iter.second;
+        auto cmb_proc = cmb_bin.cp().process({proc_regex});
+        // First check for matches
+        if (cmb_proc.process_set().size() == 0){
+          std::cout << ">> WARNING: found no processes matching " << proc << std::endl;
+          continue;
+        }
+        if (skip_proc_errs) {
+          pre_shapes[bin][proc] =
+              cmb_proc.GetShape();
+        } else {
+          pre_shapes[bin][proc] =
+              cmb_proc.GetShapeWithUncertainty();
         }
       }
 
@@ -362,6 +398,26 @@ int main(int argc, char* argv[]) {
                        : cmb_proc.GetShapeWithUncertainty(res, samples);
         }
       }
+
+      // Generate postfit distributions for merged processes
+      for (auto iter: merged_procs){
+        auto proc=iter.first;
+        std::cout << ">> Doing postfit: " << bin << "," << proc << std::endl;
+        auto proc_regex = iter.second;
+        auto cmb_proc = cmb_bin.cp().process({proc_regex});
+        if (cmb_proc.process_set().size() == 0){
+          std::cout << ">> WARNING: found no processes matching " << proc << std::endl;
+          continue;
+        }
+        if (skip_proc_errs) {
+          post_shapes[bin][proc] = cmb_proc.GetShape();
+        } else {
+          post_shapes[bin][proc] =
+              sampling ? cmb_proc.GetShapeWithUncertainty(res, samples)
+                       : cmb_proc.GetShapeWithUncertainty();
+        }
+      }
+
       if (!no_sampling && covariance) {
         post_yield_cov[bin] = cmb_bin.GetRateCovariance(res, samples);
         post_yield_cor[bin] = cmb_bin.GetRateCorrelation(res, samples);
