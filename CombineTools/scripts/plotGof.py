@@ -109,6 +109,7 @@ if args.statistic in ["AD","KS"]:
         toy_graph = plot.ToyTGraphFromJSON(js, [args.mass,key,'toy'])
         if args.autogaus:
             toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph, 1.15)
+            for i in range(toy_graph.GetN()): toy_testgaus.Fill(toy_graph.GetX()[i])
             gausfit_results = toy_testgaus.Fit("gaus", "SQ")
             automean = gausfit_results.Value(1)
             autostd  = gausfit_results.Value(2)
@@ -189,6 +190,7 @@ else:
     toy_graph = plot.ToyTGraphFromJSON(js, [args.mass, "toy"])
     if args.autogaus:
         toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph)
+        for i in range(toy_graph.GetN()): toy_testgaus.Fill(toy_graph.GetX()[i])
         gausfit_results = toy_testgaus.Fit("gaus", "SQ")
         automean = gausfit_results.Value(1)
         autostd  = gausfit_results.Value(2)
