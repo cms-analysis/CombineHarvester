@@ -29,6 +29,8 @@ parser.add_argument(
 parser.add_argument(
     '--auto-style', nargs='?', const='', default=None, help="""Take line colors and styles from a pre-defined list""")
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
+parser.add_argument("--bins", default=100, type=int, help="Number of bins in histogram")
+parser.add_argument("--range", nargs=2, help="Range of histograms. Requires two arguments in the form of <min> <max>")
 args = parser.parse_args()
 
 
@@ -104,7 +106,8 @@ if args.statistic in ["AD","KS"]:
         # if key not in titles:
         #     continue
         toy_graph = plot.ToyTGraphFromJSON(js, [args.mass,key,'toy'])
-        toy_hist = plot.makeHist1D("toys", 100, toy_graph, 1.15)
+        if args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15, absoluteXrange=args.range)
+        else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15)
         for i in range(toy_graph.GetN()):
             toy_hist.Fill(toy_graph.GetX()[i])
         pValue = js[args.mass][key]["p"]
@@ -177,7 +180,8 @@ else:
         js = json.load(jsfile)
     # graph_sets.append(plot.StandardLimitsFromJSONFile(file, args.show.split(',')))
     toy_graph = plot.ToyTGraphFromJSON(js, [args.mass, "toy"])
-    toy_hist = plot.makeHist1D("toys", 100, toy_graph)
+    if args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=args.range)
+    else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph)
     for i in range(toy_graph.GetN()):
         toy_hist.Fill(toy_graph.GetX()[i])
     pValue = js[args.mass]["p"]
