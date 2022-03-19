@@ -30,7 +30,7 @@ parser.add_argument(
     '--auto-style', nargs='?', const='', default=None, help="""Take line colors and styles from a pre-defined list""")
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 parser.add_argument("--bins", default=100, type=int, help="Number of bins in histogram")
-parser.add_argument("--range", nargs=2, help="Range of histograms. Requires two arguments in the form of <min> <max>")
+parser.add_argument("--range", nargs=2, type=float, help="Range of histograms. Requires two arguments in the form of <min> <max>")
 args = parser.parse_args()
 
 
