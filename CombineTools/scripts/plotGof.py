@@ -31,7 +31,7 @@ parser.add_argument(
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 parser.add_argument("--bins", default=100, type=int, help="Number of bins in histogram")
 parser.add_argument("--range", nargs=2, type=float, help="Range of histograms. Requires two arguments in the form of <min> <max>")
-parser.add_argument("--autogaus", action="store_true", help="Automatically adjusts histogram ranges with gaussian fit. Overrides range options")
+parser.add_argument("--autogaus", action="store_true", help="Automatically adjust histogram range with gaussian fit. Overrides range option.")
 args = parser.parse_args()
 
 
