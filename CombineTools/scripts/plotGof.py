@@ -31,6 +31,7 @@ parser.add_argument(
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 parser.add_argument("--bins", default=100, type=int, help="Number of bins in histogram")
 parser.add_argument("--range", nargs=2, type=float, help="Range of histograms. Requires two arguments in the form of <min> <max>")
+parser.add_argument("--autogaus", action="store_true", help="Automatically adjusts histogram ranges with gaussian fit. Overrides range options")
 args = parser.parse_args()
 
 
@@ -106,7 +107,13 @@ if args.statistic in ["AD","KS"]:
         # if key not in titles:
         #     continue
         toy_graph = plot.ToyTGraphFromJSON(js, [args.mass,key,'toy'])
-        if args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15, absoluteXrange=args.range)
+        if args.autogaus:
+            toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph, 1.15)
+            gausfit_results = toy_testgaus.Fit("gaus", "SQ")
+            automean = gausfit_results.Value(1)
+            autostd  = gausfit_results.Value(2)
+            toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15, absoluteXrange=(automean-3*autostd, automean+3*autostd))
+        elif args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15, absoluteXrange=args.range)
         else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15)
         for i in range(toy_graph.GetN()):
             toy_hist.Fill(toy_graph.GetX()[i])
@@ -180,7 +187,13 @@ else:
         js = json.load(jsfile)
     # graph_sets.append(plot.StandardLimitsFromJSONFile(file, args.show.split(',')))
     toy_graph = plot.ToyTGraphFromJSON(js, [args.mass, "toy"])
-    if args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=args.range)
+    if args.autogaus:
+        toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph)
+        gausfit_results = toy_testgaus.Fit("gaus", "SQ")
+        automean = gausfit_results.Value(1)
+        autostd  = gausfit_results.Value(2)
+        toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(automean-3*autostd, automean+3*autostd))
+    elif args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=args.range)
     else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph)
     for i in range(toy_graph.GetN()):
         toy_hist.Fill(toy_graph.GetX()[i])
