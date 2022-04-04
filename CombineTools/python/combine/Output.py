@@ -277,6 +277,8 @@ class CollectGoodnessOfFit(CombineToolBase):
                         js_out[mh] = {}
                     if evt.quantileExpected != -1:
                         continue
+                    if evt.iToy > 0 and evt.limit<0: #Exclude toys with negative test statistic
+                        continue
                     if branches:
                         for branch in branches:
                             if branch not in js_out[mh]:
