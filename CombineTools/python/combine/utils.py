@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import re
 
@@ -65,10 +67,10 @@ def prefit_from_workspace(file, workspace, params, setPars=None):
             tmp = allParams.find(par)
             isrvar = tmp.IsA().InheritsFrom(ROOT.RooRealVar.Class())
             if isrvar:
-                print 'Setting parameter %s to %g' % (par, float(val))
+                print('Setting parameter %s to %g' % (par, float(val)))
                 tmp.setVal(float(val))
             else:
-                print 'Setting index %s to %g' % (par, float(val))
+                print('Setting index %s to %g' % (par, float(val)))
                 tmp.setIndex(int(val))
 
     for p in params:
@@ -128,7 +130,7 @@ def get_singles_results(file, scanned, columns):
         for col in columns:
             allvals = [getattr(evt, col) for evt in t]
             if len(allvals) < (1 + len(scanned)*2):
-                print 'File %s did not contain a sufficient number of entries, skipping' % file
+                print('File %s did not contain a sufficient number of entries, skipping' % file)
                 return None
             res[param][col] = [
                 allvals[i * 2 + 1], allvals[0], allvals[i * 2 + 2]]
@@ -138,7 +140,7 @@ def get_singles_results(file, scanned, columns):
 def get_roofitresult(rfr, params, others):
     res = {}
     if rfr.covQual() != 3:
-        print 'Error: the covariance matrix in the RooFitResult is not accurate and cannot be used'
+        print('Error: the covariance matrix in the RooFitResult is not accurate and cannot be used')
         return None
     for i, param in enumerate(params):
         res[param] = {}

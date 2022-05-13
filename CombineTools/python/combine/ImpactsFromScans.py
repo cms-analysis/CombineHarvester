@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import os
 import re
@@ -18,6 +20,7 @@ import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+from six.moves import range
 
 class ImpactsFromScans(CombineToolBase):
     description = 'Calculate nuisance parameter impacts'
@@ -69,7 +72,7 @@ class ImpactsFromScans(CombineToolBase):
         for key in in_json[1:]:
             js = js[key]
         POIs = sorted([str(x) for x in js.keys()])
-        print POIs
+        print(POIs)
         for POI in POIs:
             if not self.args.do_fits: break
             arg_str = '-M MultiDimFit --algo fixed --saveInactivePOI 1 --floatOtherPOIs 1 -P %s' % POI
@@ -79,7 +82,7 @@ class ImpactsFromScans(CombineToolBase):
             self.job_queue.append('combine %s %s' % (cmd_lo, ' '.join(self.passthru)))
         self.flush_queue()
         if self.args.do_fits:
-            print '>> Re-run without --do-fits to harvest the results'
+            print('>> Re-run without --do-fits to harvest the results')
             return
         res = {}
         for POI in POIs:
@@ -107,10 +110,10 @@ class ImpactsFromScans(CombineToolBase):
             xvec.add(xvars[-1])
             mu.add(muvars[-1])
 
-        print '-----------------------------------------------------------'
-        print 'Diagonal Covariance'
-        print '-----------------------------------------------------------'
-        print '%-30s %-7s %-7s %-7s %-7s %-7s' % ('POI', 'Val', 'Sym', 'Hi', 'Lo', '(Hi-Lo)/(Hi+Lo)')
+        print('-----------------------------------------------------------')
+        print('Diagonal Covariance')
+        print('-----------------------------------------------------------')
+        print('%-30s %-7s %-7s %-7s %-7s %-7s' % ('POI', 'Val', 'Sym', 'Hi', 'Lo', '(Hi-Lo)/(Hi+Lo)'))
         for i,p in enumerate(POIs):
             cor[i][i] = ROOT.Double(1.) # diagonal correlation is 1
             d1 = res[p][p][1]
@@ -119,7 +122,7 @@ class ImpactsFromScans(CombineToolBase):
             d20 = (res[p][p][2] - res[p][p][0])/2.
             vlo = js[p]["ValidErrorLo"]
             vhi = js[p]["ValidErrorHi"]
-            print '%-30s %+.3f  %+.3f  %+.3f  %+.3f %+.3f' % (p, d1, d20, d21, d10, (d21-d10)/(d21+d10))
+            print('%-30s %+.3f  %+.3f  %+.3f  %+.3f %+.3f' % (p, d1, d20, d21, d10, (d21-d10)/(d21+d10)))
             covv = 0.
             if self.args.cov_method == 'full':
                 covv = d20
@@ -128,15 +131,15 @@ class ImpactsFromScans(CombineToolBase):
                 for x in bf_vals:
                     if x in p:
                         bf_val = bf_vals[x]
-                        print 'Using %s=%g' % (x, bf_vals[x])
+                        print('Using %s=%g' % (x, bf_vals[x]))
                 covv = d21 if bf_val >= d1 else d10
             if p == 'mu_XS_ZH_BR_WW': covv = covv * 0.89
             if p == 'mu_XS_ttHtH_BR_tautau': covv = covv * 1.2
             #if p == 'mu_XS_ttHtH_BR_tautau': covv = 6.3
             if not vlo:
-                print 'No ValidErrorLo, using d21'
+                print('No ValidErrorLo, using d21')
                 covv = d21
-            print 'Chosen: %+.3f' % covv
+            print('Chosen: %+.3f' % covv)
             cov[i][i] = ROOT.Double(pow(covv,2.))
 
             x1 = -1. * d10
@@ -150,10 +153,10 @@ class ImpactsFromScans(CombineToolBase):
             if not vlo and abs(d10) < 1E-4:
                 x1 = -1. * d21
                 y1 = d21*d21
-            print (x1, y1)
-            print (x2, y2)
-            print (x3, y3)
-            print (x4, y4)
+            print((x1, y1))
+            print((x2, y2))
+            print((x3, y3))
+            print((x4, y4))
 
             mtx = matrix([[x1*x1, x1, 1], [x3*x3, x3, 1], [x4*x4, x4, 1]])
             yvec = matrix([[y1], [y3], [y4]])
@@ -165,10 +168,10 @@ class ImpactsFromScans(CombineToolBase):
             # covvars.append(ROOT.RooFormulaVar('cov%i'%i,'', '%g' % (y2), ROOT.RooArgList()))
             covvars[-1].Print()
 
-        print '-----------------------------------------------------------'
-        print 'Correlation'
-        print '-----------------------------------------------------------'
-        print '%-30s %-30s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s' % ('i', 'j', 'Val_i', 'Val_j', 'ij_Sym', 'ij_Hi', 'ij_Lo', 'ji_Sym', 'ji_Hi', 'ji_Lo', 'Sym_Asym')
+        print('-----------------------------------------------------------')
+        print('Correlation')
+        print('-----------------------------------------------------------')
+        print('%-30s %-30s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s' % ('i', 'j', 'Val_i', 'Val_j', 'ij_Sym', 'ij_Hi', 'ij_Lo', 'ji_Sym', 'ji_Hi', 'ji_Lo', 'Sym_Asym'))
         cors = []
         mvals = ROOT.RooArgList()
         mvals_store = []
@@ -221,7 +224,7 @@ class ImpactsFromScans(CombineToolBase):
 
 
                 line =  '%-30s %-30s %+.3f  %+.3f | %+.3f  %+.3f  %+.3f  %+.3f |  %+.3f  %+.3f  %+.3f %+.3f |  %+.3f' % (ip,jp,di_1,dj_1,cij_20,cij_21,cij_10,a_i,cji_20,cji_21,cji_10,a_j,a_20)
-                print line
+                print(line)
 
                 cors.append((line, max_c))
 
@@ -239,21 +242,21 @@ class ImpactsFromScans(CombineToolBase):
                     for x in bf_vals:
                         if x in ip:
                             bf_val_i = bf_vals[x]
-                            print 'Using %s=%g for POI i' % (x, bf_vals[x])
+                            print('Using %s=%g for POI i' % (x, bf_vals[x]))
                         if x in jp:
                             bf_val_j = bf_vals[x]
-                            print 'Using %s=%g for POI j' % (x, bf_vals[x])
+                            print('Using %s=%g for POI j' % (x, bf_vals[x]))
 
                     val_i = cji_21 if bf_val_i >= di_1 else cji_10
                     val_j = cij_21 if bf_val_j >= dj_1 else cij_10
                 if not vi_lo:
-                    print 'No ValidErrorLo for POI i, using d21'
+                    print('No ValidErrorLo for POI i, using d21')
                     val_i = cji_21
                 if not vj_lo:
-                    print 'No ValidErrorLo for POI j, using d21'
+                    print('No ValidErrorLo for POI j, using d21')
                     val_j = cij_21
-                print 'Chosen: %+.3f for val_i' % val_i
-                print 'Chosen: %+.3f for val_j' % val_j
+                print('Chosen: %+.3f for val_i' % val_i)
+                print('Chosen: %+.3f for val_j' % val_j)
 
                 correlation = (val_i+val_j)/2. # take average correlation?
                 #if ip == 'mu_XS_ttHtH_BR_WW' and jp == 'mu_XS_ttHtH_BR_tautau': correlation = correlation * 1.15
@@ -270,7 +273,7 @@ class ImpactsFromScans(CombineToolBase):
                 mvals.add(mvals_store[-1])
         cors.sort(key=lambda tup: tup[1], reverse=True)
         for tup in cors:
-            print tup[0]
+            print(tup[0])
         #cor.Print()
         fout = ROOT.TFile('covariance_%s.root' % self.args.name, 'RECREATE')
         fout.WriteTObject(cor, 'cor')

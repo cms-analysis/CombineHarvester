@@ -1,7 +1,10 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.plotting as plot
 import ROOT
 import math
 import argparse
+from six.moves import range
 
 
 col_store = []
@@ -33,7 +36,7 @@ args = parser.parse_args()
 
 #Store the mA and tanb list being used for the interpolation
 file = ROOT.TFile(args.file, 'r')
-print args.file
+print(args.file)
 graph_obs         = file.Get("obs")
 graph_minus2sigma = file.Get("exp-2")
 graph_minus1sigma = file.Get("exp-1")
@@ -51,8 +54,8 @@ mA_list = sorted(set(mA_list))
 tanb_bins=len(tanb_list)
 mA_bins=len(mA_list)
 if int(args.verbosity) > 0 :
-    print "mA_list: ", mA_list, "Total number: ", mA_bins
-    print "tanb_list: ", tanb_list, "Total number: ", tanb_bins
+    print("mA_list: ", mA_list, "Total number: ", mA_bins)
+    print("tanb_list: ", tanb_list, "Total number: ", tanb_bins)
 
 #Create canvas and TH2D for each component
 plot.ModTDRStyle(width=600, l=0.12)

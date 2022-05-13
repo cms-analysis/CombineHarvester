@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import CombineHarvester.CombineTools.plotting as plot
 import argparse
@@ -72,8 +74,8 @@ for padx in pads:
     plot.Set(padx, Tickx=1, Ticky=1, Logx=args.logx)
     if args.pad_style is not None:
         settings = {x.split('=')[0]: eval(x.split('=')[1]) for x in args.pad_style.split(',')}
-        print 'Applying style options to the TPad(s):'
-        print settings
+        print('Applying style options to the TPad(s):')
+        print(settings)
         plot.Set(padx, **settings)
 
 graphs = []
@@ -107,7 +109,7 @@ for src in args.input:
     if len(splitsrc) == 1:
         graph_sets.append(plot.StandardLimitsFromJSONFile(file, args.show.split(',')))
         if axis is None:
-            axis = plot.CreateAxisHists(len(pads), graph_sets[-1].values()[0], True)
+            axis = plot.CreateAxisHists(len(pads), list(graph_sets[-1].values())[0], True)
             DrawAxisHists(pads, axis, pads[0])
         plot.StyleLimitBand(graph_sets[-1])
         plot.DrawLimitBand(pads[0], graph_sets[-1], legend=legend)

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import CombineHarvester.CombineTools.ch as ch
 
 def AddSystematics_hhh_et_mt(cb):

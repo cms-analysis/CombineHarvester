@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import math
 import json
 import argparse
 import CombineHarvester.CombineTools.plotting as plot
 import CombineHarvester.CombineTools.combine.rounding as rounding
+import six
+from six.moves import range
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -30,7 +34,7 @@ parser.add_argument('--POI', default=None, help='Specify a POI to draw')
 args = parser.parse_args()
 
 if args.transparent:
-    print 'plotImpacts.py: --transparent is now always enabled, the option will be removed in a future update'
+    print('plotImpacts.py: --transparent is now always enabled, the option will be removed in a future update')
 
 externalPullDef = False
 if args.pullDef is not None:
@@ -109,23 +113,23 @@ if args.color_groups is not None:
 
 seen_types = set()
 
-for name, col in colors.iteritems():
+for name, col in six.iteritems(colors):
     color_hists[name] = ROOT.TH1F()
     plot.Set(color_hists[name], FillColor=col, Title=name)
 
 if args.color_groups is not None:
-    for name, col in color_groups.iteritems():
+    for name, col in six.iteritems(color_groups):
         color_group_hists[name] = ROOT.TH1F()
         plot.Set(color_group_hists[name], FillColor=col, Title=name)
 
-for page in xrange(n):
+for page in range(n):
     canv = ROOT.TCanvas(args.output, args.output)
     n_params = len(data['params'][show * page:show * (page + 1)])
     pdata = data['params'][show * page:show * (page + 1)]
-    print '>> Doing page %i, have %i parameters' % (page, n_params)
+    print('>> Doing page %i, have %i parameters' % (page, n_params))
 
     boxes = []
-    for i in xrange(n_params):
+    for i in range(n_params):
         y1 = ROOT.gStyle.GetPadBottomMargin()
         y2 = 1. - ROOT.gStyle.GetPadTopMargin()
         h = (y2 - y1) / float(n_params)
@@ -161,7 +165,7 @@ for page in xrange(n):
 
     text_entries = []
     redo_boxes = []
-    for p in xrange(n_params):
+    for p in range(n_params):
         i = n_params - (p + 1)
         pre = pdata[p]['prefit']
         fit = pdata[p]['fit']
@@ -311,13 +315,13 @@ for page in xrange(n):
     if args.color_groups is not None:
         legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
-        for name, h in color_group_hists.iteritems():
+        for name, h in six.iteritems(color_group_hists):
             legend2.AddEntry(h, Translate(name, translate), 'F')
         legend2.Draw()
     elif len(seen_types) > 1:
         legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
-        for name, h in color_hists.iteritems():
+        for name, h in six.iteritems(color_hists):
             if name == 'Unrecognised': continue
             legend2.AddEntry(h, name, 'F')
         legend2.Draw()

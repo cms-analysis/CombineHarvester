@@ -1,9 +1,13 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT as R
 import math
 from array import array
 import re
 import json
 import types
+import six
+from six.moves import range
 
 COL_STORE = []
 
@@ -290,7 +294,7 @@ def CreateTransparentColor(color, alpha):
 
 
 def Set(obj, **kwargs):
-    for key, value in kwargs.iteritems():
+    for key, value in six.iteritems(kwargs):
         if value is None:
             getattr(obj, 'Set' + key)()
         elif isinstance(value, (list, tuple)):
@@ -369,7 +373,7 @@ def MultiRatioSplit(split_points, gaps_low, gaps_high):
         list[TPad]: List of TPads, indexed from top to bottom on the canvas.
     """
     pads = []
-    for i in xrange(len(split_points)+1):
+    for i in range(len(split_points)+1):
         pad = R.TPad('pad%i'%i, '', 0., 0., 1., 1.)
         if i > 0:
             pad.SetBottomMargin(sum(split_points[0:i])+gaps_high[i-1])
@@ -398,7 +402,7 @@ def TwoPadSplitColumns(split_point, gap_left, gap_right):
 
 def MultiRatioSplitColumns(split_points, gaps_left, gaps_right):
     pads = []
-    for i in xrange(len(split_points)+1):
+    for i in range(len(split_points)+1):
         pad = R.TPad('pad%i'%i, '', 0., 0., 1., 1.)
         if i > 0:
             pad.SetLeftMargin(sum(split_points[0:i])+gaps_left[i-1])
@@ -481,7 +485,7 @@ def CreateAxisHist(src, at_limits=True):
 def CreateAxisHists(n, src, at_limits):
     res = []
     h = CreateAxisHist(src, at_limits)
-    for i in xrange(n):
+    for i in range(n):
         res.append(h.Clone('tmp%i'%i))
     return res
 
@@ -562,7 +566,7 @@ def ParamFromFilename(filename, param):
         num1 = re.findall(param + '\.\d+', filename)[0].replace(param + '.', '')
         return int(num1)
     else:
-        print "Error: parameter " + param + " not found in filename"
+        print("Error: parameter " + param + " not found in filename")
 
 
 ##@}
@@ -669,7 +673,7 @@ def TH2FromTGraph2D(graph, method='BinEdgeAligned',
     x_vals = set()
     y_vals = set()
 
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         x_vals.add(graph.GetX()[i])
         y_vals.add(graph.GetY()[i])
 
@@ -682,16 +686,16 @@ def TH2FromTGraph2D(graph, method='BinEdgeAligned',
     elif method == 'BinCenterAligned':
         x_widths = []
         y_widths = []
-        for i in xrange(1, len(x_vals)):
+        for i in range(1, len(x_vals)):
             x_widths.append(x_vals[i] - x_vals[i - 1])
-        for i in xrange(1, len(y_vals)):
+        for i in range(1, len(y_vals)):
             y_widths.append(y_vals[i] - y_vals[i - 1])
         x_min = min(x_widths) if force_x_width is None else force_x_width
         y_min = min(y_widths) if force_y_width is None else force_y_width
         x_bins = int(((x_vals[-1] - (x_vals[0] - 0.5 * x_min)) / x_min) + 0.5)
         y_bins = int(((y_vals[-1] - (y_vals[0] - 0.5 * y_min)) / y_min) + 0.5)
-        print '[TH2FromTGraph2D] x-axis binning: (%i, %g, %g)' % (x_bins, x_vals[0] - 0.5 * x_min, x_vals[0] - 0.5 * x_min + x_bins * x_min)
-        print '[TH2FromTGraph2D] y-axis binning: (%i, %g, %g)' % (y_bins, y_vals[0] - 0.5 * y_min, y_vals[0] - 0.5 * y_min + y_bins * y_min)
+        print('[TH2FromTGraph2D] x-axis binning: (%i, %g, %g)' % (x_bins, x_vals[0] - 0.5 * x_min, x_vals[0] - 0.5 * x_min + x_bins * x_min))
+        print('[TH2FromTGraph2D] y-axis binning: (%i, %g, %g)' % (y_bins, y_vals[0] - 0.5 * y_min, y_vals[0] - 0.5 * y_min + y_bins * y_min))
         # Use a number slightly smaller than 0.49999 because the TGraph2D interpolation
         # is fussy about evaluating on the boundary
         h_proto = R.TH2F('prototype', '',
@@ -742,7 +746,7 @@ def LimitTGraphFromJSONFile(jsfile, label):
 def ToyTGraphFromJSON(js, label):
     xvals = []
     yvals = []
-    if isinstance(label,types.StringTypes):
+    if isinstance(label,(str,)):
         for entry in js[label]:
             xvals.append(float(entry))
             yvals.append(1.0)
@@ -818,8 +822,8 @@ def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
            (y, x, name, xbins, xmin, xmax, ybins, ymin, ymax), cut + "deltaNLL != 0", "PROF")
     prof = R.gROOT.FindObject(name + "_prof")
     h2d = R.TH2D(name, name, xbins, xmin, xmax, ybins, ymin, ymax)
-    for ix in xrange(1, xbins + 1):
-        for iy in xrange(1, ybins + 1):
+    for ix in range(1, xbins + 1):
+        for iy in range(1, ybins + 1):
             z = prof.GetBinContent(ix, iy)
             if (z != z) or (z > 4294967295):  # protect against NANs
                 z = 0
@@ -856,7 +860,7 @@ def makeVarBinHist2D(name, xbins, ybins):
     # create new arrays in which bin low edge is adjusted to make measured
     # points at the bin centres
     xbins_new = [None] * (len(xbins) + 1)
-    for i in xrange(len(xbins) - 1):
+    for i in range(len(xbins) - 1):
         if i == 0 or i == 1:
             xbins_new[i] = xbins[i] - ((xbins[i + 1] - xbins[i]) / 2) + 1E-5
         else:
@@ -867,7 +871,7 @@ def makeVarBinHist2D(name, xbins, ybins):
         ((xbins[len(xbins) - 1] - xbins[len(xbins) - 2]) / 2) - 1E-5
 
     ybins_new = [None] * (len(ybins) + 1)
-    for i in xrange(len(ybins) - 1):
+    for i in range(len(ybins) - 1):
         if i == 0 or i == 1:
             ybins_new[i] = ybins[i] - ((ybins[i + 1] - ybins[i]) / 2) + 1E-5
         else:
@@ -899,10 +903,10 @@ def GraphDifference(graph1,graph2,relative):
 
 def GraphDivide(num, den):
     res = num.Clone()
-    for i in xrange(num.GetN()):
+    for i in range(num.GetN()):
         res.GetY()[i] = res.GetY()[i]/den.Eval(res.GetX()[i])
     if type(res) is R.TGraphAsymmErrors:
-        for i in xrange(num.GetN()):
+        for i in range(num.GetN()):
             res.GetEYhigh()[i] = res.GetEYhigh()[i]/den.Eval(res.GetX()[i])
             res.GetEYlow()[i] = res.GetEYlow()[i]/den.Eval(res.GetX()[i])
 
@@ -924,11 +928,11 @@ def MakeRatioHist(num, den, num_err, den_err):
     """
     result = num.Clone()
     if not num_err:
-        for i in xrange(1, result.GetNbinsX()+1):
+        for i in range(1, result.GetNbinsX()+1):
             result.SetBinError(i, 0.)
     den_fix = den.Clone()
     if not den_err:
-        for i in xrange(1, den_fix.GetNbinsX()+1):
+        for i in range(1, den_fix.GetNbinsX()+1):
             den_fix.SetBinError(i, 0.)
     result.Divide(den_fix)
     return result
@@ -951,31 +955,31 @@ def RemoveGraphXDuplicates(graph):
 
 
 def ApplyGraphYOffset(graph, y_off):
-    for i in xrange(graph.GetN() - 1):
+    for i in range(graph.GetN() - 1):
         graph.GetY()[i] = graph.GetY()[i] + y_off
 
 
 def RemoveGraphYAll(graph, val):
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         if graph.GetY()[i] == val:
-            print '[RemoveGraphYAll] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
+            print('[RemoveGraphYAll] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i]))
             graph.RemovePoint(i)
             RemoveGraphYAll(graph, val)
             break
 
 
 def RemoveSmallDelta(graph, val):
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         diff = abs(graph.GetY()[i])
         if diff < val:
-            print '[RemoveSmallDelta] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i])
+            print('[RemoveSmallDelta] Removing point (%f, %f)' % (graph.GetX()[i], graph.GetY()[i]))
             graph.RemovePoint(i)
             RemoveSmallDelta(graph, val)
             break
 
 
 def RemoveGraphYAbove(graph, val):
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         if graph.GetY()[i] > val:
             # print 'Removing point (%f, %f)' % (graph.GetX()[i],
             # graph.GetY()[i])
@@ -987,11 +991,11 @@ def RemoveGraphYAbove(graph, val):
 def SetMinToZero(graph):
     min = 999.
     minNum = -1
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         if graph.GetY()[i] < min :
             min = graph.GetY()[i]
             minNum = i
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         graph.SetPoint(i, graph.GetX()[i], graph.GetY()[i]-min)
 
 
@@ -1000,7 +1004,7 @@ def ImproveMinimum(graph, func, doIt=False):
     fit_x = 0.
     fit_y = 999.
     fit_i = 0
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         if graph.GetY()[i] < fit_y:
             fit_i = i
             fit_x = graph.GetX()[i]
@@ -1009,24 +1013,24 @@ def ImproveMinimum(graph, func, doIt=False):
         if doIt:
             min_x = graph.GetX()[fit_i]
             min_y = graph.GetY()[fit_i]
-            for i in xrange(graph.GetN()):
+            for i in range(graph.GetN()):
                 before = graph.GetY()[i]
                 graph.GetY()[i] -= min_y
                 after = graph.GetY()[i]
-                print 'Point %i, before=%f, after=%f' % (i, before, after)
+                print('Point %i, before=%f, after=%f' % (i, before, after))
         return (fit_x, fit_y)
     search_min = fit_i - 2 if fit_i >= 2 else fit_i - 1
     search_max = fit_i + 2 if fit_i + 2 < graph.GetN() else fit_i + 1
     min_x = func.GetMinimumX(graph.GetX()[search_min], graph.GetX()[search_max])
     min_y = func.Eval(min_x)
-    print '[ImproveMinimum] Fit minimum was (%f, %f)' % (fit_x, fit_y)
-    print '[ImproveMinimum] Better minimum was (%f, %f)' % (min_x, min_y)
+    print('[ImproveMinimum] Fit minimum was (%f, %f)' % (fit_x, fit_y))
+    print('[ImproveMinimum] Better minimum was (%f, %f)' % (min_x, min_y))
     if doIt:
-        for i in xrange(graph.GetN()):
+        for i in range(graph.GetN()):
             before = graph.GetY()[i]
             graph.GetY()[i] -= min_y
             after = graph.GetY()[i]
-            print 'Point %i, before=%f, after=%f' % (i, before, after)
+            print('Point %i, before=%f, after=%f' % (i, before, after))
         graph.Set(graph.GetN() + 1)
         graph.SetPoint(graph.GetN() - 1, min_x, 0)
         graph.Sort()
@@ -1037,7 +1041,7 @@ def FindCrossingsWithSpline(graph, func, yval):
     crossings = []
     intervals = []
     current = None
-    for i in xrange(graph.GetN() - 1):
+    for i in range(graph.GetN() - 1):
         if (graph.GetY()[i] - yval) * (graph.GetY()[i + 1] - yval) < 0.:
             cross = func.GetX(yval, graph.GetX()[i], graph.GetX()[i + 1])
             if (graph.GetY()[i] - yval) > 0. and current is None:
@@ -1075,7 +1079,7 @@ def FindCrossingsWithSpline(graph, func, yval):
             'valid_hi': False
         }
         intervals.append(current)
-    print intervals
+    print(intervals)
     return intervals
     # return crossings
 
@@ -1083,22 +1087,22 @@ def FindCrossingsWithSpline(graph, func, yval):
 def ReZeroTGraph(gr, doIt=False):
     fit_x = 0.
     fit_y = 0.
-    for i in xrange(gr.GetN()):
+    for i in range(gr.GetN()):
         if gr.GetY()[i] == 0.:
             fit_x = gr.GetX()[i]
             fit_y = gr.GetY()[i]
             break
     min_x = 0.
     min_y = 0.
-    for i in xrange(gr.GetN()):
+    for i in range(gr.GetN()):
         if gr.GetY()[i] < min_y:
             min_y = gr.GetY()[i]
             min_x = gr.GetX()[i]
     if min_y < fit_y:
-        print '[ReZeroTGraph] Fit minimum was (%f, %f)' % (fit_x, fit_y)
-        print '[ReZeroTGraph] Better minimum was (%f, %f)' % (min_x, min_y)
+        print('[ReZeroTGraph] Fit minimum was (%f, %f)' % (fit_x, fit_y))
+        print('[ReZeroTGraph] Better minimum was (%f, %f)' % (min_x, min_y))
         if doIt:
-            for i in xrange(gr.GetN()):
+            for i in range(gr.GetN()):
                 before = gr.GetY()[i]
                 gr.GetY()[i] -= min_y
                 after = gr.GetY()[i]
@@ -1108,7 +1112,7 @@ def ReZeroTGraph(gr, doIt=False):
 def FilterGraph(gr, n=3):
     counter = 0
     remove_list = []
-    for i in xrange(gr.GetN()):
+    for i in range(gr.GetN()):
         if gr.GetY()[i] == 0.:
             continue
         if counter % n < (n - 1):
@@ -1121,7 +1125,7 @@ def FilterGraph(gr, n=3):
 
 def RemoveInXRange(gr, xmin=0, xmax=1):
     remove_list = []
-    for i in xrange(gr.GetN()):
+    for i in range(gr.GetN()):
         if gr.GetY()[i] == 0.:
             continue
         if gr.GetX()[i] > xmin and gr.GetX()[i] < xmax:
@@ -1140,20 +1144,20 @@ def RemoveNearMin(graph, val, spacing=None):
         spacing = (graph.GetX()[n - 1] - graph.GetX()[0]) / float(n - 2)
         # print '[RemoveNearMin] Graph has spacing of %.3f' % spacing
     bf_i = None
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         if graph.GetY()[i] == 0.:
             bf = graph.GetX()[i]
             bf_i = i
             # print '[RemoveNearMin] Found best-fit at %.3f' % bf
             break
     if bf_i is None:
-        print '[RemoveNearMin] No minimum found!'
+        print('[RemoveNearMin] No minimum found!')
         return
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         if i == bf_i:
             continue
         if abs(graph.GetX()[i] - bf) < (val * spacing):
-            print '[RemoveNearMin] Removing point (%f, %f) close to minimum at %f' % (graph.GetX()[i], graph.GetY()[i], bf)
+            print('[RemoveNearMin] Removing point (%f, %f) close to minimum at %f' % (graph.GetX()[i], graph.GetY()[i], bf))
             graph.RemovePoint(i)
             RemoveNearMin(graph, val, spacing)
             break
@@ -1185,7 +1189,7 @@ def FixTopRange(pad, fix_y, fraction):
     hobj.SetMaximum((fix_y - fraction * ymin) / (1. - fraction))
     if R.gPad.GetLogy():
         if ymin == 0.:
-            print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
+            print('Cannot adjust log-scale y-axis range if the minimum is zero!')
             return
         maxval = (math.log10(fix_y) - fraction * math.log10(ymin)) / \
             (1 - fraction)
@@ -1225,7 +1229,7 @@ def FixBothRanges(pad, fix_y_lo, frac_lo, fix_y_hi, frac_hi):
     ymax = fix_y_hi
     if R.gPad.GetLogy():
         if ymin == 0.:
-            print 'Cannot adjust log-scale y-axis range if the minimum is zero!'
+            print('Cannot adjust log-scale y-axis range if the minimum is zero!')
             return
         ymin = math.log10(ymin)
         ymax = math.log10(ymax)
@@ -1254,7 +1258,7 @@ def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
     for obj in pad_obs:
         if obj.InheritsFrom(R.TH1.Class()):
             hobj = obj
-            for j in xrange(1, hobj.GetNbinsX()+1):
+            for j in range(1, hobj.GetNbinsX()+1):
                 if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
                         hobj.GetBinLowEdge(j) > x_max):
                     continue
@@ -1267,7 +1271,7 @@ def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
         elif obj.InheritsFrom(R.TGraphAsymmErrors.Class()):
             gobj = obj
             n = gobj.GetN()
-            for k in xrange(0, n):
+            for k in range(0, n):
                 x = gobj.GetX()[k]
                 y = gobj.GetY()[k]
                 if x < x_min or x > x_max:
@@ -1279,7 +1283,7 @@ def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
         elif obj.InheritsFrom(R.TGraphErrors.Class()):
             gobj = obj
             n = gobj.GetN()
-            for k in xrange(0, n):
+            for k in range(0, n):
                 x = gobj.GetX()[k]
                 y = gobj.GetY()[k]
                 if x < x_min or x > x_max:
@@ -1291,7 +1295,7 @@ def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
         elif obj.InheritsFrom(R.TGraph.Class()):
             gobj = obj
             n = gobj.GetN()
-            for k in xrange(0, n):
+            for k in range(0, n):
                 x = gobj.GetX()[k]
                 y = gobj.GetY()[k]
                 if x < x_min or x > x_max:
@@ -1651,15 +1655,15 @@ def contourFromTH2(h2in, threshold, minPoints=10, frameValue=1000.):
     contLevel = None
 
     if conts is None or conts.GetSize() == 0:
-        print '*** No Contours Were Extracted!'
+        print('*** No Contours Were Extracted!')
         return None
     ret = R.TList()
-    for i in xrange(conts.GetSize()):
+    for i in range(conts.GetSize()):
         contLevel = conts.At(i)
-        print '>> Contour %d has %d Graphs' % (i, contLevel.GetSize())
-        for j in xrange(contLevel.GetSize()):
+        print('>> Contour %d has %d Graphs' % (i, contLevel.GetSize()))
+        for j in range(contLevel.GetSize()):
             gr1 = contLevel.At(j)
-            print'\t Graph %d has %d points' % (j, gr1.GetN())
+            print('\t Graph %d has %d points' % (j, gr1.GetN()))
             if gr1.GetN() > minPoints:
                 ret.Add(gr1.Clone())
             # // break;
@@ -1676,9 +1680,9 @@ def frameTH2D(hist, threshold, frameValue=1000):
 
     # Get lists of the bin edges
     x_bins = [hist.GetXaxis().GetBinLowEdge(x)
-              for x in xrange(1, hist.GetNbinsX() + 2)]
+              for x in range(1, hist.GetNbinsX() + 2)]
     y_bins = [hist.GetYaxis().GetBinLowEdge(y)
-              for y in xrange(1, hist.GetNbinsY() + 2)]
+              for y in range(1, hist.GetNbinsY() + 2)]
 
     # New bin edge arrays will need an extra four values
     x_new = [0.] * (len(x_bins) + 4)
@@ -1702,9 +1706,9 @@ def frameTH2D(hist, threshold, frameValue=1000):
     y_new[-2] = y_bins[-1] + 1 * yw2 * 0.02
 
     # Copy the remaining bin edges from the hist
-    for i in xrange(0, len(x_bins)):
+    for i in range(0, len(x_bins)):
         x_new[i + 2] = x_bins[i]
-    for i in xrange(0, len(y_bins)):
+    for i in range(0, len(y_bins)):
         y_new[i + 2] = y_bins[i]
 
     # print x_new
@@ -1714,8 +1718,8 @@ def frameTH2D(hist, threshold, frameValue=1000):
         x_new) - 1, array('d', x_new), len(y_new) - 1, array('d', y_new))
     framed.SetDirectory(0)
 
-    for x in xrange(1, framed.GetNbinsX() + 1):
-        for y in xrange(1, framed.GetNbinsY() + 1):
+    for x in range(1, framed.GetNbinsX() + 1):
+        for y in range(1, framed.GetNbinsY() + 1):
             if x == 1 or x == framed.GetNbinsX() or y == 1 or y == framed.GetNbinsY():
         # This is a a frame bin
                 framed.SetBinContent(x, y, frameValue)
@@ -1736,35 +1740,35 @@ def frameTH2D(hist, threshold, frameValue=1000):
     return framed
 
 def fastFillTH2(hist2d, graph, initalValue=99999, interpolateMissing=False):
-    for x in xrange(1,hist2d.GetNbinsX()+1):
-        for y in xrange(1,hist2d.GetNbinsY()+1):
+    for x in range(1,hist2d.GetNbinsX()+1):
+        for y in range(1,hist2d.GetNbinsY()+1):
             hist2d.SetBinContent(x,y,initalValue)
     # for i in xrange(graph.GetN()):
         # hist2d.Fill(graph.GetX()[i],graph.GetY()[i],graph.GetZ()[i])
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         xbin = hist2d.GetXaxis().FindBin(graph.GetX()[i])
         ybin = hist2d.GetYaxis().FindBin(graph.GetY()[i])
         if isclose(hist2d.GetXaxis().GetBinCenter(xbin), graph.GetX()[i], rel_tol=1e-2) and isclose(hist2d.GetYaxis().GetBinCenter(ybin), graph.GetY()[i], rel_tol=1e-2):
             hist2d.SetBinContent(xbin, ybin, graph.GetZ()[i])
     interpolated = 0
     if interpolateMissing:
-        for x in xrange(1,hist2d.GetNbinsX()+1):
-            for y in xrange(1,hist2d.GetNbinsY()+1):
+        for x in range(1,hist2d.GetNbinsX()+1):
+            for y in range(1,hist2d.GetNbinsY()+1):
                 if hist2d.GetBinContent(x,y) == initalValue:
                     interpolated += 1
                     hist2d.SetBinContent(x, y, graph.Interpolate(hist2d.GetXaxis().GetBinCenter(x),hist2d.GetYaxis().GetBinCenter(y)))
 
 def fillTH2(hist2d, graph):
-    for x in xrange(1, hist2d.GetNbinsX() + 1):
-        for y in xrange(1, hist2d.GetNbinsY() + 1):
+    for x in range(1, hist2d.GetNbinsX() + 1):
+        for y in range(1, hist2d.GetNbinsY() + 1):
             xc = hist2d.GetXaxis().GetBinCenter(x)
             yc = hist2d.GetYaxis().GetBinCenter(y)
             val = graph.Interpolate(xc, yc)
             hist2d.SetBinContent(x, y, val)
 
 def fillInvertedTH2(hist2d, graph):
-    for x in xrange(1, hist2d.GetNbinsX() + 1):
-        for y in xrange(1, hist2d.GetNbinsY() + 1):
+    for x in range(1, hist2d.GetNbinsX() + 1):
+        for y in range(1, hist2d.GetNbinsY() + 1):
             xc = hist2d.GetXaxis().GetBinCenter(x)
             yc = hist2d.GetYaxis().GetBinCenter(y)
             val = graph.Interpolate(xc, yc)
@@ -1792,8 +1796,8 @@ def NewInterpolate(hist):
     xMax = histCopy.GetNbinsX() + 1
     yMax = histCopy.GetNbinsY() + 1
 
-    for i in xrange(1, nBinsX + 1):
-        for j in xrange(1, nBinsY + 1):
+    for i in range(1, nBinsX + 1):
+        for j in range(1, nBinsY + 1):
             # do not extrapolate outside the scan
             if (i < xMin) or (i > xMax) or (j < yMin) or (j > yMax):
                 continue
@@ -1834,8 +1838,8 @@ def NewInterpolate(hist):
            # add result of interpolation
     histCopy.Add(hist_step1)
 
-    for i in xrange(1, nBinsX):
-        for j in xrange(1, nBinsY):
+    for i in range(1, nBinsX):
+        for j in range(1, nBinsY):
             if(i < xMin) or (i > xMax) or (j < yMin) or (j > yMax):
                 continue
             binContent = histCopy.GetBinContent(i, j)
@@ -1878,8 +1882,8 @@ def rebin(hist):
                           hist.GetXaxis().GetXmax(), 2 * hist.GetNbinsY() - 1, hist.GetYaxis().GetXmin(), hist.GetYaxis().GetXmax())
 
     # copy results from previous histogram
-    for iX in xrange(1, hist.GetNbinsX() + 1):
-        for iY in xrange(1, hist.GetNbinsY() + 1):
+    for iX in range(1, hist.GetNbinsX() + 1):
+        for iY in range(1, hist.GetNbinsY() + 1):
             binContent = hist.GetBinContent(iX, iY)
             histRebinned.SetBinContent(2 * iX - 1, 2 * iY - 1, binContent)
     histRebinned.SetMaximum(hist.GetMaximum())
