@@ -41,34 +41,34 @@ SCALES = {
 }
 
 def CustomizeProcs(p):
-  p.set_process('bbH')
-  if p.era() == '8TeV':
-    p.set_rate(p.rate() * (0.2030/18.94) * SCALES[(p.channel(), p.bin_id())]) # ratio of YR3 bbH/ggH @ 125.1
-  elif p.era() == '7TeV':
-    p.set_rate(p.rate() * (0.1555/15.11) * SCALES[(p.channel(), p.bin_id())]) # ratio of YR3 bbH/ggH @ 125.1
-  else:
-    print "Don't know how to scale for " + p.era()
+    p.set_process('bbH')
+    if p.era() == '8TeV':
+        p.set_rate(p.rate() * (0.2030/18.94) * SCALES[(p.channel(), p.bin_id())]) # ratio of YR3 bbH/ggH @ 125.1
+    elif p.era() == '7TeV':
+        p.set_rate(p.rate() * (0.1555/15.11) * SCALES[(p.channel(), p.bin_id())]) # ratio of YR3 bbH/ggH @ 125.1
+    else:
+        print "Don't know how to scale for " + p.era()
 
 def CustomizeSysts(p):
-  p.set_process('bbH')
+    p.set_process('bbH')
 
 cmb = ch.CombineHarvester()
 
 for card in glob.glob('output/htt-YR3-hpt/*/htt*.txt'):
-  cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt")
+    cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt")
 
 for card in glob.glob('output/htt-YR3-hpt/*/vhtt*.txt'):
-  cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$BINID_$ERA.txt")
+    cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$BINID_$ERA.txt")
 
 ch.CloneProcs(cmb.cp().process(['ggH']), cmb, lambda p : CustomizeProcs(p))
 ch.CloneSysts(cmb.cp().process(['ggH']), cmb, lambda p : CustomizeSysts(p))
 
 # Now we drop QCDscale and pdf:
 sys_init = set(cmb.cp().process(['bbH']).syst_name_set())
-cmb.FilterSysts(lambda sys : 
-    sys.process() == 'bbH' and 
+cmb.FilterSysts(lambda sys :
+    sys.process() == 'bbH' and
     (
-      sys.name().startswith('QCDscale') or 
+      sys.name().startswith('QCDscale') or
       sys.name().startswith('pdf')
     )
   )
@@ -93,19 +93,19 @@ cmb.cp().process(['bbH']).AddSyst(
     (['8TeV'], 1.062))
 
 def ModUEPS(sys):
-  if sys.name() != 'UEPS': return
-  if 'ggH' in sys.process() or 'bbH' in sys.process():
-    sys.set_name('UEPS_ggH')
-  elif 'qqH' in sys.process():
-    sys.set_name('UEPS_qqH')
-  elif 'WH' in sys.process() or 'ZH' in sys.process():
-    sys.set_name('UEPS_VH')
-  else:
-    raise Exception('process %s not recognised' % (sys.process()))
-  if ((sys.channel() in ['ee', 'mm', 'em'] and sys.bin_id() >= 4) or
-      (sys.channel() in ['et', 'mt'] and sys.bin_id() >= 6) or
-      (sys.channel() in ['tt'] and sys.bin_id() >= 2)) :
-    sys.set_name(sys.name() + '_vbf')
+    if sys.name() != 'UEPS': return
+    if 'ggH' in sys.process() or 'bbH' in sys.process():
+        sys.set_name('UEPS_ggH')
+    elif 'qqH' in sys.process():
+        sys.set_name('UEPS_qqH')
+    elif 'WH' in sys.process() or 'ZH' in sys.process():
+        sys.set_name('UEPS_VH')
+    else:
+        raise Exception('process %s not recognised' % (sys.process()))
+    if ((sys.channel() in ['ee', 'mm', 'em'] and sys.bin_id() >= 4) or
+        (sys.channel() in ['et', 'mt'] and sys.bin_id() >= 6) or
+        (sys.channel() in ['tt'] and sys.bin_id() >= 2)) :
+        sys.set_name(sys.name() + '_vbf')
 
 
 cmb.ForEachSyst(ModUEPS)
@@ -113,10 +113,10 @@ cmb.ForEachSyst(ModUEPS)
 cmb.cp().syst_name(['QCDscale_ggH2in']).ForEachSyst(lambda sys: sys.set_name('QCDscale_ggH2in_vbf'))
 
 def FixMe(sys):
-  if sys.process().startswith('ggH_hww') and sys.name() == 'pdf_qqbar':
-    print sys
-    sys.set_process(sys.process().replace('ggH','qqH'))
-    print sys
+    if sys.process().startswith('ggH_hww') and sys.name() == 'pdf_qqbar':
+        print sys
+        sys.set_process(sys.process().replace('ggH','qqH'))
+        print sys
 
 cmb.ForEachSyst(FixMe)
 

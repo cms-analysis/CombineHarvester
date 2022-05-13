@@ -58,18 +58,18 @@ def prefit_from_workspace(file, workspace, params, setPars=None):
     FixAll(ws)
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.WARNING)
     if setPars is not None:
-      parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]
-      allParams = ws.allVars()
-      allParams.add(ws.allCats())
-      for par, val in parsToSet:
-        tmp = allParams.find(par)
-        isrvar = tmp.IsA().InheritsFrom(ROOT.RooRealVar.Class())
-        if isrvar:
-          print 'Setting parameter %s to %g' % (par, float(val))
-          tmp.setVal(float(val))
-        else:
-          print 'Setting index %s to %g' % (par, float(val))
-          tmp.setIndex(int(val))
+        parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]
+        allParams = ws.allVars()
+        allParams.add(ws.allCats())
+        for par, val in parsToSet:
+            tmp = allParams.find(par)
+            isrvar = tmp.IsA().InheritsFrom(ROOT.RooRealVar.Class())
+            if isrvar:
+                print 'Setting parameter %s to %g' % (par, float(val))
+                tmp.setVal(float(val))
+            else:
+                print 'Setting index %s to %g' % (par, float(val))
+                tmp.setIndex(int(val))
 
     for p in params:
         res[p] = {}
@@ -176,7 +176,7 @@ def get_none_results(file, params):
     t = f.Get("limit")
     t.GetEntry(0)
     for param in params:
-      res[param] = getattr(t, param)
+        res[param] = getattr(t, param)
     return res
 
 

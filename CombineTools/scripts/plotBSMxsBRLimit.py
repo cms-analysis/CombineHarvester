@@ -1,4 +1,4 @@
-import CombineHarvester.CombineTools.plotting as plot 
+import CombineHarvester.CombineTools.plotting as plot
 import CombineHarvester.CombineTools.maketable as maketable
 import ROOT
 import math
@@ -35,7 +35,7 @@ graph_plus2sigma  = ROOT.TGraph()
 if ".root" in args.file :
     file = ROOT.TFile(args.file, 'r')
     if not args.expected_only:
-       graph_obs         = plot.SortGraph(file.Get("observed"))
+        graph_obs         = plot.SortGraph(file.Get("observed"))
     graph_minus2sigma = plot.SortGraph(file.Get("minus2sigma"))
     graph_minus1sigma = plot.SortGraph(file.Get("minus1sigma"))
     graph_exp         = plot.SortGraph(file.Get("expected"))
@@ -63,7 +63,7 @@ for i in range(graph_exp.GetN()) :
 mass_list = sorted(set(mass_list))
 mass_bins=len(mass_list)
 if int(args.verbosity) > 0 :
-    print "mass_list: ", mass_list, "Total number: ", mass_bins 
+    print "mass_list: ", mass_list, "Total number: ", mass_bins
 
 #Create canvas and TH1D
 plot.ModTDRStyle(width=600, l=0.12)
@@ -124,11 +124,11 @@ graph_exp.SetLineStyle(1);
 graph_exp.Draw("L");
 
 if not args.expected_only:
-  graph_obs.SetMarkerColor(ROOT.kBlack);
-  graph_obs.SetMarkerSize(1.0);
-  graph_obs.SetMarkerStyle(20);
-  graph_obs.SetLineWidth(3);
-  graph_obs.Draw("PLsame");
+    graph_obs.SetMarkerColor(ROOT.kBlack);
+    graph_obs.SetMarkerSize(1.0);
+    graph_obs.SetMarkerStyle(20);
+    graph_obs.SetLineWidth(3);
+    graph_obs.Draw("PLsame");
 
 pads[0].cd()
 legend = plot.PositionedLegend(0.5,0.9,2,0.03)
@@ -138,7 +138,7 @@ legend.SetTextSize(0.15)
 legend.SetTextFont(62)
 legend.SetHeader("95% CL Excluded:")
 if not args.expected_only:
-  legend.AddEntry(graph_obs,"Observed", "L")
+    legend.AddEntry(graph_obs,"Observed", "L")
 legend.AddEntry(innerBand, "#pm 1#sigma Expected", "F")
 legend.AddEntry(graph_exp,"Expected", "L")
 legend.AddEntry(outerBand, "#pm 2#sigma Expected", "F")
@@ -149,4 +149,4 @@ plot.DrawTitle(pads[1], '%s'%args.title, 3);
 plot.FixOverlay()
 c1.SaveAs("%s.pdf"%args.outname)
 c1.SaveAs("%s.png"%args.outname)
-    
+

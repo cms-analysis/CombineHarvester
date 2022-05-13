@@ -115,7 +115,7 @@ for src in args.input:
         pads[0].RedrawAxis('g')
         pads[0].GetFrame().Draw()
 
-    # limit.json:X => Draw a single graph for entry X in the json file 
+    # limit.json:X => Draw a single graph for entry X in the json file
     # 'limit.json:X:Title="Blah",LineColor=4,...' =>
     # as before but also apply style options to TGraph
     elif len(splitsrc) >= 2:

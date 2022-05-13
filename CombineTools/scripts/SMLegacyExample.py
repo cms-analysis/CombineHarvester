@@ -90,10 +90,10 @@ masses = ch.ValsFromRange('110:145|5')
 print '>> Creating processes and observations...'
 
 for era in ['7TeV', '8TeV']:
-  for chn in chns:
-    cb.AddObservations(   ['*'], ['htt'], [era], [chn],                 cats[chn+"_"+era]         )
-    cb.AddProcesses(      ['*'], ['htt'], [era], [chn], bkg_procs[chn], cats[chn+"_"+era], False  )
-    cb.AddProcesses(     masses, ['htt'], [era], [chn], sig_procs,      cats[chn+"_"+era], True   )
+    for chn in chns:
+        cb.AddObservations(   ['*'], ['htt'], [era], [chn],                 cats[chn+"_"+era]         )
+        cb.AddProcesses(      ['*'], ['htt'], [era], [chn], bkg_procs[chn], cats[chn+"_"+era], False  )
+        cb.AddProcesses(     masses, ['htt'], [era], [chn], sig_procs,      cats[chn+"_"+era], True   )
 
 #Have to drop ZL from tautau_vbf category
 cb.FilterProcs(lambda p : p.bin() == 'tauTau_vbf' and p.process() == 'ZL')
@@ -106,35 +106,35 @@ SMLegacySysts.AddSystematics_tt(cb)
 
 print '>> Extracting histograms from input root files...'
 for era in ['7TeV', '8TeV']:
-  for chn in chns:
-    if chn == 'tt' and era == '7TeV': continue
-    file = aux_shapes + input_folders[chn] + "/htt_" + chn + ".inputs-sm-" + era + "-hcg.root"
-    cb.cp().channel([chn]).era([era]).backgrounds().ExtractShapes(
-        file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
-    cb.cp().channel([chn]).era([era]).signals().ExtractShapes(
-        file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
+    for chn in chns:
+        if chn == 'tt' and era == '7TeV': continue
+        file = aux_shapes + input_folders[chn] + "/htt_" + chn + ".inputs-sm-" + era + "-hcg.root"
+        cb.cp().channel([chn]).era([era]).backgrounds().ExtractShapes(
+            file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+        cb.cp().channel([chn]).era([era]).signals().ExtractShapes(
+            file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
 
 print '>> Scaling signal process rates...'
 xs = { }
 # Get the table of H->tau tau BRs vs mass
 xs['htt'] = ch.TGraphFromTable(input_dir+'/xsecs_brs/htt_YR3.txt', 'mH', 'br')
 for e in ['7TeV', '8TeV']:
-  for p in sig_procs:
-    # Get the table of xsecs vs mass for process 'p' and era 'e':
-    xs[p+'_'+e] = ch.TGraphFromTable(input_dir+'/xsecs_brs/'+p+'_'+e+'_YR3.txt', 'mH', 'xsec')
-    print '>>>> Scaling for process ' + p + ' and era ' + e
-    cb.cp().process([p]).era([e]).ForEachProc(
-      lambda x : x.set_rate(
-        x.rate() * xs[p+'_'+e].Eval(float(x.mass())) * xs['htt'].Eval(float(x.mass())))
-    )
+    for p in sig_procs:
+        # Get the table of xsecs vs mass for process 'p' and era 'e':
+        xs[p+'_'+e] = ch.TGraphFromTable(input_dir+'/xsecs_brs/'+p+'_'+e+'_YR3.txt', 'mH', 'xsec')
+        print '>>>> Scaling for process ' + p + ' and era ' + e
+        cb.cp().process([p]).era([e]).ForEachProc(
+          lambda x : x.set_rate(
+            x.rate() * xs[p+'_'+e].Eval(float(x.mass())) * xs['htt'].Eval(float(x.mass())))
+        )
 xs['hww_over_htt'] = ch.TGraphFromTable(input_dir+'/xsecs_brs/hww_over_htt.txt', 'mH', 'ratio')
 
 for e in ['7TeV', '8TeV']:
-  for p in sig_procs:
-    cb.cp().channel(['em']).process([p+'_hww125']).era([e]).ForEachProc(
-      lambda x : x.set_rate(
-        x.rate() * xs[p+'_'+e].Eval(125.) * xs['htt'].Eval(125.) * xs['hww_over_htt'].Eval(125.))
-    )
+    for p in sig_procs:
+        cb.cp().channel(['em']).process([p+'_hww125']).era([e]).ForEachProc(
+          lambda x : x.set_rate(
+            x.rate() * xs[p+'_'+e].Eval(125.) * xs['htt'].Eval(125.) * xs['hww_over_htt'].Eval(125.))
+        )
 
 print '>> Merging bin errors and generating bbb uncertainties...'
 bbb = ch.BinByBinFactory()
@@ -184,6 +184,6 @@ writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
 writer.WriteCards('output/sm_cards/cmb', cb)
 # Also create directory structure for per-channel cards
 for chn in cb.channel_set():
-  writer.WriteCards('output/sm_cards/'+chn, cb.cp().channel([chn]))
+    writer.WriteCards('output/sm_cards/'+chn, cb.cp().channel([chn]))
 
 print '>> Done!'

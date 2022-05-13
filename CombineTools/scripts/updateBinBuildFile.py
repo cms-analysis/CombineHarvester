@@ -22,14 +22,14 @@ filtered = [x for x in content if '<bin' not in x]
 
 fout = open(buildfile, 'w')
 for line in bins:
-  basename = os.path.basename(line)
-  noext = os.path.splitext(basename)[0]
-  result = '<bin file="%s" name="%s"></bin>\n' % (basename, noext)
-  fout.write(result)
+    basename = os.path.basename(line)
+    noext = os.path.splitext(basename)[0]
+    result = '<bin file="%s" name="%s"></bin>\n' % (basename, noext)
+    fout.write(result)
 for line in filtered:
-  fout.write(line)
+    fout.write(line)
 fout.close()
 
 print '>> Operation completed successfully, the new BuildFile.xml looks like:'
 with open(buildfile, 'r') as fin:
-  print fin.read()
+    print fin.read()

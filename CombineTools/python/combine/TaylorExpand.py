@@ -393,7 +393,7 @@ class TaylorExpand(CombineToolBase):
             for item in itertools.combinations_with_replacement(range(Nx), i):
                 if len(set(item)) != 1 and i > self.args.cross_order:
                     if item in cached_terms:
-                      del cached_terms[item]
+                        del cached_terms[item]
                     continue
 
                 stats[i]['nTerms'] += 1

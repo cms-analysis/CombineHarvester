@@ -246,9 +246,9 @@ class CombineToolBase:
         if self.job_mode in ['script', 'lxbatch', 'SGE', 'slurm']:
             if self.prefix_file != '':
                 if self.prefix_file.endswith('.txt'):
-                  job_prefix_file = open(self.prefix_file,'r')
+                    job_prefix_file = open(self.prefix_file,'r')
                 else :
-                  job_prefix_file = open(os.environ['CMSSW_BASE']+"/src/CombineHarvester/CombineTools/input/job_prefixes/job_prefix_"+self.prefix_file+".txt",'r')
+                    job_prefix_file = open(os.environ['CMSSW_BASE']+"/src/CombineHarvester/CombineTools/input/job_prefixes/job_prefix_"+self.prefix_file+".txt",'r')
                 global JOB_PREFIX
                 JOB_PREFIX=job_prefix_file.read() %({
                   'CMSSW_BASE': os.environ['CMSSW_BASE'],
@@ -263,9 +263,9 @@ class CombineToolBase:
                 # we also keep track of the files that were created in case submission to a
                 # batch system was also requested
                 if self.job_dir:
-                  if not os.path.exists(self.job_dir):
-                    os.makedirs(self.job_dir)
-                  script_name = os.path.join(self.job_dir,script_name)
+                    if not os.path.exists(self.job_dir):
+                        os.makedirs(self.job_dir)
+                    script_name = os.path.join(self.job_dir,script_name)
                 self.create_job_script(
                     self.job_queue[j:j + self.merge], script_name, self.job_mode == 'script')
                 script_list.append(script_name)
