@@ -109,18 +109,18 @@ SCALES_8TEV = {
 }
 
 def DoScales(cmb, scales):
-  for key, val in scales.iteritems():
-    print 'Scaling ' + str(key) + ' by ' + str(val)
-    cmb.cp().process(["ggH"]).channel([key[0]]).bin_id([key[1]]).ForEachProc(lambda x : x.set_rate(x.rate() * val))
-    cmb.cp().process(["ggH"]).channel([key[0]]).bin_id([key[1]]).PrintProcs()
+    for key, val in scales.iteritems():
+        print 'Scaling ' + str(key) + ' by ' + str(val)
+        cmb.cp().process(["ggH"]).channel([key[0]]).bin_id([key[1]]).ForEachProc(lambda x : x.set_rate(x.rate() * val))
+        cmb.cp().process(["ggH"]).channel([key[0]]).bin_id([key[1]]).PrintProcs()
 
 cmb = ch.CombineHarvester()
 
 for card in glob.glob('output/htt-YR3/*/htt*.txt'):
-  cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt")
+    cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt")
 
 for card in glob.glob('output/htt-YR3/*/vhtt*.txt'):
-  cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$BINID_$ERA.txt")
+    cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$BINID_$ERA.txt")
 
 cmb_for_scaling = cmb.cp().analysis(['vhtt'], False)
 

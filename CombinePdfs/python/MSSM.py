@@ -164,11 +164,11 @@ class MSSMHiggsModel(PhysicsModel):
         res = h4f.Clone()
         for x in xrange(1, h4f.GetNbinsX() + 1):
             for y in xrange(1, h4f.GetNbinsY() +1):
-               mh = h4f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               if mh <= 0:
+                mh = h4f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
+                if mh <= 0:
                     print 'santanderMatching: Have mh = %f at (%f,%f), using h4f value' % (mh,  h4f.GetXaxis().GetBinCenter(x),  h4f.GetYaxis().GetBinCenter(y))
                     res.SetBinContent(x, y, h4f.GetBinContent(x, y))
-               else:
+                else:
                     t = math.log(mh / 4.92) - 2.
                     fourflav = h4f.GetBinContent(x, y)
                     fiveflav = h5f.GetBinContent(x, y)
@@ -180,11 +180,11 @@ class MSSMHiggsModel(PhysicsModel):
         res = h5f.Clone()
         for x in xrange(1, h5f.GetNbinsX() + 1):
             for y in xrange(1, h5f.GetNbinsY() +1):
-               mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               if mh <= 0:
+                mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
+                if mh <= 0:
                     print 'santanderPdfUncert: Have mh = %f at (%f,%f), using h5f value' % (mh,  h5f.GetXaxis().GetBinCenter(x),  h5f.GetYaxis().GetBinCenter(y))
                     res.SetBinContent(x, y, h5f.GetBinContent(x, y))
-               else:
+                else:
                     t = math.log(mh / 4.92) - 2.
                     fiveflav = h5f.GetBinContent(x, y)
                     sigma = (1. / (1. + t)) * (fiveflav)
@@ -198,11 +198,11 @@ class MSSMHiggsModel(PhysicsModel):
         res = h5f.Clone()
         for x in xrange(1, h5f.GetNbinsX() + 1):
             for y in xrange(1, h5f.GetNbinsY() +1):
-               mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               if mh <= 0:
+                mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
+                if mh <= 0:
                     print 'santanderPdfUncert2: Have mh = %f at (%f,%f), using h5f value' % (mh,  h5f.GetXaxis().GetBinCenter(x),  h5f.GetYaxis().GetBinCenter(y))
                     res.SetBinContent(x, y, h5f.GetBinContent(x, y))
-               else:
+                else:
                     t = math.log(mh / 4.92) - 2.
                     fiveflav = abs(h5f.GetBinContent(x, y) - h5fnom.GetBinContent(x, y))
                     sigma = (1. / (1. + t)) * (fiveflav)
@@ -260,7 +260,7 @@ class MSSMHiggsModel(PhysicsModel):
         return res
 
     def add_ggH_at_NLO(self, name, X):
-	importstring = os.path.expandvars(self.ggHatNLO)+":w:gg{X}_{LC}_MSSM_frac" #import t,b,i fraction of xsec at NLO
+        importstring = os.path.expandvars(self.ggHatNLO)+":w:gg{X}_{LC}_MSSM_frac" #import t,b,i fraction of xsec at NLO
         for loopcontrib in ['t','b','i']:
             #self.modelBuilder.out._import(importstring.format(X=X, LC=loopcontrib))
             getattr(self.modelBuilder.out, 'import')(importstring.format(X=X, LC=loopcontrib), ROOT.RooFit.RecycleConflictNodes())
@@ -428,7 +428,7 @@ class MSSMHiggsModel(PhysicsModel):
         self.sigNorms = { True:'x', False:'not_x' }
 
         self.modelBuilder.doSet('POI', 'r')
-        
+
         # We don't intend on actually floating these in any fits...
         self.modelBuilder.out.var('mA').setConstant(True)
         self.modelBuilder.out.var('tanb').setConstant(True)
@@ -478,7 +478,7 @@ class MSSMHiggsModel(PhysicsModel):
                 if E: raise RuntimeError, "Validation Error: bin string %s contains multiple known energies" % bin
                 E = era
         if not E:
-                raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
+            raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
         return (P, D, E)
 
     def getYieldScale(self,bin,process):

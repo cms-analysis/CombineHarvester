@@ -97,7 +97,7 @@ class THDMHiggsModel(PhysicsModel):
                     new_val = val_h1 / val_h2
                 res.SetBinContent(x, y, new_val)
         return res
-        
+
     def buildModel(self):
         # It's best not to set ranges for the model parameters here.
         # RooFit will create them automatically from the x- and y-axis
@@ -176,7 +176,7 @@ class THDMHiggsModel(PhysicsModel):
         """Return a triple of (production, decay, energy)"""
         P = ''
         D = ''
-        if "_" in process: 
+        if "_" in process:
             (P, D) = process.split("_")
         else:
             raise RuntimeError, 'Expected signal process %s to be of the form PROD_DECAY' % process
@@ -186,9 +186,9 @@ class THDMHiggsModel(PhysicsModel):
                 if E: raise RuntimeError, "Validation Error: bin string %s contains multiple known energies" % bin
                 E = era
         if not E:
-                raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
+            raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
         return (P, D, E)
-        
+
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
             (P, D, E) = self.getHiggsProdDecMode(bin, process)

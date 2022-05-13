@@ -1,4 +1,4 @@
-import CombineHarvester.CombineTools.plotting as plot 
+import CombineHarvester.CombineTools.plotting as plot
 import ROOT
 import math
 import argparse
@@ -6,12 +6,12 @@ import argparse
 
 col_store = []
 def CreateTransparentColor(color, alpha):
-  adapt   = ROOT.gROOT.GetColor(color)
-  new_idx = ROOT.gROOT.GetListOfColors().GetSize() + 1
-  trans = ROOT.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
-  col_store.append(trans)
-  trans.SetName('userColor%i' % new_idx)
-  return new_idx
+    adapt   = ROOT.gROOT.GetColor(color)
+    new_idx = ROOT.gROOT.GetListOfColors().GetSize() + 1
+    trans = ROOT.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(), adapt.GetBlue(), '', alpha)
+    col_store.append(trans)
+    trans.SetName('userColor%i' % new_idx)
+    return new_idx
 
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -51,7 +51,7 @@ mA_list = sorted(set(mA_list))
 tanb_bins=len(tanb_list)
 mA_bins=len(mA_list)
 if int(args.verbosity) > 0 :
-    print "mA_list: ", mA_list, "Total number: ", mA_bins 
+    print "mA_list: ", mA_list, "Total number: ", mA_bins
     print "tanb_list: ", tanb_list, "Total number: ", tanb_bins
 
 #Create canvas and TH2D for each component
@@ -178,9 +178,9 @@ for i,p in enumerate(cont_obs):
     if int(args.verbosity) > 0 : outf.WriteTObject(p, 'graph_obs_%i'%i)
 
 if int(args.verbosity) > 0 : outf.Close()
-     
+
 #if args.scenario != "hMSSM" and "2HDM" not in args.scenario :
-#    if cont_higgshhigh :   
+#    if cont_higgshhigh :
 #        for p in cont_higgshhigh:
 #            p.SetLineWidth(-402)
 #            p.SetFillStyle(3005)
@@ -229,10 +229,10 @@ legend.SetTextSize(0.15)
 legend.SetTextFont(62)
 legend.SetHeader("95% CL Excluded:")
 # Stupid hack to get legend entry looking correct
-if cont_obs[0] and not args.expected_only: 
-     alt_cont_obs = cont_obs[0].Clone()
-     alt_cont_obs.SetLineColor(ROOT.kWhite)
-     legend.AddEntry(alt_cont_obs,"Observed", "F")
+if cont_obs[0] and not args.expected_only:
+    alt_cont_obs = cont_obs[0].Clone()
+    alt_cont_obs.SetLineColor(ROOT.kWhite)
+    legend.AddEntry(alt_cont_obs,"Observed", "F")
 if cont_minus1sigma[0] : legend.AddEntry(cont_minus1sigma[0], "#pm 1#sigma Expected", "F")
 if cont_exp[0] : legend.AddEntry(cont_exp[0],"Expected", "L")
 if cont_minus2sigma[0] : legend.AddEntry(cont_minus2sigma[0], "#pm 2#sigma Expected", "F")

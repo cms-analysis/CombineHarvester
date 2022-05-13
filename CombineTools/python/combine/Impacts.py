@@ -54,7 +54,7 @@ class Impacts(CombineToolBase):
         group.add_argument('--approx', default=None, choices=['hesse', 'robust'],
             help="""Calculate impacts using the covariance matrix instead""")
         group.add_argument('--noInitialFit', action='store_true', default=False, help="""Do not look for results from the initial Fit""")
-        
+
 
     def run_method(self):
         if self.args.allPars:
@@ -148,7 +148,7 @@ class Impacts(CombineToolBase):
             elif self.args.splitInitial:
                 for poi in poiList:
                     initialRes.update(utils.get_singles_results(
-                    'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
+                        'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
             else:
                 initialRes = utils.get_singles_results(
                     'higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
@@ -166,7 +166,7 @@ class Impacts(CombineToolBase):
 
         # Exclude some parameters
         if self.args.exclude is not None:
-            exclude = self.args.exclude.split(',')            
+            exclude = self.args.exclude.split(',')
             expExclude = []
             for exParam in exclude:
                 if 'rgx{' in exParam:
@@ -220,11 +220,11 @@ class Impacts(CombineToolBase):
         self.flush_queue()
 
         if self.args.approx == 'hesse':
-                res['method'] = 'hesse'
+            res['method'] = 'hesse'
         elif self.args.approx == 'robust':
-                res['method'] = 'robust'
+            res['method'] = 'robust'
         else:
-                res['method'] = 'default'
+            res['method'] = 'default'
         jsondata = json.dumps(
             res, sort_keys=True, indent=2, separators=(',', ': '))
         # print jsondata

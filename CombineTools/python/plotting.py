@@ -993,7 +993,7 @@ def SetMinToZero(graph):
             minNum = i
     for i in xrange(graph.GetN()):
         graph.SetPoint(i, graph.GetX()[i], graph.GetY()[i]-min)
-    
+
 
 
 def ImproveMinimum(graph, func, doIt=False):
@@ -1257,7 +1257,7 @@ def GetPadYMaxInRange(pad, x_min, x_max, do_min=False):
             for j in xrange(1, hobj.GetNbinsX()+1):
                 if (hobj.GetBinLowEdge(j) + hobj.GetBinWidth(j) < x_min or
                         hobj.GetBinLowEdge(j) > x_max):
-                        continue
+                    continue
                 if (hobj.GetBinContent(j) + hobj.GetBinError(j) > h_max):
                     h_max = hobj.GetBinContent(j) + hobj.GetBinError(j)
                 if (hobj.GetBinContent(j) - hobj.GetBinError(j) < h_min) and not do_min:
@@ -1489,7 +1489,7 @@ def PositionedLegend(width, height, pos, offset, horizontaloffset=None):
     o = offset
     ho = horizontaloffset
     if not ho:
-      ho = o
+        ho = o
     w = width
     h = height
     l = R.gPad.GetLeftMargin()
@@ -1617,7 +1617,7 @@ def DrawLimitBand(pad, graph_dict, draw=['exp2', 'exp1', 'exp0', 'obs'], draw_le
         if draw_legend is None:
             draw_legend = reversed(draw)
         for key in draw_legend:
-            if key in graph_dict: 
+            if key in graph_dict:
                 legend.AddEntry(graph_dict[key],legend_dict[key]['Label'],legend_dict[key]['LegendStyle'])
 
 

@@ -29,17 +29,17 @@ sig_procs = ['ggHTohhTo2Tau2B']
 
 cats = {
   'et_8TeV' : [
-    (0, 'eleTau_2jet0tag'), 
+    (0, 'eleTau_2jet0tag'),
     (1, 'eleTau_2jet1tag'),
     (2, 'eleTau_2jet2tag')
   ],
   'mt_8TeV' : [
-    (0, 'muTau_2jet0tag'), 
+    (0, 'muTau_2jet0tag'),
     (1, 'muTau_2jet1tag'),
     (2, 'muTau_2jet2tag')
   ],
   'tt_8TeV' : [
-    (0, 'tauTau_2jet0tag'), 
+    (0, 'tauTau_2jet0tag'),
     (1, 'tauTau_2jet1tag'),
     (2, 'tauTau_2jet2tag')
   ]
@@ -64,7 +64,7 @@ HhhSysts.AddSystematics_hhh_tt(cb)
 
 print '>> Extracting histograms from input root files...'
 for chn in chns:
-    file = aux_shapes + input_folders[chn] + "/htt_" + chn + ".inputs-Hhh-8TeV.root" 
+    file = aux_shapes + input_folders[chn] + "/htt_" + chn + ".inputs-Hhh-8TeV.root"
     cb.cp().channel([chn]).era(['8TeV']).backgrounds().ExtractShapes(
         file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
     cb.cp().channel([chn]).era(['8TeV']).signals().ExtractShapes(

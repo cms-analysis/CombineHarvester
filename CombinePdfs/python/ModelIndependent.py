@@ -22,7 +22,7 @@ class BRChargedHiggs(PhysicsModel):
         self.processScaling = { 'tt_ttHchHch':'HH', 'tt_ttHchW':'WH', 'tt':'tt' }
 
         # self.modelBuilder.out.Print()
-        
+
     def getYieldScale(self,bin,process):
         for prefix, model in self.processScaling.iteritems():
             if process == prefix:
@@ -102,7 +102,7 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
                 if len(self.bbHRange) != 2:
                     raise RuntimeError, "bbH signal strength range requires minimal and maximal value"
                 elif float(self.bbHRange[0]) >= float(self.bbHRange[1]):
-                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"                 
+                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"
     def doParametersOfInterest(self):
         """
         Create POI and other parameters, and define the POI set. E.g. Evaluate cross section for given values of mA and tanb
@@ -154,7 +154,7 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
             ## in the return function instead of the newly defined variables ggH_yields or bbH_yield.
             self.modelBuilder.factory_('expr::%s_yield("@0", r_%s)' % (production, production))
             return "%s_yield" % production
-        ## This just corresponds to entry points to extend the model to other production channels like qqH, ttH, VH. 
+        ## This just corresponds to entry points to extend the model to other production channels like qqH, ttH, VH.
         #
         #if production == "qqH": return ("r_qqH" if "qqH" in self.modes else 1)
         #if production == "ttH": return ("r_ttH" if "ttH" in self.modes else 1)
@@ -169,4 +169,4 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
 brChargedHiggs = BRChargedHiggs()
 
 #Model independent xs*BR limits
-floatingMSSMXSHiggs = FloatingMSSMXSHiggs()   
+floatingMSSMXSHiggs = FloatingMSSMXSHiggs()
