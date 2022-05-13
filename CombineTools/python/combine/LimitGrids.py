@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import json
 import itertools
@@ -13,6 +15,8 @@ from array import array
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 import CombineHarvester.CombineTools.plotting as plot
+import six
+from six.moves import range
 
 class AsymptoticGrid(CombineToolBase):
     description = 'Calculate asymptotic limits on parameter grids'
@@ -89,11 +93,11 @@ class AsymptoticGrid(CombineToolBase):
             if p in file_dict:
                 file_dict[p].append(f)
 
-        for key,val in file_dict.iteritems():
+        for key,val in six.iteritems(file_dict):
             name = '%s.%s.%s.%s' % (POIs[0], key[0], POIs[1], key[1])
-            print '>> Point %s' % name
+            print('>> Point %s' % name)
             if len(val) == 0:
-                print 'Going to run limit for point %s' % (key,)
+                print('Going to run limit for point %s' % (key,))
                 set_arg = ','.join(['%s=%s,%s=%s' % (POIs[0], key[0], POIs[1], key[1])] + to_set)
                 freeze_arg = ','.join(['%s,%s' % (POIs[0], POIs[1])] + to_freeze)
                 point_args = '-n .%s --setParameters %s --freezeParameters %s' % (name, set_arg, freeze_arg)
@@ -104,13 +108,13 @@ class AsymptoticGrid(CombineToolBase):
         self.flush_queue()
 
         if bail_out:
-            print '>> New jobs were created / run in this cycle, run the script again to collect the output'
+            print('>> New jobs were created / run in this cycle, run the script again to collect the output')
             sys.exit(0)
 
         xvals = []
         yvals = []
         zvals_m2s = []; zvals_m1s = []; zvals_exp = []; zvals_p1s = []; zvals_p2s = []; zvals_obs = []
-        for key,val in file_dict.iteritems():
+        for key,val in six.iteritems(file_dict):
             for filename in val:
                 fin = ROOT.TFile(filename)
                 if fin.IsZombie(): continue
@@ -200,13 +204,13 @@ class HybridNewGrid(CombineToolBase):
                     found_res = True
             f.Close()
             if not found_res:
-                print '>> Warning, did not find a HypoTestResult object in file %s' % file
+                print('>> Warning, did not find a HypoTestResult object in file %s' % file)
         if (len(results)) > 1:
             for r in results[1:]:
                 results[0].Append(r)
         ntoys = min(results[0].GetNullDistribution().GetSize(), results[0].GetAltDistribution().GetSize())
         if ntoys == 0:
-            print '>> Warning, HypoTestResult from file(s) %s does not contain any toy results, did something go wrong in your fits?' % '+'.join(files)
+            print('>> Warning, HypoTestResult from file(s) %s does not contain any toy results, did something go wrong in your fits?' % '+'.join(files))
         return results[0]
 
     def ValidateHypoTest(self, hyp_res, min_toys, max_toys, contours, signif, cl, output=False, verbose=False, precomputed=None, feldman_cousins=False):
@@ -220,8 +224,8 @@ class HybridNewGrid(CombineToolBase):
         if hyp_res is not None:
             # We will take the number of toys thrown as the minimum of the number of b-only or s+b toys
             ntoys = min(hyp_res.GetNullDistribution().GetSize(), hyp_res.GetAltDistribution().GetSize())
-            print '>>> Number of b toys %i' %(hyp_res.GetNullDistribution().GetSize())
-            print '>>> Number of s+b toys %i'%(hyp_res.GetAltDistribution().GetSize())
+            print('>>> Number of b toys %i' %(hyp_res.GetNullDistribution().GetSize()))
+            print('>>> Number of s+b toys %i'%(hyp_res.GetAltDistribution().GetSize()))
 
         if precomputed is not None:
             ntoys = precomputed['ntoys']
@@ -229,7 +233,7 @@ class HybridNewGrid(CombineToolBase):
         results['ntoys'] = ntoys
 
         if verbose:
-            print '>>> Toys completed: %i [min=%i, max=%i]' % (ntoys, min_toys, max_toys)
+            print('>>> Toys completed: %i [min=%i, max=%i]' % (ntoys, min_toys, max_toys))
 
         # If we're not going to write the CLs grids out and we fail the ntoys criteria then we
         # don't need to waste time getting all the CLs values. Can just return the results dict as-is.
@@ -252,7 +256,7 @@ class HybridNewGrid(CombineToolBase):
         signif_results = {}
 
         if verbose:
-            print '>>> CLs target is a significance of %.1f standard deviations from %.3f' % (signif, crossing)
+            print('>>> CLs target is a significance of %.1f standard deviations from %.3f' % (signif, crossing))
 
         for contour in contours:
             # Start by assuming this contour passes, we'll set it to False if it fails
@@ -262,13 +266,13 @@ class HybridNewGrid(CombineToolBase):
             if 'exp' in contour:
                 quantile = ROOT.Math.normal_cdf(float(contour.replace('exp', '')))
                 if verbose:
-                    print '>>> Checking the %s contour at quantile=%f' % (contour, quantile)
+                    print('>>> Checking the %s contour at quantile=%f' % (contour, quantile))
                 if hyp_res is not None:
                     # Get the stat statistic value at this quantile by rounding to the nearest b-only toy
                     testStat = btoys[int(min(floor(quantile * len(btoys) +0.5), len(btoys)-1))]
                     hyp_res.SetTestStatisticData(testStat)
             elif contour == 'obs':
-                if verbose: print '>>> Checking the %s contour' % contour
+                if verbose: print('>>> Checking the %s contour' % contour)
             else:
                 raise RuntimeError('Contour %s not recognised' % contour)
 
@@ -291,12 +295,12 @@ class HybridNewGrid(CombineToolBase):
             dist = 0.
             if CLsErr == 0.:
                 if verbose:
-                    print '>>>> CLs = %g +/- %g (infinite significance), will treat as passing' % (CLs, CLsErr)
+                    print('>>>> CLs = %g +/- %g (infinite significance), will treat as passing' % (CLs, CLsErr))
                 dist = 999.
             else:
                 dist = abs(CLs - crossing) / CLsErr
                 if verbose:
-                    print '>>>> CLs = %g +/- %g, reached %.1f sigma signifance' % (CLs, CLsErr, dist)
+                    print('>>>> CLs = %g +/- %g, reached %.1f sigma signifance' % (CLs, CLsErr, dist))
                 if dist < signif:
                     signif_results[contour] = False
             results[contour] = (CLs, CLsErr, dist, testStatObs)
@@ -306,7 +310,7 @@ class HybridNewGrid(CombineToolBase):
 
         # Now do the full logic of the validation and return
         all_ok = (ntoys >= min_toys) # OK if min toys passes
-        for (key, val) in signif_results.iteritems():
+        for (key, val) in six.iteritems(signif_results):
             all_ok = all_ok and val # still OK if all contour significances pass
         all_ok = all_ok or (ntoys >= max_toys) # Always OK if we've reached the maximum
         results['ok'] = all_ok
@@ -388,11 +392,11 @@ class HybridNewGrid(CombineToolBase):
                     with open(boundlist_file) as json_file:
                         bnd = json.load(json_file)
                     bound_pars = list(bnd.keys())
-                    print 'Found bounds for parameters %s' % ','.join(bound_pars)
+                    print('Found bounds for parameters %s' % ','.join(bound_pars))
                     bound_vals = {}
                     for par in bound_pars:
                         bound_vals[par] = list()
-                        for mass, bounds in bnd[par].iteritems():
+                        for mass, bounds in six.iteritems(bnd[par]):
                             bound_vals[par].append((float(mass), bounds[0], bounds[1]))
                         bound_vals[par].sort(key=lambda x: x[0])
                 # print (min_limit, max_limit)
@@ -462,7 +466,7 @@ class HybridNewGrid(CombineToolBase):
                     # file with incomplete or failed jobs
                     if zipname and plot.TFileIsGood(f):
                         zipf.write(f) # assume this throws if it fails
-                        print 'Adding %s to %s' % (f, zipname)
+                        print('Adding %s to %s' % (f, zipname))
                         file_dict[p][seed] = zipname+'#'+f
                         os.remove(f)
                     else:  # otherwise just add the file to the dict in the normal way
@@ -491,14 +495,14 @@ class HybridNewGrid(CombineToolBase):
         total_points = 0
         complete_points = 0
 
-        for key,val in file_dict.iteritems():
+        for key,val in six.iteritems(file_dict):
             status_changed = True
             total_points += 1
             status_key = ':'.join(key)
             name = '%s.%s.%s.%s' % (POIs[0], key[0], POIs[1], key[1])
 
             # First check if we use the status json
-            all_files = val.values()
+            all_files = list(val.values())
             status_files = []
             files =[]
 
@@ -506,13 +510,13 @@ class HybridNewGrid(CombineToolBase):
             if status_key in stats:
                 status_files = stats[status_key]['files']
                 if set(all_files) == set(status_files):
-                    print 'For point %s, no files have been updated' % name
+                    print('For point %s, no files have been updated' % name)
                     status_changed = False
                     files = all_files
                 else:
                     files = [x for x in val.values() if plot.TFileIsGood(x)]
                     if set(files) == set(status_files) and len(files) < len(all_files):
-                        print 'For point %s, new files exist but they are not declared good' % name
+                        print('For point %s, new files exist but they are not declared good' % name)
                         status_changed = False
             else:
                 files = [x for x in val.values() if plot.TFileIsGood(x)]
@@ -538,7 +542,7 @@ class HybridNewGrid(CombineToolBase):
                 precomputed = precomputed,
                 feldman_cousins=feldman_cousins)
 
-            print '>> Point %s [%i toys, %s]' % (name, point_res['ntoys'], 'DONE' if ok else 'INCOMPLETE')
+            print('>> Point %s [%i toys, %s]' % (name, point_res['ntoys'], 'DONE' if ok else 'INCOMPLETE'))
 
             stats[status_key] = {
                 'files': files,
@@ -570,15 +574,15 @@ class HybridNewGrid(CombineToolBase):
 
             # Do the job cycle generation if requested
             if not ok and self.args.cycles > 0:
-                print '>>> Going to generate %i job(s) for point %s' % (self.args.cycles, key)
+                print('>>> Going to generate %i job(s) for point %s' % (self.args.cycles, key))
                 # Figure out the next seed numbers we need to run by finding the maximum seed number
                 # so far
-                done_cycles = val.keys()
+                done_cycles = list(val.keys())
                 new_idx = max(done_cycles)+1 if len(done_cycles) > 0 else 1
-                new_cycles = range(new_idx, new_idx+self.args.cycles)
+                new_cycles = list(range(new_idx, new_idx+self.args.cycles))
 
-                print '>>> Done cycles: ' + ','.join(str(x) for x in done_cycles)
-                print '>>> New cycles: ' + ','.join(str(x) for x in new_cycles)
+                print('>>> Done cycles: ' + ','.join(str(x) for x in done_cycles))
+                print('>>> New cycles: ' + ','.join(str(x) for x in new_cycles))
 
                 # Build to combine command. Here we'll take responsibility for setting the name and the
                 # model parameters, making sure the latter are frozen
@@ -624,7 +628,7 @@ class HybridNewGrid(CombineToolBase):
                     cmd = ' '.join(['combine -M HybridNew', opts, point_args, '-T %i' % toys_per_cycle, '-s %i' % idx] + self.passthru)
                     self.job_queue.append(cmd)
 
-        print ">> %i/%i points have completed and require no further toys" % (complete_points, total_points)
+        print(">> %i/%i points have completed and require no further toys" % (complete_points, total_points))
         self.flush_queue()
 
         # Create and write output CLs TGraph2Ds here
@@ -651,11 +655,11 @@ class HybridNewGrid(CombineToolBase):
         if self.args.output and self.args.from_asymptotic:
             # Need to collect all the files for each mass point and hadd them:
             files_by_mass = {}
-            for key,val in file_dict.iteritems():
+            for key,val in six.iteritems(file_dict):
                 if key[0] not in files_by_mass:
                     files_by_mass[key[0]] = list()
-                files_by_mass[key[0]].extend(val.values())
-            for m, files in files_by_mass.iteritems():
+                files_by_mass[key[0]].extend(list(val.values()))
+            for m, files in six.iteritems(files_by_mass):
                 gridfile = 'higgsCombine.gridfile.%s.%s.%s.root' % (POIs[0], m, POIs[1])
                 self.job_queue.append('hadd -f %s %s' % (gridfile, ' '.join(files)))
                 for exp in ['', '0.025', '0.160', '0.500', '0.840', '0.975']:
@@ -683,7 +687,7 @@ class HybridNewGrid(CombineToolBase):
         null_vals = [x * sign * 2. for x in result.GetNullDistribution().GetSamplingDistribution()]
         alt_vals = [x * sign * 2. for x in result.GetAltDistribution().GetSamplingDistribution()]
         if len(null_vals) == 0 or len(alt_vals) == 0:
-            print '>> Errror in PlotTestStat for %s, null and/or alt distributions are empty'
+            print('>> Errror in PlotTestStat for %s, null and/or alt distributions are empty')
             return
         plot.ModTDRStyle()
         canv = ROOT.TCanvas(name, name)

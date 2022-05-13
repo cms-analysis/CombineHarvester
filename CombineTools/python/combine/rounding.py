@@ -5,8 +5,11 @@ Written by andre.david@cern.ch
 """
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 from math import *
 from decimal import *
+from six.moves import range
 
 ###
 def roundUnc(unc, method="Publication"):
@@ -41,7 +44,7 @@ def roundUnc(unc, method="Publication"):
         if 100 <= unc3Digs <= 354:
             prec += 1
     else:
-        raise TypeError, 'Unknown precision method ("%s")'% method
+        raise TypeError('Unknown precision method ("%s")'% method)
 
     uncStr = matchPrec(uncDigs, str(10 ** int(1-prec)))
 
@@ -76,7 +79,7 @@ def getDigsMag(val):
         valMag = int(floor(log10(val)))
         valDigs = val/pow(10,valMag)
     except:
-        print val
+        print(val)
         valDigs=1
         valMag=1
 
@@ -150,7 +153,7 @@ def roundMultiple(vals, uncs, method="PDG"):
 
     try:
         valsStr = [ matchPrec(val/pow(10,uncRefMag), uncRefStr) for val in vals]
-        print "foo"
+        print("foo")
     except:
         valsStr = matchPrec(vals/pow(10,uncRefMag), uncRefStr)
 
@@ -158,7 +161,7 @@ def roundMultiple(vals, uncs, method="PDG"):
 
     for unc in uncs:
         if isinstance(unc, (list, tuple)):
-            elt = map(lambda x: matchPrec(x/pow(10,uncRefMag), uncRefStr), unc)
+            elt = [matchPrec(x/pow(10,uncRefMag), uncRefStr) for x in unc]
         else:
             elt = matchPrec(unc/pow(10,uncRefMag), uncRefStr)
         uncsStr.append(elt)
@@ -237,12 +240,12 @@ def toROOTorLatex(valStr, uncsStr, mag, uncLbls=None, units=None, mode=None):
            "right": "#right",
            }
     else:
-        raise TypeError, 'Unknown mode ("%s")'% mode
+        raise TypeError('Unknown mode ("%s")'% mode)
 
 
     symUncStr = t["sep"]+"pm%s "
     asymUncStr = "^{+%s}_{-%s} "
-    if units and magTen in commonSIPrefixes.keys():
+    if units and magTen in list(commonSIPrefixes.keys()):
         pwrStr = t["space"]+t["sep"]+"mathrm{"+commonSIPrefixes[magTen]+units+"} "
     else:
         pwrStr = t["times"]+"10^{%d} " % magTen
@@ -355,24 +358,24 @@ if __name__ == "__main__":
 
     # run latex trials here
     #
-    print
+    print()
     for i in range(-6,6 +1):
-        print toLatexRounded(5.234*pow(10,i),(0.045*pow(10,i),0.361*pow(10,i)),None,"W")
-    print
+        print(toLatexRounded(5.234*pow(10,i),(0.045*pow(10,i),0.361*pow(10,i)),None,"W"))
+    print()
     for i in range(-6,6 +1):
-        print toLatexRounded(5.746*pow(10,i),(0.023*pow(10,i),0.954*pow(10,i)))
-    print
-    print toLatexRounded(0.8274e-18,(0.1191e-18,(0.0202e-18,0.0432e-18),0.0582e-18),("stat.","syst.","theo."))
-    print toLatexRounded(0.8274e-4,(0.1191e-4,(0.0202e-6,0.0432e-4),0.0582e-4),("stat.","syst.","theo."),"b")
-    print
+        print(toLatexRounded(5.746*pow(10,i),(0.023*pow(10,i),0.954*pow(10,i))))
+    print()
+    print(toLatexRounded(0.8274e-18,(0.1191e-18,(0.0202e-18,0.0432e-18),0.0582e-18),("stat.","syst.","theo.")))
+    print(toLatexRounded(0.8274e-4,(0.1191e-4,(0.0202e-6,0.0432e-4),0.0582e-4),("stat.","syst.","theo."),"b"))
+    print()
     for i in range(-6,6 +1):
-        print toLatexRounded(1.030*pow(10,i),(0.032*pow(10,i)))
-    print
+        print(toLatexRounded(1.030*pow(10,i),(0.032*pow(10,i))))
+    print()
     for i in range(-6,6 +1):
-        print toLatexRounded(0.549*pow(10,i),(0.019*pow(10,i),0.063*pow(10,i),0.060*pow(10,i)))
-    print
+        print(toLatexRounded(0.549*pow(10,i),(0.019*pow(10,i),0.063*pow(10,i),0.060*pow(10,i))))
+    print()
 
-    print toROOTRounded(2850e9,(2850e9*0.11))
+    print(toROOTRounded(2850e9,(2850e9*0.11)))
 
     # unit tests exit after running
     runner = unittest.TextTestRunner(verbosity = 2)

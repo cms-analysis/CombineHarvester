@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import itertools
 import CombineHarvester.CombineTools.combine.utils as utils
 import json
@@ -77,10 +79,10 @@ class T2W(CombineToolBase):
             passthru = [x for x in self.passthru]
             # Deal with the directory case first (3)
             if os.path.isdir(arg):
-                print '>> Directory %s, looking for datacards' % arg
+                print('>> Directory %s, looking for datacards' % arg)
                 files = sorted([file for file in os.listdir(arg) if file.endswith('.txt')])
                 if len(files) == 0:
-                    print '>> No .txt files found, skipping this directory'
+                    print('>> No .txt files found, skipping this directory')
                     continue
                 # else:
                     # print '>> Will combine %i cards: %s' % (len(files), ' '.join(files))
@@ -95,7 +97,7 @@ class T2W(CombineToolBase):
                     })
                 base = os.path.basename(arg)
                 if self.args.mass is None and isfloat(base):
-                    print '>> Enclosing directory will be treated as mass value %s' % base
+                    print('>> Enclosing directory will be treated as mass value %s' % base)
                     passthru.extend(['-m', base])
                 elif self.args.mass is not None:
                     passthru.extend(['-m', self.args.mass])
@@ -113,7 +115,7 @@ class T2W(CombineToolBase):
                     dirname = '.'
                 base = os.path.split(dirname)[-1]
                 if self.args.mass is None and isfloat(base):
-                    print '>> Enclosing directory will be treated as mass value %s' % base
+                    print('>> Enclosing directory will be treated as mass value %s' % base)
                     passthru.extend(['-m', base])
                 elif self.args.mass is not None:
                     passthru.extend(['-m', self.args.mass])

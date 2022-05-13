@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.ch as ch
 import CombineHarvester.CombineTools.systematics.Hhh as HhhSysts
 import ROOT as R
@@ -47,7 +49,7 @@ cats = {
 
 masses = ch.ValsFromRange('260:350|10')
 
-print '>> Creating processes and observations...'
+print('>> Creating processes and observations...')
 
 for chn in chns:
     cb.AddObservations(  ['*'],  ['htt'], ['8TeV'], [chn],                 cats[chn+"_8TeV"]      )
@@ -58,11 +60,11 @@ for chn in chns:
 cb.FilterProcs(lambda p : p.bin() == 'tauTau_2jet1tag' and p.process() == 'W')
 cb.FilterProcs(lambda p : p.bin() == 'tauTau_2jet2tag' and p.process() == 'W')
 
-print '>> Adding systematic uncertainties...'
+print('>> Adding systematic uncertainties...')
 HhhSysts.AddSystematics_hhh_et_mt(cb)
 HhhSysts.AddSystematics_hhh_tt(cb)
 
-print '>> Extracting histograms from input root files...'
+print('>> Extracting histograms from input root files...')
 for chn in chns:
     file = aux_shapes + input_folders[chn] + "/htt_" + chn + ".inputs-Hhh-8TeV.root"
     cb.cp().channel([chn]).era(['8TeV']).backgrounds().ExtractShapes(
@@ -70,7 +72,7 @@ for chn in chns:
     cb.cp().channel([chn]).era(['8TeV']).signals().ExtractShapes(
         file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
 
-print '>> Merging bin errors and generating bbb uncertainties...'
+print('>> Merging bin errors and generating bbb uncertainties...')
 bbb = ch.BinByBinFactory()
 bbb.SetAddThreshold(0.1).SetMergeThreshold(0.5).SetFixNorm(True)
 
@@ -81,7 +83,7 @@ bbb.MergeAndAdd(cb_mt.cp().era(['8TeV']).bin_id([0, 1, 2]).process(['QCD','W','Z
 cb_tt = cb.cp().channel(['tt'])
 bbb.MergeAndAdd(cb_tt.cp().era(['8TeV']).bin_id([0, 1, 2]).process(['QCD','W','ZLL','VV','ZTT','TT']), cb)
 
-print '>> Setting standardised bin names...'
+print('>> Setting standardised bin names...')
 ch.SetStandardBinNames(cb)
 
 writer = ch.CardWriter('LIMITS/$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
@@ -90,4 +92,4 @@ writer = ch.CardWriter('LIMITS/$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
 writer.WriteCards('cmb', cb)
 for chn in chns: writer.WriteCards(chn,cb.cp().channel([chn]))
 
-print '>> Done!'
+print('>> Done!')

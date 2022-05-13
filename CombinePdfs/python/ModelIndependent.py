@@ -1,8 +1,11 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from HiggsAnalysis.CombinedLimit.PhysicsModel import *
 import os
 import ROOT
 import math
 import itertools
+import six
 
 class BRChargedHiggs(PhysicsModel):
     def __init__(self):
@@ -24,9 +27,9 @@ class BRChargedHiggs(PhysicsModel):
         # self.modelBuilder.out.Print()
 
     def getYieldScale(self,bin,process):
-        for prefix, model in self.processScaling.iteritems():
+        for prefix, model in six.iteritems(self.processScaling):
             if process == prefix:
-                print 'Scaling %s/%s as %s' % (bin, process, 'Scaling_'+model)
+                print('Scaling %s/%s as %s' % (bin, process, 'Scaling_'+model))
                 return 'Scaling_'+model
         return 1
 
@@ -47,21 +50,21 @@ class MSSMLikeHiggsModel(PhysicsModel):
         decaySource   = self.options.fileName+":"+bin # by default, decay comes from the datacard name or bin label
         if "_" in process: (processSource, decaySource) = process.split("_")
         if processSource not in ["ggh", "bbh", "ggA", "bbA", "ggH", "bbH"]:
-            raise RuntimeError, "Validation Error: signal process %s not among the allowed ones." % processSource
+            raise RuntimeError("Validation Error: signal process %s not among the allowed ones." % processSource)
         foundDecay = None
         for D in [ "htautau", "Atautau", "Htautau", "hbb", "htt", "hmm" ]:
             if D in decaySource:
-                if foundDecay: raise RuntimeError, "Validation Error: decay string %s contains multiple known decay names" % decaySource
+                if foundDecay: raise RuntimeError("Validation Error: decay string %s contains multiple known decay names" % decaySource)
                 foundDecay = D
-        if not foundDecay: raise RuntimeError, "Validation Error: decay string %s does not contain any known decay name" % decaySource
+        if not foundDecay: raise RuntimeError("Validation Error: decay string %s does not contain any known decay name" % decaySource)
         foundEnergy = None
         for D in [ "7TeV", "8TeV", "13TeV" ]:
             if D in decaySource:
-                if foundEnergy: raise RuntimeError, "Validation Error: decay string %s contains multiple known energies" % decaySource
+                if foundEnergy: raise RuntimeError("Validation Error: decay string %s contains multiple known energies" % decaySource)
                 foundEnergy = D
         if not foundEnergy:
             foundEnergy = "7TeV" ## To ensure backward compatibility
-            print "Warning: decay string %s does not contain any known energy, assuming %s" % (decaySource, foundEnergy)
+            print("Warning: decay string %s does not contain any known energy, assuming %s" % (decaySource, foundEnergy))
         return self.getHiggsSignalYieldScale(processSource, foundDecay, foundEnergy)
 
 
@@ -94,15 +97,15 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
             if po.startswith("ggHRange="):
                 self.ggHRange = po.replace("ggHRange=","").split(":")
                 if len(self.ggHRange) != 2:
-                    raise RuntimeError, "ggH signal strength range requires minimal and maximal value"
+                    raise RuntimeError("ggH signal strength range requires minimal and maximal value")
                 elif float(self.ggHRange[0]) >= float(self.ggHRange[1]):
-                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"
+                    raise RuntimeError("minimal and maximal range swapped. Second value must be larger first one")
             if po.startswith("bbHRange="):
                 self.bbHRange = po.replace("bbHRange=","").split(":")
                 if len(self.bbHRange) != 2:
-                    raise RuntimeError, "bbH signal strength range requires minimal and maximal value"
+                    raise RuntimeError("bbH signal strength range requires minimal and maximal value")
                 elif float(self.bbHRange[0]) >= float(self.bbHRange[1]):
-                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"
+                    raise RuntimeError("minimal and maximal range swapped. Second value must be larger first one")
     def doParametersOfInterest(self):
         """
         Create POI and other parameters, and define the POI set. E.g. Evaluate cross section for given values of mA and tanb
@@ -124,21 +127,21 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         ## as fixed. NOTE: this is only left here as an extended example. It's not useful to have mA floating at the moment.
         if self.modelBuilder.out.var("MH"):
             if len(self.mHRange):
-                print 'MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1]
+                print('MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1])
                 self.modelBuilder.out.var("MH").setRange(float(self.mHRange[0]),float(self.mHRange[1]))
                 self.modelBuilder.out.var("MH").setConstant(False)
                 poi+=',MH'
             elif self.options.mass != 0:
-                print 'MH will be assumed to be', self.options.mass
+                print('MH will be assumed to be', self.options.mass)
                 self.modelBuilder.out.var("MH").removeRange()
                 self.modelBuilder.out.var("MH").setVal(self.options.mass)
         else:
             if len(self.mHRange):
-                print 'MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1]
+                print('MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1])
                 self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0],self.mHRange[1]))
                 poi+=',MH'
             else:
-                print 'MH (not there before) will be assumed to be', self.options.mass
+                print('MH (not there before) will be assumed to be', self.options.mass)
                 self.modelBuilder.doVar("MH[%g]" % self.options.mass)
         ## define set of POIs
         self.modelBuilder.doSet("POI",poi)
@@ -160,7 +163,7 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         #if production == "ttH": return ("r_ttH" if "ttH" in self.modes else 1)
         #if production in [ "WH", "ZH", "VH" ]: return ("r_VH" if "VH" in self.modes else 1)
         #
-        raise RuntimeError, "Unknown production mode '%s'" % production
+        raise RuntimeError("Unknown production mode '%s'" % production)
 
 
 

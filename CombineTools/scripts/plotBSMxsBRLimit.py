@@ -1,9 +1,12 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.plotting as plot
 import CombineHarvester.CombineTools.maketable as maketable
 import ROOT
 import math
 import argparse
 import json
+from six.moves import range
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 parser = argparse.ArgumentParser()
@@ -63,7 +66,7 @@ for i in range(graph_exp.GetN()) :
 mass_list = sorted(set(mass_list))
 mass_bins=len(mass_list)
 if int(args.verbosity) > 0 :
-    print "mass_list: ", mass_list, "Total number: ", mass_bins
+    print("mass_list: ", mass_list, "Total number: ", mass_bins)
 
 #Create canvas and TH1D
 plot.ModTDRStyle(width=600, l=0.12)

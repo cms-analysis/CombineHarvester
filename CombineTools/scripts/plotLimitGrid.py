@@ -1,7 +1,10 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.plotting as plot
 import ROOT
 import argparse
+from six.moves import range
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -132,7 +135,7 @@ else:
 
 # Fill TH2s by interpolating the TGraph2Ds, then extract contours
 for c in types:
-    print 'Filling histo for %s' % c
+    print('Filling histo for %s' % c)
     hists[c] = h_proto.Clone(c)
     plot.fillTH2(hists[c], graphs[c])
     contours[c] = plot.contourFromTH2(hists[c], CL, 5, frameValue=1)

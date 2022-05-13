@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
-import cPickle as pickle
+import six.moves.cPickle as pickle
 import math
 import json
 import itertools
@@ -13,6 +15,9 @@ from pprint import pprint
 from functools import partial
 from CombineHarvester.CombineTools.combine.opts import OPTS
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+import six
+from six.moves import range
+from six.moves import zip
 
 
 def Eval(obj, x, params):
@@ -54,7 +59,7 @@ def GenerateDebugGraph(wsp, var_name, ingraph):
     nll = wsp.function('nll')
     var = wsp.var(var_name)
     outgraph = ingraph.Clone()
-    for i in xrange(ingraph.GetN()):
+    for i in range(ingraph.GetN()):
         var.setVal(ingraph.GetX()[i])
         outgraph.GetY()[i] = nll.getVal() * 2.
     return outgraph
@@ -78,9 +83,9 @@ class ExpansionTerm:
             self.fundamental = False
             stencil = stencils[parameter][order]
             self.coeffs = np.zeros(len(stencil), dtype=np.float64)
-            for i in xrange(len(stencil)):
+            for i in range(len(stencil)):
                 remaining_derivatives = np.array(list(
-                    filter(lambda a: a != parameter, self.derivatives)), dtype=np.uint8)
+                    [a for a in self.derivatives if a != parameter]), dtype=np.uint8)
                 # Make a copy of the current parameters and adjust the
                 # value for the current stencil point
                 new_parameter_values = np.array(self.parameter_values, dtype=np.float32)
@@ -102,7 +107,7 @@ class ExpansionTerm:
             return self.fnval
         else:
             summed = 0.
-            for i in xrange(len(self.terms)):
+            for i in range(len(self.terms)):
                 summed += self.coeffs[i] * self.terms[i].Eval()
             if with_permutations:
                 n_perms = Permutations(list(self.derivatives))
@@ -117,10 +122,10 @@ class ExpansionTerm:
         if self.fundamental:
             extra = ' %s = %f' % (list(self.FormattedPars()), self.fnval)
         if coeff is None:
-            print '%s%s%s' % (sp, self.derivatives, extra)
+            print('%s%s%s' % (sp, self.derivatives, extra))
         else:
-            print '%s%+.1f*%s%s' % (sp, coeff, self.derivatives, extra)
-        for i in xrange(len(self.terms)):
+            print('%s%+.1f*%s%s' % (sp, coeff, self.derivatives, extra))
+        for i in range(len(self.terms)):
             self.terms[i].Print(indent + 2, self.coeffs[i])
 
     def GatherFundamentalTerms(self, termlist):
@@ -155,8 +160,8 @@ class TaylorExpand(CombineToolBase):
             if i == 0:
                 continue
             res.append(getattr(evt, 'deltaNLL'))
-        print res
-        if len(res) == 0: print file
+        print(res)
+        if len(res) == 0: print(file)
         return res
 
     def attach_args(self, group):
@@ -195,7 +200,7 @@ class TaylorExpand(CombineToolBase):
     def load_workspace(self, file, POIs, data='data_obs', snapshot='MultiDimFit'):
         if self.nll is not None:
             return
-        print 'Loading NLL...'
+        print('Loading NLL...')
         self.infile = ROOT.TFile(file)
         self.loaded_wsp = self.infile.Get('w')
         # infile.Close()
@@ -205,7 +210,7 @@ class TaylorExpand(CombineToolBase):
         ll = ROOT.RooLinkedList()
         self.nll = pdf.createNLL(data, ll)
         self.loaded_wsp.loadSnapshot('MultiDimFit')
-        print '...NLL loaded'
+        print('...NLL loaded')
         # nll.Print()
         self.nll0 = self.nll.getVal()
         self.wsp_vars = {}
@@ -250,13 +255,13 @@ class TaylorExpand(CombineToolBase):
             POIs = self.args.choose_POIs.split(',')
 
         Nx = len(POIs)
-        print '>> Taylor expansion in %i variables up to order %i:' % (Nx, self.args.order)
+        print('>> Taylor expansion in %i variables up to order %i:' % (Nx, self.args.order))
         pprint(cfg)
 
         if self.args.workspace_bestfit:
             fitvals = self.get_snpashot_pois(dc, POIs)
-            for POI, val in fitvals.iteritems():
-                print '>> Updating POI best fit from %f to %f' % (cfg[POI]["BestFit"], val)
+            for POI, val in six.iteritems(fitvals):
+                print('>> Updating POI best fit from %f to %f' % (cfg[POI]["BestFit"], val))
                 cfg[POI]["BestFit"] = val
 
         xvec = np.zeros(Nx, dtype=np.float32)
@@ -291,7 +296,7 @@ class TaylorExpand(CombineToolBase):
             s_min *= 1.0
             s_max *= 1.0
             validity.append(cfg[P]['Validity'])
-            for n in xrange(self.args.order + 1):
+            for n in range(self.args.order + 1):
                 if n == 0:
                     continue
                 stencil_size = max(self.args.stencil_min, 1 + (((n + 1) / 2) * 2) + self.args.stencil_add)
@@ -305,7 +310,7 @@ class TaylorExpand(CombineToolBase):
                     a = stencil[0]
                     b = stencil[-1]
                     chebN = len(stencil)
-                    for inode in xrange(1, chebN + 1):
+                    for inode in range(1, chebN + 1):
                         cheb_list.append(0.5 * (a + b) + 0.5 * (b - a) * math.cos((((2.*inode) - 1.) * math.pi) / (2. * chebN)))
                     cheb_list.sort()
                     stencil = cheb_list
@@ -316,7 +321,7 @@ class TaylorExpand(CombineToolBase):
                     ## First requirement is that s_min or s_max  == the best-fit
                     if abs(s_min) < 1E-6:
                         xprime = s_max
-                        print xprime
+                        print(xprime)
                         stencil = [s_min, s_max]
                         coefficients = [0., 2. / (xprime*xprime)]
                     elif abs(s_max) < 1E-6:
@@ -324,10 +329,10 @@ class TaylorExpand(CombineToolBase):
                         stencil = [s_min, s_max]
                         coefficients = [2. / (xprime*xprime), 0.]
                     else:
-                        print 'Special treatment of %s not viable, one stencil range endpoint must correspond to the best fit' % P
+                        print('Special treatment of %s not viable, one stencil range endpoint must correspond to the best fit' % P)
 
 
-                stencils[i][n] = zip(stencil, coefficients)
+                stencils[i][n] = list(zip(stencil, coefficients))
 
         pprint(stencils)
 
@@ -357,7 +362,7 @@ class TaylorExpand(CombineToolBase):
 
         if self.args.test_mode == 3:
             test_mode_args = [self.args.test_args]
-            print test_mode_args
+            print(test_mode_args)
             test_mode_ws.factory('expr::func(%s)' % test_mode_args[0])
 
         ######################################################################
@@ -373,8 +378,8 @@ class TaylorExpand(CombineToolBase):
                 with open(eval_cachefile) as pkl_file:
                     cached_evals = pickle.load(pkl_file)
 
-        for i in xrange(self.args.order + 1):
-            print '>> Order %i' % i
+        for i in range(self.args.order + 1):
+            print('>> Order %i' % i)
             if i == 0 or i == 1:
                 continue
 
@@ -390,7 +395,7 @@ class TaylorExpand(CombineToolBase):
             stats[i]['nActualNewTerms'] = 0
             stats[i]['nEvals'] = 0
             stats[i]['nUniqueEvals'] = 0
-            for item in itertools.combinations_with_replacement(range(Nx), i):
+            for item in itertools.combinations_with_replacement(list(range(Nx)), i):
                 if len(set(item)) != 1 and i > self.args.cross_order:
                     if item in cached_terms:
                         del cached_terms[item]
@@ -411,7 +416,7 @@ class TaylorExpand(CombineToolBase):
                 skip_term = False
                 for skip_item in can_skip:
                     has_all_terms = True
-                    for x, freq in skip_item[1].iteritems():
+                    for x, freq in six.iteritems(skip_item[1]):
                         if item.count(x) < freq:
                             has_all_terms = False
                             break
@@ -490,7 +495,7 @@ class TaylorExpand(CombineToolBase):
                         self.job_queue.append('combine %s %s' % (arg_str, ' '.join(self.passthru)))
                     if self.args.test_mode == 1:
                         if idx % 10000 == 0:
-                            print 'Done %i/%i NLL evaluations...' % (idx, len(actual_evallist))
+                            print('Done %i/%i NLL evaluations...' % (idx, len(actual_evallist)))
                         cached_evals[vals] = self.nll.getVal() - self.nll0
                     if self.args.test_mode == 2:
                         # Divide by 2 here because the graph is already 2*deltaNLL
@@ -513,8 +518,8 @@ class TaylorExpand(CombineToolBase):
                 njobs = len(self.job_queue)
                 self.flush_queue()
                 pprint(stats[i])
-                print 'Number of jobs = %i' % njobs
-                print 'Raw number of evaluations: %i' % len(evallist)
+                print('Number of jobs = %i' % njobs)
+                print('Raw number of evaluations: %i' % len(evallist))
                 return
 
             for x in evallist:
@@ -524,7 +529,7 @@ class TaylorExpand(CombineToolBase):
                 item = tuple(term.derivatives)
                 term.Print()
                 cached_terms[item] = term.Eval(with_permutations=True, with_factorial=True)
-                print 'Raw term: %f' % term.Eval(with_permutations=False, with_factorial=False)
+                print('Raw term: %f' % term.Eval(with_permutations=False, with_factorial=False))
                 to_check_list.append((item, cached_terms[item]))
 
             for item, estimate in to_check_list:
@@ -569,9 +574,9 @@ class TaylorExpand(CombineToolBase):
             cov_matrix = ROOT.TMatrixDSym(len(POIs))
             cor_matrix = ROOT.TMatrixDSym(len(POIs))
         sorted_terms = []
-        for i in xrange(self.args.order + 1):
+        for i in range(self.args.order + 1):
             sorted_tmp = []
-            for tracker, val in cached_terms.iteritems():
+            for tracker, val in six.iteritems(cached_terms):
                 if len(tracker) == i:
                     sorted_tmp.append((tracker, val))
                     if i == 2 and save_cov_matrix:
@@ -587,9 +592,9 @@ class TaylorExpand(CombineToolBase):
             cov_matrix.Invert()
             # cov_matrix.Print()
             cor_matrix = cov_matrix.Clone()
-            for i in xrange(len(POIs)):
-                for j in xrange(len(POIs)):
-                    print i, j, cor_matrix[i][j], (cov_matrix[i][i]), (cov_matrix[j][j])
+            for i in range(len(POIs)):
+                for j in range(len(POIs)):
+                    print(i, j, cor_matrix[i][j], (cov_matrix[i][i]), (cov_matrix[j][j]))
                     cor_matrix[i][j] = cor_matrix[i][j] / (math.sqrt(cov_matrix[i][i]) * math.sqrt(cov_matrix[j][j]))
             # cor_matrix.Print()
             fout = ROOT.TFile('covariance.root', 'RECREATE')
@@ -613,7 +618,7 @@ class TaylorExpand(CombineToolBase):
             te_tracker.push_back(i_tracker)
 
             # Print it
-            print '%i -- %s --> %s: %f' % (pos, tracker, tracker, val)
+            print('%i -- %s --> %s: %f' % (pos, tracker, tracker, val))
 
         # print 'NEGLIGIBLE TERMS AT ORDER %i: %i/%i' % (n, n_below, n_terms)
 
@@ -635,12 +640,12 @@ class TaylorExpand(CombineToolBase):
             testgraph.Write()
             fgout.Close()
 
-        print '%-10s %-20s %-20s %-20s %-20s %-20s' % ('Order', 'nTerms', 'nCachedTerms', 'nSmallTerms', 'nAllNewTerms', 'nActualNewTerms')
-        print '-' * 94
+        print('%-10s %-20s %-20s %-20s %-20s %-20s' % ('Order', 'nTerms', 'nCachedTerms', 'nSmallTerms', 'nAllNewTerms', 'nActualNewTerms'))
+        print('-' * 94)
         for i in stats:
-            print '%-10i %-20i %-20i %-20i %-20i %-20i' % (i, stats[i]['nTerms'], stats[i]['nCachedTerms'], stats[i]['nSmallTerms'], stats[i]['nAllNewTerms'], stats[i]['nActualNewTerms'])
+            print('%-10i %-20i %-20i %-20i %-20i %-20i' % (i, stats[i]['nTerms'], stats[i]['nCachedTerms'], stats[i]['nSmallTerms'], stats[i]['nAllNewTerms'], stats[i]['nActualNewTerms']))
 
-        print '\n%-10s %-20s %-20s %-20s' % ('Order', 'nEvals', 'nUniqueEvals', 'nActualUniqueEvals')
-        print '-' * 74
+        print('\n%-10s %-20s %-20s %-20s' % ('Order', 'nEvals', 'nUniqueEvals', 'nActualUniqueEvals'))
+        print('-' * 74)
         for i in stats:
-            print '%-10i %-20i %-20i %-20i' % (i, stats[i]['nEvals'], stats[i]['nUniqueEvals'], stats[i]['nActualUniqueEvals'])
+            print('%-10i %-20i %-20i %-20i' % (i, stats[i]['nEvals'], stats[i]['nUniqueEvals'], stats[i]['nActualUniqueEvals']))

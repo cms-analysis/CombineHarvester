@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 # Example usage: updateBinBuildFile.py bin/BuildFile.xml bin/*.cpp
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 
@@ -11,9 +13,9 @@ assert(len(args) > 1)
 buildfile = args[0]
 bins = args[1:]
 
-print '>> Will update binaries in %s' % buildfile
-print '>> New binaries will be:'
-print bins
+print('>> Will update binaries in %s' % buildfile)
+print('>> New binaries will be:')
+print(bins)
 
 with open(buildfile) as f:
     content = f.readlines()
@@ -30,6 +32,6 @@ for line in filtered:
     fout.write(line)
 fout.close()
 
-print '>> Operation completed successfully, the new BuildFile.xml looks like:'
+print('>> Operation completed successfully, the new BuildFile.xml looks like:')
 with open(buildfile, 'r') as fin:
-    print fin.read()
+    print(fin.read())

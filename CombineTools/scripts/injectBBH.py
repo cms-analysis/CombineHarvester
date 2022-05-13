@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.ch as ch
 import ROOT as R
 import glob
@@ -47,7 +49,7 @@ def CustomizeProcs(p):
     elif p.era() == '7TeV':
         p.set_rate(p.rate() * (0.1555/15.11) * SCALES[(p.channel(), p.bin_id())]) # ratio of YR3 bbH/ggH @ 125.1
     else:
-        print "Don't know how to scale for " + p.era()
+        print("Don't know how to scale for " + p.era())
 
 def CustomizeSysts(p):
     p.set_process('bbH')
@@ -73,7 +75,7 @@ cmb.FilterSysts(lambda sys :
     )
   )
 sys_final = set(cmb.cp().process(['bbH']).syst_name_set())
-print sys_init - sys_final
+print(sys_init - sys_final)
 
 # https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV#bbH_Process
 # +7.2  -7.8  +7.5  -6.9 (ggH 8TeV: scale, pdf)
@@ -114,9 +116,9 @@ cmb.cp().syst_name(['QCDscale_ggH2in']).ForEachSyst(lambda sys: sys.set_name('QC
 
 def FixMe(sys):
     if sys.process().startswith('ggH_hww') and sys.name() == 'pdf_qqbar':
-        print sys
+        print(sys)
         sys.set_process(sys.process().replace('ggH','qqH'))
-        print sys
+        print(sys)
 
 cmb.ForEachSyst(FixMe)
 
