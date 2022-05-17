@@ -268,20 +268,41 @@ else:
     pvalue.AddText("p-value = %0.3f"%pValue)
     pvalue.Draw()
 
-    if (obs.GetX()[0] > toy_hist.GetBinLowEdge(args.bins+1)) or (obs.GetX()[0] < toy_hist.GetBinLowEdge(0)) or (underflow_count != 0) or (overflow_count != 0):
-        warningtext = ROOT.TPaveText(0.68, 0.78, 0.80, 0.82, "NDC")
-        warningtext.SetBorderSize(   0 )
-        warningtext.SetFillStyle (   0 )
-        warningtext.SetTextAlign (  32 )
-        warningtext.SetTextSize  (0.04 )
-        warningtext.SetTextColor (   2 )
-        warningtext.SetTextFont  (  62 )
+    arrow_not_in_range = (obs.GetX()[0] > toy_hist.GetBinLowEdge(args.bins+1)) or (obs.GetX()[0] < toy_hist.GetBinLowEdge(0))
+
+    warningtext1 = ROOT.TPaveText(0.68, 0.78, 0.80, 0.82, "NDC")
+    warningtext1.SetBorderSize(   0 )
+    warningtext1.SetFillStyle (   0 )
+    warningtext1.SetTextAlign (  32 )
+    warningtext1.SetTextSize  (0.04 )
+    warningtext1.SetTextColor (   2 )
+    warningtext1.SetTextFont  (  62 )
+
+    if  arrow_not_in_range and ((underflow_count != 0) or (overflow_count != 0)):
         warningstrings = []
-        if underflow_count != 0: warningstrings.append("%d underflow")
-        if overflow_count != 0: warningstrings.append("%d overflow")
-        if (obs.GetX()[0] > toy_hist.GetBinLowEdge(args.bins+1)) or (obs.GetX()[0] < toy_hist.GetBinLowEdge(0)): warningstrings.append("observed value not in range")
-        warningtext.AddText(', '.join(warningstrings))
-        warningtext.Draw()
+        if underflow_count != 0: warningstrings.append("%d underflow"%underflow_count)
+        if overflow_count != 0: warningstrings.append("%d overflow"%overflow_count)
+        warningtext1.AddText(', '.join(warningstrings))
+        warningtext1.Draw()
+
+        warningtext2 = ROOT.TPaveText(0.68, 0.73, 0.80, 0.77, "NDC")
+        warningtext2.SetBorderSize(   0 )
+        warningtext2.SetFillStyle (   0 )
+        warningtext2.SetTextAlign (  32 )
+        warningtext2.SetTextSize  (0.04 )
+        warningtext2.SetTextColor (   2 )
+        warningtext2.SetTextFont  (  62 )
+        warningtext2.AddText("observed value not in range")
+        warningtext2.Draw()
+    else:
+        if ((underflow_count != 0) or (overflow_count != 0)):
+            warningstrings = []
+            if underflow_count != 0: warningstrings.append("%d underflow"%underflow_count)
+            if overflow_count != 0: warningstrings.append("%d overflow"%overflow_count)
+            warningtext1.AddText(', '.join(warningstrings))
+        elif arrow_not_in_range:
+            warningtext1.AddText("observed value not in range")
+        warningtext1.Draw()
 
     canv.Print('.pdf')
     canv.Print('.png')
