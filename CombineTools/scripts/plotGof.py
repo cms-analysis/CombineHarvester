@@ -197,8 +197,8 @@ else:
     #    autostd  = gausfit_results.Value(2)
     #    toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(automean-3*autostd, automean+3*autostd))
     if args.percentile:
-        min_range = toy_graph.GetPointX(int(toy_graph.GetN()*args.percentile[0]))
-        max_range = toy_graph.GetPointX(int(toy_graph.GetN()*args.percentile[1]))
+        min_range = toy_graph.GetX()[int(toy_graph.GetN()*args.percentile[0])]
+        max_range = toy_graph.GetX()[int(toy_graph.GetN()*args.percentile[1])]
         toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(min_range, max_range))
     elif args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=args.range)
     else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph)
