@@ -205,8 +205,8 @@ else:
     for i in range(toy_graph.GetN()):
         toy_hist.Fill(toy_graph.GetX()[i])
     pValue = js[args.mass]["p"]
-    underflow_count = toy_hist.GetBinCount(0)
-    overflow_count = toy_hist.GetBinCount(args.bins+1)
+    underflow_count = toy_hist.GetBinContent(0)
+    overflow_count  = toy_hist.GetBinContent(args.bins+1)
     obs = plot.ToyTGraphFromJSON(js, [args.mass,"obs"])
     arr = ROOT.TArrow(obs.GetX()[0], 0.001, obs.GetX()[0], toy_hist.GetMaximum()/8, 0.02, "<|");
     # if axis is None:
