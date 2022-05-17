@@ -31,7 +31,8 @@ parser.add_argument(
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 parser.add_argument("--bins", default=100, type=int, help="Number of bins in histogram")
 parser.add_argument("--range", nargs=2, type=float, help="Range of histograms. Requires two arguments in the form of <min> <max>")
-parser.add_argument("--autogaus", action="store_true", help="Automatically adjust histogram range with gaussian fit. Overrides range option.")
+#parser.add_argument("--autogaus", action="store_true", help="Automatically adjust histogram range with gaussian fit. Overrides range option.")
+parser.add_argument("--percentile", nargs=2, type=float, help="Range of percentile from the distribution to be included. Requires two arguments in the form of <min> <max>. Overrides range option.")
 args = parser.parse_args()
 
 
@@ -188,18 +189,24 @@ else:
         js = json.load(jsfile)
     # graph_sets.append(plot.StandardLimitsFromJSONFile(file, args.show.split(',')))
     toy_graph = plot.ToyTGraphFromJSON(js, [args.mass, "toy"])
-    if args.autogaus:
-        toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph)
-        for i in range(toy_graph.GetN()): toy_testgaus.Fill(toy_graph.GetX()[i])
-        gausfit_results = toy_testgaus.Fit("gaus", "SQ")
-        automean = gausfit_results.Value(1)
-        autostd  = gausfit_results.Value(2)
-        toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(automean-3*autostd, automean+3*autostd))
+    #if args.autogaus:
+    #    toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph)
+    #    for i in range(toy_graph.GetN()): toy_testgaus.Fill(toy_graph.GetX()[i])
+    #    gausfit_results = toy_testgaus.Fit("gaus", "SQ")
+    #    automean = gausfit_results.Value(1)
+    #    autostd  = gausfit_results.Value(2)
+    #    toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(automean-3*autostd, automean+3*autostd))
+    if args.percentile:
+        min_range = toy_graph.GetPointX(int(toy_graph.GetN()*args.percentile[0]))
+        max_range = toy_graph.GetPointX(int(toy_graph.GetN()*args.percentile[1]))
+        toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(min_range, max_range))
     elif args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=args.range)
     else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph)
     for i in range(toy_graph.GetN()):
         toy_hist.Fill(toy_graph.GetX()[i])
     pValue = js[args.mass]["p"]
+    underflow_count = toy_hist.GetBinCount(0)
+    overflow_count = toy_hist.GetBinCount(args.bins+1)
     obs = plot.ToyTGraphFromJSON(js, [args.mass,"obs"])
     arr = ROOT.TArrow(obs.GetX()[0], 0.001, obs.GetX()[0], toy_hist.GetMaximum()/8, 0.02, "<|");
     # if axis is None:
@@ -260,6 +267,21 @@ else:
     pvalue.SetTextFont  (  62 )
     pvalue.AddText("p-value = %0.3f"%pValue)
     pvalue.Draw()
+
+    if ((obs.GetX()[0] > args.range[1]) or (obs.GetX()[0] < args.range[0])) or (underflow_count != 0) or (overflow_count != 0):
+        warningtext = ROOT.TPaveText(0.68, 0.78, 0.80, 0.82, "NDC")
+        warningtext.SetBorderSize(   0 )
+        warningtext.SetFillStyle (   0 )
+        warningtext.SetTextAlign (  32 )
+        warningtext.SetTextSize  (0.04 )
+        warningtext.SetTextColor (   2 )
+        warningtext.SetTextFont  (  62 )
+        warningstrings = []
+        if underflow_count != 0: warningstrings.append("%d underflow")
+        if overflow_count != 0: warningstrings.append("%d overflow")
+        if (obs.GetX()[0] > args.range[1]) or (obs.GetX()[0] < args.range[0]): warningstrings.append("observed value not in range")
+        warningtext.AddText(', '.join(warningstrings))
+        warningtext.Draw()
 
     canv.Print('.pdf')
     canv.Print('.png')
