@@ -268,7 +268,7 @@ else:
     pvalue.AddText("p-value = %0.3f"%pValue)
     pvalue.Draw()
 
-    if ((obs.GetX()[0] > args.range[1]) or (obs.GetX()[0] < args.range[0])) or (underflow_count != 0) or (overflow_count != 0):
+    if (obs.GetX()[0] > toy_hist.GetBinLowEdge(args.bins+1)) or (obs.GetX()[0] < toy_hist.GetBinLowEdge(0)) or (underflow_count != 0) or (overflow_count != 0):
         warningtext = ROOT.TPaveText(0.68, 0.78, 0.80, 0.82, "NDC")
         warningtext.SetBorderSize(   0 )
         warningtext.SetFillStyle (   0 )
