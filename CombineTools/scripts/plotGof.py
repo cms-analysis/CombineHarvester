@@ -279,7 +279,7 @@ else:
         warningstrings = []
         if underflow_count != 0: warningstrings.append("%d underflow")
         if overflow_count != 0: warningstrings.append("%d overflow")
-        if (obs.GetX()[0] > args.range[1]) or (obs.GetX()[0] < args.range[0]): warningstrings.append("observed value not in range")
+        if (obs.GetX()[0] > toy_hist.GetBinLowEdge(args.bins+1)) or (obs.GetX()[0] < toy_hist.GetBinLowEdge(0)): warningstrings.append("observed value not in range")
         warningtext.AddText(', '.join(warningstrings))
         warningtext.Draw()
 
