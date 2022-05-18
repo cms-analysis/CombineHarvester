@@ -3,12 +3,6 @@ from __future__ import print_function
 import ROOT
 import re
 
-try:
-    from HiggsAnalysis.CombinedLimit.RooAddPdfFixer import FixAll
-except ImportError:
-    #compatibility for combine version earlier than https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/tree/2d172ef50fccdfbbc2a499ac8e47bba2d667b95a
-    #can delete in a few months
-    def FixAll(workspace): pass
 
 def split_vals(vals, fmt_spec=None):
     """Converts a string '1:3|1,4,5' into a list [1, 2, 3, 4, 5]"""
@@ -42,7 +36,6 @@ def list_from_workspace(file, workspace, set):
     res = []
     wsFile = ROOT.TFile(file)
     ws = wsFile.Get(workspace)
-    FixAll(ws)
     argSet = ws.set(set)
     it = argSet.createIterator()
     var = it.Next()
@@ -57,7 +50,6 @@ def prefit_from_workspace(file, workspace, params, setPars=None):
     res = {}
     wsFile = ROOT.TFile(file)
     ws = wsFile.Get(workspace)
-    FixAll(ws)
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.WARNING)
     if setPars is not None:
         parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]

@@ -1414,22 +1414,22 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, ex
     extraOverCmsTextSize = 0.76
 
     outOfFrame = False
-    if iPosX / 10 == 0:
+    if iPosX // 10 == 0:
         outOfFrame = True
 
     alignY_ = 3
     alignX_ = 2
-    if (iPosX / 10 == 0):
+    if (iPosX // 10 == 0):
         alignX_ = 1
     if (iPosX == 0):
         alignX_ = 1
     if (iPosX == 0):
         alignY_ = 1
-    if (iPosX / 10 == 1):
+    if (iPosX // 10 == 1):
         alignX_ = 1
-    if (iPosX / 10 == 2):
+    if (iPosX // 10 == 2):
         alignX_ = 2
-    if (iPosX / 10 == 3):
+    if (iPosX // 10 == 3):
         alignX_ = 3
     # if (iPosX == 0): relPosX = 0.14
     align_ = 10 * alignX_ + alignY_
