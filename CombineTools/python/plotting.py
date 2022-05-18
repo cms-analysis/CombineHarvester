@@ -1449,7 +1449,7 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, ex
     if outOfFrame:
         latex.SetTextFont(cmsTextFont)
         latex.SetTextAlign(11)
-        latex.SetTextSize(cmsTextSize * t * pad_ratio)
+        latex.SetTextSize(cmsTextSize * t * (1./pad_ratio))
         latex.DrawLatex(l, 1 - t + lumiTextOffset * t, cmsText)
 
     posX_ = 0
@@ -1480,7 +1480,7 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, ex
             posX_ = l + relPosX * (1 - l - r)
             posY_ = 1 - t + lumiTextOffset * t
         latex.SetTextFont(extraTextFont)
-        latex.SetTextSize(extraTextSize * t * pad_ratio)
+        latex.SetTextSize(extraTextSize * t * (1./pad_ratio))
         latex.SetTextAlign(align_)
         latex.DrawLatex(posX_, posY_, extraText)
 
