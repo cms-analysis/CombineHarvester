@@ -302,7 +302,7 @@ class CollectGoodnessOfFit(CombineToolBase):
                         else:
                             js_out[mh]['toy'].append(evt.limit)
                 if(failedToys>0):
-                  print '>> %i/%i toys have negative test statistic values, and are excluded. This might indicate a failure in the calculation within combine, or for the KS and AD tests, an undefined value in toys with zero events. Note that the resulting p-value could be biased.'%(failedToys, nEvts)
+                  print('>> %i/%i toys have negative test statistic values, and are excluded. This might indicate a failure in the calculation within combine, or for the KS and AD tests, an undefined value in toys with zero events. Note that the resulting p-value could be biased.'%(failedToys, nEvts))
             for mh in js_out:
                 if all([entry in js_out[mh] for entry in ['toy','obs']]):
                     js_out[mh]["p"] = float(len([toy for toy in js_out[mh]['toy'] if toy >= js_out[mh]['obs'][0]]))/len(js_out[mh]['toy'])
