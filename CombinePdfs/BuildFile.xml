@@ -5,15 +5,11 @@
 <use name="histfactory"/>
 <use name="libxml2"/>
 <use name="vdt"/>
-<use name="python"/>
 <use name="boost_program_options"/>
 <use name="boost_filesystem"/>
-<use name="boost_python"/>
 <use name="boost_regex"/>
-<use name="rootpy"/>
 <use name="CombineHarvester/CombineTools"/>
 <use name="HiggsAnalysis/CombinedLimit"/>
-<flags LDFLAGS="-lcppyy2_7"/>
 <flags CXXFLAGS="-fno-guess-branch-probability -fno-devirtualize -fno-tree-forwprop"/>
 <export>
   <lib name="1"/>
