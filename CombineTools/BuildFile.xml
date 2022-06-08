@@ -1,4 +1,3 @@
-<flags LDFLAGS="-lcppyy2_7"/>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
@@ -6,12 +5,9 @@
 <use name="histfactory"/>
 <use name="libxml2"/>
 <use name="vdt"/>
-<use name="python"/>
 <use name="boost_program_options"/>
 <use name="boost_filesystem"/>
-<use name="boost_python"/>
 <use name="boost_regex"/>
-<use name="rootpy"/>
 <use name="HiggsAnalysis/CombinedLimit"/>
 <flags CXXFLAGS="-fno-guess-branch-probability -fno-devirtualize -fno-tree-forwprop"/>
 <export>
