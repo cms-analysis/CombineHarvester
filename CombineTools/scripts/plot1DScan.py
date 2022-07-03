@@ -47,7 +47,9 @@ def BuildScan(scan, param, files, color, yvals, ycut):
     graph.SetMarkerColor(color)
     spline = ROOT.TSpline3("spline3", graph)
     global NAMECOUNTER
-    func = ROOT.TF1('splinefn'+str(NAMECOUNTER), partial(Eval, spline), graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
+    func_method = partial(Eval, spline)
+    func = ROOT.TF1('splinefn'+str(NAMECOUNTER), func_method, graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
+    func._method = func_method
     NAMECOUNTER += 1
     func.SetLineColor(color)
     func.SetLineWidth(3)
