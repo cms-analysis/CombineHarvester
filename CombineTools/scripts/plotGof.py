@@ -31,7 +31,6 @@ parser.add_argument(
 parser.add_argument('--table_vals', help='Amount of values to be written in a table for different masses', default=10)
 parser.add_argument("--bins", default=100, type=int, help="Number of bins in histogram")
 parser.add_argument("--range", nargs=2, type=float, help="Range of histograms. Requires two arguments in the form of <min> <max>")
-#parser.add_argument("--autogaus", action="store_true", help="Automatically adjust histogram range with gaussian fit. Overrides range option.")
 parser.add_argument("--percentile", nargs=2, type=float, help="Range of percentile from the distribution to be included. Requires two arguments in the form of <min> <max>. Overrides range option.")
 args = parser.parse_args()
 
@@ -108,14 +107,11 @@ if args.statistic in ["AD","KS"]:
         # if key not in titles:
         #     continue
         toy_graph = plot.ToyTGraphFromJSON(js, [args.mass,key,'toy'])
-        if args.autogaus:
-            toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph, 1.15)
-            for i in range(toy_graph.GetN()): toy_testgaus.Fill(toy_graph.GetX()[i])
-            gausfit_results = toy_testgaus.Fit("gaus", "SQ")
-            automean = gausfit_results.Value(1)
-            autostd  = gausfit_results.Value(2)
-            toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15, absoluteXrange=(automean-3*autostd, automean+3*autostd))
-        elif args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15, absoluteXrange=args.range)
+        if args.percentile:
+            min_range = toy_graph.GetX()[int(toy_graph.GetN()*args.percentile[0])]
+            max_range = toy_graph.GetX()[int(toy_graph.GetN()*args.percentile[1])]
+            toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(min_range, max_range))
+        elif args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=args.range)
         else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15)
         for i in range(toy_graph.GetN()):
             toy_hist.Fill(toy_graph.GetX()[i])
@@ -189,19 +185,12 @@ else:
         js = json.load(jsfile)
     # graph_sets.append(plot.StandardLimitsFromJSONFile(file, args.show.split(',')))
     toy_graph = plot.ToyTGraphFromJSON(js, [args.mass, "toy"])
-    #if args.autogaus:
-    #    toy_testgaus = plot.makeHist1D("toys_testgaus", args.bins, toy_graph)
-    #    for i in range(toy_graph.GetN()): toy_testgaus.Fill(toy_graph.GetX()[i])
-    #    gausfit_results = toy_testgaus.Fit("gaus", "SQ")
-    #    automean = gausfit_results.Value(1)
-    #    autostd  = gausfit_results.Value(2)
-    #    toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(automean-3*autostd, automean+3*autostd))
     if args.percentile:
         min_range = toy_graph.GetX()[int(toy_graph.GetN()*args.percentile[0])]
         max_range = toy_graph.GetX()[int(toy_graph.GetN()*args.percentile[1])]
         toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=(min_range, max_range))
     elif args.range: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, absoluteXrange=args.range)
-    else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph)
+    else: toy_hist = plot.makeHist1D("toys", args.bins, toy_graph, 1.15)
     for i in range(toy_graph.GetN()):
         toy_hist.Fill(toy_graph.GetX()[i])
     pValue = js[args.mass]["p"]
