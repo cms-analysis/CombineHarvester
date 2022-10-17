@@ -831,11 +831,14 @@ def treeToHist2D(t, x, y, name, cut, xmin, xmax, ymin, ymax, xbins, ybins):
     return h2d
 
 
-def makeHist1D(name, xbins, graph, scaleXrange=1.0):
+def makeHist1D(name, xbins, graph, scaleXrange=1.0, absoluteXrange=None):
     len_x = graph.GetX()[graph.GetN() - 1] - graph.GetX()[0]
     binw_x = (len_x * 0.5 / (float(xbins) - 1.)) - 1E-5
-    hist = R.TH1F(
-        name, '', xbins, graph.GetX()[0], scaleXrange * (graph.GetX()[graph.GetN() - 1] + binw_x))
+    if absoluteXrange:
+        hist = R.TH1F(name, '', xbins, absoluteXrange[0], absoluteXrange[1])
+    else:
+        hist = R.TH1F(
+            name, '', xbins, graph.GetX()[0], scaleXrange * (graph.GetX()[graph.GetN() - 1] + binw_x))
     return hist
 
 
@@ -1446,7 +1449,7 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, ex
     if outOfFrame:
         latex.SetTextFont(cmsTextFont)
         latex.SetTextAlign(11)
-        latex.SetTextSize(cmsTextSize * t * pad_ratio)
+        latex.SetTextSize(cmsTextSize * t * (1./pad_ratio))
         latex.DrawLatex(l, 1 - t + lumiTextOffset * t, cmsText)
 
     posX_ = 0
@@ -1477,7 +1480,7 @@ def DrawCMSLogo(pad, cmsText, extraText, iPosX, relPosX, relPosY, relExtraDY, ex
             posX_ = l + relPosX * (1 - l - r)
             posY_ = 1 - t + lumiTextOffset * t
         latex.SetTextFont(extraTextFont)
-        latex.SetTextSize(extraTextSize * t * pad_ratio)
+        latex.SetTextSize(extraTextSize * t * (1./pad_ratio))
         latex.SetTextAlign(align_)
         latex.DrawLatex(posX_, posY_, extraText)
 

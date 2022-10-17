@@ -271,11 +271,16 @@ class CollectGoodnessOfFit(CombineToolBase):
                     if branch.GetName() == 'quantileExpected':
                         adding_cat_branch = True
                 # print branches
+                failedToys=0
+                nEvts=tree.GetEntries()
                 for evt in tree:
                     mh = str(evt.mh)
                     if mh not in js_out:
                         js_out[mh] = {}
                     if evt.quantileExpected != -1:
+                        continue
+                    if evt.iToy > 0 and evt.limit<-0.5: #Exclude toys with negative test statistic
+                        failedToys+=1
                         continue
                     if branches:
                         for branch in branches:
@@ -293,6 +298,8 @@ class CollectGoodnessOfFit(CombineToolBase):
                             js_out[mh]['obs'] = [evt.limit]
                         else:
                             js_out[mh]['toy'].append(evt.limit)
+                if(failedToys>0):
+                  print '>> %i/%i toys have negative test statistic values, and are excluded. This might indicate a failure in the calculation within combine, or for the KS and AD tests, an undefined value in toys with zero events. Note that the resulting p-value could be biased.'%(failedToys, nEvts)
             for mh in js_out:
                 if all([entry in js_out[mh] for entry in ['toy','obs']]):
                     js_out[mh]["p"] = float(len([toy for toy in js_out[mh]['toy'] if toy >= js_out[mh]['obs'][0]]))/len(js_out[mh]['toy'])

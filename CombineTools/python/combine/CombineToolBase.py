@@ -77,6 +77,14 @@ tar -cf combine_output.tar higgsCombine*.root
 rm higgsCombine*.root
 """
 
+CRAB_DO_NOTHING="""
+import FWCore.ParameterSet.Config as cms
+process = cms.Process("MAIN")
+
+process.source = cms.Source("EmptySource")
+process.options = cms.untracked.PSet()
+"""
+
 
 def run_command(dry_run, command, pre_cmd=''):
     if command.startswith('combine'):
@@ -128,6 +136,8 @@ class CombineToolBase:
                            help='Options for batch/crab submission')
         group.add_argument('--memory', type=int,
                            help='Request memory for job [MB]')
+        group.add_argument('--cores', type=int,
+                           help='Request number of cores for job')
         group.add_argument('--crab-area',
                            help='crab working area')
         group.add_argument('--custom-crab', default=self.custom_crab,
@@ -136,6 +146,8 @@ class CombineToolBase:
                            help='Extra files that should be shipped to crab')
         group.add_argument('--pre-cmd', default=self.pre_cmd,
                            help='Prefix the call to combine with this string')
+        group.add_argument('--post-job-cmd', default='',
+                           help='Postfix cmd for combine jobs [condor]')
         group.add_argument('--custom-crab-post', default=self.custom_crab_post,
                            help='txt file containing command lines that can be used in the crab job script instead of the defaults.')
 
@@ -158,10 +170,12 @@ class CombineToolBase:
         self.bopts = self.args.sub_opts
         self.custom_crab = self.args.custom_crab
         self.memory = self.args.memory
+        self.cores = self.args.cores
         self.crab_area = self.args.crab_area
         self.crab_files = self.args.crab_extra_files
         self.pre_cmd = self.args.pre_cmd
         self.custom_crab_post = self.args.custom_crab_post
+        self.post_job_cmd= self.args.post_job_cmd
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -194,6 +208,7 @@ class CombineToolBase:
                         self.pre_cmd + 'eval ' + command + log_part)
                 else:
                     text_file.write(command)
+            text_file.write('\n'+self.post_job_cmd+'\n')
         st = os.stat(fname)
         os.chmod(fname, st.st_mode | stat.S_IEXEC)
         # print JOB_PREFIX + command
@@ -215,6 +230,13 @@ class CombineToolBase:
                 assert idx != -1 and idx < len(cmd_list)
                 return cmd_list[idx + 1]
         raise RuntimeError('The workspace argument must be specified explicity with -d or --datacard')
+    def extract_lib_arg(self, cmd_list=[]):
+        for arg in ['-L', '--LoadLibrary']:
+            if arg in cmd_list:
+                idx = cmd_list.index(arg)
+                assert idx != -1 and idx < len(cmd_list)
+                return cmd_list[idx + 1]
+        return None
     def flush_queue(self):
         if self.job_mode == 'interactive':
             pool = Pool(processes=self.parallel)
@@ -289,6 +311,7 @@ class CombineToolBase:
                     newline = self.pre_cmd + line
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
+            outscript.write('\n' + self.post_job_cmd+'\n')
             outscript.close()
             st = os.stat(outscriptname)
             os.chmod(outscriptname, st.st_mode | stat.S_IEXEC)
@@ -329,6 +352,13 @@ class CombineToolBase:
                         newline = ('./copyRemoteWorkspace.sh %s ./%s; ' % (wsp, os.path.basename(wsp))) + newline
                     else:
                         wsp_files.add(wsp)
+                    if self.extract_lib_arg(newline.split()) is not None:
+                        lib = str(self.extract_lib_arg(newline.split()))
+                        newline = newline.replace(lib, os.path.basename(lib))
+                        wsp_files.add(lib)
+                        wsp_files.add(lib.replace(".so","_ACLiC_dict_rdict.pcm"))
+                        wsp_files.add(lib.replace("_cc.so",".cc"))
+                        wsp_files.add(lib.replace("_cc.so",".h"))
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
             if self.custom_crab_post is not None:
@@ -345,6 +375,12 @@ class CombineToolBase:
             config.Data.outputDatasetTag = config.General.requestName
             if self.memory is not None:
                 config.JobType.maxMemoryMB = self.memory
+            do_nothing_script = open(os.environ["CMSSW_BASE"]+"/src/CombineHarvester/CombineTools/scripts/do_nothing_cfg.py","w")
+            do_nothing_script.write(CRAB_DO_NOTHING)
+            if self.cores is not None:
+                config.JobType.numCores = self.cores
+                do_nothing_script.write('\nprocess.options.numberOfThreads=cms.untracked.uint32(%i)'%self.cores)
+            do_nothing_script.close()
             if self.crab_area is not None:
                 config.General.workArea = self.crab_area
             if self.custom_crab is not None:
