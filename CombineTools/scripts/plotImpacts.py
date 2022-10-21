@@ -208,8 +208,11 @@ for page in range(n):
     pads[1].SetGrid(1, 0)
     pads[1].SetTickx(1)
 
-    h_pulls = ROOT.TH2F("pulls", "pulls", 6, -2.9, 2.9, n_params, 0, n_params)
-    g_pulls = ROOT.TGraphAsymmErrors(n_params)
+    min_pull = -0.9
+    max_pull = +0.9
+
+    g_fit = ROOT.TGraphAsymmErrors(n_params)
+    g_pull = ROOT.TGraph(n_params)
     g_impacts_hi = ROOT.TGraphAsymmErrors(n_params)
     g_impacts_lo = ROOT.TGraphAsymmErrors(n_params)
     g_check = ROOT.TGraphAsymmErrors()
@@ -219,29 +222,31 @@ for page in range(n):
 
     text_entries = []
     redo_boxes = []
-    for p in xrange(n_params):
+    y_bin_labels = []
+    for p in range(n_params):
+        par = pdata[p]
         i = n_params - (p + 1)
-        pre = pdata[p]['prefit']
-        fit = pdata[p]['fit']
-        tp = pdata[p]['type']
+        pre = par['prefit']
+        fit = par['fit']
+        tp = par['type']
         seen_types.add(tp)
-        if pdata[p]['type'] != 'Unconstrained':
-            pre_err_hi = (pre[2] - pre[1])
-            pre_err_lo = (pre[1] - pre[0])
+        if IsConstrained(par):
+            if par['pull'] < min_pull:
+                min_pull = float(int(par['pull']) - 1)
+            if par['pull'] > max_pull:
+                max_pull = float(int(par['pull']) + 1)
+            if (par["sc_fit"] - par["sc_fit_lo"]) < min_pull:
+                min_pull = float(int(par["sc_fit"] - par["sc_fit_lo"]) - 1)
+            if (par["sc_fit"] + par["sc_fit_hi"]) > max_pull:
+                max_pull = float(int(par["sc_fit"] + par["sc_fit_hi"]) + 1)
 
-            if externalPullDef:
-                fit_err_hi = (fit[2] - fit[1])
-                fit_err_lo = (fit[1] - fit[0])
-                pull, pull_hi, pull_lo = CP.returnPullAsym(args.pullDef,fit[1],pre[1],fit_err_hi,pre_err_hi,fit_err_lo,pre_err_lo)
+            g_fit.SetPoint(i, par["sc_fit"], float(i) + 0.7)
+            g_fit.SetPointError(i, par["sc_fit_lo"], par["sc_fit_hi"], 0., 0.)
+            if par['pull_ok']:
+                g_pull.SetPoint(i, par['pull'], float(i) + 0.3)
             else:
-                pull = fit[1] - pre[1]
-                pull = (pull/pre_err_hi) if pull >= 0 else (pull/pre_err_lo)
-                pull_hi = fit[2] - pre[1]
-                pull_hi = (pull_hi/pre_err_hi) if pull_hi >= 0 else (pull_hi/pre_err_lo)
-                pull_hi = pull_hi - pull
-                pull_lo = fit[0] - pre[1]
-                pull_lo = (pull_lo/pre_err_hi) if pull_lo >= 0 else (pull_lo/pre_err_lo)
-                pull_lo =  pull - pull_lo
+                # If pull not valid, hide it
+                g_pull.SetPoint(i, 0., 9999.)
 
             # y1 = ROOT.gStyle.GetPadBottomMargin()
             # y2 = 1. - ROOT.gStyle.GetPadTopMargin()
@@ -291,7 +296,7 @@ for page in range(n):
                     break
         y_bin_labels.append((i, col, pdata[p]['name']))
 
-    h_pulls = ROOT.TH2F("pulls", "pulls", 6, -5.99, +5.99, n_params, 0, n_params)
+    h_pulls = ROOT.TH2F("pulls", "pulls", 6, -2.9, +2.9, n_params, 0, n_params)
     for i, col, name in y_bin_labels:
         h_pulls.GetYaxis().SetBinLabel(
             i + 1, ('#color[%i]{%s}'% (col, Translate(name, translate))))
