@@ -1,14 +1,36 @@
 #!/usr/bin/env python
+from __future__ import print_function
+from builtins import range
+# import enum
 import ROOT
 import math
 import json
 import argparse
 import CombineHarvester.CombineTools.plotting as plot
 import CombineHarvester.CombineTools.combine.rounding as rounding
+import HiggsAnalysis.CombinedLimit.calculate_pulls as CP
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 ROOT.TH1.AddDirectory(0)
+
+def Translate(name, ndict):
+    return ndict[name] if name in ndict else name
+
+
+def GetRounded(nom, e_hi, e_lo):
+    if e_hi < 0.0:
+        e_hi = 0.0
+    if e_lo < 0.0:
+        e_lo = 0.0
+    rounded = rounding.PDGRoundAsym(nom, e_hi if e_hi != 0.0 else 1.0, e_lo if e_lo != 0.0 else 1.0)
+    s_nom = rounding.downgradePrec(rounded[0],rounded[2])
+    s_hi = rounding.downgradePrec(rounded[1][0][0],rounded[2]) if e_hi != 0.0 else '0'
+    s_lo = rounding.downgradePrec(rounded[1][0][1],rounded[2]) if e_lo != 0.0 else '0'
+    return (s_nom, s_hi, s_lo)
+
+def IsConstrained(param_info):
+    return param_info["type"] != 'Unconstrained'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', '-i', help='input json file')
@@ -27,31 +49,13 @@ parser.add_argument('--blind', action='store_true', help='Do not print best fit 
 parser.add_argument('--color-groups', default=None, help='Comma separated list of GROUP=COLOR')
 parser.add_argument("--pullDef",  default=None, help="Choose the definition of the pull, see HiggsAnalysis/CombinedLimit/python/calculate_pulls.py for options")
 parser.add_argument('--POI', default=None, help='Specify a POI to draw')
+parser.add_argument("--sort", "-s", choices=["impact", "constraint", "pull"], default="impact", help="The metric to sort the list of parameters")
 args = parser.parse_args()
 
 if args.transparent:
-    print 'plotImpacts.py: --transparent is now always enabled, the option will be removed in a future update'
+    print('plotImpacts.py: --transparent is now always enabled, the option will be removed in a future update')
 
-externalPullDef = False
-if args.pullDef is not None:
-    externalPullDef = True
-    import HiggsAnalysis.CombinedLimit.calculate_pulls as CP
-
-
-def Translate(name, ndict):
-    return ndict[name] if name in ndict else name
-
-
-def GetRounded(nom, e_hi, e_lo):
-    if e_hi < 0.0:
-        e_hi = 0.0
-    if e_lo < 0.0:
-        e_lo = 0.0
-    rounded = rounding.PDGRoundAsym(nom, e_hi if e_hi != 0.0 else 1.0, e_lo if e_lo != 0.0 else 1.0)
-    s_nom = rounding.downgradePrec(rounded[0],rounded[2])
-    s_hi = rounding.downgradePrec(rounded[1][0][0],rounded[2]) if e_hi != 0.0 else '0'
-    s_lo = rounding.downgradePrec(rounded[1][0][1],rounded[2]) if e_lo != 0.0 else '0'
-    return (s_nom, s_hi, s_lo)
+externalPullDef = (args.pullDef is not None)
 
 # Dictionary to translate parameter names
 translate = {}
@@ -80,8 +84,62 @@ for ele in data['POIs']:
 
 POI_fit = POI_info['fit']
 
-# Sort parameters by largest absolute impact on this POI
-data['params'].sort(key=lambda x: abs(x['impact_%s' % POI]), reverse=True)
+# Add the actual pull to each entry
+params = data['params']
+for ele in params:
+    if IsConstrained(ele):
+        pre = ele['prefit']
+        fit = ele['fit']
+        pre_err_hi = (pre[2] - pre[1])
+        pre_err_lo = (pre[1] - pre[0])
+        fit_err_hi = (fit[2] - fit[1])
+        fit_err_lo = (fit[1] - fit[0])
+        pull = CP.diffPullAsym(fit[1], pre[1], fit_err_hi,pre_err_hi,fit_err_lo,pre_err_lo)
+        ele['pull'] = pull[0]
+        # Under some conditions (very small constraint) the calculated pull is not reliable.
+        # In this case, pull[1] will have a non-zero value.
+        ele['pull_ok'] = (pull[1] == 0)
+        ele['constraint'] = (fit[2] - fit[0]) / (pre[2] - pre[0])
+
+        if externalPullDef:
+            sc_fit, sc_fit_hi, sc_fit_lo = CP.returnPullAsym(args.pullDef, fit[1], pre[1], fit_err_hi, pre_err_hi, fit_err_lo, pre_err_lo)
+        else:
+            sc_fit = fit[1] - pre[1]
+            sc_fit = (sc_fit / pre_err_hi) if sc_fit >= 0 else (sc_fit / pre_err_lo)
+            sc_fit_hi = fit[2] - pre[1]
+            sc_fit_hi = (sc_fit_hi / pre_err_hi) if sc_fit_hi >= 0 else (sc_fit_hi / pre_err_lo)
+            sc_fit_hi = sc_fit_hi - sc_fit
+            sc_fit_lo = fit[0] - pre[1]
+            sc_fit_lo = (sc_fit_lo / pre_err_hi) if sc_fit_lo >= 0 else (sc_fit_lo / pre_err_lo)
+            sc_fit_lo =  sc_fit - sc_fit_lo
+        ele["sc_fit"] = sc_fit
+        ele["sc_fit_hi"] = sc_fit_hi
+        ele["sc_fit_lo"] = sc_fit_lo
+    else:
+        # For unconstrained parameters there is no pull to define. For sorting purposes we
+        # still need to set a value, so will put it to zero
+        ele['pull'] = 0
+        ele['pull_ok'] = False
+        ele['constraint'] = 9999.
+
+
+# Now compute each parameters ranking according to: largest pull, strongest constraint, and largest impact
+ranking_pull = sorted([(i, abs(v['pull'])) for i, v in enumerate(params)], reverse=True, key=lambda X: X[1])
+ranking_constraint = sorted([(i, abs(v['constraint'])) for i, v in enumerate(params)], reverse=False, key=lambda X: X[1])
+ranking_impact = sorted([(i, abs(v['impact_{}'.format(POI)])) for i, v in enumerate(params)], reverse=True, key=lambda X: X[1])
+for i in range(len(params)):
+    params[ranking_pull[i][0]]['rank_pull'] = i + 1
+    params[ranking_impact[i][0]]['rank_impact'] = i + 1
+    params[ranking_constraint[i][0]]['rank_constraint'] = i + 1
+
+if args.sort == 'pull':
+    data['params'].sort(key=lambda x: abs(x['pull']), reverse=True)
+elif args.sort == "impact":
+    data['params'].sort(key=lambda x: abs(x['impact_%s' % POI]), reverse=True)
+elif args.sort == "constraint":
+    data['params'].sort(key=lambda x: abs(x['constraint']), reverse=False)
+else:
+    raise RuntimeError("This error should not have happened!")
 
 if args.checkboxes:
     cboxes = data['checkboxes']
@@ -109,23 +167,23 @@ if args.color_groups is not None:
 
 seen_types = set()
 
-for name, col in colors.iteritems():
+for name, col in colors.items():
     color_hists[name] = ROOT.TH1F()
     plot.Set(color_hists[name], FillColor=col, Title=name)
 
 if args.color_groups is not None:
-    for name, col in color_groups.iteritems():
+    for name, col in color_groups.items():
         color_group_hists[name] = ROOT.TH1F()
         plot.Set(color_group_hists[name], FillColor=col, Title=name)
 
-for page in xrange(n):
+for page in range(n):
     canv = ROOT.TCanvas(args.output, args.output)
     n_params = len(data['params'][show * page:show * (page + 1)])
     pdata = data['params'][show * page:show * (page + 1)]
-    print '>> Doing page %i, have %i parameters' % (page, n_params)
+    print(">> Doing page %i, have %i parameters" % (page, n_params))
 
     boxes = []
-    for i in xrange(n_params):
+    for i in range(n_params):
         y1 = ROOT.gStyle.GetPadBottomMargin()
         y2 = 1. - ROOT.gStyle.GetPadTopMargin()
         h = (y2 - y1) / float(n_params)
@@ -185,12 +243,24 @@ for page in xrange(n):
                 pull_lo = (pull_lo/pre_err_hi) if pull_lo >= 0 else (pull_lo/pre_err_lo)
                 pull_lo =  pull - pull_lo
 
-            g_pulls.SetPoint(i, pull, float(i) + 0.5)
-            g_pulls.SetPointError(
-                i, pull_lo, pull_hi, 0., 0.)
+            # y1 = ROOT.gStyle.GetPadBottomMargin()
+            # y2 = 1. - ROOT.gStyle.GetPadTopMargin()
+            # x1 = ROOT.gStyle.GetPadLeftMargin()
+            # h = (y2 - y1) / float(n_params)
+            # y1 = y1 + ((float(i)+0.5) * h)
+            # pleft = (1. - pads[0].GetRightMargin())
+            # pright = pads[1].GetLeftMargin()
+            # x1 = (1. - pads[0].GetRightMargin()) * 0.33 + pads[1].GetLeftMargin() * 0.67
+            # print(x1)
+            # if pdata[p]['pull_ok']:
+            #     text_entries.append((0.65, y1, '{:.1f}^{{{:.1f}}}_{{{:.1f}}} ({})  {:.1f} ({})'.format(par["sc_fit"], -1. * par["sc_fit_lo"], par["sc_fit_hi"], par['rank_constraint'], par['pull'], par['rank_pull'])))
+            #     # text_entries.append((0.65, y1, '{}'.format(pdata[p]['rank_pull'])))
+            # else:
+            #     text_entries.append((x1, y1, '--'))
         else:
             # Hide this point
-            g_pulls.SetPoint(i, 0., 9999.)
+            g_fit.SetPoint(i, 0., 9999.)
+            g_pull.SetPoint(i, 0., 9999.)
             y1 = ROOT.gStyle.GetPadBottomMargin()
             y2 = 1. - ROOT.gStyle.GetPadTopMargin()
             x1 = ROOT.gStyle.GetPadLeftMargin()
@@ -219,14 +289,18 @@ for page in xrange(n):
                 if p_grp in color_groups:
                     col = color_groups[p_grp]
                     break
+        y_bin_labels.append((i, col, pdata[p]['name']))
+
+    h_pulls = ROOT.TH2F("pulls", "pulls", 6, -5.99, +5.99, n_params, 0, n_params)
+    for i, col, name in y_bin_labels:
         h_pulls.GetYaxis().SetBinLabel(
-            i + 1, ('#color[%i]{%s}'% (col, Translate(pdata[p]['name'], translate))))
+            i + 1, ('#color[%i]{%s}'% (col, Translate(name, translate))))
 
     # Style and draw the pulls histo
     if externalPullDef:
         plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title=CP.returnTitle(args.pullDef))
     else:
-        plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='(#hat{#theta}-#theta_{0})/#Delta#theta')
+        plot.Set(h_pulls.GetXaxis(), TitleSize=0.04, LabelSize=0.03, Title='#scale[0.7]{(#hat{#theta}-#theta_{I})/#sigma_{I} #color[4]{(#hat{#theta}-#theta_{I})/#sqrt{#sigma_{I}^{2} - #sigma^{2}}}}')
 
     plot.Set(h_pulls.GetYaxis(), LabelSize=args.label_size, TickLength=0.0)
     h_pulls.GetYaxis().LabelsOption('v')
@@ -274,9 +348,10 @@ for page in xrange(n):
 
     # Back to the first pad to draw the pulls graph
     pads[0].cd()
-    plot.Set(g_pulls, MarkerSize=0.8, LineWidth=2)
-    g_pulls.Draw('PSAME')
-
+    plot.Set(g_fit, MarkerSize=0.7, LineWidth=2)
+    g_fit.Draw('PSAME')
+    plot.Set(g_pull, MarkerSize=0.5, LineWidth=2, MarkerStyle=5, MarkerColor=4)
+    g_pull.Draw('PSAME')
     # And back to the second pad to draw the impacts graphs
     pads[1].cd()
     alpha = 0.7
@@ -300,10 +375,11 @@ for page in xrange(n):
     g_impacts_lo.Draw('2SAME')
     pads[1].RedrawAxis()
 
-    legend = ROOT.TLegend(0.02, 0.02, 0.40, 0.06, '', 'NBNDC')
-    legend.SetNColumns(3)
-    legend.AddEntry(g_pulls, 'Pull', 'LP')
+    legend = ROOT.TLegend(0.02, 0.02, 0.35, 0.09, '', 'NBNDC')
+    legend.SetNColumns(2)
+    legend.AddEntry(g_fit, 'Fit', 'LP')
     legend.AddEntry(g_impacts_hi, '+1#sigma Impact', 'F')
+    legend.AddEntry(g_pull, 'Pull', 'P')
     legend.AddEntry(g_impacts_lo, '-1#sigma Impact', 'F')
     legend.Draw()
 
@@ -311,13 +387,13 @@ for page in xrange(n):
     if args.color_groups is not None:
         legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
-        for name, h in color_group_hists.iteritems():
+        for name, h in color_group_hists.items():
             legend2.AddEntry(h, Translate(name, translate), 'F')
         legend2.Draw()
     elif len(seen_types) > 1:
         legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
-        for name, h in color_hists.iteritems():
+        for name, h in color_hists.items():
             if name == 'Unrecognised': continue
             legend2.AddEntry(h, name, 'F')
         legend2.Draw()
