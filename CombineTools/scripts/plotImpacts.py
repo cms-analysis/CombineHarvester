@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from builtins import range
-# import enum
 import ROOT
 import math
 import json
@@ -43,17 +42,14 @@ parser.add_argument('--height', type=int, default=600, help='Canvas height, in p
 parser.add_argument('--left-margin', type=float, default=0.4, help='Left margin, expressed as a fraction')
 parser.add_argument('--label-size', type=float, default=0.021, help='Parameter name label size')
 parser.add_argument('--cms-label', default='Internal', help='Label next to the CMS logo')
-parser.add_argument('--transparent', action='store_true', help='Draw areas as hatched lines instead of solid')
 parser.add_argument('--checkboxes', action='store_true', help='Draw an extra panel with filled checkboxes')
 parser.add_argument('--blind', action='store_true', help='Do not print best fit signal strength')
 parser.add_argument('--color-groups', default=None, help='Comma separated list of GROUP=COLOR')
 parser.add_argument("--pullDef",  default=None, help="Choose the definition of the pull, see HiggsAnalysis/CombinedLimit/python/calculate_pulls.py for options")
 parser.add_argument('--POI', default=None, help='Specify a POI to draw')
 parser.add_argument("--sort", "-s", choices=["impact", "constraint", "pull"], default="impact", help="The metric to sort the list of parameters")
+parser.add_argument("--relative", "-r", action="store_true", help="Show impacts relative to the uncertainty on the POI")
 args = parser.parse_args()
-
-if args.transparent:
-    print('plotImpacts.py: --transparent is now always enabled, the option will be removed in a future update')
 
 externalPullDef = (args.pullDef is not None)
 
@@ -87,6 +83,22 @@ POI_fit = POI_info['fit']
 # Add the actual pull to each entry
 params = data['params']
 for ele in params:
+    # Calculate impacts and relative impacts. Note that here the impacts are signed.
+    ele["impact_hi"] = ele[POI][2] - ele[POI][1]
+    ele["impact_lo"] = ele[POI][0] - ele[POI][1]
+    # Some care needed with the relative ones, since we don't know the signs of hi and lo.
+    # We want to divide any positive impact by the positive uncert. on the POI, and similar for negative.
+    # We also need to be careful in case the uncertainties on the POI came out as zero (shouldn't happen...)
+    if (POI_fit[2] - POI_fit[1]) > 0. and (POI_fit[1] - POI_fit[0]) > 0.:
+        ele["impact_rel_hi"] = ele["impact_hi"] / ( (POI_fit[2] - POI_fit[1]) if ele["impact_hi"] >=0 else (POI_fit[1] - POI_fit[0]))
+        ele["impact_rel_lo"] = ele["impact_lo"] / ( (POI_fit[2] - POI_fit[1]) if ele["impact_lo"] >=0 else (POI_fit[1] - POI_fit[0]))
+    else:
+        ele["impact_rel_hi"] = 0.
+        ele["impact_rel_lo"] = 0.
+        if args.relative:
+            # Now we have a real problem, best throw:
+            raise RuntimeError("Relative impacts requested (--relative), but uncertainty on the POI is zero")
+            
     if IsConstrained(ele):
         pre = ele['prefit']
         fit = ele['fit']
@@ -122,6 +134,14 @@ for ele in params:
         ele['pull_ok'] = False
         ele['constraint'] = 9999.
 
+if args.sort == 'pull':
+    data['params'].sort(key=lambda x: abs(x['pull']), reverse=True)
+elif args.sort == "impact":
+    data['params'].sort(key=lambda x: abs(x['impact_%s' % POI]), reverse=True)
+elif args.sort == "constraint":
+    data['params'].sort(key=lambda x: abs(x['constraint']), reverse=False)
+else:
+    raise RuntimeError("This error should not have happened!")
 
 # Now compute each parameters ranking according to: largest pull, strongest constraint, and largest impact
 ranking_pull = sorted([(i, abs(v['pull'])) for i, v in enumerate(params)], reverse=True, key=lambda X: X[1])
@@ -132,14 +152,6 @@ for i in range(len(params)):
     params[ranking_impact[i][0]]['rank_impact'] = i + 1
     params[ranking_constraint[i][0]]['rank_constraint'] = i + 1
 
-if args.sort == 'pull':
-    data['params'].sort(key=lambda x: abs(x['pull']), reverse=True)
-elif args.sort == "impact":
-    data['params'].sort(key=lambda x: abs(x['impact_%s' % POI]), reverse=True)
-elif args.sort == "constraint":
-    data['params'].sort(key=lambda x: abs(x['constraint']), reverse=False)
-else:
-    raise RuntimeError("This error should not have happened!")
 
 if args.checkboxes:
     cboxes = data['checkboxes']
@@ -175,6 +187,191 @@ if args.color_groups is not None:
     for name, col in color_groups.items():
         color_group_hists[name] = ROOT.TH1F()
         plot.Set(color_group_hists[name], FillColor=col, Title=name)
+
+
+
+canv = ROOT.TCanvas(args.output, args.output)
+canv.Divide(2, 2, 0.005, 0.005)
+
+
+latex = ROOT.TLatex()
+
+
+min_pull = min([X['pull'] for X in params])
+max_pull = max([X['pull'] for X in params])
+
+h_pulls = ROOT.TH1F('pulls', '', 49, -5, 5)
+
+n_larger = [0, 0, 0]
+# h_pulls.FillRandom("gaus", 1000)
+n_entries = 0.
+for par in params:
+    if par['pull_ok']:
+        n_entries += 1.0
+        h_pulls.Fill(par['pull'])
+        a_pull = abs(par['pull'])
+        if a_pull > 1.:
+            n_larger[0] += 1
+        if a_pull > 2.:
+            n_larger[1] += 1
+        if a_pull > 3.:
+            n_larger[2] += 1
+f_normal = ROOT.TF1("normal","[0]*exp(-0.5*((x-[1])/[2])**2)", -5, 5)
+f_normal.SetParameter(0, 0.2 * h_pulls.Integral() / math.sqrt(2. * math.pi))
+f_normal.SetParameter(1, 0)
+f_normal.SetParameter(2, 1)
+# pad_pulls = ROOT.TPad('pad_pulls', '', 0.5, 0.5, 1, 1)
+# pad_pulls.Draw()
+canv.cd(1)
+# print(ROOT.gPad.GetTopMargin())
+plot.Set(ROOT.gPad, TopMargin=0.12, LeftMargin=0.12, RightMargin=0.05, BottomMargin=0.10)
+# h_pulls.Scale(1., 'width')
+print(h_pulls.GetMean(), h_pulls.GetRMS())
+plot.Set(h_pulls.GetXaxis(), Title="Pull (s.d.)")
+plot.Set(h_pulls.GetYaxis(), Title="Number of parameters", TitleOffset=0.9)
+h_pulls.Draw('HIST')
+f_normal.Draw('LSAME')
+legend = ROOT.TLegend(0.62, 0.72, 0.92, 0.85, '', 'NBNDC')
+# legend.SetNColumns(2)
+legend.AddEntry(h_pulls, 'Pulls', 'L')
+legend.AddEntry(f_normal, 'Gaussian(0,1)', 'L')
+legend.Draw()
+
+plot.Set(latex, NDC=None, TextFont=42, TextSize=0.04, TextAlign=32)
+latex.DrawLatex(0.3, 0.85, 'N(> 1 s.d.)')
+latex.DrawLatex(0.3, 0.8, 'N(> 2 s.d.)')
+latex.DrawLatex(0.3, 0.75, 'N(> 3 s.d.)')
+latex.DrawLatex(0.33, 0.85, '{}'.format(n_larger[0]))
+latex.DrawLatex(0.33, 0.8, '{}'.format(n_larger[1]))
+latex.DrawLatex(0.33, 0.75, '{}'.format(n_larger[2]))
+latex.DrawLatex(0.42, 0.85, '#color[2]{{{:.2f}}}'.format(n_entries * 2. * ROOT.Math.normal_cdf_c(1.)))
+latex.DrawLatex(0.42, 0.8, '#color[2]{{{:.2f}}}'.format(n_entries * 2. * ROOT.Math.normal_cdf_c(2.)))
+latex.DrawLatex(0.42, 0.75, '#color[2]{{{:.2f}}}'.format(n_entries * 2. * ROOT.Math.normal_cdf_c(3.)))
+
+
+plot.DrawCMSLogo(ROOT.gPad, 'CMS', args.cms_label, 0, 0.20, 0.00, 0.00)
+s_nom, s_hi, s_lo = GetRounded(POI_fit[1], POI_fit[2] - POI_fit[1], POI_fit[1] - POI_fit[0])
+if not args.blind:
+    plot.DrawTitle(ROOT.gPad, '#hat{%s} = %s^{#plus%s}_{#minus%s}%s' % (
+        Translate(POI, translate), s_nom, s_hi, s_lo,
+        '' if args.units is None else ' '+args.units), 3, 0.27)
+
+canv.cd(2)
+
+def FmtROOTNumber(val, digits=2):
+    if val >= 0.:
+        fmt_str = "#plus{:." + str(digits) + "f}"
+    else:
+        fmt_str = "#minus{:." + str(digits) + "f}"
+    return fmt_str.format(abs(val))
+
+
+plot.Set(latex, NDC=None, TextFont=42, TextSize=0.06, TextAlign=12)
+latex.DrawLatex(0.03, 0.95, "Largest pulls")
+plot.Set(latex, NDC=None, TextFont=42, TextSize=0.06, TextAlign=32)
+latex.DrawLatex(0.97, 0.95, "(#hat{#theta}-#theta_{I})/#sqrt{#sigma_{I}^{2} - #sigma^{2}}")
+nDraw = 10
+max_y = 0.9
+min_y = 0.1
+left_margin = 0.03
+right_margin = 0.97
+row_h = ((max_y - min_y) / float(nDraw))
+
+boxes = []
+
+occurances = {}
+for i in range(nDraw):
+    box = ROOT.TPaveText(0.02, max_y - (float(i + 1) * row_h), 0.98, max_y - (float(i) * row_h), 'NDC')
+    plot.Set(box, TextSize=0.02, BorderSize=0, FillColor=0, TextAlign=12, Margin=0.00)
+    if i % 2 == 1:
+        box.SetFillColor(ROOT.kRed - 10)
+    # box.AddText('%i' % (n_params - i + page * show))
+    box.Draw()
+    boxes.append(box)
+for i in range(nDraw):
+    par = params[ranking_pull[i][0]]
+    if par['name'] not in occurances:
+        occurances[par['name']] = [None, None, None]
+    occurances[par['name']][0] = i
+    plot.Set(latex, NDC=None, TextFont=42, TextSize=0.04, TextAlign=12)
+    latex.DrawLatex(0.03, max_y - ((float(i) + 0.5) * row_h ), par["name"])
+    plot.Set(latex, NDC=None, TextFont=42, TextSize=0.04, TextAlign=32)
+    latex.DrawLatex(0.97, max_y - ((float(i) + 0.5) * row_h ), FmtROOTNumber(par["pull"]))
+
+canv.cd(3)
+plot.Set(latex, NDC=None, TextFont=42, TextSize=0.06, TextAlign=12)
+latex.DrawLatex(0.03, 0.95, "Strongest constraints")
+plot.Set(latex, NDC=None, TextFont=42, TextSize=0.06, TextAlign=32)
+latex.DrawLatex(0.97, 0.95, "#sigma/#sigma_{I}")
+for i in range(nDraw):
+    box = ROOT.TPaveText(0.02, max_y - (float(i + 1) * row_h), 0.98, max_y - (float(i) * row_h), 'NDC')
+    plot.Set(box, TextSize=0.02, BorderSize=0, FillColor=0, TextAlign=12, Margin=0.00)
+    if i % 2 == 1:
+        box.SetFillColor(ROOT.kGreen - 10)
+    # box.AddText('%i' % (n_params - i + page * show))
+    box.Draw()
+    boxes.append(box)
+for i in range(nDraw):
+    par = params[ranking_constraint[i][0]]
+    if par['name'] not in occurances:
+        occurances[par['name']] = [None, None, None]
+    occurances[par['name']][1] = i
+    plot.Set(latex, NDC=None, TextFont=42, TextSize=0.04, TextAlign=12)
+    latex.DrawLatex(0.03, max_y - ((float(i) + 0.5) * ((0.9 - 0.1) / float(nDraw)) ), par["name"])
+    plot.Set(latex, NDC=None, TextFont=42, TextSize=0.04, TextAlign=32)
+    latex.DrawLatex(0.97, max_y - ((float(i) + 0.5) * ((0.9 - 0.1) / float(nDraw)) ), "{:.2f}".format(par["constraint"]))
+
+canv.cd(4)
+plot.Set(latex, NDC=None, TextFont=42, TextSize=0.06, TextAlign=12)
+latex.DrawLatex(0.03, 0.95, "Largest impacts")
+plot.Set(latex, NDC=None, TextFont=42, TextSize=0.06, TextAlign=32)
+latex.DrawLatex(0.97, 0.95, "#Delta{}(#pm#sigma_{{#theta}})/#sigma_{{{}}}".format(POI, POI))
+
+for i in range(nDraw):
+    box = ROOT.TPaveText(0.02, max_y - (float(i + 1) * row_h), 0.98, max_y - (float(i) * row_h), 'NDC')
+    plot.Set(box, TextSize=0.02, BorderSize=0, FillColor=0, TextAlign=12, Margin=0.00)
+    if i % 2 == 1:
+        box.SetFillColor(ROOT.kBlue - 10)
+    # box.AddText('%i' % (n_params - i + page * show))
+    box.Draw()
+    boxes.append(box)
+for i in range(nDraw):
+    par = params[ranking_impact[i][0]]
+    if par['name'] not in occurances:
+        occurances[par['name']] = [None, None, None]
+    occurances[par['name']][2] = i
+    plot.Set(latex, NDC=None, TextFont=42, TextSize=0.04, TextAlign=12)
+    latex.DrawLatex(0.03, 0.9 - ((float(i) + 0.5) * ((0.9 - 0.1) / float(nDraw)) ), par["name"])
+    plot.Set(latex, NDC=None, TextFont=42, TextSize=0.05, TextAlign=32)
+    latex.DrawLatex(0.97, 0.9 - ((float(i) + 0.5) * ((0.9 - 0.1) / float(nDraw)) ), "{{}}^{{{}}}_{{{}}}".format(FmtROOTNumber(par["impact_rel_hi"]), FmtROOTNumber(par["impact_rel_lo"])))
+
+marker = ROOT.TMarker()
+
+marker_styles = []
+for style in [20, 23, 29, 34]:
+    for col in [1, 2, 3, 4, 6, 7, 15, ROOT.kOrange]:
+        marker_styles.append((style, col))
+curr_marker = 0
+for parname, entries in occurances.items():
+    print(parname, entries)
+    multiple = (entries.count(None) <= 1)
+    if multiple:
+        print('here')
+        plot.Set(marker, MarkerStyle=marker_styles[curr_marker][0], MarkerColor=marker_styles[curr_marker][1])        
+        if entries[0] is not None:
+            canv.cd(2)
+            marker.DrawMarker(0.01, 0.9 - ((float(entries[0]) + 0.5) * ((0.9 - 0.1) / float(nDraw)) ))
+        if entries[1] is not None:
+            canv.cd(3)
+            marker.DrawMarker(0.01, 0.9 - ((float(entries[1]) + 0.5) * ((0.9 - 0.1) / float(nDraw)) ))
+        if entries[2] is not None:
+            canv.cd(4)
+            marker.DrawMarker(0.01, 0.9 - ((float(entries[2]) + 0.5) * ((0.9 - 0.1) / float(nDraw)) ))
+        curr_marker += 1
+        if curr_marker >= len(marker_styles):
+            curr_marker = 0
+
+canv.Print('.pdf(')
 
 for page in range(n):
     canv = ROOT.TCanvas(args.output, args.output)
@@ -284,10 +481,10 @@ for page in range(n):
                 g_check.SetPoint(g_check_i, cboxes.index(pbox) + 0.5, float(i) + 0.5)
                 g_check_i += 1
         imp = pdata[p][POI]
-        g_impacts_hi.SetPointError(i, 0, imp[2] - imp[1], 0.5, 0.5)
-        g_impacts_lo.SetPointError(i, imp[1] - imp[0], 0, 0.5, 0.5)
+        g_impacts_hi.SetPointError(i, 0, par["impact_rel_hi"], 0.5, 0.5)
+        g_impacts_lo.SetPointError(i, -1. * par["impact_rel_lo"], 0, 0.5, 0.5)
         max_impact = max(
-            max_impact, abs(imp[1] - imp[0]), abs(imp[2] - imp[1]))
+            max_impact, abs(par["impact_rel_hi"]), abs(par["impact_rel_lo"]))
         col = colors.get(tp, 2)
         if args.color_groups is not None and len(pdata[p]['groups']) >= 1:
             for p_grp in pdata[p]['groups']:
@@ -410,8 +607,8 @@ for page in range(n):
             Translate(POI, translate), s_nom, s_hi, s_lo,
             '' if args.units is None else ' '+args.units), 3, 0.27)
     extra = ''
-    if page == 0:
-        extra = '('
+    # if page == 0:
+    #     extra = '('
     if page == n - 1:
         extra = ')'
     canv.Print('.pdf%s' % extra)
