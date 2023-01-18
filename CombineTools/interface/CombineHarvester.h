@@ -338,6 +338,7 @@ class CombineHarvester {
    */
   /**@{*/
   double GetRate();
+  std::map<std::string, double> RateEvolution(RooFitResult const& fit);
   double GetObservedRate();
   double GetUncertainty();
 
