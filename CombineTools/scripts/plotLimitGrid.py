@@ -1,7 +1,10 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.plotting as plot
 import ROOT
 import argparse
+from six.moves import range
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -132,7 +135,7 @@ else:
 
 # Fill TH2s by interpolating the TGraph2Ds, then extract contours
 for c in types:
-    print 'Filling histo for %s' % c
+    print('Filling histo for %s' % c)
     hists[c] = h_proto.Clone(c)
     plot.fillTH2(hists[c], graphs[c])
     contours[c] = plot.contourFromTH2(hists[c], CL, 5, frameValue=1)
@@ -143,15 +146,15 @@ for c in types:
 
 #Extract mh contours if mh histogram exists:
 if h_mh is not None:
-  h_mh_inverted = h_mh.Clone("mhInverted")
-  for i in range(1,h_mh.GetNbinsX()+1):
-     for j in range(1, h_mh.GetNbinsY()+1):
-         h_mh_inverted.SetBinContent(i,j,1-(1./h_mh.GetBinContent(i,j)))
-  mh122_contours = plot.contourFromTH2(h_mh_inverted, (1-1./122), 5, frameValue=1)
-  mh128_contours = plot.contourFromTH2(h_mh, 128, 5, frameValue=1)
-else : 
-  mh122_contours = None
-  mh128_contours = None
+    h_mh_inverted = h_mh.Clone("mhInverted")
+    for i in range(1,h_mh.GetNbinsX()+1):
+        for j in range(1, h_mh.GetNbinsY()+1):
+            h_mh_inverted.SetBinContent(i,j,1-(1./h_mh.GetBinContent(i,j)))
+    mh122_contours = plot.contourFromTH2(h_mh_inverted, (1-1./122), 5, frameValue=1)
+    mh128_contours = plot.contourFromTH2(h_mh, 128, 5, frameValue=1)
+else :
+    mh122_contours = None
+    mh128_contours = None
 
 # Setup the canvas: we'll use a two pad split, with a small top pad to contain
 # the CMS logo and the legend
@@ -263,13 +266,13 @@ if mh122_contours is not None:
         gr.Draw('LSAME')
 
 if extra_contours is not None:
-    if args.extra_contour_style is not None: 
+    if args.extra_contour_style is not None:
         contour_styles = args.extra_contour_style.split(',')
     for i in range(0,len(extra_contours)):
         for gr in extra_contours[i]:
             plot.Set(gr,LineWidth=2,LineColor=ROOT.kBlue,LineStyle=int(contour_styles[i]))
             gr.Draw('LSAME')
-   
+
 
 # We just want the top pad to look like a box, so set all the text and tick
 # sizes to zero
@@ -294,9 +297,9 @@ if 'exp0' in contours:
 if 'exp-2' in contours and 'exp+2' in contours:
     legend.AddEntry(contours['exp-2'][0], "95% expected", "F")
 if extra_contours is not None:
-    if args.extra_contour_title is not None: 
+    if args.extra_contour_title is not None:
         contour_title = args.extra_contour_title.split(',')
-    for i in range(0,len(contour_title)): 
+    for i in range(0,len(contour_title)):
         legend.AddEntry(extra_contours[i][0],contour_title[i],"L")
 legend.Draw()
 

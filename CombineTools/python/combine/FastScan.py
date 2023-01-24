@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import json
 import ROOT
@@ -8,6 +10,7 @@ import CombineHarvester.CombineTools.combine.utils as utils
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 import CombineHarvester.CombineTools.plotting as plot
+from six.moves import range
 
 
 class FastScan(CombineToolBase):
@@ -49,7 +52,7 @@ class FastScan(CombineToolBase):
             data = wsp.data('data_obs')
         else:
             ws_d = self.args.data.split(':')
-            print '>> Data: ' + str(ws_d)
+            print('>> Data: ' + str(ws_d))
             f_d = ROOT.TFile(ws_d[0])
             if len(ws_d) == 2:
                 data = f_d.Get(ws_d[1])
@@ -82,12 +85,12 @@ class FastScan(CombineToolBase):
                     continue
             par.Print()
             if not (par.hasMax() and par.hasMin()):
-                print 'Parameter does not have an associated range, skipping'
+                print('Parameter does not have an associated range, skipping')
                 continue
             doPars.append(par)
         plot.ModTDRStyle(width=700, height=1000)
         for idx, par in enumerate(doPars):
-            print '%s : (%i/%i)' % (par.GetName(), idx+1, len(doPars))
+            print('%s : (%i/%i)' % (par.GetName(), idx+1, len(doPars)))
             nlld1 = nll.derivative(par, 1)
             nlld2 = nll.derivative(par, 2)
             xmin = par.getMin()
@@ -99,7 +102,7 @@ class FastScan(CombineToolBase):
             grd1.SetName(par.GetName()+"_d1")
             grd2.SetName(par.GetName()+"_d2")
             w = (xmax - xmin) / float(points)
-            for i in xrange(points):
+            for i in range(points):
                 x = xmin + (float(i) + 0.5) * w
                 par.setVal(x)
                 gr.SetPoint(i, x, nll.getVal())
@@ -139,7 +142,7 @@ class FastScan(CombineToolBase):
                 extra = '('
             if page == len(doPars) - 1:
                 extra = ')'
-            print extra
+            print(extra)
             canv.Print('.pdf%s' % extra)
             page += 1
 

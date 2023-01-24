@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+from __future__ import absolute_import
 from __future__ import print_function
-from builtins import range
 import ROOT
 import math
 import json
@@ -8,6 +8,8 @@ import argparse
 import CombineHarvester.CombineTools.plotting as plot
 import CombineHarvester.CombineTools.combine.rounding as rounding
 import HiggsAnalysis.CombinedLimit.calculate_pulls as CP
+import six
+from six.moves import range
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -179,12 +181,12 @@ if args.color_groups is not None:
 
 seen_types = set()
 
-for name, col in colors.items():
+for name, col in six.iteritems(colors):
     color_hists[name] = ROOT.TH1F()
     plot.Set(color_hists[name], FillColor=col, Title=name)
 
 if args.color_groups is not None:
-    for name, col in color_groups.items():
+    for name, col in six.iteritems(color_groups):
         color_group_hists[name] = ROOT.TH1F()
         plot.Set(color_group_hists[name], FillColor=col, Title=name)
 
@@ -352,7 +354,7 @@ for style in [20, 23, 29, 34]:
     for col in [1, 2, 3, 4, 6, 7, 15, ROOT.kOrange]:
         marker_styles.append((style, col))
 curr_marker = 0
-for parname, entries in occurances.items():
+for parname, entries in six.iteritems(occurances):
     print(parname, entries)
     multiple = (entries.count(None) <= 1)
     if multiple:
@@ -377,7 +379,7 @@ for page in range(n):
     canv = ROOT.TCanvas(args.output, args.output)
     n_params = len(data['params'][show * page:show * (page + 1)])
     pdata = data['params'][show * page:show * (page + 1)]
-    print(">> Doing page %i, have %i parameters" % (page, n_params))
+    print('>> Doing page %i, have %i parameters' % (page, n_params))
 
     boxes = []
     for i in range(n_params):
@@ -589,13 +591,13 @@ for page in range(n):
     if args.color_groups is not None:
         legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
-        for name, h in color_group_hists.items():
+        for name, h in six.iteritems(color_group_hists):
             legend2.AddEntry(h, Translate(name, translate), 'F')
         legend2.Draw()
     elif len(seen_types) > 1:
         legend2 = ROOT.TLegend(0.01, 0.94, leg_width, 0.99, '', 'NBNDC')
         legend2.SetNColumns(2)
-        for name, h in color_hists.items():
+        for name, h in six.iteritems(color_hists):
             if name == 'Unrecognised': continue
             legend2.AddEntry(h, name, 'F')
         legend2.Draw()

@@ -1,7 +1,10 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import stat
 from functools import partial
 from multiprocessing import Pool
+from six.moves import range
 
 DRY_RUN = False
 
@@ -90,10 +93,10 @@ def run_command(dry_run, command, pre_cmd=''):
     if command.startswith('combine'):
         command = pre_cmd + command
     if not dry_run:
-        print '>> ' + command
+        print('>> ' + command)
         return os.system(command)
     else:
-        print '[DRY-RUN]: ' + command
+        print('[DRY-RUN]: ' + command)
 
 
 class CombineToolBase:
@@ -212,13 +215,13 @@ class CombineToolBase:
         st = os.stat(fname)
         os.chmod(fname, st.st_mode | stat.S_IEXEC)
         # print JOB_PREFIX + command
-        print 'Created job script: %s' % script_filename
+        print('Created job script: %s' % script_filename)
 
     def run_method(self):
-        print vars(self.args)
+        print(vars(self.args))
         # Put the method back in because we always take it out
         self.put_back_arg('method', '-M')
-        print self.passthru
+        print(self.passthru)
         command = 'combine ' + ' '.join(self.passthru)
         self.job_queue.append(command)
         self.flush_queue()
@@ -246,9 +249,9 @@ class CombineToolBase:
         if self.job_mode in ['script', 'lxbatch', 'SGE', 'slurm']:
             if self.prefix_file != '':
                 if self.prefix_file.endswith('.txt'):
-                  job_prefix_file = open(self.prefix_file,'r')
+                    job_prefix_file = open(self.prefix_file,'r')
                 else :
-                  job_prefix_file = open(os.environ['CMSSW_BASE']+"/src/CombineHarvester/CombineTools/input/job_prefixes/job_prefix_"+self.prefix_file+".txt",'r')
+                    job_prefix_file = open(os.environ['CMSSW_BASE']+"/src/CombineHarvester/CombineTools/input/job_prefixes/job_prefix_"+self.prefix_file+".txt",'r')
                 global JOB_PREFIX
                 JOB_PREFIX=job_prefix_file.read() %({
                   'CMSSW_BASE': os.environ['CMSSW_BASE'],
@@ -263,9 +266,9 @@ class CombineToolBase:
                 # we also keep track of the files that were created in case submission to a
                 # batch system was also requested
                 if self.job_dir:
-                  if not os.path.exists(self.job_dir):
-                    os.makedirs(self.job_dir)
-                  script_name = os.path.join(self.job_dir,script_name)
+                    if not os.path.exists(self.job_dir):
+                        os.makedirs(self.job_dir)
+                    script_name = os.path.join(self.job_dir,script_name)
                 self.create_job_script(
                     self.job_queue[j:j + self.merge], script_name, self.job_mode == 'script')
                 script_list.append(script_name)
@@ -299,7 +302,7 @@ class CombineToolBase:
         if self.job_mode == 'condor':
             outscriptname = 'condor_%s.sh' % self.task_name
             subfilename = 'condor_%s.sub' % self.task_name
-            print '>> condor job script will be %s' % outscriptname
+            print('>> condor job script will be %s' % outscriptname)
             outscript = open(outscriptname, "w")
             outscript.write(JOB_PREFIX)
             jobs = 0
@@ -319,7 +322,7 @@ class CombineToolBase:
             condor_settings = CONDOR_TEMPLATE % {
               'EXE': outscriptname,
               'TASK': self.task_name,
-              'EXTRA': self.bopts.decode('string_escape'),
+              'EXTRA': self.bopts.encode("UTF-8").decode("unicode_escape"),
               'NUMBER': jobs
             }
             subfile.write(condor_settings)
@@ -329,10 +332,10 @@ class CombineToolBase:
         if self.job_mode == 'crab3':
             #import the stuff we need
             from CRABAPI.RawCommand import crabCommand
-            from httplib import HTTPException
-            print '>> crab3 requestName will be %s' % self.task_name
+            from six.moves.http_client import HTTPException
+            print('>> crab3 requestName will be %s' % self.task_name)
             outscriptname = 'crab_%s.sh' % self.task_name
-            print '>> crab3 script will be %s' % outscriptname
+            print('>> crab3 script will be %s' % outscriptname)
             outscript = open(outscriptname, "w")
             outscript.write(CRAB_PREFIX)
             jobs = 0
@@ -385,12 +388,12 @@ class CombineToolBase:
                 config.General.workArea = self.crab_area
             if self.custom_crab is not None:
                 d = {}
-                execfile(self.custom_crab, d)
+                exec(compile(open(self.custom_crab).read(), self.custom_crab, 'exec'), d)
                 d['custom_crab'](config)
-            print config
+            print(config)
             if not self.dry_run:
                 try:
                     crabCommand('submit', config = config)
-                except HTTPException, hte:
-                    print hte.headers
+                except HTTPException as hte:
+                    print(hte.headers)
         del self.job_queue[:]

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 
 import CombineHarvester.CombineTools.combine.utils as utils
@@ -45,9 +47,9 @@ class ModifyDataSet(CombineToolBase):
 
     def run_method(self):
         ws_in = self.args.input.split(':')
-        print '>> Input:  ' + str(ws_in)
+        print('>> Input:  ' + str(ws_in))
         ws_out = self.args.output.split(':')
-        print '>> Output: ' + str(ws_out)
+        print('>> Output: ' + str(ws_out))
         f = ROOT.TFile(ws_in[0])
         ws = f.Get(ws_in[1])
         if len(ws_in) == 3:
@@ -56,7 +58,7 @@ class ModifyDataSet(CombineToolBase):
                 data.SetName(ws_out[2])
         else:
             ws_d = self.args.data.split(':')
-            print '>> Data: ' + str(ws_d)
+            print('>> Data: ' + str(ws_d))
             f_d = ROOT.TFile(ws_d[0])
             if len(ws_d) == 2:
                 data = f_d.Get(ws_d[1])

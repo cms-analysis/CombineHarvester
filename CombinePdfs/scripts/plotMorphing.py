@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import ROOT
 import math
@@ -21,7 +23,7 @@ m = real_points[0]
 while m < real_points[-1]:
     morph_points.append(m)
     m += step
-print morph_points
+print(morph_points)
 
 # file = 'htt_sm_morphing_debug_full.root'
 # folder = 'htt_mt_1_8TeV_ggH_morph'
@@ -35,7 +37,7 @@ ROOT.gDirectory.cd(folder)
 donescale = False
 
 for p in morph_points:
-    print '%g' % p
+    print('%g' % p)
 
     hmorph = ROOT.gDirectory.Get('morph_point_%g' % p)
     hmorph.Scale(1, 'width')

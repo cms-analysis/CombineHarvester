@@ -1,8 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import CombineHarvester.CombineTools.plotting as plot
 import argparse
 import json
+from six.moves import range
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -60,8 +63,8 @@ for padx in pads:
     plot.Set(padx, Tickx=1, Ticky=1)
     if args.pad_style is not None:
         settings = {x.split('=')[0]: eval(x.split('=')[1]) for x in args.pad_style.split(',')}
-        print 'Applying style options to the TPad(s):'
-        print settings
+        print('Applying style options to the TPad(s):')
+        print(settings)
         plot.Set(padx, **settings)
 
 graphs = []
