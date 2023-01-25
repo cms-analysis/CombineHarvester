@@ -31,15 +31,16 @@ This repository is a "top-level" CMSSW package, i.e. it should be located at `$C
   * **CombineHarvester/CombineTools**, which contains the CombineHarvester class and other parts of the core framework
   * **CombineHarvester/CombinePdfs**, which provides tools for building custom RooFit pdfs
 
-The CMSSW version that should be used with CombineHarvester is driven by the recommendation for the HiggsAnalysis/CombinedLimit package, which is also required. The latest instructions can be found [here](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation). The CombineHarvester framework is  compatible with the CMSSW 8_1_X and 10_2_X series releases. A new release area can be set up and compiled in the following steps:
+The CMSSW version that should be used with CombineHarvester is driven by the recommendation for the HiggsAnalysis/CombinedLimit package, which is also required. The latest instructions can be found [here](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation). The CombineHarvester framework is  compatible with the CMSSW 10_2_X and 11_3_X series releases. A new release area can be set up and compiled in the following steps:
 
-    export SCRAM_ARCH=slc6_amd64_gcc530
-    scram project CMSSW CMSSW_10_2_13
-    cd CMSSW_10_2_13/src
+    export SCRAM_ARCH=slc7_amd64_gcc900
+    scram project CMSSW CMSSW_11_3_4
+    cd CMSSW_11_3_4/src
     cmsenv
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
     # IMPORTANT: Checkout the recommended tag on the link above
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+    git checkout v2.0.0
     scram b
 
 If you are using this framework for the first time we recommend taking a look through some of the examples below which demonstrate the main features:
