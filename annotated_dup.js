@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "ch", "namespacech.html", "namespacech" ],
+    [ "python", "namespacepython.html", null ],
     [ "BkgInfo", "struct_bkg_info.html", "struct_bkg_info" ],
     [ "ColInfo", "struct_col_info.html", "struct_col_info" ],
     [ "convert_cpp_map_to_py_dict", "structconvert__cpp__map__to__py__dict.html", null ],

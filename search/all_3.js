@@ -1,16 +1,16 @@
 var searchData=
 [
-  ['data',['data',['../classch_1_1_combine_harvester.html#a463bab1fa1cc7098f35d82c78a10fb9d',1,'ch::CombineHarvester::data()'],['../classch_1_1_observation.html#ad49842c7287e9746b332068e2915c6e7',1,'ch::Observation::data()'],['../classch_1_1_process.html#a2e2e290f4c554cf76456180913188b7b',1,'ch::Process::data()']]],
-  ['data_5fd',['data_d',['../classch_1_1_systematic.html#ab0fc94bc1ba9eed9c747a6c1c40abba9',1,'ch::Systematic']]],
-  ['data_5fu',['data_u',['../classch_1_1_systematic.html#a95a30941a8b10c59b54a2d7bedd5c80e',1,'ch::Systematic']]],
-  ['deep',['deep',['../classch_1_1_combine_harvester.html#acbc55586d0cc9e8dc83f0396157d4b75',1,'ch::CombineHarvester']]],
-  ['delete_5fattribute',['delete_attribute',['../classch_1_1_object.html#afe324e1fe370f7804a30e84da0a67556',1,'ch::Object']]],
-  ['deprecated_20list',['Deprecated List',['../deprecated.html',1,'']]],
-  ['drawcmslogo',['DrawCMSLogo',['../_plotting_8h.html#ac9a2d10dbb78251b4757aba40f73fa68',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX, float relPosX, float relPosY, float relExtraDY):&#160;Plotting.h'],['../_plotting_8h.html#a99344cc5028c90aaafacea9ec5eab9d2',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX):&#160;Plotting.h'],['../namespaceplotting.html#a618c4283dd81de09c35d79ca2c297511',1,'plotting.DrawCMSLogo()']]],
-  ['drawcontours',['drawContours',['../_plotting___contours_8h.html#afcb8faa65f5a499825189a7cdd745b9e',1,'Plotting_Contours.h']]],
-  ['drawhorizontalline',['DrawHorizontalLine',['../_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98',1,'DrawHorizontalLine():&#160;Plotting.h'],['../namespaceplotting.html#a1102590a510e7c4921fba16694201a5b',1,'plotting.DrawHorizontalLine()']]],
-  ['drawlimitband',['DrawLimitBand',['../namespaceplotting.html#a46caef3f43ba70de6364c881776167d0',1,'plotting']]],
-  ['drawtitle',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'DrawTitle():&#160;Plotting.h'],['../namespaceplotting.html#af9e086c663eae77d30240bd2bdb692ce',1,'plotting.DrawTitle()']]],
-  ['drawverticalband',['DrawVerticalBand',['../namespaceplotting.html#ace67664dbba47adb388dfcb9ecee7bb8',1,'plotting']]],
-  ['drawverticalline',['DrawVerticalLine',['../namespaceplotting.html#a55c01267919e194bd1be83c273fb3a70',1,'plotting']]]
+  ['data_127',['data',['../classch_1_1_combine_harvester.html#a463bab1fa1cc7098f35d82c78a10fb9d',1,'ch::CombineHarvester::data()'],['../classch_1_1_observation.html#a6cfe0c1aaed17a7a1784f3a0b0c4ef2c',1,'ch::Observation::data()'],['../classch_1_1_process.html#a80aedc9343ad988ca0908b21367bd3f0',1,'ch::Process::data()']]],
+  ['data_5fd_128',['data_d',['../classch_1_1_systematic.html#a2932a2add1e82602cfea45af6ff2f953',1,'ch::Systematic']]],
+  ['data_5fu_129',['data_u',['../classch_1_1_systematic.html#ab3faed43e3b15b998560f271d4068182',1,'ch::Systematic']]],
+  ['deep_130',['deep',['../classch_1_1_combine_harvester.html#acbc55586d0cc9e8dc83f0396157d4b75',1,'ch::CombineHarvester']]],
+  ['delete_5fattribute_131',['delete_attribute',['../classch_1_1_object.html#afe324e1fe370f7804a30e84da0a67556',1,'ch::Object']]],
+  ['deprecated_20list_132',['Deprecated List',['../deprecated.html',1,'']]],
+  ['drawcmslogo_133',['DrawCMSLogo',['../_plotting_8h.html#ac9a2d10dbb78251b4757aba40f73fa68',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX, float relPosX, float relPosY, float relExtraDY):&#160;Plotting.h'],['../_plotting_8h.html#a99344cc5028c90aaafacea9ec5eab9d2',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX):&#160;Plotting.h'],['../namespacepython_1_1plotting.html#a2f37093b1828f3553adf6c59e9a86aa4',1,'python.plotting.DrawCMSLogo()']]],
+  ['drawcontours_134',['drawContours',['../_plotting___contours_8h.html#afcb8faa65f5a499825189a7cdd745b9e',1,'Plotting_Contours.h']]],
+  ['drawhorizontalline_135',['DrawHorizontalLine',['../_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98',1,'DrawHorizontalLine():&#160;Plotting.h'],['../namespacepython_1_1plotting.html#aa59088e7ab459b7d23bbc043dc6be97a',1,'python.plotting.DrawHorizontalLine()']]],
+  ['drawlimitband_136',['DrawLimitBand',['../namespacepython_1_1plotting.html#a2c4bc7ae087717eb744bacdb14207e63',1,'python::plotting']]],
+  ['drawtitle_137',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'DrawTitle():&#160;Plotting.h'],['../namespacepython_1_1plotting.html#ae8b7215feda9add6dfa50619eb441857',1,'python.plotting.DrawTitle()']]],
+  ['drawverticalband_138',['DrawVerticalBand',['../namespacepython_1_1plotting.html#a1958833c592d44945a72957e87089cbf',1,'python::plotting']]],
+  ['drawverticalline_139',['DrawVerticalLine',['../namespacepython_1_1plotting.html#a42fdb746289c7f95685cbc0182f140e1',1,'python::plotting']]]
 ];
