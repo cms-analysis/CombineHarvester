@@ -259,7 +259,7 @@ Applying a model at text2workspace step</h1>
 </div><!-- fragment --><p> The histograms containing the information on the different cross-sections and branching ratios are included as TH2Ds inside a file for a particular model. These are read in and turned into a RooHistFunc via a helper function called doHistFunc:</p>
 <div class="fragment"><div class="line">    <span class="keyword">def </span>doHistFunc(self, name, hist, varlist, interpolate=0):</div>
 <div class="line">        <span class="stringliteral">&quot;method to conveniently create a RooHistFunc from a TH1/TH2 input&quot;</span></div>
-<div class="line">        <span class="keywordflow">print</span> <span class="stringliteral">&#39;Doing histFunc %s...&#39;</span> % name</div>
+<div class="line">        print(<span class="stringliteral">&#39;Doing histFunc %s...&#39;</span> % name)</div>
 <div class="line">        <span class="keywordflow">if</span> self.dbg_file:</div>
 <div class="line">            self.dbg_file.WriteTObject(hist, name)</div>
 <div class="line">        <span class="keywordflow">if</span> self.mk_plots:</div>

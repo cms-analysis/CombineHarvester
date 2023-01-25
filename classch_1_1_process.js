@@ -22,6 +22,7 @@ var classch_1_1_process =
     [ "norm", "classch_1_1_process.html#a5e09f829f8bda2f3b241500fba58f985", null ],
     [ "set_observable", "classch_1_1_process.html#af8158fc6ada12e951a6c84504d05444f", null ],
     [ "observable", "classch_1_1_process.html#ab032210cfba1f6edc94218ed4a6411ed", null ],
+    [ "to_string", "classch_1_1_process.html#a71a3c904169a01cb6e79d0c342643ad8", null ],
     [ "operator<<", "classch_1_1_process.html#ad2d1aa710013a7a2eac899ed820a8f29", null ],
     [ "swap", "classch_1_1_process.html#acdd8a9af1254395822e5c250053397aa", null ]
 ];

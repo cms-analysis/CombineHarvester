@@ -31,6 +31,7 @@ var classch_1_1_systematic =
     [ "set_pdf", "classch_1_1_systematic.html#a15b322bf20273a650dbdaa4316eb013c", null ],
     [ "set_shapes", "classch_1_1_systematic.html#a400bca9bdb905d91e094ebd30a4aac7d", null ],
     [ "set_shapes", "classch_1_1_systematic.html#a76e80983e8424d7326ea34eac9d2b661", null ],
+    [ "to_string", "classch_1_1_systematic.html#a8d1cceb924cb5709221afef970778236", null ],
     [ "SwapUpAndDown", "classch_1_1_systematic.html#a838d5c14e2be2610010e7354eb706fae", null ],
     [ "operator<<", "classch_1_1_systematic.html#a02ece8cccb0b41cb2cb28145822875d8", null ],
     [ "swap", "classch_1_1_systematic.html#ae72c57591746155a32cd36adc350e92a", null ]

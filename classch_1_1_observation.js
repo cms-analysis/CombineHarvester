@@ -15,6 +15,7 @@ var classch_1_1_observation =
     [ "ShapeAsTH1F", "classch_1_1_observation.html#a35828ac184b5aad339c5a0254f3b179e", null ],
     [ "set_data", "classch_1_1_observation.html#a8069a2cfb78c84325ba023064930bd43", null ],
     [ "data", "classch_1_1_observation.html#a6cfe0c1aaed17a7a1784f3a0b0c4ef2c", null ],
+    [ "to_string", "classch_1_1_observation.html#a6fca2ff7fd0dada3c1254a54b81617c2", null ],
     [ "operator<<", "classch_1_1_observation.html#a987488ba4dcac7dee972febeeab0b648", null ],
     [ "swap", "classch_1_1_observation.html#a89be1a9e99b14efd3d528195c3f8eb88", null ]
 ];

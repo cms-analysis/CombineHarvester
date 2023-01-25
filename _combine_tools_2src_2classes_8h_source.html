@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
-<title>CombineHarvester: convert_cpp_set_to_py_list&lt; T &gt; Struct Template Reference</title>
+<title>CombineHarvester: CombineTools/src/classes.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,7 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('structconvert__cpp__set__to__py__list.html','');});
+$(document).ready(function(){initNavTree('_combine_tools_2src_2classes_8h_source.html','');});
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -102,66 +102,32 @@ $(document).ready(function(){initNavTree('structconvert__cpp__set__to__py__list.
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#pub-static-methods">Static Public Member Functions</a>  </div>
   <div class="headertitle">
-<div class="title">convert_cpp_set_to_py_list&lt; T &gt; Struct Template Reference</div>  </div>
+<div class="title">classes.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Convert a C++ set to a python list.  
- <a href="structconvert__cpp__set__to__py__list.html#details">More...</a></p>
-
-<p><code>#include &quot;<a class="el" href="_combine_harvester___python_8h_source.html">CombineHarvester/CombineTools/interface/CombineHarvester_Python.h</a>&quot;</code></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a7a593bbc004a8412de7d4978f7d2fc36"><td class="memItemLeft" align="right" valign="top">static PyObject *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structconvert__cpp__set__to__py__list.html#a7a593bbc004a8412de7d4978f7d2fc36">convert</a> (const std::set&lt; T &gt; &amp;in)</td></tr>
-<tr class="separator:a7a593bbc004a8412de7d4978f7d2fc36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T&gt;<br />
-struct convert_cpp_set_to_py_list&lt; T &gt;</h3>
-
-<p>Convert a C++ set to a python list. </p>
-
-<p class="definition">Definition at line <a class="el" href="_combine_harvester___python_8h_source.html#l00072">72</a> of file <a class="el" href="_combine_harvester___python_8h_source.html">CombineHarvester_Python.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a7a593bbc004a8412de7d4978f7d2fc36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a593bbc004a8412de7d4978f7d2fc36">&#9670;&nbsp;</a></span>convert()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static PyObject* <a class="el" href="structconvert__cpp__set__to__py__list.html">convert_cpp_set_to_py_list</a>&lt; T &gt;::convert </td>
-          <td>(</td>
-          <td class="paramtype">const std::set&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>in</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_combine_harvester___python_8h_source.html#l00073">73</a> of file <a class="el" href="_combine_harvester___python_8h_source.html">CombineHarvester_Python.h</a>.</p>
-
-</div>
-</div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>CombineTools/interface/<a class="el" href="_combine_harvester___python_8h_source.html">CombineHarvester_Python.h</a></li>
-</ul>
-</div><!-- contents -->
+<a href="_combine_tools_2src_2classes_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_combine_harvester_8h.html">CombineHarvester/CombineTools/interface/CombineHarvester.h</a>&quot;</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_observation_8h.html">CombineHarvester/CombineTools/interface/Observation.h</a>&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_parameter_8h.html">CombineHarvester/CombineTools/interface/Parameter.h</a>&quot;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_card_writer_8h.html">CombineHarvester/CombineTools/interface/CardWriter.h</a>&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_bin_by_bin_8h.html">CombineHarvester/CombineTools/interface/BinByBin.h</a>&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_auto_rebin_8h.html">CombineHarvester/CombineTools/interface/AutoRebin.h</a>&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_copy_tools_8h.html">CombineHarvester/CombineTools/interface/CopyTools.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_utilities_8h.html">CombineHarvester/CombineTools/interface/Utilities.h</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_validation_tools_no_j_s_o_n_8h.html">CombineHarvester/CombineTools/interface/ValidationToolsNoJSON.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_parse_combine_workspace_8h.html">CombineHarvester/CombineTools/interface/ParseCombineWorkspace.h</a>&quot;</span></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="a_validation_tools_no_j_s_o_n_8h_html"><div class="ttname"><a href="_validation_tools_no_j_s_o_n_8h.html">ValidationToolsNoJSON.h</a></div></div>
+<div class="ttc" id="a_parameter_8h_html"><div class="ttname"><a href="_parameter_8h.html">Parameter.h</a></div></div>
+<div class="ttc" id="a_card_writer_8h_html"><div class="ttname"><a href="_card_writer_8h.html">CardWriter.h</a></div></div>
+<div class="ttc" id="a_utilities_8h_html"><div class="ttname"><a href="_utilities_8h.html">Utilities.h</a></div></div>
+<div class="ttc" id="a_auto_rebin_8h_html"><div class="ttname"><a href="_auto_rebin_8h.html">AutoRebin.h</a></div></div>
+<div class="ttc" id="a_bin_by_bin_8h_html"><div class="ttname"><a href="_bin_by_bin_8h.html">BinByBin.h</a></div></div>
+<div class="ttc" id="a_copy_tools_8h_html"><div class="ttname"><a href="_copy_tools_8h.html">CopyTools.h</a></div></div>
+<div class="ttc" id="a_combine_harvester_8h_html"><div class="ttname"><a href="_combine_harvester_8h.html">CombineHarvester.h</a></div></div>
+<div class="ttc" id="a_observation_8h_html"><div class="ttname"><a href="_observation_8h.html">Observation.h</a></div></div>
+<div class="ttc" id="a_parse_combine_workspace_8h_html"><div class="ttname"><a href="_parse_combine_workspace_8h.html">ParseCombineWorkspace.h</a></div></div>
 <!-- HTML footer for doxygen 1.8.6-->
 <!-- start footer part -->
 </body>

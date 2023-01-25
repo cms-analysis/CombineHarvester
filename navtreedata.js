@@ -137,7 +137,6 @@ var NAVTREE =
       [ "Globals", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
-        [ "Variables", "globals_vars.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -147,10 +146,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_a_zh_systematics_8cc.html",
-"_parse_combine_workspace_8h_source.html",
-"classch_1_1_combine_harvester.html#a44064524ffe47ccac63ef8025a6f46dc",
-"classch_1_1syst_1_1_syst_map_func.html#aaf1800cf62304ece89a1217c53ab7e5c",
-"structch_1_1_hist_mapping.html#ac7903050d3b4015018857d32f6e9f94c"
+"_process_8cc.html#a8b80f6510601d33e773f90b1160d5463",
+"classch_1_1_combine_harvester.html#aaf7c0e7a370d1a43290815e818058735",
+"functions_l.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
