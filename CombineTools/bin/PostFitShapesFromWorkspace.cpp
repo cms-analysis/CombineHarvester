@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
       po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
       "Save signal- and background shapes added for all channels/categories")
     ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for")
-    ("merged-bins", po::value<vector<string>>(&merged_bins_)->multitoken(), "List of [label]=[regex] for merged bins");
+    ("merged-channels", po::value<vector<string>>(&merged_bins_)->multitoken(), "List of [label]=[regex] for merged channels");
 
 
   po::variables_map vm;

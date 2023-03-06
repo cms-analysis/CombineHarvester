@@ -1193,7 +1193,7 @@ def FixTopRange(pad, fix_y, fraction):
             print('Cannot adjust log-scale y-axis range if the minimum is zero!')
             return
         if fix_y <= 0:
-            print 'Cannot adjust log-scale y-axis range if the maximum is zero!'
+            print('Cannot adjust log-scale y-axis range if the maximum is zero!')
             return
         maxval = (math.log10(fix_y) - fraction * math.log10(ymin)) / \
             (1 - fraction)
