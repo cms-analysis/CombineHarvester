@@ -263,7 +263,7 @@ int main(int argc, char* argv[]) {
       "Merge these processes. Regex expression allowed. Format: NEWPROCESSNAME='expression'")
     ("skip-procs,s", po::value<vector<string>>(&skip_procs_)->multitoken(), 
       "Skip these processes. Regex expression allowed. Format: 'expression'. Can be called multiple times")
-    ("merged-bins", po::value<vector<string>>(&merged_bins_)->multitoken(), "List of [label]=[regex] for merged bins");
+    ("merged-channels", po::value<vector<string>>(&merged_bins_)->multitoken(), "List of [label]=[regex] for merged channels");
 
   // if (!no_sampling && !postfit) {
   //   throw logic_error(
@@ -426,7 +426,7 @@ int main(int argc, char* argv[]) {
     }
        
     
-  for (unsigned ib = 0; ib < bins.size(); ++ib) {
+    for (unsigned ib = 0; ib < bins.size(); ++ib) {
       std::string bin = bins[ib];
       std::string bin_pattern = bin_patterns[ib];
       pre_shapes[bin] = map<string, TH1F>();
@@ -486,8 +486,7 @@ int main(int argc, char* argv[]) {
     }
 
 
-    for (auto bin : bins) {
-      for (unsigned ib = 0; ib < bins.size(); ++ib) {
+    for (unsigned ib = 0; ib < bins.size(); ++ib) {
       std::string bin = bins[ib];
       std::string bin_pattern = bin_patterns[ib];
       post_shapes[bin] = map<string, TH1F>();
