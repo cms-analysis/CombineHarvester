@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import math
 from functools import partial
@@ -6,6 +8,7 @@ import CombineHarvester.CombineTools.plotting as plot
 import json
 import argparse
 import os.path
+from six.moves import range
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -34,14 +37,19 @@ def Eval(obj, x, params):
 
 def BuildScan(scan, param, files, color, yvals, ycut):
     graph = read(scan, param, files, ycut)
+    if graph.GetN() <= 1:
+        graph.Print()
+        raise RuntimeError('Attempting to build %s scan from TGraph with zero or one point (see above)' % files)
     bestfit = None
-    for i in xrange(graph.GetN()):
+    for i in range(graph.GetN()):
         if graph.GetY()[i] == 0.:
             bestfit = graph.GetX()[i]
     graph.SetMarkerColor(color)
     spline = ROOT.TSpline3("spline3", graph)
     global NAMECOUNTER
-    func = ROOT.TF1('splinefn'+str(NAMECOUNTER), partial(Eval, spline), graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
+    func_method = partial(Eval, spline)
+    func = ROOT.TF1('splinefn'+str(NAMECOUNTER), func_method, graph.GetX()[0], graph.GetX()[graph.GetN() - 1], 1)
+    func._method = func_method
     NAMECOUNTER += 1
     func.SetLineColor(color)
     func.SetLineWidth(3)
@@ -102,9 +110,9 @@ parser.add_argument('--logo', default='CMS')
 parser.add_argument('--logo-sub', default='Internal')
 args = parser.parse_args()
 
-print '--------------------------------------'
-print  args.output
-print '--------------------------------------'
+print('--------------------------------------')
+print(args.output)
+print('--------------------------------------')
 
 fixed_name = args.POI
 if args.translate is not None:
@@ -134,6 +142,7 @@ main_scan['graph'].Draw('AP')
 
 axishist = plot.GetAxisHist(pads[0])
 
+axishist.SetMinimum(min(main_scan['graph'].GetY()))
 axishist.SetMaximum(args.y_max)
 axishist.GetYaxis().SetTitle("- 2 #Delta ln L")
 axishist.GetXaxis().SetTitle("%s" % fixed_name)
@@ -216,12 +225,12 @@ if args.breakdown is not None:
     for i, br in enumerate(breakdown):
         if i < (len(breakdown) - 1):
             if (abs(v_hi[i+1]) > abs(v_hi[i])):
-                print 'ERROR SUBTRACTION IS NEGATIVE FOR %s HI' % br
+                print('ERROR SUBTRACTION IS NEGATIVE FOR %s HI' % br)
                 hi = 0.
             else:
                 hi = math.sqrt(v_hi[i]*v_hi[i] - v_hi[i+1]*v_hi[i+1])
             if (abs(v_lo[i+1]) > abs(v_lo[i])):
-                print 'ERROR SUBTRACTION IS NEGATIVE FOR %s LO' % br
+                print('ERROR SUBTRACTION IS NEGATIVE FOR %s LO' % br)
                 lo = 0.
             else:
                 lo = math.sqrt(v_lo[i]*v_lo[i] - v_lo[i+1]*v_lo[i+1])
@@ -243,8 +252,8 @@ if len(other_scans) > 0:
     legend_l = legend_l - len(other_scans) * 0.04
 legend = ROOT.TLegend(0.15, legend_l, 0.45, 0.78, '', 'NBNDC')
 if len(other_scans) >= 3:
-        legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
-        legend.SetNColumns(2)
+    legend = ROOT.TLegend(0.46, 0.83, 0.95, 0.93, '', 'NBNDC')
+    legend.SetNColumns(2)
 
 legend.AddEntry(main_scan['func'], args.main_label, 'L')
 for i, other in enumerate(other_scans):

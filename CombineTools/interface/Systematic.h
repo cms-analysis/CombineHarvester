@@ -17,7 +17,7 @@ class Systematic : public Object {
   Systematic(Systematic&& other);
   Systematic& operator=(Systematic other);
 
-  void set_name(std::string const& name) { name_ = name; }
+  void set_name(std::string const& name);
   std::string const& name() const { return name_; }
 
   void set_type(std::string const& type) { type_ = type; }
@@ -49,8 +49,15 @@ class Systematic : public Object {
 
   RooDataHist const* data_d() const { return data_d_; }
 
+  RooAbsReal const* pdf_u() const { return pdf_u_; }
+
+  RooAbsReal const* pdf_d() const { return pdf_d_; }
+
   void set_data(RooDataHist* data_u, RooDataHist* data_d,
                 RooDataHist const* nominal);
+
+  void set_pdf(RooAbsReal* pdf_u, RooAbsReal* pdf_d,
+                RooAbsReal const* nominal);
 
   void set_shapes(std::unique_ptr<TH1> shape_u, std::unique_ptr<TH1> shape_d,
                   TH1 const* nominal);
@@ -58,6 +65,7 @@ class Systematic : public Object {
   void set_shapes(TH1 const& shape_u, TH1 const& shape_d,
                   TH1 const& nominal);
 
+  std::string to_string() const;
   friend std::ostream& operator<< (std::ostream &out, Systematic const& val);
   static std::ostream& PrintHeader(std::ostream &out);
 
@@ -72,6 +80,8 @@ class Systematic : public Object {
   bool asymm_;
   std::unique_ptr<TH1> shape_u_;
   std::unique_ptr<TH1> shape_d_;
+  RooAbsReal * pdf_u_;
+  RooAbsReal * pdf_d_;
   RooDataHist * data_u_;
   RooDataHist * data_d_;
 

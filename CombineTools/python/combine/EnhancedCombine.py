@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import itertools
 import CombineHarvester.CombineTools.combine.utils as utils
 import json
@@ -5,6 +7,8 @@ import os
 import bisect
 from CombineHarvester.CombineTools.combine.opts import OPTS
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+import six
+from six.moves import zip
 
 
 def isfloat(value):
@@ -86,8 +90,8 @@ class EnhancedCombine(CombineToolBase):
         for i, generate in enumerate(self.args.generate):
             split_char = ':' if '::' in generate else ';'
             gen_header, gen_content = generate.split(split_char*2)
-            print gen_header
-            print gen_content
+            print(gen_header)
+            print(gen_content)
             gen_headers = gen_header.split(split_char)
             gen_entries = gen_content.split(split_char)
             key = tuple()
@@ -135,7 +139,7 @@ class EnhancedCombine(CombineToolBase):
                 # Figure out if the enclosing directory is a mass value
                 dirs = path.split('/')
                 if self.args.mass is None and len(dirs) >= 1 and isfloat(dirs[-1]):
-                    print 'Assuming card %s uses mass value %s' % (dc, dirs[-1])
+                    print('Assuming card %s uses mass value %s' % (dc, dirs[-1]))
                     dc_mass.append((path, file, dirs[-1]))
                 dc_no_mass.append((path, file))
             # If at least one mass value was inferred assume all of them are like this
@@ -159,13 +163,13 @@ class EnhancedCombine(CombineToolBase):
             with open(self.args.boundlist) as json_file:
                 bnd = json.load(json_file)
             bound_pars = list(bnd.keys())
-            print 'Found bounds for parameters %s' % ','.join(bound_pars)
+            print('Found bounds for parameters %s' % ','.join(bound_pars))
             # Fill a dictionaries of the bound info of the form:
             #  { 'PAR1' : [(MASS, LOWER, UPER), ...], ...}
             bound_vals = {}
             for par in bound_pars:
                 bound_vals[par] = list()
-                for mass, bounds in bnd[par].iteritems():
+                for mass, bounds in six.iteritems(bnd[par]):
                     bound_vals[par].append((float(mass), bounds[0], bounds[1]))
                 bound_vals[par].sort(key=lambda x: x[0])
             # find the subbed_vars entry containing the mass
@@ -240,8 +244,8 @@ class EnhancedCombine(CombineToolBase):
         if self.args.there:
             proto = 'pushd %(DIR)s; combine ' + (' '.join(self.passthru))+'; popd'
 
-        for it in itertools.product(*subbed_vars.values()):
-            keys = subbed_vars.keys()
+        for it in itertools.product(*list(subbed_vars.values())):
+            keys = list(subbed_vars.keys())
             dict = {}
             for i, k in enumerate(keys):
                 for tuple_i, tuple_ele in enumerate(k):

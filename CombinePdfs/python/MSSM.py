@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from HiggsAnalysis.CombinedLimit.PhysicsModel import *
 import CombineHarvester.CombineTools.plotting as plot
 import os
@@ -7,6 +9,8 @@ import itertools
 import pprint
 import sys
 from collections import defaultdict
+import six
+from six.moves import range
 
 class MSSMHiggsModel(PhysicsModel):
     def __init__(self):
@@ -95,18 +99,18 @@ class MSSMHiggsModel(PhysicsModel):
         for po in physOptions:
             if po.startswith('filePrefix='):
                 self.filePrefix = po.replace('filePrefix=', '')
-                print 'Set file prefix to: %s' % self.filePrefix
+                print('Set file prefix to: %s' % self.filePrefix)
             if po.startswith('modelFiles='):
                 cfgList = po.replace('modelFiles=', '').split(':')
                 for cfg in cfgList:
                     cfgSplit = cfg.split(',')
                     if len(cfgSplit) != 3:
-                        raise RuntimeError, 'Model file argument %s should be in the format ERA,FILE,VERSION' % cfg
+                        raise RuntimeError('Model file argument %s should be in the format ERA,FILE,VERSION' % cfg)
                     self.modelFiles[cfgSplit[0]] = (cfgSplit[1], int(cfgSplit[2]))
                 pprint.pprint(self.modelFiles)
             if po.startswith('debugFile='):
                 self.dbg_file = ROOT.TFile(po.replace('debugFile=', ''), 'RECREATE')
-                print 'Write debug output to: %s' % self.dbg_file.GetName()
+                print('Write debug output to: %s' % self.dbg_file.GetName())
             if po.startswith("makePlots"):
                 self.mk_plots = True
             if po.startswith("MSSM-NLO-Workspace="):
@@ -125,7 +129,7 @@ class MSSMHiggsModel(PhysicsModel):
     #! [part2]
     def doHistFunc(self, name, hist, varlist, interpolate=0):
         "method to conveniently create a RooHistFunc from a TH1/TH2 input"
-        print 'Doing histFunc %s...' % name
+        print('Doing histFunc %s...' % name)
         if self.dbg_file:
             self.dbg_file.WriteTObject(hist, name)
         if self.mk_plots:
@@ -162,13 +166,13 @@ class MSSMHiggsModel(PhysicsModel):
 
     def santanderMatching(self, h4f, h5f, mass = None):
         res = h4f.Clone()
-        for x in xrange(1, h4f.GetNbinsX() + 1):
-            for y in xrange(1, h4f.GetNbinsY() +1):
-               mh = h4f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               if mh <= 0:
-                    print 'santanderMatching: Have mh = %f at (%f,%f), using h4f value' % (mh,  h4f.GetXaxis().GetBinCenter(x),  h4f.GetYaxis().GetBinCenter(y))
+        for x in range(1, h4f.GetNbinsX() + 1):
+            for y in range(1, h4f.GetNbinsY() +1):
+                mh = h4f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
+                if mh <= 0:
+                    print('santanderMatching: Have mh = %f at (%f,%f), using h4f value' % (mh,  h4f.GetXaxis().GetBinCenter(x),  h4f.GetYaxis().GetBinCenter(y)))
                     res.SetBinContent(x, y, h4f.GetBinContent(x, y))
-               else:
+                else:
                     t = math.log(mh / 4.92) - 2.
                     fourflav = h4f.GetBinContent(x, y)
                     fiveflav = h5f.GetBinContent(x, y)
@@ -178,13 +182,13 @@ class MSSMHiggsModel(PhysicsModel):
 
     def santanderPdfUncert(self, h5f, mass = None):
         res = h5f.Clone()
-        for x in xrange(1, h5f.GetNbinsX() + 1):
-            for y in xrange(1, h5f.GetNbinsY() +1):
-               mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               if mh <= 0:
-                    print 'santanderPdfUncert: Have mh = %f at (%f,%f), using h5f value' % (mh,  h5f.GetXaxis().GetBinCenter(x),  h5f.GetYaxis().GetBinCenter(y))
+        for x in range(1, h5f.GetNbinsX() + 1):
+            for y in range(1, h5f.GetNbinsY() +1):
+                mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
+                if mh <= 0:
+                    print('santanderPdfUncert: Have mh = %f at (%f,%f), using h5f value' % (mh,  h5f.GetXaxis().GetBinCenter(x),  h5f.GetYaxis().GetBinCenter(y)))
                     res.SetBinContent(x, y, h5f.GetBinContent(x, y))
-               else:
+                else:
                     t = math.log(mh / 4.92) - 2.
                     fiveflav = h5f.GetBinContent(x, y)
                     sigma = (1. / (1. + t)) * (fiveflav)
@@ -196,13 +200,13 @@ class MSSMHiggsModel(PhysicsModel):
         uncertanties are given as absolute cross sections instead of the
         difference with respect to the nominal."""
         res = h5f.Clone()
-        for x in xrange(1, h5f.GetNbinsX() + 1):
-            for y in xrange(1, h5f.GetNbinsY() +1):
-               mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
-               if mh <= 0:
-                    print 'santanderPdfUncert2: Have mh = %f at (%f,%f), using h5f value' % (mh,  h5f.GetXaxis().GetBinCenter(x),  h5f.GetYaxis().GetBinCenter(y))
+        for x in range(1, h5f.GetNbinsX() + 1):
+            for y in range(1, h5f.GetNbinsY() +1):
+                mh = h5f.GetXaxis().GetBinCenter(x) if mass is None else mass.GetBinContent(x, y)
+                if mh <= 0:
+                    print('santanderPdfUncert2: Have mh = %f at (%f,%f), using h5f value' % (mh,  h5f.GetXaxis().GetBinCenter(x),  h5f.GetYaxis().GetBinCenter(y)))
                     res.SetBinContent(x, y, h5f.GetBinContent(x, y))
-               else:
+                else:
                     t = math.log(mh / 4.92) - 2.
                     fiveflav = abs(h5f.GetBinContent(x, y) - h5fnom.GetBinContent(x, y))
                     sigma = (1. / (1. + t)) * (fiveflav)
@@ -213,8 +217,8 @@ class MSSMHiggsModel(PhysicsModel):
         """Divides two TH2s taking care of exceptions like divide by zero
         and potentially doing more checks in the future"""
         res = h1.Clone()
-        for x in xrange(1, h1.GetNbinsX() + 1):
-            for y in xrange(1, h2.GetNbinsY() +1):
+        for x in range(1, h1.GetNbinsX() + 1):
+            for y in range(1, h2.GetNbinsY() +1):
                 val_h1 = h1.GetBinContent(x, y)
                 val_h2 = h2.GetBinContent(x, y)
                 # if val_h2 < 0.:
@@ -228,11 +232,11 @@ class MSSMHiggsModel(PhysicsModel):
                 #     val_h1 = val_h2 * 0.5
                 #     print ('>> Setting value to 0.5 * numerator: %g')
                 if val_h1 == 0. or val_h2 == 0.:
-                    print ('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
+                    print(('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
                            'with values: %g/%g, will set the kappa to 1.0 here' % (
                                 h1.GetName(), h2.GetName(), x, y, h1.GetXaxis().GetBinCenter(x),
                                 h1.GetYaxis().GetBinCenter(y), val_h1, val_h2
-                            ))
+                            )))
                     new_val = 1.
                 else:
                     new_val = val_h1 / val_h2
@@ -243,16 +247,16 @@ class MSSMHiggsModel(PhysicsModel):
         """Divides two TH2s taking care of exceptions like divide by zero
         and potentially doing more checks in the future"""
         res = h1.Clone()
-        for x in xrange(1, h1.GetNbinsX() + 1):
-            for y in xrange(1, h2.GetNbinsY() +1):
+        for x in range(1, h1.GetNbinsX() + 1):
+            for y in range(1, h2.GetNbinsY() +1):
                 val_h1 = h1.GetBinContent(x, y)
                 val_h2 = h2.GetBinContent(x, y)
                 if val_h1 == 0. or val_h2 == 0.:
-                    print ('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
+                    print(('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
                            'with values: %g/%g, will set the kappa to 1.0 here' % (
                                 h1.GetName(), h2.GetName(), x, y, h1.GetXaxis().GetBinCenter(x),
                                 h1.GetYaxis().GetBinCenter(y), val_h1, val_h2
-                            ))
+                            )))
                     new_val = 1.
                 else:
                     new_val = (val_h2 + coeff*val_h1) / val_h2
@@ -260,7 +264,7 @@ class MSSMHiggsModel(PhysicsModel):
         return res
 
     def add_ggH_at_NLO(self, name, X):
-	importstring = os.path.expandvars(self.ggHatNLO)+":w:gg{X}_{LC}_MSSM_frac" #import t,b,i fraction of xsec at NLO
+        importstring = os.path.expandvars(self.ggHatNLO)+":w:gg{X}_{LC}_MSSM_frac" #import t,b,i fraction of xsec at NLO
         for loopcontrib in ['t','b','i']:
             #self.modelBuilder.out._import(importstring.format(X=X, LC=loopcontrib))
             getattr(self.modelBuilder.out, 'import')(importstring.format(X=X, LC=loopcontrib), ROOT.RooFit.RecycleConflictNodes())
@@ -275,7 +279,7 @@ class MSSMHiggsModel(PhysicsModel):
         pars = [mA, tanb]
         doneMasses = False
 
-        for era, (file, version) in self.modelFiles.iteritems():
+        for era, (file, version) in six.iteritems(self.modelFiles):
             hd = self.h_dict[version]
             f = ROOT.TFile(self.filePrefix + file)
 
@@ -414,7 +418,7 @@ class MSSMHiggsModel(PhysicsModel):
                         if param in self.NUISANCES:
                             doParams.add(param)
         for param in doParams:
-            print 'Add nuisance parameter %s to datacard' % param
+            print('Add nuisance parameter %s to datacard' % param)
             nuisances.append((param,False, "param", [ "0", "1"], [] ) )
 
     def doParametersOfInterest(self):
@@ -428,7 +432,7 @@ class MSSMHiggsModel(PhysicsModel):
         self.sigNorms = { True:'x', False:'not_x' }
 
         self.modelBuilder.doSet('POI', 'r')
-        
+
         # We don't intend on actually floating these in any fits...
         self.modelBuilder.out.var('mA').setConstant(True)
         self.modelBuilder.out.var('tanb').setConstant(True)
@@ -471,21 +475,21 @@ class MSSMHiggsModel(PhysicsModel):
         if "_" in process:
             (P, D) = process.split("_")
         else:
-            raise RuntimeError, 'Expected signal process %s to be of the form PROD_DECAY' % process
+            raise RuntimeError('Expected signal process %s to be of the form PROD_DECAY' % process)
         E = None
         for era in self.ERAS:
             if era in bin:
-                if E: raise RuntimeError, "Validation Error: bin string %s contains multiple known energies" % bin
+                if E: raise RuntimeError("Validation Error: bin string %s contains multiple known energies" % bin)
                 E = era
         if not E:
-                raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
+            raise RuntimeError('Did not find a valid energy in bin string %s' % bin)
         return (P, D, E)
 
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
             (P, D, E) = self.getHiggsProdDecMode(bin, process)
             scaling = 'scaling_%s_%s_%s' % (P, D, E)
-            print 'Scaling %s/%s as %s' % (bin, process, scaling)
+            print('Scaling %s/%s as %s' % (bin, process, scaling))
             return scaling
         else:
             return 1

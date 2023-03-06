@@ -1,15 +1,21 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import re
+
 
 def split_vals(vals, fmt_spec=None):
     """Converts a string '1:3|1,4,5' into a list [1, 2, 3, 4, 5]"""
     res = set()
+    res_extra = list()
     first = vals.split(',')
     for f in first:
         second = re.split('[:|]', f)
         # print second
         if len(second) == 1:
             res.add(second[0])
+        if len(second) == 2:
+            res_extra.extend([second[0]] * int(second[1]))
         if len(second) == 3:
             x1 = float(second[0])
             ndigs = '0'
@@ -22,14 +28,15 @@ def split_vals(vals, fmt_spec=None):
             while x1 < float(second[1]) + 0.0001:
                 res.add(fmt % x1)
                 x1 += float(second[2])
-    return sorted([x for x in res], key=lambda x: float(x))
+    return sorted([x for x in res] + res_extra, key=lambda x: float(x))
 
 
 def list_from_workspace(file, workspace, set):
     """Create a list of strings from a RooWorkspace set"""
     res = []
     wsFile = ROOT.TFile(file)
-    argSet = wsFile.Get(workspace).set(set)
+    ws = wsFile.Get(workspace)
+    argSet = ws.set(set)
     it = argSet.createIterator()
     var = it.Next()
     while var:
@@ -45,10 +52,18 @@ def prefit_from_workspace(file, workspace, params, setPars=None):
     ws = wsFile.Get(workspace)
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.WARNING)
     if setPars is not None:
-      parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]
-      for par, val in parsToSet:
-        print 'Setting paramter %s to %g' % (par, float(val))
-        ws.var(par).setVal(float(val))
+        parsToSet = [tuple(x.split('=')) for x in setPars.split(',')]
+        allParams = ws.allVars()
+        allParams.add(ws.allCats())
+        for par, val in parsToSet:
+            tmp = allParams.find(par)
+            isrvar = tmp.IsA().InheritsFrom(ROOT.RooRealVar.Class())
+            if isrvar:
+                print('Setting parameter %s to %g' % (par, float(val)))
+                tmp.setVal(float(val))
+            else:
+                print('Setting index %s to %g' % (par, float(val)))
+                tmp.setIndex(int(val))
 
     for p in params:
         res[p] = {}
@@ -107,7 +122,7 @@ def get_singles_results(file, scanned, columns):
         for col in columns:
             allvals = [getattr(evt, col) for evt in t]
             if len(allvals) < (1 + len(scanned)*2):
-                print 'File %s did not contain a sufficient number of entries, skipping' % file
+                print('File %s did not contain a sufficient number of entries, skipping' % file)
                 return None
             res[param][col] = [
                 allvals[i * 2 + 1], allvals[0], allvals[i * 2 + 2]]
@@ -117,7 +132,7 @@ def get_singles_results(file, scanned, columns):
 def get_roofitresult(rfr, params, others):
     res = {}
     if rfr.covQual() != 3:
-        print 'Error: the covariance matrix in the RooFitResult is not accurate and cannot be used'
+        print('Error: the covariance matrix in the RooFitResult is not accurate and cannot be used')
         return None
     for i, param in enumerate(params):
         res[param] = {}
@@ -155,7 +170,7 @@ def get_none_results(file, params):
     t = f.Get("limit")
     t.GetEntry(0)
     for param in params:
-      res[param] = getattr(t, param)
+        res[param] = getattr(t, param)
     return res
 
 

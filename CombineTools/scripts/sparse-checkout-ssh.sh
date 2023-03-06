@@ -10,6 +10,6 @@ else
   git init
   git remote add origin git@github.com:cms-analysis/CombineHarvester.git
   git config core.sparsecheckout true; echo CombineTools/ >> .git/info/sparse-checkout
-  git pull origin master
+  git pull origin v2.0.0
   popd
 fi

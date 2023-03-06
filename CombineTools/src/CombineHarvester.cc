@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include "RooFormulaVar.h"
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Process.h"
 #include "CombineHarvester/CombineTools/interface/Systematic.h"
@@ -575,13 +576,18 @@ void CombineHarvester::LoadShapes(Systematic* entry,
   } else if (mapping.IsPdf()) {
     if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is RooDataHist");
     // Try and get this as RooAbsData first. If this doesn't work try pdf
+    
     RooDataHist* h =
-        dynamic_cast<RooDataHist*>(mapping.sys_ws->data(mapping.WorkspaceObj().c_str()));
+        (mapping.sys_ws) ? dynamic_cast<RooDataHist*>(mapping.sys_ws->data(mapping.WorkspaceObj().c_str())) : nullptr;
     RooDataHist* h_u =
-        dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_hi.c_str()));
+        (mapping.sys_ws) ? dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_hi.c_str())): nullptr;
     RooDataHist* h_d =
-        dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_lo.c_str()));
-    if (!h || !h_u || !h_d) {
+        (mapping.sys_ws) ? dynamic_cast<RooDataHist*>(mapping.sys_ws->data(p_s_lo.c_str())): nullptr;
+    RooAbsReal* pdf =   (mapping.sys_ws) ? mapping.sys_ws->function(mapping.WorkspaceObj().c_str()):nullptr;
+    RooAbsReal* pdf_u = (mapping.sys_ws) ? mapping.sys_ws->function(p_s_hi.c_str()):nullptr;
+    RooAbsReal* pdf_d = (mapping.sys_ws) ? mapping.sys_ws->function(p_s_lo.c_str()):nullptr;
+    
+    if ((!h || !h_u || !h_d) && (!pdf || !pdf_u || !pdf_d)) {
       if (flags_.at("allow-missing-shapes")) {
         LOGLINE(log(), "Warning, shape missing:");
         log() << Systematic::PrintHeader << *entry << "\n";
@@ -589,8 +595,10 @@ void CombineHarvester::LoadShapes(Systematic* entry,
         throw std::runtime_error(
             FNERROR("All shapes must be of type RooDataHist"));
       }
-    } else {
+    } else if (h && h_u && h_d){
       entry->set_data(h_u, h_d, h);
+    } else if (pdf && pdf_u &&pdf_d){
+      entry->set_pdf(pdf_u,pdf_d,pdf);
     }
   } else {
     throw std::runtime_error(
@@ -891,4 +899,36 @@ void CombineHarvester::AddExtArgValue(std::string const& name, double const& val
   param->set_err_u(0.);
   param->set_err_d(0.);
 }
+
+double CombineHarvester::getParFromWs(const std::string name){
+    double r=0.; bool found=false;
+      for (auto & item : wspaces_) { 
+          if (item.second.get()->var(name.c_str())) {
+              if (found) std::cout<<"WARNING-DUPLICATE: ALREADY FOUND "<<name<<"in an other ws"<<r<<std::endl;
+              r=item.second.get()->var(name.c_str())->getVal();
+              found=true;
+          }
+      }
+      return r; 
+  }
+
+void CombineHarvester::setParInWs(const std::string name,double value) {
+    for (auto & item : wspaces_) { 
+        if (item.second.get()->var(name.c_str())){
+            if ( item.second.get()->var(name.c_str())->getMin() >value) item.second.get()->var(name.c_str())->setMin(value-0.001);
+            if ( item.second.get()->var(name.c_str())->getMax() <value) item.second.get()->var(name.c_str())->setMax(value+0.001);
+            item.second.get()->var(name.c_str())->setVal(value); 
+        }
+    }
+  }
+
+void CombineHarvester::renameParInWs(const std::string& name, const std::string& newName, const std::string& wsName)
+{ 
+    for (auto & item : wspaces_) { 
+        if ( (wsName=="" or item.first == wsName ) and item.second.get()->var(name.c_str())){
+            item.second.get()->var(name.c_str())->SetName(newName.c_str());
+        }
+    }
+}
+
 }

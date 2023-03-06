@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 
 import CombineHarvester.CombineTools.combine.utils as utils
 from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+from six.moves import range
 
 
 class CovMatrix(CombineToolBase):
@@ -33,7 +36,7 @@ class CovMatrix(CombineToolBase):
             POIs = args.POIs.split(',')
         if args.POIs_from_set is not None:
             ws_in = args.POIs_from_set.split(':')
-            print ws_in
+            print(ws_in)
             POIs = list_from_workspace(ws_in[0], ws_in[1], ws_in[2])
         # res = { }
         # if len(args.input) == 1:
@@ -84,12 +87,12 @@ class CovMatrix(CombineToolBase):
         # print 'My correlation matrix:'
         # cor.Print()
         if compare:
-            print 'RooFitResult correlation matrix:'
+            print('RooFitResult correlation matrix:')
             fitres_cor.Print()
         # print 'My covariance matrix:'
         # cov.Print()
         if compare:
-            print 'RooFitResult covariance matrix:'
+            print('RooFitResult covariance matrix:')
             fitres_cov.Print()
         if args.output is not None:
             out = args.output.split(':')

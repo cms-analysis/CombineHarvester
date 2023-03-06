@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT
 import json
 import os
@@ -12,6 +14,7 @@ import CombineHarvester.CombineTools.plotting as plot
 # from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
+import six
 
 def isfloat(value):
     try:
@@ -56,9 +59,9 @@ class PrintFit(CombineToolBase):
             res = utils.get_none_results(self.args.input, POIs)
             for p in POIs:
                 val = res[p]
-                print '%-30s = %+.3f' % (p, val)
+                print('%-30s = %+.3f' % (p, val))
             if self.args.json is not None:
-                for key,val in res.iteritems():
+                for key,val in six.iteritems(res):
                     js_target[key] = { 'Val' : val }
                 with open(json_structure[0], 'w') as outfile:
                     json.dump(js, outfile, sort_keys=True, indent=4, separators=(',', ': '))
@@ -66,14 +69,14 @@ class PrintFit(CombineToolBase):
             res = utils.get_singles_results(self.args.input, POIs, POIs)
             for p in POIs:
                 val = res[p][p]
-                print '%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1])
+                print('%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1]))
         elif self.args.algo == 'fixed':
             res = utils.get_fixed_results(self.args.input, POIs)
-            print '%-30s   bestfit :   fixed' % ('')
+            print('%-30s   bestfit :   fixed' % (''))
             for p in POIs:
-                print '%-30s = %+.3f  :   %+.3f' % (p, res['bestfit'][p], res['fixedpoint'][p])
-            print '-' * 60
-            print '2*deltaNLL = %f, nPOIs = %i, p-value = %0.4f' % (2.*res['deltaNLL'], len(POIs), res['pvalue'])
+                print('%-30s = %+.3f  :   %+.3f' % (p, res['bestfit'][p], res['fixedpoint'][p]))
+            print('-' * 60)
+            print('2*deltaNLL = %f, nPOIs = %i, p-value = %0.4f' % (2.*res['deltaNLL'], len(POIs), res['pvalue']))
 
             # pprint.pprint(res)
 
@@ -109,7 +112,7 @@ class CollectLimits(CombineToolBase):
         limit_sets = defaultdict(list)
         for filename in self.args.input:
             if not plot.TFileIsGood(filename):
-                print '>> File %s is corrupt or incomplete, skipping' % filename
+                print('>> File %s is corrupt or incomplete, skipping' % filename)
                 continue
             if self.args.use_dirs is False:
                 limit_sets['default'].append(filename)
@@ -125,7 +128,7 @@ class CollectLimits(CombineToolBase):
                 limit_sets[label].append(filename)
         # print limit_sets
 
-        for label, filenames in limit_sets.iteritems():
+        for label, filenames in six.iteritems(limit_sets):
             js_out = {}
             for filename in filenames:
                 if plot.TFileIsGood(filename):
@@ -185,8 +188,8 @@ class CollectLimits(CombineToolBase):
 
             if self.args.toys:
                 for mh in js_out.keys():
-                    print "Expected bands will be taken from toys"
-                    print mh
+                    print("Expected bands will be taken from toys")
+                    print(mh)
                     limits = sorted(js_out[mh]['toys']['obs'])
                     #if mh == '160.0' or mh == '90.0' :
                     #    limits = [x for x in limits if x > 0.1]
@@ -194,7 +197,7 @@ class CollectLimits(CombineToolBase):
                     res = array('d', [0., 0., 0., 0., 0.])
                     empty = array('i', [0])
                     ROOT.TMath.Quantiles(len(limits), len(quantiles), array('d', limits), res, quantiles, True, empty, 1)
-                    print res
+                    print(res)
                     js_out[mh]['exp-2'] = res[0]
                     js_out[mh]['exp-1'] = res[1]
                     js_out[mh]['exp0'] = res[2]
@@ -207,7 +210,7 @@ class CollectLimits(CombineToolBase):
             if self.args.output is not None:
                 outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
                 with open(outname, 'w') as out_file:
-                    print '>> Writing output %s from files:' % outname
+                    print('>> Writing output %s from files:' % outname)
                     pprint.pprint(filenames, indent=2)
                     out_file.write(jsondata)
 
@@ -236,7 +239,7 @@ class CollectGoodnessOfFit(CombineToolBase):
         limit_sets = defaultdict(list)
         for filename in self.args.input:
             if not plot.TFileIsGood(filename):
-                print '>> File %s is corrupt or incomplete, skipping' % filename
+                print('>> File %s is corrupt or incomplete, skipping' % filename)
                 continue
             if not self.args.use_dirs:
                 if 'default' not in limit_sets:
@@ -256,7 +259,7 @@ class CollectGoodnessOfFit(CombineToolBase):
                 limit_sets[label][0].append(filename)
 
 
-        for label, (filenames, toyfiles) in limit_sets.iteritems():
+        for label, (filenames, toyfiles) in six.iteritems(limit_sets):
             js_out = {}
             for filename in filenames:
                 file = ROOT.TFile(filename)
@@ -271,11 +274,16 @@ class CollectGoodnessOfFit(CombineToolBase):
                     if branch.GetName() == 'quantileExpected':
                         adding_cat_branch = True
                 # print branches
+                failedToys=0
+                nEvts=tree.GetEntries()
                 for evt in tree:
                     mh = str(evt.mh)
                     if mh not in js_out:
                         js_out[mh] = {}
                     if evt.quantileExpected != -1:
+                        continue
+                    if evt.iToy > 0 and evt.limit<-0.5: #Exclude toys with negative test statistic
+                        failedToys+=1
                         continue
                     if branches:
                         for branch in branches:
@@ -293,6 +301,8 @@ class CollectGoodnessOfFit(CombineToolBase):
                             js_out[mh]['obs'] = [evt.limit]
                         else:
                             js_out[mh]['toy'].append(evt.limit)
+                if(failedToys>0):
+                  print('>> %i/%i toys have negative test statistic values, and are excluded. This might indicate a failure in the calculation within combine, or for the KS and AD tests, an undefined value in toys with zero events. Note that the resulting p-value could be biased.'%(failedToys, nEvts))
             for mh in js_out:
                 if all([entry in js_out[mh] for entry in ['toy','obs']]):
                     js_out[mh]["p"] = float(len([toy for toy in js_out[mh]['toy'] if toy >= js_out[mh]['obs'][0]]))/len(js_out[mh]['toy'])
@@ -307,6 +317,6 @@ class CollectGoodnessOfFit(CombineToolBase):
             if self.args.output is not None:
                 outname = self.args.output.replace('.json', '_%s.json' % label) if self.args.use_dirs else self.args.output
                 with open(outname, 'w') as out_file:
-                    print '>> Writing output %s from files:' % outname
+                    print('>> Writing output %s from files:' % outname)
                     pprint.pprint(filenames, indent=2)
                     out_file.write(jsondata)

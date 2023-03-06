@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import ROOT
 from CombineHarvester.CombineTools.plotting import *
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -12,7 +13,7 @@ pads = OnePad()
 graphs = StandardLimitsFromJSONFile('limits_mt.json')
 
 # Create an empty TH1 from the first TGraph to serve as the pad axis and frame
-axis = CreateAxisHist(graphs.values()[0])
+axis = CreateAxisHist(list(graphs.values())[0])
 axis.GetXaxis().SetTitle('m_{H} (GeV)')
 axis.GetYaxis().SetTitle('95% CL limit on #mu')
 pads[0].cd()

@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.ch as ch
 import ROOT as R
 import glob
+import six
 
 SCALES_XSEC_7TEV = {
   "^ggH(|_hww|_htt)$" : 15.13/15.31,
@@ -24,18 +27,18 @@ SCALES_BR = {
 }
 
 def DoScales(cmb, scales):
-  for key, val in scales.iteritems():
-    print 'Scaling ' + key + ' by ' + str(val)
-    cmb.cp().process_rgx([key]).ForEachProc(lambda x : x.set_rate(x.rate() * val))
-    cmb.cp().process_rgx([key]).PrintProcs()
+    for key, val in six.iteritems(scales):
+        print('Scaling ' + key + ' by ' + str(val))
+        cmb.cp().process_rgx([key]).ForEachProc(lambda x : x.set_rate(x.rate() * val))
+        cmb.cp().process_rgx([key]).PrintProcs()
 
 cmb = ch.CombineHarvester()
 
 for card in glob.glob('output/htt-YR2/125.1/htt*.txt'):
-  cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt")
+    cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt")
 
 for card in glob.glob('output/htt-YR2/125.1/vhtt*.txt'):
-  cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$BINID_$ERA.txt")
+    cmb.QuickParseDatacard(card, "$MASS/$ANALYSIS_$BINID_$ERA.txt")
 
 cmb_for_scaling = cmb.cp().analysis(['vhtt'], False)
 
