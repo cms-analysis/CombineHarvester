@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import ROOT
 import math
@@ -6,15 +8,16 @@ from functools import partial
 import Tools.Plotting.plotting as plot
 import os.path
 import bisect
+from six.moves import range
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
 h1 = ROOT.TH1F('h1', '', 100, 0, 10)
-for i in xrange(1, 101):
+for i in range(1, 101):
     h1.SetBinContent(i, float(i))
 h2 = ROOT.TH1F('h2', '', 10, 0, 10)
-for i in xrange(1, 11):
+for i in range(1, 11):
     h2.SetBinContent(i, float(i))
 
 h1.Print('range')
@@ -45,5 +48,5 @@ r1.setBins(10)
 x = 0.05
 while x <= 10.:
     r1.setVal(x)
-    print 'r1 = %f; rhf1 = %f; rhf2 = %f' % (x, rhf1.getVal(), rhf2.getVal())
+    print('r1 = %f; rhf1 = %f; rhf2 = %f' % (x, rhf1.getVal(), rhf2.getVal()))
     x += 0.1

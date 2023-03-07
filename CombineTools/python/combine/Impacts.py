@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import re
 import json
@@ -7,12 +9,7 @@ import ROOT
 import CombineHarvester.CombineTools.combine.utils as utils
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
-try:
-    from HiggsAnalysis.CombinedLimit.RooAddPdfFixer import FixAll
-except ImportError:
-    #compatibility for combine version earlier than https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/tree/2d172ef50fccdfbbc2a499ac8e47bba2d667b95a
-    #can delete in a few months
-    def FixAll(workspace): pass
+from six.moves import map
 
 
 class Impacts(CombineToolBase):
@@ -54,11 +51,11 @@ class Impacts(CombineToolBase):
         group.add_argument('--approx', default=None, choices=['hesse', 'robust'],
             help="""Calculate impacts using the covariance matrix instead""")
         group.add_argument('--noInitialFit', action='store_true', default=False, help="""Do not look for results from the initial Fit""")
-        
+
 
     def run_method(self):
         if self.args.allPars:
-            print 'Info: the behaviour of --allPars is now always enabled and the option will be removed in a future update'
+            print('Info: the behaviour of --allPars is now always enabled and the option will be removed in a future update')
         passthru = self.passthru
         mh = self.args.mass
         ws = self.args.datacard
@@ -81,7 +78,7 @@ class Impacts(CombineToolBase):
             poiList = self.args.redefineSignalPOIs.split(',')
         else:
             poiList = utils.list_from_workspace(ws, 'w', 'ModelConfig_POI')
-        print 'Have POIs: ' + str(poiList)
+        print('Have POIs: ' + str(poiList))
         poistr = ','.join(poiList)
 
         if self.args.approx == 'hesse' and self.args.doFits:
@@ -107,7 +104,7 @@ class Impacts(CombineToolBase):
         # Generate the initial fit(s)
         ################################################
         if self.args.doInitialFit and self.args.approx is not None:
-            print 'No --initialFit needed with --approx, use --output directly'
+            print('No --initialFit needed with --approx, use --output directly')
             sys.exit(0)
         if self.args.doInitialFit:
             if self.args.splitInitial:
@@ -148,7 +145,7 @@ class Impacts(CombineToolBase):
             elif self.args.splitInitial:
                 for poi in poiList:
                     initialRes.update(utils.get_singles_results(
-                    'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
+                        'higgsCombine_initialFit_%(name)s_POI_%(poi)s.MultiDimFit.mH%(mh)s.root' % vars(), [poi], poiList))
             else:
                 initialRes = utils.get_singles_results(
                     'higgsCombine_initialFit_%(name)s.MultiDimFit.mH%(mh)s.root' % vars(), poiList, poiList)
@@ -166,7 +163,7 @@ class Impacts(CombineToolBase):
 
         # Exclude some parameters
         if self.args.exclude is not None:
-            exclude = self.args.exclude.split(',')            
+            exclude = self.args.exclude.split(',')
             expExclude = []
             for exParam in exclude:
                 if 'rgx{' in exParam:
@@ -179,7 +176,7 @@ class Impacts(CombineToolBase):
                     expExclude.append(exParam)
             paramList = [x for x in paramList if x not in expExclude]
 
-        print 'Have parameters: ' + str(len(paramList))
+        print('Have parameters: ' + str(len(paramList)))
 
         prefit = utils.prefit_from_workspace(ws, 'w', paramList, self.args.setPhysicsModelParameters)
         res = {}
@@ -214,17 +211,17 @@ class Impacts(CombineToolBase):
                     continue
                 pres["fit"] = paramScanRes[param][param]
                 for p in poiList:
-                    pres.update({p: paramScanRes[param][p], 'impact_' + p: max(map(abs, (x - paramScanRes[
-                                param][p][1] for x in (paramScanRes[param][p][2], paramScanRes[param][p][0]))))})
+                    pres.update({p: paramScanRes[param][p], 'impact_' + p: max(list(map(abs, (x - paramScanRes[
+                                param][p][1] for x in (paramScanRes[param][p][2], paramScanRes[param][p][0])))))})
             res['params'].append(pres)
         self.flush_queue()
 
         if self.args.approx == 'hesse':
-                res['method'] = 'hesse'
+            res['method'] = 'hesse'
         elif self.args.approx == 'robust':
-                res['method'] = 'robust'
+            res['method'] = 'robust'
         else:
-                res['method'] = 'default'
+            res['method'] = 'default'
         jsondata = json.dumps(
             res, sort_keys=True, indent=2, separators=(',', ': '))
         # print jsondata
@@ -232,13 +229,12 @@ class Impacts(CombineToolBase):
             with open(self.args.output, 'w') as out_file:
                 out_file.write(jsondata)
         if len(missing) > 0:
-            print 'Missing inputs: ' + ','.join(missing)
+            print('Missing inputs: ' + ','.join(missing))
 
     def all_free_parameters(self, file, wsp, mc, pois):
         res = []
         wsFile = ROOT.TFile.Open(file)
         w = wsFile.Get(wsp)
-        FixAll(w)
         config = w.genobj(mc)
         pdfvars = config.GetPdf().getParameters(config.GetObservables())
         it = pdfvars.createIterator()

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
 import CombineHarvester.CombineTools.ch as ch
 import os
 
@@ -22,7 +24,7 @@ cb.AddObservations(   ['*'], ['htt'], ["8TeV"], ['th'],               cats      
 cb.AddProcesses(      ['*'], ['htt'], ["8TeV"], ['th'], procs['bkg'], cats, False  )
 cb.AddProcesses(     masses, ['htt'], ["8TeV"], ['th'], procs['sig'], cats, True   )
 
-print '>> Adding systematic uncertainties...'
+print('>> Adding systematic uncertainties...')
 
 cb.cp().process(procs['sig'] + procs['sim']).AddSyst(
     cb, 'lumi_$ERA', 'lnN', ch.SystMap()(1.026))
@@ -90,7 +92,7 @@ cb.cp().AddSyst(
       (['tHW'], 1.048))
 
 
-print '>> Extracting histograms from input root files...'
+print('>> Extracting histograms from input root files...')
 file = aux_shapes + 'CERN/htt_th.inputs-sm-8TeV.root'
 cb.cp().backgrounds().ExtractShapes(
     file, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
@@ -98,13 +100,13 @@ cb.cp().signals().ExtractShapes(
     file, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
 
 
-print '>> Generating bbb uncertainties...'
+print('>> Generating bbb uncertainties...')
 bbb = ch.BinByBinFactory()
 bbb.SetAddThreshold(0.1).SetFixNorm(True)
 bbb.AddBinByBin(cb.cp().process(['reducible']), cb)
 
 
-print '>> Setting standardised bin names...'
+print('>> Setting standardised bin names...')
 ch.SetStandardBinNames(cb)
 cb.PrintAll()
 
@@ -113,4 +115,4 @@ writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
 writer.SetVerbosity(1)
 writer.WriteCards('output/sm_cards/LIMITS', cb)
 
-print '>> Done!'
+print('>> Done!')

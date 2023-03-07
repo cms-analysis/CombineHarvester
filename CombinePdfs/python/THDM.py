@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from HiggsAnalysis.CombinedLimit.PhysicsModel import *
 import os
 import ROOT
@@ -5,6 +7,8 @@ import math
 import itertools
 import pprint
 import sys
+import six
+from six.moves import range
 
 class THDMHiggsModel(PhysicsModel):
     def __init__(self):
@@ -36,13 +40,13 @@ class THDMHiggsModel(PhysicsModel):
         for po in physOptions:
             if po.startswith('filePrefix='):
                 self.filePrefix = po.replace('filePrefix=', '')
-                print 'Set file prefix to: %s' % self.filePrefix
+                print('Set file prefix to: %s' % self.filePrefix)
             if po.startswith('modelFiles='):
                 cfgList = po.replace('modelFiles=', '').split(':')
                 for cfg in cfgList:
                     cfgSplit = cfg.split(',')
                     if len(cfgSplit) != 3:
-                        raise RuntimeError, 'Model file argument %s should be in the format ERA,FILE,VERSION' % cfg
+                        raise RuntimeError('Model file argument %s should be in the format ERA,FILE,VERSION' % cfg)
                     self.modelFiles[cfgSplit[0]] = (cfgSplit[1], int(cfgSplit[2]))
                 pprint.pprint(self.modelFiles)
 
@@ -58,7 +62,7 @@ class THDMHiggsModel(PhysicsModel):
 
     def doHistFunc(self, name, hist, varlist, interpolate=0):
         "method to conveniently create a RooHistFunc from a TH1/TH2 input"
-        print 'Doing histFunc %s...' % name
+        print('Doing histFunc %s...' % name)
         dh = ROOT.RooDataHist('dh_%s'%name, 'dh_%s'%name, ROOT.RooArgList(*varlist), ROOT.RooFit.Import(hist))
         hfunc = ROOT.RooHistFunc(name, name, ROOT.RooArgSet(*varlist), dh)
         hfunc.setInterpolationOrder(interpolate)
@@ -71,7 +75,7 @@ class THDMHiggsModel(PhysicsModel):
         if not param_var:
             self.modelBuilder.doVar('%s[0,-7,7]'%param)
             param_var = self.modelBuilder.out.var(param)
-        print param_var
+        print(param_var)
         hi = self.doHistFunc('%s_hi'%name, h_kappa_hi, varlist)
         lo = self.doHistFunc('%s_lo'%name, h_kappa_lo, varlist)
         asym = ROOT.AsymPow('systeff_%s'%name, '', lo, hi, param_var)
@@ -82,22 +86,22 @@ class THDMHiggsModel(PhysicsModel):
         """Divides two TH2s taking care of exceptions like divide by zero
         and potentially doing more checks in the future"""
         res = h1.Clone()
-        for x in xrange(1, h1.GetNbinsX() + 1):
-            for y in xrange(1, h2.GetNbinsY() +1):
+        for x in range(1, h1.GetNbinsX() + 1):
+            for y in range(1, h2.GetNbinsY() +1):
                 val_h1 = h1.GetBinContent(x, y)
                 val_h2 = h2.GetBinContent(x, y)
                 if val_h1 == 0. or val_h2 == 0.:
-                    print ('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
+                    print(('Warning: dividing histograms %s and %s at bin (%i,%i)=(%g, %g) '
                            'with values: %g/%g, will set the kappa to 1.0 here' % (
                                 h1.GetName(), h2.GetName(), x, y, h1.GetXaxis().GetBinCenter(x),
                                 h1.GetYaxis().GetBinCenter(y), val_h1, val_h2
-                            ))
+                            )))
                     new_val = 1.
                 else:
                     new_val = val_h1 / val_h2
                 res.SetBinContent(x, y, new_val)
         return res
-        
+
     def buildModel(self):
         # It's best not to set ranges for the model parameters here.
         # RooFit will create them automatically from the x- and y-axis
@@ -107,7 +111,7 @@ class THDMHiggsModel(PhysicsModel):
         pars = [mH, tanb]
         doneMasses = False
 
-        for era, (file, version) in self.modelFiles.iteritems():
+        for era, (file, version) in six.iteritems(self.modelFiles):
             hd = self.h_dict[version]
             f = ROOT.TFile(self.filePrefix + file)
 
@@ -176,24 +180,24 @@ class THDMHiggsModel(PhysicsModel):
         """Return a triple of (production, decay, energy)"""
         P = ''
         D = ''
-        if "_" in process: 
+        if "_" in process:
             (P, D) = process.split("_")
         else:
-            raise RuntimeError, 'Expected signal process %s to be of the form PROD_DECAY' % process
+            raise RuntimeError('Expected signal process %s to be of the form PROD_DECAY' % process)
         E = None
         for era in self.ERAS:
             if era in bin:
-                if E: raise RuntimeError, "Validation Error: bin string %s contains multiple known energies" % bin
+                if E: raise RuntimeError("Validation Error: bin string %s contains multiple known energies" % bin)
                 E = era
         if not E:
-                raise RuntimeError, 'Did not find a valid energy in bin string %s' % bin
+            raise RuntimeError('Did not find a valid energy in bin string %s' % bin)
         return (P, D, E)
-        
+
     def getYieldScale(self,bin,process):
         if self.DC.isSignal[process]:
             (P, D, E) = self.getHiggsProdDecMode(bin, process)
             scaling = 'scaling_%s_%s_%s' % (P, D, E)
-            print 'Scaling %s/%s as %s' % (bin, process, scaling)
+            print('Scaling %s/%s as %s' % (bin, process, scaling))
             return scaling
         else:
             return 1

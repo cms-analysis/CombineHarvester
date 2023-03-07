@@ -17,7 +17,7 @@ class Systematic : public Object {
   Systematic(Systematic&& other);
   Systematic& operator=(Systematic other);
 
-  void set_name(std::string const& name) { name_ = name; }
+  void set_name(std::string const& name);
   std::string const& name() const { return name_; }
 
   void set_type(std::string const& type) { type_ = type; }
@@ -65,6 +65,7 @@ class Systematic : public Object {
   void set_shapes(TH1 const& shape_u, TH1 const& shape_d,
                   TH1 const& nominal);
 
+  std::string to_string() const;
   friend std::ostream& operator<< (std::ostream &out, Systematic const& val);
   static std::ostream& PrintHeader(std::ostream &out);
 

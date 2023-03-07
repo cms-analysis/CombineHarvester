@@ -1,0 +1,4 @@
+<lcgdict>
+  <class name="ch::CMSHistFuncFactory" transient="true" />
+  <function name="ch::BuildRooMorphing" />
+</lcgdict>

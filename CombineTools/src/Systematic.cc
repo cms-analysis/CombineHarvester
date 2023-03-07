@@ -2,6 +2,34 @@
 #include <iostream>
 #include "boost/format.hpp"
 #include "CombineHarvester/CombineTools/interface/Logging.h"
+#include <regex>
+
+namespace {
+auto format_syst(const ch::Systematic& val) {
+  std::string value_fmt;
+  if (val.asymm()) {
+    value_fmt = (boost::format("%.4g/%.4g")
+      % val.value_d() % val.value_u()).str();
+  } else {
+    value_fmt = (boost::format("%.4g") % val.value_u()).str();
+  }
+  return boost::format("%-6s %-9s %-6s %-8s %-28s %-3i"
+    " %-16s %-4i %-45s %-8s %-13s %-4i %-4i")
+  % val.mass()
+  % val.analysis()
+  % val.era()
+  % val.channel()
+  % val.bin()
+  % val.bin_id()
+  % val.process()
+  % val.signal()
+  % val.name()
+  % val.type()
+  % value_fmt
+  % (bool(val.shape_d()) || bool(val.data_d()) || bool(val.pdf_d()))
+  % (bool(val.shape_u()) || bool(val.data_u()) || bool(val.pdf_u()));
+}
+}
 
 namespace ch {
 
@@ -22,6 +50,15 @@ Systematic::Systematic()
   }
 
 Systematic::~Systematic() { }
+
+void Systematic::set_name(std::string const& name) { 
+//test = std::regex_replace(test, std::regex("def"), "klm");
+    if (data_u_) data_u_->SetName(std::regex_replace(data_u_->GetName(),std::regex(name_),name).c_str());
+    if (data_d_) data_d_->SetName(std::regex_replace(data_d_->GetName(),std::regex(name_),name).c_str());
+    if (pdf_u_) pdf_u_->SetName(std::regex_replace(pdf_u_->GetName(),std::regex(name_),name).c_str());
+    if (pdf_d_) pdf_d_->SetName(std::regex_replace(pdf_d_->GetName(),std::regex(name_),name).c_str());
+    name_ = name; 
+}
 
 void swap(Systematic& first, Systematic& second) {
   using std::swap;
@@ -224,29 +261,12 @@ std::ostream& Systematic::PrintHeader(std::ostream &out) {
   return out;
 }
 
+std::string Systematic::to_string() const {
+  return ::format_syst(*this).str();
+}
+
 std::ostream& operator<< (std::ostream &out, Systematic const& val) {
-  std::string value_fmt;
-  if (val.asymm()) {
-    value_fmt = (boost::format("%.4g/%.4g")
-      % val.value_d() % val.value_u()).str();
-  } else {
-    value_fmt = (boost::format("%.4g") % val.value_u()).str();
-  }
-  out << boost::format("%-6s %-9s %-6s %-8s %-28s %-3i"
-    " %-16s %-4i %-45s %-8s %-13s %-4i %-4i")
-  % val.mass()
-  % val.analysis()
-  % val.era()
-  % val.channel()
-  % val.bin()
-  % val.bin_id()
-  % val.process()
-  % val.signal()
-  % val.name()
-  % val.type()
-  % value_fmt
-  % (bool(val.shape_d()) || bool(val.data_d()) || bool(val.pdf_d()))
-  % (bool(val.shape_u()) || bool(val.data_u()) || bool(val.pdf_u()));
+  out << ::format_syst(val);
   return out;
 }
 
