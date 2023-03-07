@@ -35,12 +35,12 @@ void ReverseBins(TH1F & h) {
 void load_shapes_and_yields(
   ch::CombineHarvester& cmb, 
   map<string, TH1F>& shape_container, 
-  vector<RooRealVar>& yield_container, 
   const std::string& proc,
+  vector<RooRealVar>* yield_container=nullptr, 
   const bool& skip_proc_errs=true,
   const bool& no_sampling=true,
   const int& samples=0,
-  RooFitResult* res=NULL,
+  RooFitResult* res=nullptr,
   const bool& verbose=false){
   TString helper;
   if (skip_proc_errs) {
@@ -51,11 +51,14 @@ void load_shapes_and_yields(
         no_sampling ? cmb.GetShapeWithUncertainty()
                    : cmb.GetShapeWithUncertainty(*res, samples);
   }
-  helper.Form("%s_%s", "yield" , proc.c_str());
-  yield_container.push_back(RooRealVar(helper, helper, 
-        cmb.GetRate()));
-  yield_container.back().setError(no_sampling ? cmb.GetUncertainty()
-                   : cmb.GetUncertainty(*res, samples));
+  // fill the yield container if there is one
+  if(yield_container != nullptr){
+    helper.Form("%s_%s", "yield" , proc.c_str());
+    yield_container->push_back(RooRealVar(helper, helper, 
+          cmb.GetRate()));
+    yield_container->back().setError(no_sampling ? cmb.GetUncertainty()
+                    : cmb.GetUncertainty(*res, samples));
+  }
 }
 
 void do_complete_set(
@@ -63,10 +66,10 @@ void do_complete_set(
   TFile& outfile,
   const std::string& output_prefix,
   map<string, TH1F>& shape_container,
-  vector<RooRealVar>& yield_container,
   const std::map<std::string, std::string>& merged_procs,
   const std::set<std::string> skip_procs,
   ch::CombineHarvester& cmb_card,
+  bool  save_yields=true,
   const std::string& datacard="",
   const bool& skip_proc_errs=true,
   const bool& factors=false,
@@ -83,14 +86,19 @@ void do_complete_set(
     // the number of bins in data
     // cmb_bin.SetPdfBins(cmb_bin.GetObservedShape().GetNbinsX());
 
+    // initialize container for yields if necessary
+    std::vector<RooRealVar>* yield_container = nullptr;
+    if(save_yields) yield_container = new std::vector<RooRealVar>();
     // Fill the data and process histograms
     shape_container["data_obs"] = cmb_bin.GetObservedShape();
-    yield_container.push_back(RooRealVar("yield_data_obs", "yield_data_obs", cmb_bin.GetObservedRate()));
-    yield_container.back().setError(TMath::Power(cmb_bin.GetObservedRate(), 0.5));
+    if(yield_container != nullptr){
+      yield_container->push_back(RooRealVar("yield_data_obs", "yield_data_obs", cmb_bin.GetObservedRate()));
+      yield_container->back().setError(TMath::Power(cmb_bin.GetObservedRate(), 0.5));
+    }
     for (auto proc : cmb_bin.process_set()) {
       if(skip_procs.find(proc) == skip_procs.end()){
         std::cout << ">> Doing " << output_prefix.c_str() << "," << proc << std::endl;
-        load_shapes_and_yields(cmb_bin.cp().process({proc}), shape_container, yield_container, proc, skip_proc_errs, no_sampling, samples, res, verbose);
+        load_shapes_and_yields(cmb_bin.cp().process({proc}), shape_container, proc, yield_container, skip_proc_errs, no_sampling, samples, res, verbose);
       }
       else{
         std::cout << ">> Skipping processes " << proc << std::endl;
@@ -105,30 +113,30 @@ void do_complete_set(
         std::cout << ">> WARNING: found no processes matching " << proc << std::endl;
         continue;
       }
-      load_shapes_and_yields(cmb_proc, shape_container, yield_container, proc, skip_proc_errs, no_sampling, samples, res, verbose);
+      load_shapes_and_yields(cmb_proc, shape_container, proc, yield_container, skip_proc_errs, no_sampling, samples, res, verbose);
     }
 
     // The fill total signal and total bkg hists
     std::cout << ">> Doing " << output_prefix.c_str() << "," << "TotalBkg" << std::endl;
-    load_shapes_and_yields(cmb_bin.cp().backgrounds(), shape_container, yield_container, "TotalBkg", false, no_sampling, samples, res, verbose);
+    load_shapes_and_yields(cmb_bin.cp().backgrounds(), shape_container, "TotalBkg", yield_container, false, no_sampling, samples, res, verbose);
 
     // Print out the relative uncert. on the bkg
-    if (factors) {
+    if (factors && yield_container != nullptr) {
       cout << boost::format("%-25s %-32s\n") % "Bin" %
                   "Total relative bkg uncert.";
       cout << string(58, '-') << "\n";
       
-      double rate = yield_container.back().getVal();
-      double err = yield_container.back().getError();
+      double rate = yield_container->back().getVal();
+      double err = yield_container->back().getError();
       cout << boost::format("%-25s %-10.5f") % output_prefix.c_str() %
                   (rate > 0. ? (err / rate) : 0.) << std::endl;
     }
     
     std::cout << ">> Doing " << output_prefix.c_str() << "," << "TotalSig" << std::endl;
-    load_shapes_and_yields(cmb_bin.cp().signals(), shape_container, yield_container, "TotalSig", false, no_sampling, samples, res, verbose);
+    load_shapes_and_yields(cmb_bin.cp().signals(), shape_container, "TotalSig", yield_container, false, no_sampling, samples, res, verbose);
     
     std::cout << ">> Doing " << output_prefix.c_str() << "," << "TotalProcs" << std::endl;
-    load_shapes_and_yields(cmb_bin, shape_container, yield_container, "TotalProcs", false, no_sampling, samples, res, verbose);
+    load_shapes_and_yields(cmb_bin, shape_container, "TotalProcs", yield_container, false, no_sampling, samples, res, verbose);
 
 
     if (datacard != "") {
@@ -148,9 +156,11 @@ void do_complete_set(
     for (auto& iter : shape_container) {
       ch::WriteToTFile(&(iter.second), &outfile, output_prefix + "/" + iter.first);
     }
-    for (auto& yield: yield_container){
-      helper.Form("%s/%s", output_prefix.c_str() , yield.GetName());
-      ch::WriteToTFile(&(yield), &outfile, helper.Data());
+    if(yield_container != nullptr){
+      for (auto& yield: *yield_container){
+        helper.Form("%s/%s", output_prefix.c_str() , yield.GetName());
+        ch::WriteToTFile(&(yield), &outfile, helper.Data());
+      }
     }
 }
 
@@ -175,6 +185,7 @@ int main(int argc, char* argv[]) {
   bool skip_prefit  = false;
   bool skip_proc_errs = false;
   bool total_shapes = false;
+  bool save_yields = false;
   bool verbose = false;
   std::vector<std::string> reverse_bins_;
   std::vector<std::string> bins_;
@@ -218,6 +229,9 @@ int main(int argc, char* argv[]) {
     ("no-sampling",
       po::value<bool>(&no_sampling)->default_value(no_sampling)->implicit_value(true),
       "Do not use the cov. matrix sampling method for the post-fit uncertainty")
+    ("save-yields,y",
+      po::value<bool>(&save_yields)->default_value(save_yields)->implicit_value(true),
+      "Save process yields in addition to the shapes. This will generate RooRealVar objects with the yield as value and the (sampled) uncertainties as error")
     ("samples",
       po::value<unsigned>(&samples)->default_value(samples),
       "Number of samples to make in each evaluate call")
@@ -393,26 +407,23 @@ int main(int argc, char* argv[]) {
   // We can always do the prefit version,
   // Loop through the bins writing the shapes to the output file
   map<string, map<string, TH1F>> pre_shapes;
-  map<string, vector<RooRealVar>> pre_yields;
   TString helper;
   if (!skip_prefit) {
     if(total_shapes){
       pre_shapes["total"] = map<string, TH1F>();
-      pre_yields["total"] = vector<RooRealVar>();
-      do_complete_set(cmb, outfile, "total_prefit", pre_shapes["total"], pre_yields["total"], merged_procs, skip_procs, cmb_card, datacard, skip_proc_errs, factors);
+      do_complete_set(cmb, outfile, "total_prefit", pre_shapes["total"], merged_procs, skip_procs, cmb_card, save_yields, datacard, skip_proc_errs, factors);
     }
     for (auto bin : bins) {
       pre_shapes[bin] = map<string, TH1F>();
-      pre_yields[bin] = vector<RooRealVar>();
       do_complete_set(
         cmb.cp().bin({bin}), 
         outfile, 
         bin+"_prefit", 
         pre_shapes[bin], 
-        pre_yields[bin], 
         merged_procs,
         skip_procs,
-        cmb_card.cp().bin({bin}), 
+        cmb_card.cp().bin({bin}),
+        save_yields,
         datacard, 
         skip_proc_errs,
         factors, 
@@ -430,7 +441,6 @@ int main(int argc, char* argv[]) {
     // Calculate the post-fit fractional background uncertainty in each bin
 
     map<string, map<string, TH1F>> post_shapes;
-    map<string, vector<RooRealVar>> post_yields;
     map<string, TH2F> post_yield_cov;
     map<string, TH2F> post_yield_cor;
 
@@ -439,17 +449,16 @@ int main(int argc, char* argv[]) {
 
 
     if(total_shapes){
-      post_yields["total"] = vector<RooRealVar>();
       post_shapes["total"] = map<string, TH1F>();
       do_complete_set(
         cmb,
         outfile, 
         "total_postfit", 
         post_shapes["total"], 
-        post_yields["total"], 
         merged_procs,
         skip_procs,
         cmb_card, 
+        save_yields, 
         datacard, 
         skip_proc_errs, 
         factors,
@@ -462,7 +471,6 @@ int main(int argc, char* argv[]) {
 
 
     for (auto bin : bins) {
-      post_yields[bin] = vector<RooRealVar>();
       post_shapes[bin] = map<string, TH1F>();
       auto cmb_bin = cmb.cp().bin({bin});
       do_complete_set(
@@ -470,10 +478,10 @@ int main(int argc, char* argv[]) {
         outfile, 
         bin+"_postfit", 
         post_shapes[bin], 
-        post_yields[bin], 
         merged_procs,
         skip_procs,
         cmb_card.cp().bin({bin}), 
+        save_yields,
         datacard, 
         skip_proc_errs, 
         factors,
