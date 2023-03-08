@@ -128,20 +128,23 @@ TH1F CombineHarvester::GetShapeWithUncertainty() {
 
 TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const* fit,
                                                unsigned n_samples,
-                                               const bool& verbose) {
-  return GetShapeWithUncertainty(*fit, n_samples, verbose);
+                                               const bool& verbose,
+                                               const float& fraction_threshold) {
+  return GetShapeWithUncertainty(*fit, n_samples, verbose, fraction_threshold);
 }
 
 TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
                                                unsigned n_samples, 
-                                               const bool& verbose) 
+                                               const bool& verbose,
+                                               const float& fraction_threshold
+                                               ) 
 {
   auto lookup = GenerateProcSystMap();
   TH1F shape = GetShapeInternal(lookup);
   std::vector<std::string> full_rand_shape_summary;
   for (int i = 1; i <= shape.GetNbinsX(); ++i) {
     shape.SetBinError(i, 0.0);
-    full_rand_shape_summary.push_back("");
+    if (verbose) full_rand_shape_summary.push_back("");
   }
   // Create a backup copy of the current parameter values
   auto backup = GetParameters();
@@ -162,25 +165,26 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
   }
 
   TString tmp;
-  
+  std::string rand_shape_summary = "";
   // Main loop through n_samples
   for (unsigned i = 0; i < n_samples; ++i) {
     // Randomise and update values
     fit.randomizePars();
-    std::string rand_shape_summary = "";
     for (int n = 0; n < n_pars; ++n) {
       if (p_vec[n] && !p_vec[n]->frozen()) {
         p_vec[n]->set_val(r_vec[n]->getVal());
-        tmp.Form("setting parameter '%s' to %f\n", p_vec[n]->name().c_str(), r_vec[n]->getVal());
-        // std::cout << tmp.Data();
-        rand_shape_summary = tmp.Data();
-        // std::cout << rand_shape_summary.c_str() << std::endl;
-        TH1F rand_shape = this->GetShapeInternal(lookup);
-        for (int j = 1; j <= rand_shape.GetNbinsX(); ++j) {
-          tmp.Form("\tBin Content %i: %f\n", j, rand_shape.GetBinContent(j));
+        if(verbose){
+          tmp.Form("setting parameter '%s' to %f\n", p_vec[n]->name().c_str(), r_vec[n]->getVal());
           // std::cout << tmp.Data();
-          full_rand_shape_summary.at(j-1) = rand_shape_summary;
-          full_rand_shape_summary.at(j-1) += tmp.Data();
+          rand_shape_summary = tmp.Data();
+          // std::cout << rand_shape_summary.c_str() << std::endl;
+          TH1F rand_shape = this->GetShapeInternal(lookup);
+          for (int j = 1; j <= rand_shape.GetNbinsX(); ++j) {
+            tmp.Form("\tBin Content %i: %f\n", j, rand_shape.GetBinContent(j));
+            // std::cout << tmp.Data();
+            full_rand_shape_summary.at(j-1) = rand_shape_summary;
+            full_rand_shape_summary.at(j-1) += tmp.Data();
+          }
         }
       }
       // else if (!p_vec[n]) {
@@ -192,13 +196,15 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
       
       double err =
           std::fabs(rand_shape.GetBinContent(j) - shape.GetBinContent(j));
-      if (std::fabs(err/shape.GetBinContent(j)) >= 0.5 and verbose){
-        std::cout << "rel. error > 0.5 detected in bin " << j << " for toy " << i << std::endl;
-        std::cout << "nominal bin content (" << j << "):\t" << shape.GetBinContent(j) <<std::endl;
-        std::cout << "randomized bin content (" << j << "):\t" << rand_shape.GetBinContent(j) <<std::endl;
-        std::cout << "parameters: " << std::endl;
-        std::cout << "random shape evolution" << std::endl;
-        std::cout << full_rand_shape_summary.at(j-1).c_str() << std::endl;
+      if(verbose){
+        if (std::fabs(err/shape.GetBinContent(j)) >= fraction_threshold){
+          std::cout << "rel. error > " << fraction_threshold << " detected in bin " << j << " for toy " << i << std::endl;
+          std::cout << "nominal bin content (" << j << "):\t" << shape.GetBinContent(j) <<std::endl;
+          std::cout << "randomized bin content (" << j << "):\t" << rand_shape.GetBinContent(j) <<std::endl;
+          std::cout << "parameters: " << std::endl;
+          std::cout << "random shape evolution" << std::endl;
+          std::cout << full_rand_shape_summary.at(j-1).c_str() << std::endl;
+        }
       }
       shape.SetBinError(j, err*err + shape.GetBinError(j));
     }

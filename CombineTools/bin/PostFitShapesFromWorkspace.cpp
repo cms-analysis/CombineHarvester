@@ -49,7 +49,7 @@ void load_shapes_and_yields(
   } else {
     shape_container[proc] =
         no_sampling ? cmb.GetShapeWithUncertainty()
-                   : cmb.GetShapeWithUncertainty(*res, samples);
+                   : cmb.GetShapeWithUncertainty(*res, samples, verbose);
   }
   // fill the yield container if there is one
   if(yield_container != nullptr){
