@@ -21,6 +21,7 @@ from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 from six.moves import range
+import ctypes
 
 class ImpactsFromScans(CombineToolBase):
     description = 'Calculate nuisance parameter impacts'
@@ -115,7 +116,7 @@ class ImpactsFromScans(CombineToolBase):
         print('-----------------------------------------------------------')
         print('%-30s %-7s %-7s %-7s %-7s %-7s' % ('POI', 'Val', 'Sym', 'Hi', 'Lo', '(Hi-Lo)/(Hi+Lo)'))
         for i,p in enumerate(POIs):
-            cor[i][i] = ROOT.Double(1.) # diagonal correlation is 1
+            cor[i][i] = ctypes.c_double(1.) # diagonal correlation is 1
             d1 = res[p][p][1]
             d21 = res[p][p][2] - res[p][p][1]
             d10 = res[p][p][1] - res[p][p][0]
@@ -140,7 +141,7 @@ class ImpactsFromScans(CombineToolBase):
                 print('No ValidErrorLo, using d21')
                 covv = d21
             print('Chosen: %+.3f' % covv)
-            cov[i][i] = ROOT.Double(pow(covv,2.))
+            cov[i][i] = ctypes.c_double(pow(covv,2.))
 
             x1 = -1. * d10
             x2 = 0.
