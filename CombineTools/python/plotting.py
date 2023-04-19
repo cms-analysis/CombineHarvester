@@ -470,14 +470,14 @@ def CreateAxisHist(src, at_limits=True):
         x = ctypes.c_double(0.)
         y = ctypes.c_double(0.)
         src.GetPoint(0, x, y)
-        min = float(x)
-        max = float(x)
+        min = float(x.value)
+        max = float(x.value)
         for i in range(1, src.GetN()):
             src.GetPoint(i, x, y)
             if x < min:
-                min = float(x)
+                min = float(x.value)
             if x > max:
-                max = float(x)
+                max = float(x.value)
         result.GetXaxis().SetLimits(min, max)
     R.gPad = backup
     return result
