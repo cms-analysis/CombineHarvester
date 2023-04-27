@@ -7,6 +7,7 @@ import re
 import json
 import types
 import six
+import ctypes
 from six.moves import range
 
 COL_STORE = []
@@ -467,17 +468,17 @@ def CreateAxisHist(src, at_limits=True):
     if (at_limits):
         min = 0.
         max = 0.
-        x = R.Double(0.)
-        y = R.Double(0.)
+        x = ctypes.c_double(0.)
+        y = ctypes.c_double(0.)
         src.GetPoint(0, x, y)
-        min = float(x)
-        max = float(x)
+        min = float(x.value)
+        max = float(x.value)
         for i in range(1, src.GetN()):
             src.GetPoint(i, x, y)
             if x < min:
-                min = float(x)
+                min = float(x.value)
             if x > max:
-                max = float(x)
+                max = float(x.value)
         result.GetXaxis().SetLimits(min, max)
     R.gPad = backup
     return result
@@ -597,10 +598,10 @@ def RocCurveFrom1DHists(h_x, h_y, cut_is_greater_than):
     R.TH1.AddDirectory(False)
     x_den = h_x.Clone()
     x_num = h_x.Clone()
-    x_err = R.Double(0.)
+    x_err = ctypes.c_double(0.)
     x_int = h_x.IntegralAndError(0, h_x.GetNbinsX() + 1, x_err)
     for i in range(1, h_x.GetNbinsX() + 1):
-        x_part_err = R.Double(0.)
+        x_part_err = ctypes.c_double(0.)
         x_part_int = h_x.IntegralAndError(i, h_x.GetNbinsX(
         ) + 1, x_part_err) if cut_is_greater_than else h_x.IntegralAndError(0, i, x_part_err)
         x_den.SetBinContent(i, x_int)
@@ -609,10 +610,10 @@ def RocCurveFrom1DHists(h_x, h_y, cut_is_greater_than):
         x_num.SetBinError(i, x_part_err)
     y_den = h_y.Clone()
     y_num = h_y.Clone()
-    y_err = R.Double(0.)
+    y_err = ctypes.c_double(0.)
     y_int = h_y.IntegralAndError(0, h_y.GetNbinsX() + 1, y_err)
     for i in range(1, h_y.GetNbinsX() + 1):
-        y_part_err = R.Double(0.)
+        y_part_err = ctypes.c_double(0.)
         y_part_int = h_y.IntegralAndError(i, h_y.GetNbinsX(
         ) + 1, y_part_err) if cut_is_greater_than else h_y.IntegralAndError(0, i, y_part_err)
         y_den.SetBinContent(i, y_int)

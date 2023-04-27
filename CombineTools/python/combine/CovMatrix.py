@@ -9,7 +9,7 @@ from CombineHarvester.CombineTools.combine.opts import OPTS
 
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 from six.moves import range
-
+import ctypes
 
 class CovMatrix(CombineToolBase):
     description = 'Build a fit covariance matrix from scan results'
@@ -52,8 +52,8 @@ class CovMatrix(CombineToolBase):
         # cor = ROOT.TMatrixDSym(len(POIs))
         # cov = ROOT.TMatrixDSym(len(POIs))
         # for i,p in enumerate(POIs):
-        # cor[i][i] = ROOT.Double(1.) # diagonal correlation is 1
-        # cov[i][i] = ROOT.Double(pow((res[p][p][2] - res[p][p][0])/2.,2.)) # symmetrized error
+        # cor[i][i] = ctypes.c_double(1.) # diagonal correlation is 1
+        # cov[i][i] = ctypes.c_double(pow((res[p][p][2] - res[p][p][0])/2.,2.)) # symmetrized error
         # for i,ip in enumerate(POIs):
         #   for j,jp in enumerate(POIs):
         #     if i == j: continue
@@ -80,9 +80,9 @@ class CovMatrix(CombineToolBase):
                 ipos.append(fitres.floatParsFinal().index(p))
             for i, ip in enumerate(POIs):
                 for j, jp in enumerate(POIs):
-                    fitres_cor[i][j] = ROOT.Double(
+                    fitres_cor[i][j] = ctypes.c_double(
                         fitres_cor_src[ipos[i]][ipos[j]])
-                    fitres_cov[i][j] = ROOT.Double(
+                    fitres_cov[i][j] = ctypes.c_double(
                         fitres_cov_src[ipos[i]][ipos[j]])
         # print 'My correlation matrix:'
         # cor.Print()
