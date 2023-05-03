@@ -134,8 +134,14 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
                                                unsigned n_samples) {
   auto lookup = GenerateProcSystMap();
   TH1F shape = GetShapeInternal(lookup);
-  for (int i = 1; i <= shape.GetNbinsX(); ++i) {
+  TH1F yield_sum;
+  shape.Copy(yield_sum);
+  int n_bins = shape.GetNbinsX();
+  std::vector<std::vector<float>> sample_yields_perbin(n_bins, std::vector<float>(n_samples));
+
+  for (int i = 1; i <= n_bins; ++i) {
     shape.SetBinError(i, 0.0);
+    yield_sum.SetBinContent(i, 0.0);
   }
   // Create a backup copy of the current parameter values
   auto backup = GetParameters();
@@ -161,15 +167,19 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
     for (int n = 0; n < n_pars; ++n) {
       if (p_vec[n]) p_vec[n]->set_val(r_vec[n]->getVal());
     }
-
     TH1F rand_shape = this->GetShapeInternal(lookup);
-    for (int i = 1; i <= shape.GetNbinsX(); ++i) {
-      double err =
-          std::fabs(rand_shape.GetBinContent(i) - shape.GetBinContent(i));
-      shape.SetBinError(i, err*err + shape.GetBinError(i));
+    for (int j = 1; j <= n_bins; ++j) {
+      double yield = rand_shape.GetBinContent(j);
+      sample_yields_perbin[j-1][i] = yield;
+      yield_sum.SetBinContent(j, yield_sum.GetBinContent(j) + yield);
     }
   }
-  for (int i = 1; i <= shape.GetNbinsX(); ++i) {
+  for (int i = 1; i <= n_bins; ++i) {
+    double yield_mean = yield_sum.GetBinContent(i)/double(n_samples);
+    for (auto x :sample_yields_perbin[i-1]){
+      double err = std::fabs(x - yield_mean);
+      shape.SetBinError(i, err*err + shape.GetBinError(i));
+    }
     shape.SetBinError(i, std::sqrt(shape.GetBinError(i)/double(n_samples)));
   }
   this->UpdateParameters(backup);
