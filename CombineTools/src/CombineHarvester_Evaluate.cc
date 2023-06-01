@@ -209,13 +209,14 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
     for (auto x :sample_yields_perbin[i-1]){
       double err = std::fabs(x - yield_mean);
       if(verbose){
-        if (std::fabs(err/shape.GetBinContent(j)) >= fraction_threshold){
-          std::cout << "rel. error > " << fraction_threshold << " detected in bin " << j << " for toy " << i << std::endl;
-          std::cout << "nominal bin content (" << j << "):\t" << shape.GetBinContent(j) <<std::endl;
-          std::cout << "randomized bin content (" << j << "):\t" << rand_shape.GetBinContent(j) <<std::endl;
+        auto orig_content = shape.GetBinContent(i);
+        if (std::fabs(err/orig_content) >= fraction_threshold){
+          std::cout << "rel. error > " << fraction_threshold << " detected in bin " << i << std::endl;
+          std::cout << "nominal bin content (" << i << "):\t" << orig_content <<std::endl;
+          std::cout << "randomized bin content (" << i << "):\t" << x <<std::endl;
           std::cout << "parameters: " << std::endl;
           std::cout << "random shape evolution" << std::endl;
-          std::cout << full_rand_shape_summary.at(j-1).c_str() << std::endl;
+          std::cout << full_rand_shape_summary.at(i-1).c_str() << std::endl;
         }
       }
       shape.SetBinError(i, err*err + shape.GetBinError(i));
