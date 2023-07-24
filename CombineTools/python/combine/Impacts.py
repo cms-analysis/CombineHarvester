@@ -23,7 +23,13 @@ class Impacts(CombineToolBase):
         CombineToolBase.attach_intercept_args(self, group)
         group.add_argument('-m', '--mass', required=True)
         group.add_argument('-d', '--datacard', required=True)
-        group.add_argument('--redefineSignalPOIs')
+        group.add_argument('--redefineSignalPOIs', help="""This option will be
+            forwarded to combine, and accepts arguments in the same X,Y,Z format. 
+            For models with multiple POIs, the impacts will be calculated for all
+            of them at the same time. It is important to specify the POI list with this
+            option, which must be included in the --doInitialFit, --doFits and 
+            --output stages. Note the ordering of POIs in the list must also be
+            identical in each step.""")
         group.add_argument('--setPhysicsModelParameters')
         group.add_argument('--setParameters')
         group.add_argument('--name', '-n', default='Test')
