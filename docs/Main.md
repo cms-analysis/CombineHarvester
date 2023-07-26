@@ -40,7 +40,7 @@ The CMSSW version that should be used with CombineHarvester is driven by the rec
     git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
     # IMPORTANT: Checkout the recommended tag on the link above
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
-    git checkout v2.0.0
+    git checkout v2.1.0
     scram b
 
 If you are using this framework for the first time we recommend taking a look through some of the examples below which demonstrate the main features:
