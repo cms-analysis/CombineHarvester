@@ -143,6 +143,11 @@ void CombineHarvester::AddSystVar(std::string const& name,
   auto sys = std::make_shared<Systematic>();
   sys->set_name(name);
   sys->set_type("param");
+  sys->set_analysis(analysis);
+  sys->set_era(era);
+  sys->set_channel(channel);
+  sys->set_bin_id(bin_id);
+  sys->set_mass(mass);
   systs_.push_back(sys);
 }
 
