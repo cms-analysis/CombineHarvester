@@ -25,13 +25,13 @@ class FastScan(CombineToolBase):
 
     def attach_args(self, group):
         CombineToolBase.attach_args(self, group)
-        group.add_argument('-w', '--workspace', required=True)
-        group.add_argument('-d', '--data')
-        group.add_argument('-f', '--fitres')
-        group.add_argument('--match')
-        group.add_argument('--no-match')
-        group.add_argument('-o', '--output', default='nll')
-        group.add_argument('-p', '--points', default=200, type=int)
+        group.add_argument('-w', '--workspace', required=True, help="Input ROOT file and workspace object name, in the format [file.root]:[name]. For workspaces produced by combine, the name is usually w.")
+        group.add_argument('-d', '--data', help="By default reads data_obs from the input workspace. Alternative can be specified as [file.root]:[dataset name] or [file.root]:[wsp name]:[dataset name], where in both cases [dataset name] identifies an object inheriting from RooAbsData")
+        group.add_argument('-f', '--fitres', help="Optionally supply a RooFitResult to update the initial parameter values, format [file.root]:[RooFitResult]")
+        group.add_argument('--match', help="Regular expression to only run for matching parameter names")
+        group.add_argument('--no-match', help="Regular expression to skip certain parameter names")
+        group.add_argument('-o', '--output', default='nll', help="Name of the output file, without the .pdf extension")
+        group.add_argument('-p', '--points', default=200, type=int, help="Number of NLL points to sample in each scan")
 
     def RooColIter(self, coll):
         it = coll.createIterator()
