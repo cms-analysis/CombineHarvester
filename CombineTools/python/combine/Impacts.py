@@ -163,9 +163,7 @@ class Impacts(CombineToolBase):
             paramList = named
         else:
             paramList = self.all_free_parameters(ws, 'w', 'ModelConfig', poiList)
-        # else:
-        #     paramList = utils.list_from_workspace(
-        #         ws, 'w', 'ModelConfig_NuisParams')
+        varList = utils.list_from_workspace(ws, 'w', 'variables')
 
         # Exclude some parameters
         if self.args.exclude is not None:
@@ -183,6 +181,24 @@ class Impacts(CombineToolBase):
             paramList = [x for x in paramList if x not in expExclude]
 
         print('Have parameters: ' + str(len(paramList)))
+
+        if self.args.setParameters is not None:
+            set_parameters = self.args.setParameters.split(',')
+            set_parameters_str = ''
+            for ind,setParam in enumerate(set_parameters):
+                if 'rgx{' in setParam:
+                    eqs_to = setParam.split("=")[-1]
+                    pattern = setParam.split("=")[0]
+                    pattern = pattern.replace("'rgx{","").replace("}'","")
+                    pattern = pattern.replace("rgx{","").replace("}","")
+                    set_parameters[ind] = ''
+                    for var in varList:
+                        if re.search(pattern, var):
+                            var_str = var + "=" + eqs_to 
+                            set_parameters_str += var_str + ","
+                else: 
+                    set_parameters_str += setParam + ","
+        self.args.setPhysicsModelParameters = set_parameters_str.rstrip(',')
 
         prefit = utils.prefit_from_workspace(ws, 'w', paramList, self.args.setPhysicsModelParameters)
         res = {}
