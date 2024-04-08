@@ -9,6 +9,7 @@ from CombineHarvester.CombineTools.combine.opts import OPTS
 from CombineHarvester.CombineTools.combine.CombineToolBase import CombineToolBase
 import six
 from six.moves import zip
+import pandas as pd
 
 
 def isfloat(value):
@@ -32,6 +33,8 @@ class EnhancedCombine(CombineToolBase):
             '-m', '--mass', help='Supports range strings for multiple masses, e.g. "120:130:5,140 will produce three combine calls with mass values of 120, 125, 130 and 140"')
         group.add_argument(
             '--points', help='For use with "-M MultiDimFit --algo grid" to split scan points into separate jobs')
+        group.add_argument(
+            '--fromfile', help='The file to read the points from, for use with "-M MultiDimFit --algo fixed"')
         group.add_argument(
             '--singlePoint', help='Supports range strings for multiple points to test, uses the same format as the --mass argument')
         group.add_argument(
@@ -87,6 +90,28 @@ class EnhancedCombine(CombineToolBase):
             seed_vals = utils.split_vals(self.args.seed)
             subbed_vars[('SEED',)] = [(sval,) for sval in seed_vals]
             self.passthru.extend(['-s', '%(SEED)s'])
+
+        # Handle the --fromfile option
+        if '--algo' in self.passthru:
+            algo = self.passthru[self.passthru.index('--algo')+1]
+        else:
+            algo = None
+        if self.args.fromfile is not None:
+            if not os.path.exists(self.args.fromfile):
+                print("Points file %s does not exist"%self.args.fromfile)
+                exit(1)
+        
+            # Generating points from file is only supported for --algo fixed
+            if algo != 'fixed':
+                print(f'--fromfile is only supported for --algo fixed, not {algo}')
+                exit(1)
+        
+            # Check file is a csv file and that the headers are in the model POIs
+            with open(self.args.fromfile) as f:
+                points_df = pd.read_csv(f)
+                if len(points_df) < int(self.args.points):
+                    print(f"Points file has fewer points ({len(points_df)}) than requested ({self.args.points})")
+                    exit(1)
 
         for i, generate in enumerate(self.args.generate):
             split_char = ':' if '::' in generate else ';'
@@ -210,14 +235,16 @@ class EnhancedCombine(CombineToolBase):
         if put_back_ranges:
             self.put_back_arg('setParameterRanges', '--setParameterRanges')
 
-        if self.args.points is not None:
+        if self.args.points is not None and algo != 'fixed':
             self.passthru.extend(['--points', self.args.points])
+        groupby = 1
         if (self.args.split_points is not None and
                 self.args.split_points > 0 and
-                self.args.points is not None):
+                self.args.points is not None
+                and self.args.fromfile is None):
             points = int(self.args.points)
             split = self.args.split_points
-            start = 0
+            start = 0          
             ranges = []
             while (start + (split - 1)) < points:
             #    filename = "higgsCombine"+self.args.name+".POINTS."+str(start)+"."+str(start+(split-1))+".MultiDimFit.mH"+str(self.args.mass)+".root"
@@ -238,6 +265,30 @@ class EnhancedCombine(CombineToolBase):
                 ['--firstPoint %(P_START)s --lastPoint %(P_END)s'])
             self.args.name += '.POINTS.%(P_START)s.%(P_END)s'
 
+        # Handle --fromfile option
+        if (self.args.split_points is not None and
+                self.args.split_points > 0 and
+                self.args.points is not None
+                and self.args.fromfile is not None):
+            points = int(self.args.points)
+            start = 0
+            groupby = self.args.split_points
+            ranges = []
+            while (start) < points:
+                ranges.append((start, start))
+                start += 1
+            if start < points:
+                ranges.append((start, points - 1))
+            points_array = []
+            for r in ranges:
+                points_dict = points_df.iloc[r[0]].to_dict()
+                points_str = ','.join(f'{k}={v}' for k, v in points_dict.items())
+                points_array.append((r[0], r[1], points_str))
+            subbed_vars[('P_START', 'P_END', 'fixedPointPOIs')] = points_array
+            self.passthru.extend(
+                ['--fixedPointPOIs %(fixedPointPOIs)s'])
+            self.args.name += '.POINTS.%(P_START)s.%(P_END)s'
+
         # can only put the name option back now because we might have modified
         # it from what the user specified
         self.put_back_arg('name', '-n')
@@ -245,11 +296,17 @@ class EnhancedCombine(CombineToolBase):
         if self.args.there:
             proto = 'pushd %(DIR)s; combine ' + (' '.join(self.passthru))+'; popd'
 
-        for it in itertools.product(*list(subbed_vars.values())):
+        job_str = ''
+        for idx, it in enumerate(itertools.product(*list(subbed_vars.values()))):
             keys = list(subbed_vars.keys())
             dict = {}
             for i, k in enumerate(keys):
                 for tuple_i, tuple_ele in enumerate(k):
                     dict[tuple_ele] = it[i][tuple_i]
-            self.job_queue.append(proto % dict)
+            job_str += proto % dict + '\n  '
+            if ((idx + 1) % groupby) == 0:
+                self.job_queue.append(job_str.strip())
+                job_str = ''
+        if job_str != '':
+            self.job_queue.append(job_str.strip())
         self.flush_queue()
