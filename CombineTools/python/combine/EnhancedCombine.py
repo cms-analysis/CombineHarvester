@@ -109,6 +109,10 @@ class EnhancedCombine(CombineToolBase):
             # Check file is a csv file and that the headers are in the model POIs
             with open(self.args.fromfile) as f:
                 points_df = pd.read_csv(f)
+                if not self.args.points:
+                    self.args.points = len(points_df)
+                if not self.args.split_points:
+                    self.args.split_points = len(points_df)
                 if len(points_df) < int(self.args.points):
                     print(f"Points file has fewer points ({len(points_df)}) than requested ({self.args.points})")
                     exit(1)
