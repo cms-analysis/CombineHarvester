@@ -1,8 +1,14 @@
 #include <map>
+#include <regex>
+
 #include "boost/program_options.hpp"
 #include "boost/format.hpp"
 #include "TSystem.h"
 #include "TH2F.h"
+#include "RooRealVar.h"
+#include "TMath.h"
+#include "TString.h"
+#include "RooMsgService.h"
 #include "CombineHarvester/CombineTools/interface/CombineHarvester.h"
 #include "CombineHarvester/CombineTools/interface/ParseCombineWorkspace.h"
 #include "CombineHarvester/CombineTools/interface/TFileIO.h"
@@ -26,6 +32,139 @@ void ReverseBins(TH1F & h) {
   // return h;
 }
 
+void load_shapes_and_yields(
+  ch::CombineHarvester& cmb, 
+  map<string, TH1F>& shape_container, 
+  const std::string& proc,
+  vector<RooRealVar>* yield_container=nullptr, 
+  const bool& skip_proc_errs=true,
+  const bool& no_sampling=true,
+  const int& samples=0,
+  RooFitResult* res=nullptr,
+  const bool& verbose=false){
+  TString helper;
+  if (skip_proc_errs) {
+    shape_container[proc] =
+        cmb.GetShape();
+  } else {
+    shape_container[proc] =
+        no_sampling ? cmb.GetShapeWithUncertainty()
+                   : cmb.GetShapeWithUncertainty(*res, samples, verbose);
+  }
+  // fill the yield container if there is one
+  if(yield_container != nullptr){
+    helper.Form("%s_%s", "yield" , proc.c_str());
+    yield_container->push_back(RooRealVar(helper, helper, 
+          cmb.GetRate()));
+    yield_container->back().setError(no_sampling ? cmb.GetUncertainty()
+                    : cmb.GetUncertainty(*res, samples));
+  }
+}
+
+void do_complete_set(
+  ch::CombineHarvester& cmb_bin,
+  TFile& outfile,
+  const std::string& output_prefix,
+  map<string, TH1F>& shape_container,
+  const std::map<std::string, std::string>& merged_procs,
+  const std::set<std::string> skip_procs,
+  ch::CombineHarvester& cmb_card,
+  bool  save_yields=true,
+  const std::string& datacard="",
+  const bool& skip_proc_errs=true,
+  const bool& factors=false,
+  const bool& reverse_bins=false,
+  const bool& no_sampling=true,
+  const int& samples=0,
+  RooFitResult* res=NULL,
+  const bool& verbose=false
+  ){
+    TString helper;
+  // ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
+    // This next line is a temporary fix for models with parameteric RooFit pdfs
+    // - we try and set the number of bins to evaluate the pdf to be the same as
+    // the number of bins in data
+    // cmb_bin.SetPdfBins(cmb_bin.GetObservedShape().GetNbinsX());
+
+    // initialize container for yields if necessary
+    std::vector<RooRealVar>* yield_container = nullptr;
+    if(save_yields) yield_container = new std::vector<RooRealVar>();
+    // Fill the data and process histograms
+    shape_container["data_obs"] = cmb_bin.GetObservedShape();
+    if(yield_container != nullptr){
+      yield_container->push_back(RooRealVar("yield_data_obs", "yield_data_obs", cmb_bin.GetObservedRate()));
+      yield_container->back().setError(TMath::Power(cmb_bin.GetObservedRate(), 0.5));
+    }
+    for (auto proc : cmb_bin.process_set()) {
+      if(skip_procs.find(proc) == skip_procs.end()){
+        std::cout << ">> Doing " << output_prefix.c_str() << "," << proc << std::endl;
+        load_shapes_and_yields(cmb_bin.cp().process({proc}), shape_container, proc, yield_container, skip_proc_errs, no_sampling, samples, res, verbose);
+      }
+      else{
+        std::cout << ">> Skipping processes " << proc << std::endl;
+      }
+    }
+    for (auto iter: merged_procs){
+      auto proc=iter.first;
+      std::cout << ">> Doing " << output_prefix.c_str() << "," << proc << std::endl;
+      auto proc_regex = iter.second;
+      auto cmb_proc = cmb_bin.cp().process({proc_regex});
+      if (cmb_proc.process_set().size() == 0){
+        std::cout << ">> WARNING: found no processes matching " << proc << std::endl;
+        continue;
+      }
+      load_shapes_and_yields(cmb_proc, shape_container, proc, yield_container, skip_proc_errs, no_sampling, samples, res, verbose);
+    }
+
+    // The fill total signal and total bkg hists
+    std::cout << ">> Doing " << output_prefix.c_str() << "," << "TotalBkg" << std::endl;
+    load_shapes_and_yields(cmb_bin.cp().backgrounds(), shape_container, "TotalBkg", yield_container, false, no_sampling, samples, res, verbose);
+
+    // Print out the relative uncert. on the bkg
+    if (factors && yield_container != nullptr) {
+      cout << boost::format("%-25s %-32s\n") % "Bin" %
+                  "Total relative bkg uncert.";
+      cout << string(58, '-') << "\n";
+      
+      double rate = yield_container->back().getVal();
+      double err = yield_container->back().getError();
+      cout << boost::format("%-25s %-10.5f") % output_prefix.c_str() %
+                  (rate > 0. ? (err / rate) : 0.) << std::endl;
+    }
+    
+    std::cout << ">> Doing " << output_prefix.c_str() << "," << "TotalSig" << std::endl;
+    load_shapes_and_yields(cmb_bin.cp().signals(), shape_container, "TotalSig", yield_container, false, no_sampling, samples, res, verbose);
+    
+    std::cout << ">> Doing " << output_prefix.c_str() << "," << "TotalProcs" << std::endl;
+    load_shapes_and_yields(cmb_bin, shape_container, "TotalProcs", yield_container, false, no_sampling, samples, res, verbose);
+
+
+    if (datacard != "") {
+      TH1F ref = cmb_card.GetObservedShape();
+      for (auto & it : shape_container) {
+        it.second = ch::RestoreBinning(it.second, ref);
+      }
+    }
+
+    if(reverse_bins){
+      for (auto it = shape_container.begin(); it != shape_container.end(); ++it) {
+        ReverseBins(it->second);
+      }
+    }
+    // Can write these straight into the output file
+    outfile.cd();
+    for (auto& iter : shape_container) {
+      ch::WriteToTFile(&(iter.second), &outfile, output_prefix + "/" + iter.first);
+    }
+    if(yield_container != nullptr){
+      for (auto& yield: *yield_container){
+        helper.Form("%s/%s", output_prefix.c_str() , yield.GetName());
+        ch::WriteToTFile(&(yield), &outfile, helper.Data());
+      }
+    }
+}
+
+
 int main(int argc, char* argv[]) {
   // Need this to read combine workspaces
   gSystem->Load("libHiggsAnalysisCombinedLimit");
@@ -46,7 +185,16 @@ int main(int argc, char* argv[]) {
   bool skip_prefit  = false;
   bool skip_proc_errs = false;
   bool total_shapes = false;
+  bool save_yields = false;
+  bool verbose = false;
   std::vector<std::string> reverse_bins_;
+  std::vector<std::string> bins_;
+  std::set<std::string> skip_procs;
+  std::vector<std::string> skip_procs_;
+  std::vector<std::string> input_merge_procs_;
+  std::map<std::string, std::string> merged_procs;
+
+  std::vector<std::string> merged_bins_;
 
   po::options_description help_config("Help");
   help_config.add_options()
@@ -82,6 +230,9 @@ int main(int argc, char* argv[]) {
     ("no-sampling",
       po::value<bool>(&no_sampling)->default_value(no_sampling)->implicit_value(true),
       "Do not use the cov. matrix sampling method for the post-fit uncertainty")
+    ("save-yields,y",
+      po::value<bool>(&save_yields)->default_value(save_yields)->implicit_value(true),
+      "Save process yields in addition to the shapes. This will generate RooRealVar objects with the yield as value and the (sampled) uncertainties as error")
     ("samples",
       po::value<unsigned>(&samples)->default_value(samples),
       "Number of samples to make in each evaluate call")
@@ -100,16 +251,29 @@ int main(int argc, char* argv[]) {
     ("skip-proc-errs",
       po::value<bool>(&skip_proc_errs)->default_value(skip_proc_errs)->implicit_value(true),
       "Skip evaluation of errors on individual processes")
+    ("verbose,v",
+      po::value<bool>(&verbose)->default_value(verbose)->implicit_value(true),
+      "Genererate additional output if uncertainties in a given bin are large")
     ("total-shapes",
       po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
       "Save signal- and background shapes added for all channels/categories")
-    ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for");
+    ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for")
+    ("bins", po::value<vector<string>>(&bins_)->multitoken(), "List of bins to produce shapes for (default: all bins")
+    ("merge-procs,p", po::value<vector<string>>(&input_merge_procs_)->multitoken(), 
+      "Merge these processes. Regex expression allowed. Format: NEWPROCESSNAME='expression'")
+    ("skip-procs,s", po::value<vector<string>>(&skip_procs_)->multitoken(), 
+      "Skip these processes. Regex expression allowed. Format: 'expression'. Can be called multiple times")
+    ("merged-channels", po::value<vector<string>>(&merged_bins_)->multitoken(), "List of [label]=[regex] for merged channels");
 
+  // if (!no_sampling && !postfit) {
+  //   throw logic_error(
+  //       "Can't sample the fit covariance matrix for pre-fit!");
+  // }
 
   po::variables_map vm;
 
   // First check if the user has set the "--help" or "-h" option, and if so
-  // just prin the usage information and quit
+  // just print the usage information and quit
   po::store(po::command_line_parser(argc, argv)
     .options(help_config).allow_unregistered().run(), vm);
   po::notify(vm);
@@ -140,35 +304,72 @@ int main(int argc, char* argv[]) {
   // Create CH instance and parse the workspace
   ch::CombineHarvester cmb;
   cmb.SetFlag("workspaces-use-clone", true);
+  cmb.SetFlag("filters-use-regex", true);
   ch::ParseCombineWorkspace(cmb, *ws, "ModelConfig", data, false);
-
+  RooMsgService::instance().setSilentMode(true);
   // Only evaluate in case parameters to freeze are provided
   if(! freeze_arg.empty())
   {
     vector<string> freeze_vec;
     boost::split(freeze_vec, freeze_arg, boost::is_any_of(","));
+    vector<string> parameters;
+    for (auto& par : cmb.GetParameters())
+    {
+      parameters.push_back(par.name());
+    }
     for (auto const& item : freeze_vec) {
       vector<string> parts;
       boost::split(parts, item, boost::is_any_of("="));
-      if (parts.size() == 1) {
-        ch::Parameter *par = cmb.GetParameter(parts[0]);
-        if (par) par->set_frozen(true);
-        else throw std::runtime_error(
-          FNERROR("Requested variable to freeze does not exist in workspace"));
-      } else {
-        if (parts.size() == 2) {
-          ch::Parameter *par = cmb.GetParameter(parts[0]);
-          if (par) {
-            par->set_val(boost::lexical_cast<double>(parts[1]));
+      auto current_expr = parts[0];
+
+      // check for regex syntax: rgx{regex}                                                                                                                                     
+      if (boost::starts_with(current_expr, "rgx{") && boost::ends_with(current_expr, "}")) {
+        bool matched = false;
+        
+        std::string reg_esp = current_expr.substr(4, current_expr.size()-5);
+        std::cout<<"interpreting "<<reg_esp<<" as regex "<<std::endl;
+        std::regex rgx( reg_esp, std::regex::ECMAScript);
+
+        
+        for (auto& parname: parameters) {
+          std::smatch match;
+          if (std::regex_match(parname, match, rgx)){
+            ch::Parameter *par = cmb.GetParameter(parname.c_str());
+            std::cout << "freezing parameter '" << parname.c_str() << "'" << std::endl;
+            matched = true;
+            if (parts.size() == 2) {
+              par->set_val(boost::lexical_cast<double>(parts[1]));
+            }
             par->set_frozen(true);
           }
-          else throw std::runtime_error(
-            FNERROR("Requested variable to freeze does not exist in workspace"));
         }
+        // if not match is found, throw runtime error
+        if(!matched){ 
+          throw std::runtime_error(
+          FNERROR("Requested variable to freeze does not exist in workspace"));
+        }
+      } else {
+        ch::Parameter *par = cmb.GetParameter(current_expr);
+        if (par) {
+          std::cout << "freezing parameter '" << par->name() << "'" << std::endl;
+          if (parts.size() == 2) {
+            par->set_val(boost::lexical_cast<double>(parts[1]));
+          }
+          par->set_frozen(true);
+        }
+        else throw std::runtime_error(
+            FNERROR("Requested variable to freeze does not exist in workspace"));
       }
     }
   }
   // cmb.GetParameter("r")->set_frozen(true);
+
+  // parse processes that are to be merged
+  for (auto& in: input_merge_procs_){
+    vector<string> parts;
+    boost::split(parts, in, boost::is_any_of("="));
+    merged_procs[parts[0]] = parts[1];
+  }
 
   ch::CombineHarvester cmb_card;
   cmb_card.SetFlag("workspaces-use-clone",true);
@@ -185,115 +386,64 @@ int main(int argc, char* argv[]) {
     }
     return no_shape;
   });
+  vector<string> bins;
+  if (bins_.size() == 0)
+  {
+    bins = ch::Set2Vec(cmb.cp().bin_set());
+  }
+  else{
+    bins = bins_;
+  }
 
-  auto bins = cmb.cp().bin_set();
+  // parse processes
+  std::set<std::string> process_set;
+  for(auto& expr: skip_procs_){
+    process_set = cmb.cp().process({expr}).process_set();
+    skip_procs.insert(process_set.begin(), process_set.end());
+  }
+
+  auto bin_patterns = bins;
+  for (unsigned i = 0; i < merged_bins_.size(); ++i) {
+    vector<string> parts;
+    boost::split(parts, merged_bins_[i], boost::is_any_of("="));
+    if (parts.size() == 2) {
+      bins.push_back(parts[0]);
+      bin_patterns.push_back(parts[1]);
+    }
+  }
 
   TFile outfile(output.c_str(), "RECREATE");
   TH1::AddDirectory(false);
 
-  // Create a map of maps for storing histograms in the form:
-  //   pre_shapes[<bin>][<process>]
-  map<string, map<string, TH1F>> pre_shapes;
-
-  // Also create a simple map for storing total histograms, summed 
-  // over all bins, in the form:
-  //   pre_shapes_tot[<process>]
-  map<string, TH1F> pre_shapes_tot;
-
   // We can always do the prefit version,
   // Loop through the bins writing the shapes to the output file
+  map<string, map<string, TH1F>> pre_shapes;
+  TString helper;
   if (!skip_prefit) {
     if(total_shapes){
-      pre_shapes_tot["data_obs"] = cmb.GetObservedShape();
-      // Then fill total signal and total bkg hists
-      std::cout << ">> Doing prefit: TotalBkg" << std::endl;
-      pre_shapes_tot["TotalBkg"] =
-          cmb.cp().backgrounds().GetShapeWithUncertainty();
-      std::cout << ">> Doing prefit: TotalSig" << std::endl;
-      pre_shapes_tot["TotalSig"] =
-          cmb.cp().signals().GetShapeWithUncertainty();
-      std::cout << ">> Doing prefit: TotalProcs" << std::endl;
-      pre_shapes_tot["TotalProcs"] =
-          cmb.cp().GetShapeWithUncertainty();
-
-      if (datacard != "") {
-        TH1F ref = cmb_card.cp().GetObservedShape();
-        for (auto & it : pre_shapes_tot) {
-          it.second = ch::RestoreBinning(it.second, ref);
-        }
-      }
-
-      // Can write these straight into the output file
-      outfile.cd();
-      for (auto& iter : pre_shapes_tot) {
-        ch::WriteToTFile(&(iter.second), &outfile, "prefit/" + iter.first);
-      }
+      pre_shapes["total"] = map<string, TH1F>();
+      do_complete_set(cmb, outfile, "total_prefit", pre_shapes["total"], merged_procs, skip_procs, cmb_card, save_yields, datacard, skip_proc_errs, factors);
     }
-    for (auto bin : bins) {
-      ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
-      // This next line is a temporary fix for models with parameteric RooFit pdfs
-      // - we try and set the number of bins to evaluate the pdf to be the same as
-      // the number of bins in data
-      // cmb_bin.SetPdfBins(cmb_bin.GetObservedShape().GetNbinsX());
+       
+    
+    for (unsigned ib = 0; ib < bins.size(); ++ib) {
+      std::string bin = bins[ib];
+      std::string bin_pattern = bin_patterns[ib];
+      pre_shapes[bin] = map<string, TH1F>();
 
-      // Fill the data and process histograms
-      pre_shapes[bin]["data_obs"] = cmb_bin.GetObservedShape();
-      for (auto proc : cmb_bin.process_set()) {
-        std::cout << ">> Doing prefit: " << bin << "," << proc << std::endl;
-        if (skip_proc_errs) {
-          pre_shapes[bin][proc] =
-              cmb_bin.cp().process({proc}).GetShape();
-        } else {
-          pre_shapes[bin][proc] =
-              cmb_bin.cp().process({proc}).GetShapeWithUncertainty();
-        }
-      }
-
-      // The fill total signal and total bkg hists
-      std::cout << ">> Doing prefit: " << bin << "," << "TotalBkg" << std::endl;
-      pre_shapes[bin]["TotalBkg"] =
-          cmb_bin.cp().backgrounds().GetShapeWithUncertainty();
-      std::cout << ">> Doing prefit: " << bin << "," << "TotalSig" << std::endl;
-      pre_shapes[bin]["TotalSig"] =
-          cmb_bin.cp().signals().GetShapeWithUncertainty();
-      std::cout << ">> Doing prefit: " << bin << "," << "TotalProcs" << std::endl;
-      pre_shapes[bin]["TotalProcs"] =
-          cmb_bin.cp().GetShapeWithUncertainty();
-
-
-      if (datacard != "") {
-        TH1F ref = cmb_card.cp().bin({bin}).GetObservedShape();
-        for (auto & it : pre_shapes[bin]) {
-          it.second = ch::RestoreBinning(it.second, ref);
-        }
-      }
-
-      for (auto const& rbin : reverse_bins_) {
-        if (rbin != bin) continue;
-        auto & hists = pre_shapes[bin];
-        for (auto it = hists.begin(); it != hists.end(); ++it) {
-          ReverseBins(it->second);
-        }
-      }
-      // Can write these straight into the output file
-      outfile.cd();
-      for (auto& iter : pre_shapes[bin]) {
-        ch::WriteToTFile(&(iter.second), &outfile, bin + "_prefit/" + iter.first);
-      }
-    }
-
-    // Print out the relative uncert. on the bkg
-    if (factors) {
-      cout << boost::format("%-25s %-32s\n") % "Bin" %
-                  "Total relative bkg uncert. (prefit)";
-      cout << string(58, '-') << "\n";
-      for (auto bin : bins) {
-        ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
-        double rate = cmb_bin.cp().backgrounds().GetRate();
-        double err = cmb_bin.cp().backgrounds().GetUncertainty();
-        cout << boost::format("%-25s %-10.5f") % bin %
-                    (rate > 0. ? (err / rate) : 0.) << std::endl;
-      }
+      do_complete_set(
+        cmb.cp().bin({bin_pattern}), 
+        outfile, 
+        bin+"_prefit", 
+        pre_shapes[bin], 
+        merged_procs,
+        skip_procs,
+        cmb_card.cp().bin({bin_pattern}),
+        save_yields,
+        datacard, 
+        skip_proc_errs,
+        factors, 
+        std::find(reverse_bins_.begin(), reverse_bins_.end(), bin) != reverse_bins_.end());
     }
   }
 
@@ -311,100 +461,60 @@ int main(int argc, char* argv[]) {
     map<string, TH2F> post_yield_cor;
 
     map<string, TH1F> post_shapes_tot;
+    
+
 
     if(total_shapes){
-      post_shapes_tot["data_obs"] = cmb.GetObservedShape();
-      // Fill the total sig. and total bkg. hists
-      auto cmb_bkgs = cmb.cp().backgrounds();
-      auto cmb_sigs = cmb.cp().signals();
-      std::cout << ">> Doing postfit: TotalBkg" << std::endl;
-      post_shapes_tot["TotalBkg"] =
-          no_sampling ? cmb_bkgs.GetShapeWithUncertainty()
-                   : cmb_bkgs.GetShapeWithUncertainty(res, samples);
-      std::cout << ">> Doing postfit: TotalSig" << std::endl;
-      post_shapes_tot["TotalSig"] =
-          no_sampling ? cmb_sigs.GetShapeWithUncertainty()
-                   : cmb_sigs.GetShapeWithUncertainty(res, samples);
-      std::cout << ">> Doing postfit: TotalProcs" << std::endl;
-      post_shapes_tot["TotalProcs"] =
-          no_sampling ? cmb.cp().GetShapeWithUncertainty()
-                   : cmb.cp().GetShapeWithUncertainty(res, samples);
-
-      if (datacard != "") {
-        TH1F ref = cmb_card.cp().GetObservedShape();
-        for (auto & it : post_shapes_tot) {
-          it.second = ch::RestoreBinning(it.second, ref);
-        }
-      }
-
-      outfile.cd();
-      // Write the post-fit histograms
-      for (auto & iter : post_shapes_tot) {
-        ch::WriteToTFile(&(iter.second), &outfile,
-                         "postfit/" + iter.first);
-      }
+      post_shapes["total"] = map<string, TH1F>();
+      do_complete_set(
+        cmb,
+        outfile, 
+        "total_postfit", 
+        post_shapes["total"], 
+        merged_procs,
+        skip_procs,
+        cmb_card, 
+        save_yields, 
+        datacard, 
+        skip_proc_errs, 
+        factors,
+        false,
+        no_sampling,
+        samples,
+        &res, 
+        verbose);
     }
 
 
-    for (auto bin : bins) {
-      ch::CombineHarvester cmb_bin = cmb.cp().bin({bin});
-      post_shapes[bin]["data_obs"] = cmb_bin.GetObservedShape();
-      for (auto proc : cmb_bin.process_set()) {
-        auto cmb_proc = cmb_bin.cp().process({proc});
-        // Method to get the shape uncertainty depends on whether we are using
-        // the sampling method or the "wrong" method (assumes no correlations)
-        std::cout << ">> Doing postfit: " << bin << "," << proc << std::endl;
-        if (skip_proc_errs) {
-          post_shapes[bin][proc] = cmb_proc.GetShape();
-        } else {
-          post_shapes[bin][proc] =
-              no_sampling ? cmb_proc.GetShapeWithUncertainty()
-                       : cmb_proc.GetShapeWithUncertainty(res, samples);
-        }
-      }
+    for (unsigned ib = 0; ib < bins.size(); ++ib) {
+      std::string bin = bins[ib];
+      std::string bin_pattern = bin_patterns[ib];
+      post_shapes[bin] = map<string, TH1F>();
+      auto cmb_bin = cmb.cp().bin({bin_pattern});
+      do_complete_set(
+        cmb_bin,
+        outfile, 
+        bin+"_postfit", 
+        post_shapes[bin], 
+        merged_procs,
+        skip_procs,
+        cmb_card.cp().bin({bin_pattern}), 
+        save_yields,
+        datacard, 
+        skip_proc_errs, 
+        factors,
+        std::find(reverse_bins_.begin(), reverse_bins_.end(), bin) != reverse_bins_.end(),
+        no_sampling,
+        samples,
+        &res, 
+        verbose);
       if (!no_sampling && covariance) {
         post_yield_cov[bin] = cmb_bin.GetRateCovariance(res, samples);
         post_yield_cor[bin] = cmb_bin.GetRateCorrelation(res, samples);
       }
-      // Fill the total sig. and total bkg. hists
-      auto cmb_bkgs = cmb_bin.cp().backgrounds();
-      auto cmb_sigs = cmb_bin.cp().signals();
-      std::cout << ">> Doing postfit: " << bin << "," << "TotalBkg" << std::endl;
-      post_shapes[bin]["TotalBkg"] =
-          no_sampling ? cmb_bkgs.GetShapeWithUncertainty()
-                   : cmb_bkgs.GetShapeWithUncertainty(res, samples);
-      std::cout << ">> Doing postfit: " << bin << "," << "TotalSig" << std::endl;
-      post_shapes[bin]["TotalSig"] =
-          no_sampling ? cmb_sigs.GetShapeWithUncertainty()
-                   : cmb_sigs.GetShapeWithUncertainty(res, samples);
-      std::cout << ">> Doing postfit: " << bin << "," << "TotalProcs" << std::endl;
-      post_shapes[bin]["TotalProcs"] =
-          no_sampling ? cmb_bin.cp().GetShapeWithUncertainty()
-                   : cmb_bin.cp().GetShapeWithUncertainty(res, samples);
-
-      if (datacard != "") {
-        TH1F ref = cmb_card.cp().bin({bin}).GetObservedShape();
-        for (auto & it : post_shapes[bin]) {
-          it.second = ch::RestoreBinning(it.second, ref);
-        }
-      }
 
       outfile.cd();
-      // Write the post-fit histograms
 
-      for (auto const& rbin : reverse_bins_) {
-        if (rbin != bin) continue;
-        std::cout << ">> reversing hists in bin " << bin << "\n";
-        auto & hists = post_shapes[bin];
-        for (auto it = hists.begin(); it != hists.end(); ++it) {
-          ReverseBins(it->second);
-        }
-      }
-
-      for (auto & iter : post_shapes[bin]) {
-        ch::WriteToTFile(&(iter.second), &outfile,
-                         bin + "_postfit/" + iter.first);
-      }
       for (auto & iter : post_yield_cov) {
         ch::WriteToTFile(&(iter.second), &outfile,
                          iter.first+"_cov");
@@ -414,20 +524,6 @@ int main(int argc, char* argv[]) {
                          iter.first+"_cor");
       }
 
-    }
-
-    if (factors) {
-      cout << boost::format("\n%-25s %-32s\n") % "Bin" %
-                  "Total relative bkg uncert. (postfit)";
-      cout << string(58, '-') << "\n";
-      for (auto bin : bins) {
-        ch::CombineHarvester cmb_bkgs = cmb.cp().bin({bin}).backgrounds();
-        double rate = cmb_bkgs.GetRate();
-        double err = no_sampling ? cmb_bkgs.GetUncertainty()
-                              : cmb_bkgs.GetUncertainty(res, samples);
-        cout << boost::format("%-25s %-10.5f") % bin %
-                    (rate > 0. ? (err / rate) : 0.) << std::endl;
-      }
     }
 
     // As we calculate the post-fit yields can also print out the post/pre scale
