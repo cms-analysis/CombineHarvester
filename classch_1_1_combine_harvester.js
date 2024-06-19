@@ -90,6 +90,7 @@ var classch_1_1_combine_harvester =
     [ "GetRateCorrelation", "classch_1_1_combine_harvester.html#a2fde08ec87e285cd05be2227a1b2a5b0", null ],
     [ "AddObservations", "classch_1_1_combine_harvester.html#a8d7ccde30bda35ec084f4e38b923ef23", null ],
     [ "AddProcesses", "classch_1_1_combine_harvester.html#a1ecb940a59ea7a2039956a07882e9ccc", null ],
+    [ "AddSystVar", "classch_1_1_combine_harvester.html#a2dcd4e28456978a5b876ea76acb24c37", null ],
     [ "AddSystFromProc", "classch_1_1_combine_harvester.html#a00bd4490f33ab0ae404fb46a8cbd9dfe", null ],
     [ "AddSyst", "classch_1_1_combine_harvester.html#aab26f47e06ee53fcf1aab5c0940e916f", null ],
     [ "ExtractShapes", "classch_1_1_combine_harvester.html#ad4bd2bb5458d8435efd8fff49624b7b0", null ],

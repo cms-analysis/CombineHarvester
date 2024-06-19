@@ -25,6 +25,6 @@ var classch_1_1_object =
     [ "delete_attribute", "classch_1_1_object.html#afe324e1fe370f7804a30e84da0a67556", null ],
     [ "set_all_attributes", "classch_1_1_object.html#a8c779be0d578124a56a17031abd86c9f", null ],
     [ "all_attributes", "classch_1_1_object.html#af6956eda45da72f747aeee28fadfe4fe", null ],
-    [ "attribute", "classch_1_1_object.html#a92bcd99a8c7a5e565d713387bbd954d2", null ],
+    [ "attribute", "classch_1_1_object.html#a3f131c3c63a86f91cab1d2fb56c86bb9", null ],
     [ "swap", "classch_1_1_object.html#a9ea9cb8427d79a8fccee9409eae3f603", null ]
 ];

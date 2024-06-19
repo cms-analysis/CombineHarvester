@@ -6,11 +6,8 @@ var searchData=
   ['deep_111',['deep',['../classch_1_1_combine_harvester.html#acbc55586d0cc9e8dc83f0396157d4b75',1,'ch::CombineHarvester']]],
   ['delete_5fattribute_112',['delete_attribute',['../classch_1_1_object.html#afe324e1fe370f7804a30e84da0a67556',1,'ch::Object']]],
   ['deprecated_20list_113',['Deprecated List',['../deprecated.html',1,'']]],
-  ['drawcmslogo_114',['DrawCMSLogo',['../_plotting_8h.html#ac9a2d10dbb78251b4757aba40f73fa68',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX, float relPosX, float relPosY, float relExtraDY):&#160;Plotting.h'],['../_plotting_8h.html#a99344cc5028c90aaafacea9ec5eab9d2',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX):&#160;Plotting.h'],['../namespacepython_1_1plotting.html#a2f37093b1828f3553adf6c59e9a86aa4',1,'python.plotting.DrawCMSLogo()']]],
+  ['drawcmslogo_114',['DrawCMSLogo',['../_plotting_8h.html#ac9a2d10dbb78251b4757aba40f73fa68',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX, float relPosX, float relPosY, float relExtraDY):&#160;Plotting.h'],['../_plotting_8h.html#a99344cc5028c90aaafacea9ec5eab9d2',1,'DrawCMSLogo(TPad *pad, TString cmsText, TString extraText, int iPosX):&#160;Plotting.h']]],
   ['drawcontours_115',['drawContours',['../_plotting___contours_8h.html#afcb8faa65f5a499825189a7cdd745b9e',1,'Plotting_Contours.h']]],
-  ['drawhorizontalline_116',['DrawHorizontalLine',['../_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98',1,'DrawHorizontalLine():&#160;Plotting.h'],['../namespacepython_1_1plotting.html#aa59088e7ab459b7d23bbc043dc6be97a',1,'python.plotting.DrawHorizontalLine()']]],
-  ['drawlimitband_117',['DrawLimitBand',['../namespacepython_1_1plotting.html#a2c4bc7ae087717eb744bacdb14207e63',1,'python::plotting']]],
-  ['drawtitle_118',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'DrawTitle():&#160;Plotting.h'],['../namespacepython_1_1plotting.html#ae8b7215feda9add6dfa50619eb441857',1,'python.plotting.DrawTitle()']]],
-  ['drawverticalband_119',['DrawVerticalBand',['../namespacepython_1_1plotting.html#a1958833c592d44945a72957e87089cbf',1,'python::plotting']]],
-  ['drawverticalline_120',['DrawVerticalLine',['../namespacepython_1_1plotting.html#a42fdb746289c7f95685cbc0182f140e1',1,'python::plotting']]]
+  ['drawhorizontalline_116',['DrawHorizontalLine',['../_plotting_8h.html#aa8adc566a12b3c090d1e1ff3330f7c98',1,'Plotting.h']]],
+  ['drawtitle_117',['DrawTitle',['../_plotting_8h.html#a39767958a52b4be5820816be7b1bb9bf',1,'Plotting.h']]]
 ];
