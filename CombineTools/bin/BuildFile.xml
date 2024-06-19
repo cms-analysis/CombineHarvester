@@ -14,6 +14,7 @@
 <bin file="PlotTest.cpp" name="PlotTest"></bin>
 <bin file="PostFitPlot2.cpp" name="PostFitPlot2"></bin>
 <bin file="PostFitShapesFromWorkspace.cpp" name="PostFitShapesFromWorkspace"></bin>
+<bin file="PostFit2DShapesFromWorkspace.cpp" name="PostFit2DShapesFromWorkspace"></bin>
 <bin file="PrePost.cpp" name="PrePost"></bin>
 <bin file="PrintPulls.cpp" name="PrintPulls"></bin>
 <bin file="RoundTrip.cpp" name="RoundTrip"></bin>
