@@ -15,7 +15,7 @@ A new full release area can be set up and compiled in the following steps:
     # IMPORTANT: Checkout the recommended tag on the link above
     git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
     cd CombineHarvester
-    git checkout v3.0.0-pre1
+    git checkout v3.0.0
     scram b
 
 Previously this package contained some analysis-specific subpackages. These packages can now be found [here](https://gitlab.cern.ch/cms-hcg/ch-areas). If you would like a repository for your analysis package to be created in that group, please create an issue in the CombineHarvester repository stating the desired package name and your NICE username. Note: you are not obliged to store your analysis package in this central group.
