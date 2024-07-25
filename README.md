@@ -4,7 +4,7 @@ Full documentation: http://cms-analysis.github.io/CombineHarvester
 
 ## Quick start
 
-This package requires HiggsAnalysis/CombinedLimit to be in your local CMSSW area. We follow the release recommendations of the combine developers which can be found [here](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation). The CombineHarvester framework is compatible with the CMSSW 14_1_X and 11_3_X series releases. The default branch, `main`, is for developments in the 14_1_X releases, and the current recommended tag is `v3.0.0-pre1`. The `v2.1.0` tag should be used in CMSSW_11_3_X.
+This package requires HiggsAnalysis/CombinedLimit to be in your local CMSSW area. We follow the release recommendations of the combine developers which can be found [here](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation). The CombineHarvester framework is compatible with the CMSSW 14_1_X and 11_3_X series releases. The default branch, `main`, is for developments in the 14_1_X releases, and the current recommended tag is `v3.0.0`. The `v2.1.0` tag should be used in CMSSW_11_3_X.
 
 A new full release area can be set up and compiled in the following steps:
 
