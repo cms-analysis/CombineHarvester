@@ -3,7 +3,6 @@
 <bin file="Example3.cpp" name="Example3"></bin>
 <bin file="GamGamExample.cpp" name="GamGamExample"></bin>
 <bin file="ImpactsTable.cpp" name="ImpactsTable"></bin>
-<bin file="LimitCompare.cpp" name="LimitCompare"></bin>
 <bin file="MSSMExample.cpp" name="MSSMExample"></bin>
 <bin file="MSSMUpdate.cpp" name="MSSMUpdate"></bin>
 <bin file="MSSMYieldTable.cpp" name="MSSMYieldTable"></bin>
