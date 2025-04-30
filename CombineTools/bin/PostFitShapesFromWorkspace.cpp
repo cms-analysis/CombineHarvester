@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
   bool skip_proc_errs = false;
   bool total_shapes = false;
   std::vector<std::string> reverse_bins_;
+  std::string selected_bins_="";
 
   po::options_description help_config("Help");
   help_config.add_options()
@@ -103,6 +104,7 @@ int main(int argc, char* argv[]) {
     ("total-shapes",
       po::value<bool>(&total_shapes)->default_value(total_shapes)->implicit_value(true),
       "Save signal- and background shapes added for all channels/categories")
+    ("selected-bins", po::value<string>(&selected_bins_)->default_value(selected_bins_), "List of bins to consider")
     ("reverse-bins", po::value<vector<string>>(&reverse_bins_)->multitoken(), "List of bins to reverse the order for");
 
 
@@ -186,7 +188,12 @@ int main(int argc, char* argv[]) {
     return no_shape;
   });
 
-  auto bins = cmb.cp().bin_set();
+  auto bins = cmb.cp().bin_set();  
+  if(selected_bins_!="") {
+    vector<string> selected_bins_vec;
+    boost::split(selected_bins_vec, selected_bins_, boost::is_any_of(","));
+    bins = cmb.cp().bin(selected_bins_vec).bin_set();
+  }
 
   TFile outfile(output.c_str(), "RECREATE");
   TH1::AddDirectory(false);
