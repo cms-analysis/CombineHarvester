@@ -14,6 +14,7 @@ from CombineHarvester.CombineTools.combine.Output import PrintFit, CollectLimits
 from CombineHarvester.CombineTools.combine.T2W import T2W
 from CombineHarvester.CombineTools.combine.FastScan import FastScan
 from CombineHarvester.CombineTools.combine.TaylorExpand import TaylorExpand
+from CombineHarvester.CombineTools.combine.PostFitShapesFromWorkspace import PostFitShapesFromWorkspace
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -37,6 +38,7 @@ register_method(parser, methods, T2W)
 register_method(parser, methods, PrintWorkspace)
 register_method(parser, methods, ModifyDataSet)
 register_method(parser, methods, Impacts)
+register_method(parser, methods, PostFitShapesFromWorkspace)
 register_method(parser, methods, ImpactsFromScans)
 register_method(parser, methods, CollectLimits)
 register_method(parser, methods, CollectGoodnessOfFit)
