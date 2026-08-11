@@ -14,6 +14,7 @@
 #include "TDirectory.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TString.h"
 #include "CombineHarvester/CombineTools/interface/Observation.h"
 #include "CombineHarvester/CombineTools/interface/Process.h"
 #include "CombineHarvester/CombineTools/interface/Systematic.h"
@@ -126,12 +127,18 @@ TH1F CombineHarvester::GetShapeWithUncertainty() {
 }
 
 TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const* fit,
-                                               unsigned n_samples) {
-  return GetShapeWithUncertainty(*fit, n_samples);
+                                               unsigned n_samples,
+                                               const bool& verbose,
+                                               const float& fraction_threshold) {
+  return GetShapeWithUncertainty(*fit, n_samples, verbose, fraction_threshold);
 }
 
 TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
-                                               unsigned n_samples) {
+                                               unsigned n_samples, 
+                                               const bool& verbose,
+                                               const float& fraction_threshold
+                                               ) 
+{
   auto lookup = GenerateProcSystMap();
   TH1F shape = GetShapeInternal(lookup);
   TH1F yield_sum;
@@ -139,9 +146,11 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
   int n_bins = shape.GetNbinsX();
   std::vector<std::vector<float>> sample_yields_perbin(n_bins, std::vector<float>(n_samples));
 
+  std::vector<std::string> full_rand_shape_summary;
   for (int i = 1; i <= n_bins; ++i) {
     shape.SetBinError(i, 0.0);
     yield_sum.SetBinContent(i, 0.0);
+    if (verbose) full_rand_shape_summary.push_back("");
   }
   // Create a backup copy of the current parameter values
   auto backup = GetParameters();
@@ -158,14 +167,35 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
   for (unsigned n = 0; n < p_vec.size(); ++n) {
     r_vec[n] = dynamic_cast<RooRealVar const*>(rands.at(n));
     p_vec[n] = GetParameter(r_vec[n]->GetName());
+    // if(! p_vec[n]) std::cout << "could not initialize parameter '" << r_vec[n]->GetName() << "'" << std::endl;
   }
 
+  TString tmp;
+  std::string rand_shape_summary = "";
   // Main loop through n_samples
   for (unsigned i = 0; i < n_samples; ++i) {
     // Randomise and update values
     fit.randomizePars();
     for (int n = 0; n < n_pars; ++n) {
-      if (p_vec[n]) p_vec[n]->set_val(r_vec[n]->getVal());
+      if (p_vec[n] && !p_vec[n]->frozen()) {
+        p_vec[n]->set_val(r_vec[n]->getVal());
+        if(verbose){
+          tmp.Form("setting parameter '%s' to %f\n", p_vec[n]->name().c_str(), r_vec[n]->getVal());
+          // std::cout << tmp.Data();
+          rand_shape_summary = tmp.Data();
+          // std::cout << rand_shape_summary.c_str() << std::endl;
+          TH1F rand_shape = this->GetShapeInternal(lookup);
+          for (int j = 1; j <= rand_shape.GetNbinsX(); ++j) {
+            tmp.Form("\tBin Content %i: %f\n", j, rand_shape.GetBinContent(j));
+            // std::cout << tmp.Data();
+            full_rand_shape_summary.at(j-1) = rand_shape_summary;
+            full_rand_shape_summary.at(j-1) += tmp.Data();
+          }
+        }
+      }
+      // else if (!p_vec[n]) {
+      //   std::cout << "could not find parameter '" << r_vec[n]->GetName() << "'"<< std::endl;
+      // }
     }
     TH1F rand_shape = this->GetShapeInternal(lookup);
     for (int j = 1; j <= n_bins; ++j) {
@@ -178,6 +208,17 @@ TH1F CombineHarvester::GetShapeWithUncertainty(RooFitResult const& fit,
     double yield_mean = yield_sum.GetBinContent(i)/double(n_samples);
     for (auto x :sample_yields_perbin[i-1]){
       double err = std::fabs(x - yield_mean);
+      if(verbose){
+        auto orig_content = shape.GetBinContent(i);
+        if (std::fabs(err/orig_content) >= fraction_threshold){
+          std::cout << "rel. error > " << fraction_threshold << " detected in bin " << i << std::endl;
+          std::cout << "nominal bin content (" << i << "):\t" << orig_content <<std::endl;
+          std::cout << "randomized bin content (" << i << "):\t" << x <<std::endl;
+          std::cout << "parameters: " << std::endl;
+          std::cout << "random shape evolution" << std::endl;
+          std::cout << full_rand_shape_summary.at(i-1).c_str() << std::endl;
+        }
+      }
       shape.SetBinError(i, err*err + shape.GetBinError(i));
     }
     shape.SetBinError(i, std::sqrt(shape.GetBinError(i)/double(n_samples)));
@@ -691,7 +732,9 @@ TH1F CombineHarvester::GetObservedShape() {
       tmp->SetBinErrorOption(TH1::kPoisson);
       proc_shape = *tmp;
       delete tmp;
-      proc_shape.Scale(1. / proc_shape.Integral());
+      if (proc_shape.Integral() > 0.) {
+        proc_shape.Scale(1. / proc_shape.Integral());
+      }
     }
     proc_shape.Scale(p_rate);
     if (!shape_init) {

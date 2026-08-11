@@ -384,6 +384,7 @@ def MultiRatioSplit(split_points, gaps_low, gaps_high):
         pad.Draw()
         pads.append(pad)
     pads.reverse()
+    pads[0].cd()
     return pads
 
 
@@ -1192,6 +1193,9 @@ def FixTopRange(pad, fix_y, fraction):
         if ymin == 0.:
             print('Cannot adjust log-scale y-axis range if the minimum is zero!')
             return
+        if fix_y <= 0:
+            print('Cannot adjust log-scale y-axis range if the maximum is zero!')
+            return
         maxval = (math.log10(fix_y) - fraction * math.log10(ymin)) / \
             (1 - fraction)
         maxval = math.pow(10, maxval)
@@ -1356,6 +1360,8 @@ def FixBoxPadding(pad, box, frac):
     # Convert this to a normalised frame value
     f_max_h = (a_max_h - ymin) / (ymax - ymin);
     if R.gPad.GetLogy() and f_max_h > 0.:
+        if a_max_h <= 0. or ymin <= 0. or ymax <= 0.:
+            return
         f_max_h = (math.log10(a_max_h) - math.log10(ymin)) / (math.log10(ymax) - math.log10(ymin))
 
     if f_y1 - f_max_h < frac:

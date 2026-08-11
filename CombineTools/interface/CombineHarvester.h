@@ -366,8 +366,8 @@ class CombineHarvester {
    * version of this method instead - this method will be removed in an
    * upcoming release
    */
-  TH1F GetShapeWithUncertainty(RooFitResult const* fit, unsigned n_samples);
-  TH1F GetShapeWithUncertainty(RooFitResult const& fit, unsigned n_samples);
+  TH1F GetShapeWithUncertainty(RooFitResult const* fit, unsigned n_samples, const bool& verbose = false, const float& fraction_threshold=0.5);
+  TH1F GetShapeWithUncertainty(RooFitResult const& fit, unsigned n_samples, const bool& verbose = false, const float& fraction_threshold=0.5);
   TH1F GetObservedShape();
 
   TH2F Get2DShapeWithUncertainty(RooFitResult const* fit, unsigned n_samples);
