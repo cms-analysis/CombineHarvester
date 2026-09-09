@@ -372,6 +372,9 @@ class CombineHarvester {
 
   TH2F Get2DShapeWithUncertainty(RooFitResult const* fit, unsigned n_samples);
   TH2F Get2DShapeWithUncertainty(RooFitResult const& fit, unsigned n_samples);
+  // As above, but additionally record the deviation of each sampled shape from the nominal one, for every bin
+  // The flattened bin index is b = (i-1)*n_y + j
+  TH2F Get2DShapeWithUncertainty(RooFitResult const& fit, unsigned n_samples, TH2F* deviations);
   TH2F GetObserved2DShape();
 
   TH2F GetRateCovariance(RooFitResult const& fit, unsigned n_samples);

@@ -223,6 +223,12 @@ TH2F CombineHarvester::Get2DShapeWithUncertainty(RooFitResult const* fit,
 
 TH2F CombineHarvester::Get2DShapeWithUncertainty(RooFitResult const& fit,
                                                unsigned n_samples) {
+  return Get2DShapeWithUncertainty(fit, n_samples, nullptr);
+}
+
+TH2F CombineHarvester::Get2DShapeWithUncertainty(RooFitResult const& fit,
+                                               unsigned n_samples,
+                                               TH2F* deviations) {
   auto lookup = GenerateProcSystMap();
   TH2F shape = Get2DShapeInternal(lookup);
   for (int i = 1; i <= shape.GetNbinsX(); ++i) {
@@ -230,6 +236,21 @@ TH2F CombineHarvester::Get2DShapeWithUncertainty(RooFitResult const& fit,
       shape.SetBinError(i,j, 0.0);
     }
   }
+
+  // Optionally record the per-sample deviations, which retain the bin-to-bin
+  // correlations that the per-bin errors alone throw away. The flattened bin
+  // index is b = (i-1)*n_y + j.
+  const int n_by = shape.GetNbinsY();
+  const int n_bins = shape.GetNbinsX() * n_by;
+  if (deviations) {
+    *deviations = TH2F("sample_deviations", "sample deviations",
+                       n_bins, 0.5, double(n_bins) + 0.5,
+                       int(n_samples), 0.5, double(n_samples) + 0.5);
+    deviations->SetDirectory(nullptr);
+    deviations->GetXaxis()->SetTitle("flattened bin index");
+    deviations->GetYaxis()->SetTitle("sample");
+  }
+
   // Create a backup copy of the current parameter values
   auto backup = GetParameters();
 
@@ -248,7 +269,7 @@ TH2F CombineHarvester::Get2DShapeWithUncertainty(RooFitResult const& fit,
   }
 
   // Main loop through n_samples
-  for (unsigned i = 0; i < n_samples; ++i) {
+  for (unsigned s = 0; s < n_samples; ++s) {
     // Randomise and update values
     fit.randomizePars();
     for (int n = 0; n < n_pars; ++n) {
@@ -258,8 +279,12 @@ TH2F CombineHarvester::Get2DShapeWithUncertainty(RooFitResult const& fit,
     TH2F rand_shape = this->Get2DShapeInternal(lookup);
     for (int i = 1; i <= shape.GetNbinsX(); ++i) {
       for (int j = 1; j <= shape.GetNbinsY(); ++j) {
-        double err = std::fabs(rand_shape.GetBinContent(i,j) - shape.GetBinContent(i,j));
-        shape.SetBinError(i,j, err*err + shape.GetBinError(i,j));
+        double d = rand_shape.GetBinContent(i,j) - shape.GetBinContent(i,j); // sign matters for deviations
+        shape.SetBinError(i,j, d*d + shape.GetBinError(i,j));
+        if (deviations) {
+          int b = (i - 1) * n_by + j;
+          deviations->SetBinContent(b, int(s) + 1, d);
+        }
       }
     }
   }
